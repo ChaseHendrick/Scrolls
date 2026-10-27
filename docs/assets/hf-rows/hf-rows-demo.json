@@ -1,0 +1,32 @@
+{
+  "schema": "scrolls-media/1",
+  "name": "hf-rows-demo",
+  "label": "Synthetic demo",
+  "alt": "A dark terminal running kit run hf-rows: the first run adds four rows and names one Job still running, the same command again adds none, and the ledger's first lines show date, purpose, flavor, minutes and billed USD.",
+  "caption": "Synthetic demo: kit run hf-rows on a made-up Hugging Face bill (invented Job ids and costs, no network). Four finished Jobs become rows once; the running one waits. No scan data.",
+  "license": "Apache-2.0",
+  "release_id": null,
+  "data": null,
+  "sources": [],
+  "outputs": [
+    {
+      "file": "hf-rows-demo.png",
+      "bytes": 99947,
+      "sha256": "6f262fc607f3b3ca2b637f5820b807b4ab151cbba5f8bdf074c99e9fcf14a8d9",
+      "width": 1100,
+      "height": 461,
+      "kind": "still",
+      "format": "png"
+    }
+  ],
+  "inputs": [],
+  "made": "2026-10-27",
+  "tool": {
+    "scripts": [
+      "hfrows_demo.py"
+    ],
+    "scripts_sha256": "87cfc34ba7b504a82ee384eeeb673ed992c919570e2f8e4209c80421cc83cab9",
+    "base_commit": "98f82606fd87cb515c13eb3e4e2b12bc7b050e39"
+  },
+  "command": "python scripts/media/hfrows_demo.py"
+}

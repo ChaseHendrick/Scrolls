@@ -81,3 +81,19 @@ python -m kit run modal-row row.json --ledger docs/compute/modal-ledger.csv --pu
 The file holds `{"key": "...", "row": {column: value}, "generic": true}`. The key is a stable name for the run (no `;` or newline). It is stored at the end of the notes as `autoledger KEY`, and a row whose key, or whose `app_id`, the ledger already holds is never written again, so a rerun writes nothing. Writes take an advisory lock and replace the file atomically (Mac/Linux).
 
 This ledger is public, so it takes a row only when both gates pass: the explicit `--public-generic` flag, and `"generic": true` in the file. A row whose purpose or notes name title, target, preregistered, held-out, experiment or candidate work is refused. Columns the header does not have are refused, except `lane_branch` and `app_id`, which are dropped. Fill `actual_cost_usd_if_known` from Modal's per-app report when it is available.
+
+## Hugging Face ledger rows
+
+Hugging Face publishes its own per-Job bill, so its rows need no row file: `python -m kit run hf-rows` reads the bill and writes one row per finished Job into `docs/compute/hf-jobs-costs.csv` (`date_time_utc, purpose, flavor, minutes, billed_usd, notes`), with the minutes and cost exactly as Hugging Face billed them.
+
+```
+export HF_TOKEN=...        # a token with billing read access
+python -m kit run hf-rows --label run=RUN --purpose "what the Jobs were for" --public-generic
+python -m kit run hf-rows --job JOB_ID --purpose "..." --public-generic --dry-run
+```
+
+Each Job's key is `hfjob:JOB_ID`, so a rerun writes nothing, and a Job still running waits for the next run. The public ledger takes rows behind the same two gates as the Modal ledger: the explicit flag and a purpose with no title, target, preregistered, held-out, experiment or candidate work. The full page: [hf-rows](tools/hf-rows.md).
+
+![A terminal running kit run hf-rows on a made-up bill: four rows added once, one running Job left for later.](assets/hf-rows/hf-rows-demo.png)
+
+*Synthetic demo: kit run hf-rows on a made-up Hugging Face bill (invented Job ids and costs, no network). No scan data.*

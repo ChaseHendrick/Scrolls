@@ -268,6 +268,7 @@ Each action prints one line (see Quick start); `check` prints one `problem: ...`
 | `ROOT/SLUG/run.json is not a run record (a JSON object); fix the file or restore it from a backup`, exit code 2 | A `run.json` that holds JSON other than an object, such as a list | Restore the record from a backup |
 | `cannot read backfill FILE: ...` | `run backfill` only: its JSON file is missing or not JSON ([run-local](run-local.md)) | Fix the file |
 | `FILE is a JSON object with key, row and optionally generic` | `run modal-row` only: its spec has the wrong shape ([modal-row](modal-row.md)) | Fix the spec |
+| `give --job ID or --label KEY=VALUE (no Jobs matched)` | `run hf-rows` only: no Job ids given, or the label matched none ([hf-rows](hf-rows.md)) | Check the ids or the label |
 
 ## How it works
 

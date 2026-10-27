@@ -8,7 +8,7 @@
 | Status | Current |
 | Kind | script folder |
 | Area | Releases and repository |
-| Run | `python scripts/media/hero.py`, `python scripts/media/encode.py`, `python scripts/media/capture_web.py`, `python scripts/media/record_ap_monitor.py`, `python scripts/media/sweep.py`, `python scripts/media/tifxyz_stills.py`, `python scripts/media/isometry_media.py`, `python scripts/media/coverage_still.py`, `python scripts/media/vc3d_agent_session.py` |
+| Run | `python scripts/media/hero.py`, `python scripts/media/encode.py`, `python scripts/media/capture_web.py`, `python scripts/media/record_ap_monitor.py`, `python scripts/media/sweep.py`, `python scripts/media/tifxyz_stills.py`, `python scripts/media/isometry_media.py`, `python scripts/media/coverage_still.py`, `python scripts/media/vc3d_agent_session.py`, `python scripts/media/hfrows_demo.py` |
 | Code | `scripts/media/` |
 | Tests | `tests/test_media.py`, `tests/test_repo.py` (`test_assets_are_listed_labeled_and_within_limits`) |
 | Needs | Python 3.10 or newer. `hero.py` and `sweep.py`: numpy and Pillow, and the Inter font for social cards. `encode.py`: ffmpeg (libx264) and gifsicle. `capture_web.py`: the `playwright` package and a Chromium it can start (it never downloads one). `common.py` is standard library only |
@@ -217,6 +217,14 @@ The still and GIF for the isometry block proposed for `meta.json` (villa issue #
 | `--segment NAME` | required | The segment's short name, for the sidecar |
 | `--cache CACHE` | `work/tifxyz/cache` | Where a bucket segment is kept |
 | `--out-dir OUT_DIR` | required | Writes `isometry-still.png` (Real data render) and `isometry-demo.gif` (Synthetic demo), each with a sidecar |
+
+### `python scripts/media/hfrows_demo.py`
+
+The still on the [hf-rows](hf-rows.md) page: `kit run hf-rows` run twice in a pseudo-terminal on a made-up Hugging Face bill (a fake Hub, no network), in the Scrolls terminal look, then the ledger's first lines; screenshotted with Node's Playwright (needs the `script` command and Node with Playwright and Chromium).
+
+| Option | Default | Meaning |
+| --- | --- | --- |
+| `--out OUT` | `docs/assets/hf-rows/hf-rows-demo.png` | The PNG to write (Synthetic demo), with its sidecar beside it |
 
 ### `python scripts/media/coverage_still.py`
 

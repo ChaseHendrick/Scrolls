@@ -21,7 +21,7 @@
 
 ## What it does
 
-Chase asked on 17 October 2026 to add nnU-Net where needed, plus NVIDIA Auto3DSeg, MedSAM2, DINOv3, MedNeXt, Swin UNETR, SegFormer and SS2DNet or other Mamba-based models. Where needed here means: where a family could plausibly beat what a tool uses now, on known-answer data, and where its license allows what we would do with it. This tool is the place where those families live, so that a benchmark can swap one in with one change and everything else held fixed.
+Asked on 17 October 2026 to add nnU-Net where needed, plus NVIDIA Auto3DSeg, MedSAM2, DINOv3, MedNeXt, Swin UNETR, SegFormer and SS2DNet or other Mamba-based models. Where needed here means: where a family could plausibly beat what a tool uses now, on known-answer data, and where its license allows what we would do with it. This tool is the place where those families live, so that a benchmark can swap one in with one change and everything else held fixed.
 
 It has two parts:
 
