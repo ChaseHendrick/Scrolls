@@ -16,7 +16,7 @@ A Hugging Face dataset of the published surface labels of PHerc0139, PHerc0814, 
 | Network | `huggingface.co` (the dataset), `vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` (CT and the published meshes, read live) |
 | Writes | Nothing; `hf download` writes the folder you name |
 | Go-ahead | Not needed to use. Releasing the dataset and the Space was Chase's yes (27 Oct 2026); the Space redeploys from merged `main` under the standing yes (rule 8) |
-| Released | Public on Hugging Face since 2026-10-27 (dataset and Space); README "Released tools" entry `snapped-labels` |
+| Released | Public on Hugging Face since 2026-10-27 (dataset and Space); 1.0.1 the same day (`abstain.tif` code 2 for filled vertices); README "Released tools" entry `snapped-labels` |
 | License | Data CC BY-NC 4.0, like the open data it comes from; page code Apache 2.0 |
 | Checked | 2026-10-27 against commit `ff82a63` |
 
@@ -24,7 +24,7 @@ A Hugging Face dataset of the published surface labels of PHerc0139, PHerc0814, 
 
 A surface label is a tifxyz mesh that follows one wrap of papyrus in a scan. Published labels sit near the sheet but rarely on it: on fresh test sites, only about a quarter of their vertices were within one voxel of the recto face. Models trained on such labels learn that offset.
 
-The dataset holds every published label of four scrolls after a snap: each vertex moved along its normal onto the face of the bright papyrus band, on the side toward the scroll's centre line. On PHerc0139, PHerc0814 and PHerc0841 the face is found in a 2.4 µm scan of the same scroll registered vertex by vertex to the label's scan (finesnap); on PHerc0172 in the label's own 7.9 µm scan (labelsnap). A vertex whose face is unclear keeps its published position. Each mesh keeps the grid and voxel frame of its source, so it lines up with it vertex for vertex.
+The dataset holds every published label of four scrolls after a snap: each vertex moved along its normal onto the face of the bright papyrus band, on the side toward the scroll's centre line. On PHerc0139, PHerc0814 and PHerc0841 the face is found in a 2.4 µm scan of the same scroll registered vertex by vertex to the label's scan (finesnap); on PHerc0172 in the label's own 7.9 µm scan (labelsnap). Where a vertex's own face is unclear, nothing is measured at that vertex: it takes a Gaussian-weighted average of its measured neighbours' offsets when one lies within two grid cells (filled, `abstain.tif` 2), and otherwise keeps its published position (`abstain.tif` 1). Of 32.9 million released vertices, 66.0 % are snapped, 33.0 % filled (median move 2.7 voxels) and 1.0 % left in place. The snapped share counts measured vertices only; keep `abstain.tif` 0 to use only vertices whose own face was found. Version 1.0.1 (27 Oct 2026) added code 2; in 1.0.0 filled vertices were marked 1. Each mesh keeps the grid and voxel frame of its source, so it lines up with it vertex for vertex.
 
 The Space draws a segment's published and snapped lines on the CT plane you pick, and lists every segment.
 
@@ -94,12 +94,12 @@ None to use it. The dataset was made from the published meshes and scans of the 
 | File | Type | Meaning |
 | --- | --- | --- |
 | `SCROLL/SEGMENT/snapped.tifxyz/{x,y,z}.tif` | float32 grids | Moved vertices, level-0 voxels of the label scan; `-1` none or held back |
-| `abstain.tif` | uint8 grid | 0 snapped, 1 left in place, 255 no vertex |
+| `abstain.tif` | float32 grid of codes | 0 snapped (face measured at the vertex), 1 not measured and left at its published position, 2 not measured and moved by its measured neighbours' filled offset (since 1.0.1), 255 no vertex or held back |
 | `confidence.tif` | float32 grid | 0 to 1 |
-| `reason.tif` | uint8 grid | Why a vertex was left in place |
-| `source.tif` | uint8 grid | finesnap only: 1 placed in the 2.4 µm scan, 2 in the label scan |
-| `release_mask.tif` | uint8 grid | 0 released, 1 held back for evaluation, 255 not in the source |
-| `release.json` | JSON | Source and scan URLs, sha256 of source and outputs, summary (`vertices_released`, `snapped`, `move_voxels`, `placed_by`) |
+| `reason.tif` | float32 grid of codes | Why no face was measured at a vertex |
+| `source.tif` | float32 grid of codes | finesnap only: 1 placed in the 2.4 µm scan, 2 in the label scan |
+| `release_mask.tif` | float32 grid of codes | 0 released, 1 held back for evaluation, 255 not in the source |
+| `release.json` | JSON | Source and scan URLs, sha256 of source and outputs, `release` (`1.0.1`), summary (`vertices_released`, `snapped`, `filled`, `left_in_place`, `abstained`, `move_voxels`, `placed_by`) |
 | `index.json` | JSON | One row per segment with its summary |
 | `viewer/SCROLL/SEGMENT.{bin,json}` | float32 rows, JSON | The viewer's line pieces per z plane: published ax ay bx by, snapped ax ay bx by |
 | `SHA256SUMS` | text | Every file |

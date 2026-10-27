@@ -1,6 +1,6 @@
 :root {
   --bg: #f7f7fb; --panel: #ffffff; --ink: #1b1d29; --mute: #5d6378; --line: #dfe1ea;
-  --pub: #f08a24; --snap: #2f7bf6; --move: rgba(120, 124, 140, .75); --accent: #7c5cff; --held: #e5487f;
+  --pub: #f08a24; --snap: #2f7bf6; --move: rgba(120, 124, 140, .75); --accent: #7c5cff; --held: #e5487f; --fill: #9cc0ff;
   --code: #eef0f7;
 }
 @media (prefers-color-scheme: dark) {

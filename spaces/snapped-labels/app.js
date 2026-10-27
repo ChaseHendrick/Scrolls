@@ -157,6 +157,7 @@ function msg(t) { const e = $('cv-msg'); e.textContent = t; e.hidden = !t; }
 
 function card(seg) {
   const v = seg.vertices_released, sn = seg.snapped, ab = seg.abstained, held = seg.vertices_held_back;
+  const fl = seg.filled != null ? seg.filled : 0, lip = seg.left_in_place != null ? seg.left_in_place : ab - fl;
   const pb = seg.placed_by;
   const mv = seg.move_voxels || {};
   const fine = pb ? `<div><b>${pct(pb.finer_scan, v)}</b><span>placed in the 2.4 µm scan</span></div>` : '';
@@ -165,12 +166,13 @@ function card(seg) {
     <div class="row">
       <div><b>${fmt(v)}</b><span>released vertices</span></div>
       <div><b>${pct(sn, v)}</b><span>snapped onto a face</span></div>
+      <div><b>${pct(fl, v)}</b><span>filled from measured neighbours</span></div>
       ${fine}
       <div><b>${mv.median != null ? mv.median.toFixed(2) : 'n/a'} vx</b><span>median move (90th pct ${mv.p90 != null ? mv.p90.toFixed(1) : 'n/a'})</span></div>
       <div><b>${fmt(held)}</b><span>held back for evaluation</span></div>
     </div>
-    <div class="meter"><i style="width:${100 * sn / Math.max(1, v + held)}%;background:var(--snap)"></i><i style="width:${100 * ab / Math.max(1, v + held)}%;background:var(--pub)"></i><i style="width:${100 * held / Math.max(1, v + held)}%;background:var(--held)"></i></div>
-    <div class="legend"><span><i style="background:var(--snap)"></i>snapped</span><span><i style="background:var(--pub)"></i>kept at the published position</span><span><i style="background:var(--held)"></i>held back</span></div>
+    <div class="meter"><i style="width:${100 * sn / Math.max(1, v + held)}%;background:var(--snap)"></i><i style="width:${100 * fl / Math.max(1, v + held)}%;background:var(--fill)"></i><i style="width:${100 * lip / Math.max(1, v + held)}%;background:var(--pub)"></i><i style="width:${100 * held / Math.max(1, v + held)}%;background:var(--held)"></i></div>
+    <div class="legend"><span><i style="background:var(--snap)"></i>snapped</span><span><i style="background:var(--fill)"></i>filled (drawn at the published position)</span><span><i style="background:var(--pub)"></i>left in place</span><span><i style="background:var(--held)"></i>held back</span></div>
     <pre class="cmd"><code>hf download SharpMeow/vesuvius-snapped-labels --repo-type dataset --include "${seg.path}/*" --local-dir snapped-labels</code></pre>
     <p class="hint">Mesh: <a href="${base}/snapped.tifxyz/meta.json" target="_blank" rel="noopener">${seg.path}/snapped.tifxyz</a> · record: <a href="${base}/release.json" target="_blank" rel="noopener">release.json</a> · CT: <a href="${S.view ? S.view.volume : '#'}/.zattrs" target="_blank" rel="noopener">${S.view ? S.view.volume.split('/').pop() : ''}</a></p>`;
 }

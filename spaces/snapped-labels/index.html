@@ -55,7 +55,7 @@
       <label class="zl">z <input id="z-range" type="range" min="0" max="0" value="0"> <output id="z-out">0</output></label>
       <label class="zl">Window <select id="win"><option value="96">96 voxels</option><option value="192" selected>192 voxels</option><option value="384">384 voxels</option></select></label>
     </div>
-    <p class="hint">Click the image to centre it. The lines are where each mesh crosses this z plane: orange for the published label, blue for the snapped one, with grey strokes joining matching points. Where the snap left a vertex in place, the two lines coincide.</p>
+    <p class="hint">Click the image to centre it. The lines are where each mesh crosses this z plane: orange for the published label, blue for the snapped one, with grey strokes joining matching points. The blue line moves only vertices whose own face was measured (<code>abstain.tif</code> 0). Filled vertices (<code>abstain.tif</code> 2, moved in the dataset by their measured neighbours' offsets) and vertices left in place (1) are drawn at the published position, so the two lines coincide there.</p>
     <div id="seg-card" class="card"></div>
   </div>
 </section>
@@ -81,8 +81,8 @@
   <h2>What is in each segment folder</h2>
   <ul>
     <li><code>snapped.tifxyz/</code>: the moved mesh, same grid as the source; <code>-1</code> where there is no vertex or it was held back.</li>
-    <li><code>abstain.tif</code>: 0 snapped, 1 left at its published position, 255 no vertex.</li>
-    <li><code>confidence.tif</code> (0 to 1), <code>reason.tif</code> (why a vertex abstained), <code>source.tif</code> (finesnap: 1 fine scan, 2 label scan).</li>
+    <li><code>abstain.tif</code>: 0 snapped (face measured at the vertex), 1 not measured and left at its published position, 2 not measured and moved by the offset filled in from measured neighbours (filled), 255 no vertex or held back. Version 1.0.1 added code 2; in 1.0.0 filled vertices were 1.</li>
+    <li><code>confidence.tif</code> (0 to 1), <code>reason.tif</code> (why no face was measured), <code>source.tif</code> (finesnap: 1 fine scan, 2 label scan).</li>
     <li><code>release_mask.tif</code>: 0 released, 1 held back for evaluation, 255 not in the source mesh. <code>release.json</code>: source URLs, checksums and the summary.</li>
   </ul>
   <h2>Limits</h2>
