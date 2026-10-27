@@ -141,6 +141,7 @@ The snap ran on Hugging Face CPU Jobs on 27 Oct 2026, under 9 USD in caps; stitc
 
 ## History
 
+- 2026-10-27: one page scroll bar and American English ([PR #253](https://github.com/ChaseHendrick/Scrolls/pull/253)): the segment list grows with the page (after the viewer on phones), a pick from far down the list or table brings the image back into view, and `view()` returns `center` (was `centre`).
 - 2026-10-27: dataset and Space released, page added (`bd34a59`).
 
 ## Related

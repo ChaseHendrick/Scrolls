@@ -150,7 +150,7 @@ None in this repository. The read-back check above ran on 2026-10-24 before and 
 - 2026-10-24: bucket public with the whole PHerc0841 scan; README "Released tools" entry added ([PR #206](https://github.com/ChaseHendrick/Scrolls/pull/206)).
 - 2026-10-24: color volume (`-rgb.ome.zarr`) public beside the embeddings, opened in neuroglancer from the Space; Download section with tested commands and sizes ([PR #211](https://github.com/ChaseHendrick/Scrolls/pull/211)).
 - 2026-10-24: guide Space `SharpMeow/dinovol-embeddings` with a click-to-search demo; bucket README gains a plain-words intro and links it ([PR #206](https://github.com/ChaseHendrick/Scrolls/pull/206)).
-- 2026-10-27: one page scroll bar (user decision, 27 October 2026): code blocks grow to their full height instead of scrolling inside the page at 380 px (300 px in the Download cards), keeping only a sideways scroll for long lines, and the head carries the one-scroll fragment from `python -m kit spaceconnect render` (on top of `aa259e8`).
+- 2026-10-27: one page scroll bar (user decision, 27 October 2026): code blocks grow to their full height instead of scrolling inside the page at 380 px (300 px in the Download cards), keeping only a sideways scroll for long lines, and the head carries the one-scroll fragment from `python -m kit spaceconnect render` ([PR #253](https://github.com/ChaseHendrick/Scrolls/pull/253)).
 
 ## Related
 

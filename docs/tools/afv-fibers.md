@@ -182,6 +182,7 @@ Free to use: downloads and the Space cost nothing. Making the fibers ran on Hugg
 
 ## History
 
+- 2026-10-27: one page scroll bar and American English ([PR #253](https://github.com/ChaseHendrick/Scrolls/pull/253)): a fading hero with the key numbers and buttons above the fold, the guide's frame fitted to its content so only the page scrolls, the public API `/fibers_box` with output key `fibers` (was `/fibres_box`, `fibres`), and a speed chart in place of the speed and cost chart.
 - 2026-10-27: six datasets and the Space 1.0.0 public, with the catalog and Connect your tool panel ([#248](https://github.com/ChaseHendrick/Scrolls/pull/248)).
 
 ## Related

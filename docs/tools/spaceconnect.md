@@ -242,7 +242,7 @@ Free. `render` and `check` run in a fraction of a second; `run` took a few minut
 
 - 2026-10-24: first version, branched from public `main` at `2ce4d50`: the panel on Umbilici, Unroll, Crackle Check, Scroll Lens, Ink Lens and AutoPipeline ink.
 - 2026-10-24: Segment Lens, which merged into `main` while this was open, gets its panel in its Guide; `check` caught it ([PR #170](https://github.com/ChaseHendrick/Scrolls/pull/170)).
-- 2026-10-27: one page scroll bar (`onescroll.html`, `scroll`) and American English (`spelling`) on every Space, branched from `main` at `aa259e8`.
+- 2026-10-27: one page scroll bar (`onescroll.html`, `scroll`) and American English (`spelling`) on every Space ([PR #253](https://github.com/ChaseHendrick/Scrolls/pull/253)).
 
 ## Related
 
