@@ -146,7 +146,7 @@ None in this repository for the Space's code. `python -m unittest tests.test_spa
 
 ## History
 
-- 2026-10-27: release entry `crackle-check` and this page, branched from `main` at `45836d9`, describing the public Space at Space commit 2a7d5d50 (version 0.4.0).
+- 2026-10-27: release entry `crackle-check` and this page ([PR #250](https://github.com/ChaseHendrick/Scrolls/pull/250)), branched from `main` at `45836d9`, describing the public Space at Space commit 2a7d5d50 (version 0.4.0).
 - 2026-10-24: Connect your tool panel, `spaces/connect/crackle-check/` ([PR #170](https://github.com/ChaseHendrick/Scrolls/pull/170)).
 
 ## Related
