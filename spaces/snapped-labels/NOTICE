@@ -1,0 +1,12 @@
+Snapped Labels
+Copyright 2026 Chase Hendrick
+
+The page's code (index.html, app.js and style.css) is licensed under the Apache License, Version 2.0 (LICENSE).
+
+Data
+- Every mesh, record and cross section the page shows is read at run time from the dataset
+  SharpMeow/vesuvius-snapped-labels: published surface labels of the Vesuvius Challenge open data moved onto the
+  papyrus surface, derived from the open data and shared under CC BY-NC 4.0, like the meshes and scans they come from.
+- CT is not stored here. Visitors' browsers read it from the Vesuvius Challenge open-data bucket
+  (https://scrollprize.org/data), CC BY-NC 4.0.
+The Apache licence of the code does not apply to the data.
