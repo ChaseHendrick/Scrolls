@@ -83,7 +83,7 @@ def cmd_flat(a):
     out.mkdir(parents=True, exist_ok=True)
     names = a.models or [n for n in zoo.models() if zoo.get(n)["family"] != "ct3d"]
     samples = _samples(a.samples)
-    loaded, n, i = {}, len(samples) * 2, 0
+    loaded, n, i, failed = {}, len(samples) * 2, 0, []
     for s in samples:
         info = {"id": s["id"], "scroll": s["scroll"], "segment": s["segment"]}
         if not a.no_orient:
@@ -101,6 +101,7 @@ def cmd_flat(a):
                 vol, lab, vinfo = compare.sample_inputs(s, scan, size=a.size)
             except Exception as exc:  # noqa: BLE001  (one sample failing never stops the others)
                 print(f"  {s['id']} {scan}: {type(exc).__name__}: {exc}", flush=True)
+                failed.append(f"{s['id']} {scan}")
                 progress(i, n, f"{s['id']} {scan} failed")
                 continue
             res, maps, vols = compare.run(vol, scan, these, labels=lab, centres=a.centres, steps=a.steps,
@@ -113,10 +114,19 @@ def cmd_flat(a):
                 import numpy as np
                 np.savez_compressed(f"{stem}_labels.npz", ink=lab[0], sup=lab[1])
             for row in res["models"].values():
+                if row.get("error"):
+                    failed.append(f"{s['id']} {scan} {row['model']}")
                 print(f"  {s['id']} {scan} {row['model']}: {row.get('error') or row.get('skipped') or 'ok'}",
                       flush=True)
             progress(i, n, f"{s['id']} {scan} in {time.time() - t0:.0f} s")
-    return 0
+    return _finish(failed)
+
+
+def _finish(failed):
+    """Exit 1 when any sample or model failed (its outputs are kept), so a smoke run that hides an error fails."""
+    if failed:
+        print(f"failed: {', '.join(failed)}", flush=True)
+    return 1 if failed else 0
 
 
 def orientation(s, mesh_dest):
@@ -193,12 +203,18 @@ def cmd_ct3d(a):
     os.environ.setdefault("KIT_INK_PYTHON", sys.executable)
     from kit import ink3d
     _smoke(a, ["gambiarra-3d"], 32)
+    if a.device.startswith("cuda"):
+        import torch
+        if not torch.cuda.is_available():
+            if not a.smoke:
+                raise SystemExit("ct3d: no CUDA device; pass --device cpu to run on the CPU")
+            a.device = "cpu"     # a smoke run on a CPU flavor
     out = Path(a.out)
     out.mkdir(parents=True, exist_ok=True)
     names = a.models or [n for n in zoo.models() if zoo.get(n)["family"] == "ct3d"]
     samples = _samples(a.samples)
     weights = {n: runners.fetch(n) for n in names}
-    n, i = len(samples) * len(names), 0
+    n, i, failed = len(samples) * len(names), 0, []
     for s in samples:
         sc = s["scan24"]
         mesh = _fetch_mesh(s, out / "mesh" / s["id"])
@@ -228,11 +244,12 @@ def cmd_ct3d(a):
                 rec.update(record=r, seconds=round(time.time() - t0, 1))
             except Exception as exc:  # noqa: BLE001  (one model failing never hides the others)
                 rec["error"] = f"{type(exc).__name__}: {str(exc)[:500]}"
+                failed.append(f"{s['id']} {name}")
             finally:
                 ink3d.canvas, ink3d.points = saved
             (out / f"{s['id']}_{name}.json").write_text(json.dumps(rec, indent=1, default=str))
             progress(i, n, f"{s['id']} {name}: {rec.get('error', 'ok')} in {time.time() - t0:.0f} s")
-    return 0
+    return _finish(failed)
 
 
 # ---------------------------------------------------------------- assemble: the Space's gallery folder

@@ -319,6 +319,8 @@ In a cloud session with `HF_TOKEN` set, the same commands work; `deploy.py` stil
 | `a SIZE px region at rows Y, columns X is outside the H x W surface` | `--at` puts the square outside the surface | Pick a corner further in |
 | `label scoring needs this repository's kit/ (and zarr)` | `--score` outside this repository | Run from the repository with zarr installed |
 | `run from a Scrolls checkout: label scoring needs its kit/` | `tools/gallery_job.py flat` or `assemble` run outside a Scrolls checkout | Clone the repository and run the job from `spaces/ink-lens/` |
+| `ct3d: no CUDA device; pass --device cpu to run on the CPU` | `tools/gallery_job.py ct3d` on a machine without CUDA (a `--smoke` run falls back to the CPU by itself) | Run on a GPU flavor, or pass `--device cpu` for a small `--size` |
+| `failed: SAMPLE SCAN MODEL, ...` and exit 1 | A sample's inputs or a model failed in `tools/gallery_job.py flat` or `ct3d`; the other outputs are kept | Read that model's `error` in the run record and rerun it alone with `--samples` and `--models` |
 | `the region packs to N MB; the Space takes at most 64 MB. Use a smaller region or --local` | The packed region is over 64 MB | Use a smaller region or local mode |
 | `Space mode runs on your own ZeroGPU quota, so it needs your Hugging Face token: run 'hf auth login' or set HF_TOKEN (a read token is enough). Or use --local to run on this machine` | No token was found | Log in, set `HF_TOKEN`, or use `--local` |
 | `Space mode needs gradio_client (pip install gradio_client), or use --local` | gradio_client is missing | Install it or use `--local` |
