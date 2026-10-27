@@ -37,6 +37,7 @@ OUT = Path(tempfile.gettempdir()) / "fiber-checker-out"
 CT_CACHE = C.CACHE / "ct"
 CT_KEEP = int(8e9)                  # CT chunks kept between runs; the oldest go first
 GAME = HERE / "assets" / "game.npz"
+GUIDE = HERE / "guide" / "index.html"
 CONNECT_HTML = HERE / "connect.html"
 PATCHES = [("Quick: 60 patches, about 2 minutes", 60), ("Thorough: 150 patches, about 5 minutes", 150),
            ("Whole segment: up to 400 patches, about 15 minutes", 400)]
@@ -243,6 +244,34 @@ def compare_results(a_json, b_json):
 
 # ---------------------------------------------------------------- what the page shows
 
+def compare_html(res):
+    """compare_results' answer as two columns, with the better side of each row marked."""
+    def name(v):
+        if isinstance(v, dict):
+            v = " · ".join(str(v[k]) for k in ("sample", "name", "volume") if v.get(k))
+        v = str(v or "?").rstrip("/").rsplit("/", 1)[-1]     # a mesh path: its folder name, not where it was cached
+        return html.escape(v.rsplit("_mesh_", 1)[-1])
+    rows = [("Patches checked", "patches", lambda v: f"{v}", None),
+            ("Fibers show on", "share_fibers_visible", pct, 1),
+            ("Median fiber evidence", "median_evidence", lambda v: f"{v:.2f}", 1),
+            ("Unsure", "share_unsure", pct, -1)]
+    body = []
+    for label, k, fmt, better in rows:
+        a, b = res["summary"][k]
+        cells = [fmt(v) if v is not None else "n/a" for v in (a, b)]
+        if better and a is not None and b is not None and abs(a - b) > 0.02:
+            win = 0 if (a - b) * better > 0 else 1
+            cells[win] = f"<b>{cells[win]}</b> ◀"
+        body.append(f"<tr><td>{label}</td><td>{cells[0]}</td><td>{cells[1]}</td></tr>")
+    pr = res.get("paired_same_grid")
+    paired = (f"<p class='fc-meta'>Same mesh grid, {pr['patches']} patches in both: A clearly better on "
+              f"{pct(pr['a_better'])}, B on {pct(pr['b_better'])}, mean difference {pr['mean_diff']:+.3f} (A minus B)."
+              "</p>" if pr else "<p class='fc-meta'>Different mesh grids, so the summaries are compared, not patch "
+              "by patch.</p>")
+    return (f"<table class='fc-cmp'><thead><tr><th></th><th>A<span>{name(res.get('a'))}</span></th>"
+            f"<th>B<span>{name(res.get('b'))}</span></th></tr></thead><tbody>{''.join(body)}</tbody></table>{paired}")
+
+
 def pct(v):
     return "n/a" if v is None or v != v else f"{v:.0%}"
 
@@ -277,7 +306,7 @@ def summary_html(rec):
  · {setting} · judge: {'free local model' if rec['judge'] == 'local' else 'Claude, your key'}{cost}</p>
 <details class="fc-untested"><summary>Untested hints ({jumps} possible jumps)</summary>
 <p>These have not passed a test of their own yet, so read them as ideas, not results.
-<b>Jump hints</b>: {jumps} patches with low evidence where every neighbour is clear, which can mark a sheet jump or a
+<b>Jump hints</b>: {jumps} patches with low evidence where every neighbor is clear, which can mark a sheet jump or a
 stretch off the sheet. <b>Fiber direction</b>: {pct(s['direction_share_horizontal'])} of patches have strands
 running along the mesh's columns (horizontal in the map), the rest along its rows. <b>Best depth</b>: the median
 patch looks most fibrous {s['depth_offset_median']:+g} voxels from the traced surface.</p></details>
@@ -287,6 +316,40 @@ patch looks most fibrous {s['depth_offset_median']:+g} voxels from the traced su
 def tiles_of(out):
     files = sorted(Path(out).glob("tiles/*.png"))
     return [(str(f), f"{f.stem.split('-')[-1]} {f.stem.split('-')[1]}") for f in files]
+
+
+def with_figures(text):
+    """Fill the guides' [[fig NAME | caption]] slots with the pictures in assets/ (tools/build_media.py); a slot whose
+    picture this copy lacks is dropped, so the guides read the same without them."""
+    out, rest = [], text
+    while "[[fig " in rest:
+        head, _, tail = rest.partition("[[fig ")
+        spec, _, rest = tail.partition("]]")
+        name, _, caption = (x.strip() for x in spec.partition("|"))
+        out.append(head)
+        if (HERE / "assets" / name).is_file():
+            alt = html.escape(" ".join(caption.split()), quote=True)
+            out.append(f'<figure><img src="/gradio_api/file=assets/{name}" alt="{alt}" loading="lazy">'
+                       f'<figcaption>{html.escape(" ".join(caption.split()))} Recorded on public scrolls on no prize '
+                       'list.</figcaption></figure>')
+    return "".join(out) + rest
+
+
+def guide_html():
+    """The welcome page, its pictures read from this Space's assets/ folder (tools/build_media.py)."""
+    if not GUIDE.is_file():
+        return "<p>The welcome page is missing from this copy.</p>"
+    page = GUIDE.read_text()
+    # its pictures point at Gradio's file route (a <base> cannot do it); in-page anchors scroll inside the frame,
+    # ?tab= links switch the Space's tabs, other links open a new tab (as Lasagna Fields does)
+    page = page.replace("'assets/", "'/gradio_api/file=assets/").replace('"assets/', '"/gradio_api/file=assets/')
+    fix = ('<script>document.addEventListener("click",function(e){var a=e.target.closest&&e.target.closest("a");'
+           'if(!a)return;var h=a.getAttribute("href")||"";if(h.charAt(0)==="#"){e.preventDefault();'
+           'var t=document.getElementById(h.slice(1));if(t)t.scrollIntoView({behavior:"smooth"});}'
+           'else if(h.indexOf("?tab=")===0){e.preventDefault();window.parent.postMessage({fcTab:h.slice(5)},"*");}'
+           'else if(/^https?:/.test(h)){a.target="_blank";a.rel="noopener";}},true);</script>')
+    page = page.replace("<head>", "<head>" + fix, 1)
+    return f'<iframe title="Fiber Checker" srcdoc="{html.escape(page, quote=True)}"></iframe>'
 
 
 def report_frame(out):
@@ -442,6 +505,10 @@ texture: it never reads or finds text.
    judges them on the CPU.
 3. The map, the summary and the download appear on the right. Try the **Fiber or not?** tab while you wait.
 
+[[fig howto-check.gif | A check from start to finish, sped up: pick an example, press Check fibers, read the map.]]
+
+[[fig howto-game.gif | Fiber or not?: say which render shows fibers, then see what the free judge said.]]
+
 <h3 id="read">2. Read the result</h3>
 
 - **The map** is the segment as traced, flattened on its own mesh grid. Yellow and green: clear fibers. Purple: weak.
@@ -452,17 +519,24 @@ texture: it never reads or finds text.
 - **Unsure**: the judge's answer changed when the patch was turned by a quarter turn.
 - **Clearest and weakest patches** are the renders themselves, so you can see what the judge saw.
 
+[[fig howto-result.webp | A finished check: the map, the summary with its self-check, and the download.]]
+
 <h3 id="own">3. Check your own trace</h3>
 
 Zip your tifxyz folder (x.tif, y.tif and z.tif; VC3D and villa write these) and upload it on **Check a segment**,
 under **Your own mesh**, with the 14-digit id of the scan its coordinates are in (level-0 voxels). The Space reads the
 CT of that scan from the open data. Meshes on 2.2 to 2.4 um scans are checked in the tested setting.
 
+[[fig howto-upload.webp | Your own mesh: the zip goes in the box, the scan id below it.]]
+
 <h3 id="ab">4. Compare two traces</h3>
 
 Check both (two segments, or your trace before and after an edit), download each zip, and give the two
 `fiber.json` files to **Compare**. When both are meshes of the same grid, it compares them patch by patch: the share
 of patches where each is clearly better, and the mean difference.
+
+[[fig howto-compare.gif | Two fiber.json files in, a side-by-side table out. These two are checks of the same segment on
+two scans, whose meshes have different grids, so the summaries are compared.]]
 
 <h3 id="prize">5. For prize entries</h3>
 
@@ -507,7 +581,7 @@ the segment in tools that read tifxyz channels. `--judge claude` uses `ANTHROPIC
 - **Outside the tested setting** (other voxel sizes, your own meshes at other spacings): it still runs, and says so.
 - **Untested hints**: jump hints, fiber direction and best depth are ideas until a test of their own passes.
 - **Which sheet**: each patch is rendered at the brightest depth within 5 voxels of the trace (the tested rule), and
-  papyrus sheets lie close together, so a trace a few voxels off, or on the neighbouring sheet, can still show fibers.
+  papyrus sheets lie close together, so a trace a few voxels off, or on the neighboring sheet, can still show fibers.
   A clear map says fibers show on and near your surface; it does not prove the trace stayed on one sheet.
 
 <h3 id="wrong">When something goes wrong</h3>
@@ -569,6 +643,19 @@ CSS = """
 .fc-legend { font-size:12.5px; color: var(--body-text-color-subdued); }
 .fc-legend i { display:inline-block; width:11px; height:11px; border-radius:3px; margin:0 4px -1px 10px; }
 .fc-report { width:100%; height:80vh; border:0; border-radius:12px; }
+.fc-guide iframe { width:100%; height:calc(100vh - 150px); min-height:640px; border:0; border-radius:12px;
+  background:#f6f1e7; }
+.fc-howto img { border-radius:10px; border:1px solid var(--border-color-primary); max-width:min(100%, 820px);
+  display:block; margin:10px 0 4px; }
+.fc-howto figure { margin:10px 0 18px; } .fc-howto figcaption { font-size:13px; color: var(--body-text-color-subdued); }
+.fc-strip { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; max-width:820px; margin:10px 0; }
+.fc-strip img { width:100%; margin:0; aspect-ratio:1; object-fit:cover; }
+.fc-strip span { display:block; font-size:12.5px; color: var(--body-text-color-subdued); margin-top:4px; }
+.fc-drop .wrap { padding:14px 10px !important; gap:4px !important; line-height:1.35 !important; }
+.fc-cmp { width:100%; max-width:820px; border-collapse:collapse; font-size:15px; margin-top:6px; }
+.fc-cmp th, .fc-cmp td { text-align:left; padding:9px 12px; border-bottom:1px solid var(--border-color-primary); }
+.fc-cmp th span { display:block; font-weight:400; font-size:12.5px; color: var(--body-text-color-subdued); }
+.fc-cmp td:not(:first-child) { font-variant-numeric: tabular-nums; }
 .fc-howto { max-width: 1000px; margin: 0 auto !important; }
 .fc-howto h3 { scroll-margin-top: 16px; margin-top: 1.6em !important; }
 .fc-toc { font-size: 14px; line-height: 1.9; padding: 10px 14px; border-radius: 10px;
@@ -582,6 +669,8 @@ CSS = """
   .fc-head h1 { font-size:24px; }
   .fc-head span { display:none; }
   #fc-tabs .tab-container button { padding:6px 6px !important; font-size:12.5px !important; }
+  .fc-guide iframe { height:calc(100vh - 120px); min-height:520px; }
+  .fc-strip { grid-template-columns:repeat(2,minmax(0,1fr)); }
 }
 """
 
@@ -602,10 +691,14 @@ model or by Claude with your own key. Model output, not a reading.">
 TAB_JS = """
 () => {
   const pick = (name) => {
-    const ids = {check: 0, game: 1, compare: 2, howto: 3, agents: 4};
-    const btns = document.querySelectorAll('#fc-tabs button[role="tab"]');
-    if (name in ids && btns[ids[name]]) btns[ids[name]].click();
+    // by label: on a phone the later tabs sit in Gradio's overflow menu, as buttons without role="tab"
+    const labels = {home: 'Welcome', check: 'Check a segment', game: 'Fiber or not?', compare: 'Compare',
+                    howto: 'How-to guides', agents: 'Agents and API'};
+    const btns = [...document.querySelectorAll('#fc-tabs button')].filter((b) => b.textContent.trim() === labels[name]);
+    const btn = btns.find((b) => b.getAttribute('role') === 'tab') || btns[btns.length - 1];
+    if (btn) btn.click();
   };
+  window.addEventListener('message', (e) => { if (e.data && e.data.fcTab) pick(e.data.fcTab); });
   const q = new URLSearchParams(window.location.search).get('tab');
   if (q) setTimeout(() => pick(q), 300);
 }
@@ -721,6 +814,8 @@ def build_demo():
         gr.HTML('<div class="fc-head"><div class="weave"></div><h1>Fiber Checker</h1><span>Are papyrus fibers '
                 'visible on a traced scroll surface? A free fiber map of any segment, patch by patch.</span></div>')
         with gr.Tabs(elem_id="fc-tabs"):
+            with gr.Tab("Welcome", id="home"):
+                gr.HTML(guide_html(), elem_classes="fc-guide")
             with gr.Tab("Check a segment", id="check"):
                 gr.Markdown(INTRO)
                 with gr.Row(equal_height=False):
@@ -738,7 +833,7 @@ def build_demo():
                                 go = gr.Button("Check fibers", variant="primary", size="lg")
                             with gr.Tab("Your own mesh"):
                                 upload = gr.File(label="Zip of your tifxyz folder (x.tif, y.tif, z.tif)",
-                                                 file_types=[".zip"], type="filepath", height=100)
+                                                 file_types=[".zip"], type="filepath")
                                 up_vol = gr.Textbox(label="14-digit scan id its coordinates are in (level-0 voxels)",
                                                     placeholder="20250526151718")
                                 go_up = gr.Button("Check my mesh", variant="primary", size="lg")
@@ -785,12 +880,14 @@ def build_demo():
                 gr.Markdown("Give two `fiber.json` files (from the downloads, or the command line tool): two "
                             "segments, two tracers, or one trace before and after an edit.")
                 with gr.Row():
-                    ca = gr.File(label="A: fiber.json", file_types=[".json"], type="filepath", height=100)
-                    cb = gr.File(label="B: fiber.json", file_types=[".json"], type="filepath", height=100)
+                    ca = gr.File(label="A: fiber.json", file_types=[".json"], type="filepath", elem_classes="fc-drop")
+                    cb = gr.File(label="B: fiber.json", file_types=[".json"], type="filepath", elem_classes="fc-drop")
                 cgo = gr.Button("Compare", variant="primary")
-                cout = gr.JSON(label="Side by side")
+                cside = gr.HTML()
+                with gr.Accordion("Record (JSON)", open=False):
+                    cout = gr.JSON(label="Side by side")
             with gr.Tab("How-to guides", id="howto"):
-                gr.Markdown(HOW_TO, elem_classes="fc-howto")
+                gr.Markdown(with_figures(HOW_TO), elem_classes="fc-howto")
             with gr.Tab("Agents and API", id="agents"):
                 gr.Markdown(AGENTS.format(host=host))
                 with gr.Accordion("Connect your tool: the scans and meshes by URL", open=True):
@@ -826,7 +923,10 @@ def build_demo():
         game_tab.select(guard(first_pair), st, [img_a, img_b, reveal, score_md, st], **hidden)
         pick_a.click(lambda s: answer("A", s), st, [reveal, score_md, st], **hidden)
         pick_b.click(lambda s: answer("B", s), st, [reveal, score_md, st], **hidden)
-        cgo.click(guard(compare_results), [ca, cb], cout, **hidden)
+        def on_compare(a, b):
+            res = compare_results(a, b)
+            return compare_html(res), res
+        cgo.click(guard(on_compare), [ca, cb], [cside, cout], **hidden)
 
         def api_check(sample_, segment_, volume_, patches_, request: gr.Request, progress=gr.Progress()):
             return check_segment(sample_, segment_, volume_, int(patches_ or 60), request=request, progress=progress)
@@ -861,6 +961,10 @@ def fix_mcp_multiple_outputs():
 
 
 def launch_kwargs():
+    import gradio as gr
+    if (HERE / "assets").is_dir():
+        gr.set_static_paths(paths=[str(HERE / "assets")])
+    os.chdir(HERE)                     # the welcome page's assets/... resolve against the Space's folder
     return dict(theme=theme(), css=CSS, head=HEAD, footer_links=["api", "gradio"], mcp_server=True,
                 max_file_size="200mb", allowed_paths=[str(OUT)])
 
