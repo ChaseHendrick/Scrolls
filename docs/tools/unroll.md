@@ -1,6 +1,6 @@
 # unroll: view and virtually unroll Herculaneum scrolls in 3D in the browser, and score ink maps
 
-Unroll 1.5.0 is a static web app, a Hugging Face Space, that rebuilds traced scroll windings in 3D with X-ray and ink layers, unrolls them, shows raw CT around any point, and scores your ink map against the published one (Ink Bench).
+Unroll 1.7.0 is a static web app, a Hugging Face Space, that rebuilds traced scroll windings in 3D with X-ray and ink layers, unrolls them, shows raw CT around any point, and scores your ink map against the published one (Ink Bench).
 
 | Field | Value |
 | --- | --- |
@@ -16,7 +16,7 @@ Unroll 1.5.0 is a static web app, a Hugging Face Space, that rebuilds traced scr
 | Network | The page and its data from `huggingface.co` and `sharpmeow-unroll.static.hf.space`; three.js from `cdn.jsdelivr.net`; the CT volume view streams OME-Zarr from the open-data bucket `s3://vesuvius-challenge-open-data`; Open your own fetches only a URL you give (the server must allow CORS). `inkbench.py` fetches `data/bench/` from the Space unless `--root` names a local checkout |
 | Writes | In the browser only: settings in `localStorage` under `unroll.settings.v1`; the installed app's service-worker caches `unroll-shell-<tag>`, `unroll-data-<tag>` and `unroll-runtime-<tag>`; scrolls opened with Open your own in browser storage; downloads you ask for (a picture, an Ink Bench bundle). Nothing is uploaded. `inkbench.py` writes the bundle given by `-o` (else prints it) and, with `adapt`, a 16-bit PNG |
 | Go-ahead | Not needed to view it or run Ink Bench. Changing the Space, or posting its pictures or scores, needs Chase's yes (the go-ahead rule, hard rule 8), and never with private work or target-scroll data |
-| Released | Hugging Face Space `SharpMeow/unroll`, version 1.5.0 of 2026-10-16 (the Space's `version.json`); in this README's "Released tools" since 2026-10-16 (`9896827`), pinned there with AutoPipeline. The Space's changelog starts at 0.9.0 (2026-10-15); 1.0.0 is the first release |
+| Released | Hugging Face Space `SharpMeow/unroll`, version 1.7.0 of 2026-10-24 (the Space's `version.json`; Live sheet, [guide](../unroll-space.md)); in this README's "Released tools" since 2026-10-16 (`9896827`), pinned there with AutoPipeline. The Space's changelog starts at 0.9.0 (2026-10-15); 1.0.0 is the first release |
 | License | Code: Apache 2.0 ([LICENSE](https://huggingface.co/spaces/SharpMeow/unroll/blob/main/LICENSE), with `NOTICE`); the scan data and everything derived from it (`data/`, `og.jpg`): [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/); three.js keeps its MIT license |
 | Guide | [`docs/unroll-space.md`](../unroll-space.md) |
 | Checked | 2026-10-16 against commit `7be3185` |
@@ -281,6 +281,7 @@ No tests in this repository, and none run for this page. The Space's `tests/` fo
 
 ## History
 
+- 2026-10-24: 1.7.0 on the Space: Live sheet streams any public segment and a CT or 3D ink volume from the bucket; release entry and guide (`975d96e`, PR #216).
 - 2026-10-24: 1.6.0 on the Space (from Space commit `e31bb23`): Connect your tool in the Embed sheet, `connect.json` and `CONNECT.md`; spec in this repository's `spaces/connect/unroll/`.
 - 2026-10-16: release entry and guide updated to version 1.5.0, its other scrolls and the CT tools (`b0913b4`).
 - 2026-10-16: Install app link, offline app since 1.1.0 (`cf72eb1`, PR #98).
