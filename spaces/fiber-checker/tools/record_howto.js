@@ -74,10 +74,11 @@ async function open(tab) {
   // 3. Compare: two fiber.json files side by side
   await open('compare');
   await frame('compare', 1800);
-  const inputs = page.locator('.fc-drop input[type=file]');
-  await inputs.nth(0).setInputFiles(aJson);
+  // each drop box swaps its input for the file once it has one, so find each box's input by the box
+  const drops = page.locator('.fc-drop');
+  await drops.nth(0).locator('input[type=file]').setInputFiles(aJson);
   await page.waitForTimeout(1200);
-  await inputs.nth(1).setInputFiles(bJson);
+  await drops.nth(1).locator('input[type=file]').setInputFiles(bJson);
   await page.waitForTimeout(1200);
   await frame('compare', 1600);
   await page.getByRole('button', { name: 'Compare', exact: true }).click();

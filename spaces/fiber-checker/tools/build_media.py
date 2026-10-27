@@ -1,12 +1,13 @@
 """Build the pictures of Fiber Checker's welcome page from the game's renders (public scrolls on no prize list).
 
-  python3 tools/build_media.py [--run RUN_DIR] [--shot SCREENSHOT.png]
+  python3 tools/build_media.py [--run RUN_DIR] [--shot SCREENSHOT.png] [--frames FRAMES_DIR]
 
 Writes into assets/ (on the Space only, never in git, docs/media/README.md):
   hero.webp           a mosaic of the clearest renders, for the page's hero
   pair-N-{on,scramble,shuffle,off}.webp   three patches with the controls the judge must beat
   map.png, tile-N.webp                    a fiber map and its clearest patches, from a fibercheck score folder (--run)
   ui.webp             a screenshot of the Check tab with a result (--shot), at most 1600 px wide
+  howto-FLOW.gif, howto-*.webp            the How-to guides' GIFs and stills, from tools/record_howto.js (--frames)
   media.json          where every picture came from
 Every picture is at most 1920 px and well under 4 MB.
 """
@@ -38,10 +39,44 @@ def grey(a, size=None):
     return im.resize((size, size), Image.BICUBIC) if size else im
 
 
+def gif(frames, out, width=1100, limit=3.9e6):
+    """One GIF from [(png, ms), ...] at `width` px, made narrower until it is under `limit` bytes."""
+    while True:
+        ims = []
+        for f, _ in frames:
+            im = Image.open(f).convert("RGB")
+            ims.append(im.resize((width, round(im.height * width / im.width)), Image.LANCZOS))
+        # one shared palette keeps the interface's colors steady from frame to frame
+        pal = ims[-1].quantize(colors=128, method=Image.Quantize.MEDIANCUT)
+        q = [im.quantize(palette=pal, dither=Image.Dither.NONE) for im in ims]
+        q[0].save(out, save_all=True, append_images=q[1:], duration=[ms for _, ms in frames], loop=0,
+                  optimize=True, disposal=1)
+        if out.stat().st_size < limit or width <= 640:
+            return width
+        width -= 120
+
+
+def frames_media(src, meta):
+    """GIFs and stills of the How-to guides from record_howto.js's frames.json and shots."""
+    flows = json.loads((src / "frames.json").read_text())
+    for flow, frames in flows.items():
+        w = gif([(src / f, ms) for f, ms in frames], ASSETS / f"howto-{flow}.gif")
+        meta["pictures"][f"howto-{flow}.gif"] = f"interface recording of the {flow} guide at {w} px (public scrolls on no prize list)"
+    for shot in ("result", "upload"):
+        f = src / f"shot-{shot}.png"
+        if f.is_file():
+            im = Image.open(f).convert("RGB")
+            if im.width > 1100:
+                im = im.resize((1100, round(im.height * 1100 / im.width)), Image.LANCZOS)
+            im.save(ASSETS / f"howto-{shot}.webp", quality=86)
+            meta["pictures"][f"howto-{shot}.webp"] = f"interface screenshot ({shot}, PHerc0139 w030)"
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     ap.add_argument("--run", type=Path, help="a fibercheck score folder for the example map")
     ap.add_argument("--shot", type=Path, help="a screenshot of the Check tab with a result")
+    ap.add_argument("--frames", type=Path, help="record_howto.js's output folder (frames.json and shots)")
     a = ap.parse_args()
     z = np.load(ASSETS / "game.npz")
     on, off, src = z["on"].astype(np.float64), z["off"].astype(np.float64), list(z["src"])
@@ -77,10 +112,12 @@ def main():
         if im.width > 1600:
             im = im.resize((1600, round(im.height * 1600 / im.width)), Image.LANCZOS)
         im.save(ASSETS / "ui.webp", quality=85)
-        meta["pictures"]["ui.webp"] = "interface screenshot of the Check tab (PHerc0500P2 example)"
+        meta["pictures"]["ui.webp"] = "interface screenshot of the Check tab with a finished check (PHerc0139 w030)"
+    if a.frames:
+        frames_media(a.frames, meta)
     (ASSETS / "media.json").write_text(json.dumps(meta, indent=1))
     for f in sorted(ASSETS.glob("*")):
-        if f.suffix in (".webp", ".png"):
+        if f.suffix in (".webp", ".png", ".gif"):
             w, h = Image.open(f).size
             assert max(w, h) <= 1920 and f.stat().st_size < 4e6, f
             print(f"{f.name}: {w} x {h}, {f.stat().st_size / 1e3:.0f} KB")

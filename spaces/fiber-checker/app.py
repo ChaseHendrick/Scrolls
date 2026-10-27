@@ -249,7 +249,8 @@ def compare_html(res):
     def name(v):
         if isinstance(v, dict):
             v = " · ".join(str(v[k]) for k in ("sample", "name", "volume") if v.get(k))
-        return html.escape(str(v or "?"))
+        v = str(v or "?").rstrip("/").rsplit("/", 1)[-1]     # a mesh path: its folder name, not where it was cached
+        return html.escape(v.rsplit("_mesh_", 1)[-1])
     rows = [("Patches checked", "patches", lambda v: f"{v}", None),
             ("Fibers show on", "share_fibers_visible", pct, 1),
             ("Median fiber evidence", "median_evidence", lambda v: f"{v:.2f}", 1),
@@ -315,6 +316,23 @@ patch looks most fibrous {s['depth_offset_median']:+g} voxels from the traced su
 def tiles_of(out):
     files = sorted(Path(out).glob("tiles/*.png"))
     return [(str(f), f"{f.stem.split('-')[-1]} {f.stem.split('-')[1]}") for f in files]
+
+
+def with_figures(text):
+    """Fill the guides' [[fig NAME | caption]] slots with the pictures in assets/ (tools/build_media.py); a slot whose
+    picture this copy lacks is dropped, so the guides read the same without them."""
+    out, rest = [], text
+    while "[[fig " in rest:
+        head, _, tail = rest.partition("[[fig ")
+        spec, _, rest = tail.partition("]]")
+        name, _, caption = (x.strip() for x in spec.partition("|"))
+        out.append(head)
+        if (HERE / "assets" / name).is_file():
+            alt = html.escape(" ".join(caption.split()), quote=True)
+            out.append(f'<figure><img src="/gradio_api/file=assets/{name}" alt="{alt}" loading="lazy">'
+                       f'<figcaption>{html.escape(" ".join(caption.split()))} Recorded on public scrolls on no prize '
+                       'list.</figcaption></figure>')
+    return "".join(out) + rest
 
 
 def guide_html():
@@ -487,6 +505,10 @@ texture: it never reads or finds text.
    judges them on the CPU.
 3. The map, the summary and the download appear on the right. Try the **Fiber or not?** tab while you wait.
 
+[[fig howto-check.gif | A check from start to finish, sped up: pick an example, press Check fibers, read the map.]]
+
+[[fig howto-game.gif | Fiber or not?: say which render shows fibers, then see what the free judge said.]]
+
 <h3 id="read">2. Read the result</h3>
 
 - **The map** is the segment as traced, flattened on its own mesh grid. Yellow and green: clear fibers. Purple: weak.
@@ -497,17 +519,24 @@ texture: it never reads or finds text.
 - **Unsure**: the judge's answer changed when the patch was turned by a quarter turn.
 - **Clearest and weakest patches** are the renders themselves, so you can see what the judge saw.
 
+[[fig howto-result.webp | A finished check: the map, the summary with its self-check, and the download.]]
+
 <h3 id="own">3. Check your own trace</h3>
 
 Zip your tifxyz folder (x.tif, y.tif and z.tif; VC3D and villa write these) and upload it on **Check a segment**,
 under **Your own mesh**, with the 14-digit id of the scan its coordinates are in (level-0 voxels). The Space reads the
 CT of that scan from the open data. Meshes on 2.2 to 2.4 um scans are checked in the tested setting.
 
+[[fig howto-upload.webp | Your own mesh: the zip goes in the box, the scan id below it.]]
+
 <h3 id="ab">4. Compare two traces</h3>
 
 Check both (two segments, or your trace before and after an edit), download each zip, and give the two
 `fiber.json` files to **Compare**. When both are meshes of the same grid, it compares them patch by patch: the share
 of patches where each is clearly better, and the mean difference.
+
+[[fig howto-compare.gif | Two fiber.json files in, a side-by-side table out. These two are checks of the same segment on
+two scans, whose meshes have different grids, so the summaries are compared.]]
 
 <h3 id="prize">5. For prize entries</h3>
 
@@ -662,9 +691,12 @@ model or by Claude with your own key. Model output, not a reading.">
 TAB_JS = """
 () => {
   const pick = (name) => {
-    const ids = {home: 0, check: 1, game: 2, compare: 3, howto: 4, agents: 5};
-    const btns = document.querySelectorAll('#fc-tabs button[role="tab"]');
-    if (name in ids && btns[ids[name]]) btns[ids[name]].click();
+    // by label: on a phone the later tabs sit in Gradio's overflow menu, as buttons without role="tab"
+    const labels = {home: 'Welcome', check: 'Check a segment', game: 'Fiber or not?', compare: 'Compare',
+                    howto: 'How-to guides', agents: 'Agents and API'};
+    const btns = [...document.querySelectorAll('#fc-tabs button')].filter((b) => b.textContent.trim() === labels[name]);
+    const btn = btns.find((b) => b.getAttribute('role') === 'tab') || btns[btns.length - 1];
+    if (btn) btn.click();
   };
   window.addEventListener('message', (e) => { if (e.data && e.data.fcTab) pick(e.data.fcTab); });
   const q = new URLSearchParams(window.location.search).get('tab');
@@ -855,7 +887,7 @@ def build_demo():
                 with gr.Accordion("Record (JSON)", open=False):
                     cout = gr.JSON(label="Side by side")
             with gr.Tab("How-to guides", id="howto"):
-                gr.Markdown(HOW_TO, elem_classes="fc-howto")
+                gr.Markdown(with_figures(HOW_TO), elem_classes="fc-howto")
             with gr.Tab("Agents and API", id="agents"):
                 gr.Markdown(AGENTS.format(host=host))
                 with gr.Accordion("Connect your tool: the scans and meshes by URL", open=True):
