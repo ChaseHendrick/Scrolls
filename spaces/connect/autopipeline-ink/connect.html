@@ -17,20 +17,44 @@
 .scc footer{font-size:.8em;opacity:.75;margin-top:.6em}</style>
 <h2>Connect your tool</h2>
 <p>The segments this page analyzes and the model it runs are public, and both read straight from these URLs in your own tool.</p>
-<div class="scc-src" id="connect-api"><h3>Call the analysis from code</h3>
-<p class="scc-meta">Code Apache 2.0; Reader V3 MIT; scans CC BY-NC 4.0 · The Space has no MCP server; use gradio_client or curl. Each call spends the caller&#x27;s ZeroGPU quota, which is small when logged out: pass hf_token= to Client (or an Authorization header to curl) for your own.</p>
+<div class="scc-src" id="connect-api"><h3>Call the analysis from code or an agent (API and MCP)</h3>
+<p class="scc-meta">Code Apache 2.0; Reader V3 MIT; scans CC BY-NC 4.0 · Every tool is an API endpoint and an MCP tool: ink_sample (a public sample crop; a JSON record with both AUCs, and a PNG preview), ink_upload (your own surface volume by URL; JSON only) and list_samples. Each GPU call spends the caller&#x27;s ZeroGPU quota, which is small when logged out: pass your own Hugging Face token (hf_token= in Python, an Authorization: Bearer header in curl and MCP). Model output, not a reading.</p>
 <div class="scc-url"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>https://huggingface.co/spaces/SharpMeow/autopipeline-ink</code></pre></div>
-<details><summary>Python /on_sample<span class="scc-b ok">tested 2026-10-24</span></summary>
+<details><summary>Python /ink_sample<span class="scc-b ok">tested 2026-10-24</span></summary>
 <div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code># pip install gradio_client
+import os
 from gradio_client import Client
 
-client = Client(&quot;SharpMeow/autopipeline-ink&quot;)
-result = client.predict(title=&quot;PHerc0841 w00 (development segment)&quot;, api_name=&quot;/on_sample&quot;)</code></pre></div></details>
-<details><summary>curl /on_sample<span class="scc-b ok">tested 2026-10-24</span></summary>
-<div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>URL=https://sharpmeow-autopipeline-ink.hf.space
-EVENT=$(curl -s -X POST $URL/gradio_api/call/on_sample -H &#x27;Content-Type: application/json&#x27; \
-  -d &#x27;{&quot;data&quot;: [&quot;PHerc0841 w00 (development segment)&quot;]}&#x27; | python3 -c &#x27;import json,sys; print(json.load(sys.stdin)[&quot;event_id&quot;])&#x27;)
-curl -sN $URL/gradio_api/call/on_sample/$EVENT</code></pre></div></details>
+client = Client(&quot;SharpMeow/autopipeline-ink&quot;, hf_token=os.environ.get(&quot;HF_TOKEN&quot;))  # your token: your own ZeroGPU quota
+result = client.predict(sample=&quot;0841-w00&quot;, size=640, api_name=&quot;/ink_sample&quot;)</code></pre></div></details>
+<details><summary>Python /list_samples<span class="scc-b ok">tested 2026-10-24</span></summary>
+<div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code># pip install gradio_client
+import os
+from gradio_client import Client
+
+client = Client(&quot;SharpMeow/autopipeline-ink&quot;, hf_token=os.environ.get(&quot;HF_TOKEN&quot;))  # your token: your own ZeroGPU quota
+result = client.predict(api_name=&quot;/list_samples&quot;)</code></pre></div></details>
+<details><summary>curl /ink_sample<span class="scc-b ok">tested 2026-10-24</span></summary>
+<div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code># HF_TOKEN, when set, is your own token: the call spends your ZeroGPU quota
+URL=https://sharpmeow-autopipeline-ink.hf.space
+EVENT=$(curl -s -X POST $URL/gradio_api/call/ink_sample -H &#x27;Content-Type: application/json&#x27; ${HF_TOKEN:+-H &quot;Authorization: Bearer $HF_TOKEN&quot;} \
+  -d &#x27;{&quot;data&quot;: [&quot;0841-w00&quot;, 640]}&#x27; | python3 -c &#x27;import json,sys; print(json.load(sys.stdin)[&quot;event_id&quot;])&#x27;)
+curl -sN ${HF_TOKEN:+-H &quot;Authorization: Bearer $HF_TOKEN&quot;} $URL/gradio_api/call/ink_sample/$EVENT</code></pre></div></details>
+<details><summary>MCP (Claude, Cursor and other agents)<span class="scc-b ok">tested 2026-10-24</span></summary>
+<div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>{
+  &quot;mcpServers&quot;: {
+    &quot;autopipeline-ink&quot;: {
+      &quot;url&quot;: &quot;https://sharpmeow-autopipeline-ink.hf.space/gradio_api/mcp/sse&quot;,
+      &quot;headers&quot;: {
+        &quot;Authorization&quot;: &quot;Bearer YOUR_HF_TOKEN&quot;
+      }
+    }
+  }
+}
+
+YOUR_HF_TOKEN is your own Hugging Face token (huggingface.co/settings/tokens): each call spends your ZeroGPU quota; without it, calls share the small logged-out quota.
+
+Tool list: https://sharpmeow-autopipeline-ink.hf.space/gradio_api/mcp/schema</code></pre></div></details>
 </div>
 <div class="scc-src" id="connect-layers"><h3>The layers it reads, example PHerc0841 w00 (9.366 um surface volume)</h3>
 <p class="scc-meta">CC BY-NC 4.0 (Vesuvius Challenge open data) · <a href="https://scrollprize.org/data_browser/PHerc0841" target="_blank" rel="noopener">browse</a></p>
@@ -59,4 +83,4 @@ curl -s https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc084
 <details><summary>curl<span class="scc-b ok">tested 2026-10-24</span></summary>
 <div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>curl -L -O https://huggingface.co/domenicor046/reader-v3/resolve/main/reader-v3.pth</code></pre></div></details>
 </div>
-<footer>Machine-readable: <a href="https://huggingface.co/spaces/SharpMeow/autopipeline-ink/blob/main/connect.json" target="_blank" rel="noopener">connect.json</a> and <a href="https://huggingface.co/spaces/SharpMeow/autopipeline-ink/blob/main/CONNECT.md" target="_blank" rel="noopener">CONNECT.md</a>. Checked 2026-10-25. "Tested" means the snippet ran against this public data on that date. Scan data keeps its own license (the Vesuvius Challenge open data is CC BY-NC 4.0).</footer></section>
+<footer>Machine-readable: <a href="https://huggingface.co/spaces/SharpMeow/autopipeline-ink/blob/main/connect.json" target="_blank" rel="noopener">connect.json</a> and <a href="https://huggingface.co/spaces/SharpMeow/autopipeline-ink/blob/main/CONNECT.md" target="_blank" rel="noopener">CONNECT.md</a>. Checked 2026-10-27. "Tested" means the snippet ran against this public data on that date. Scan data keeps its own license (the Vesuvius Challenge open data is CC BY-NC 4.0).</footer></section>
