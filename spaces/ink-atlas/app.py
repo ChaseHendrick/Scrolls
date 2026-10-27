@@ -192,15 +192,16 @@ def split(preview, side=360):
     right = preview.crop((box[0] + half, box[1], box[2] + half, box[3]))
     tile = Image.new("RGB", (2 * q, 2 * q), (250, 248, 244))
     tile.paste(left, (0, 0))
-    tile.paste(right, (left.width, 0))
+    r = np.asarray(right.convert("L"))
+    tile.paste(Image.fromarray(A.ramp("ember")[r]), (left.width, 0))
     tile = tile.resize((side, side), Image.Resampling.LANCZOS)
     from PIL import ImageDraw
     ImageDraw.Draw(tile).line([(side // 2, 0), (side // 2, side)], fill=(246, 165, 59), width=2)
     return tile
 
 
-def card(big, small):
-    return f'<div class="ia-card"><div class="ia-big">{big}</div><span>{small}</span></div>'
+def card(big, small, tone=0):
+    return f'<div class="ia-card ia-t{tone % 4}"><div class="ia-big">{big}</div><span>{small}</span></div>'
 
 
 def info_html(sid, layer, window, order):
@@ -222,9 +223,9 @@ def info_html(sid, layer, window, order):
   <div class="ia-title">{html.escape(s['scroll'])} <small>{html.escape(A.short_id(sid, s['scroll']))}</small></div>
   {ref}
   <div class="ia-cards">
-    {card(f"{len(alive)}/{len(m.get('models', {}))}", "models with real spread here")}
-    {card(f"{w * um / 1000:.0f} x {h * um / 1000:.0f} mm", f"{w} x {h} pixels at {um} um")}
-    {card(f"{votes['forward']} : {votes['reverse']}", f"face check, as stored : reversed ({votes['tie']} tie)")}
+    {card(f"{len(alive)}/{len(m.get('models', {}))}", "models with real spread here", 0)}
+    {card(f"{w * um / 1000:.0f} x {h * um / 1000:.0f} mm", f"{w} x {h} pixels at {um} um", 1)}
+    {card(f"{votes['forward']} : {votes['reverse']}", f"face check, as stored : reversed ({votes['tie']} tie)", 2)}
   </div>
   {note}
   <table class="ia-kv">
@@ -247,8 +248,12 @@ def compare_table(rec):
         by = "" if lid == A.ENSEMBLE else A.MODELS[lid][2]
         r = "" if st["r_with_ensemble"] is None else f"{st['r_with_ensemble']:+.2f}"
         flat = "" if st["alive"] else ' <em class="ia-flat">flat here</em>'
-        rows.append(f"<tr><td><b>{html.escape(name)}</b>{flat}<span>{html.escape(by)}</span></td>"
-                    f"<td>{st['mean']:.3f}</td><td>{st['p50']:.3f}</td><td>{st['p99']:.3f}</td><td>{r}</td></tr>")
+        col = A.LAYER_COLOUR.get(lid, "#5b4bd6")
+        rv = st["r_with_ensemble"]
+        bar = ("" if rv is None else f'<i class="ia-rbar" style="width:{max(0.0, rv) * 90:.0f}px;background:{col}"></i>')
+        rows.append(f'<tr><td><b><i class="ia-dot" style="background:{col}"></i>{html.escape(name)}</b>{flat}'
+                    f"<span>{html.escape(by)}</span></td>"
+                    f"<td>{st['mean']:.3f}</td><td>{st['p50']:.3f}</td><td>{st['p99']:.3f}</td><td>{bar}{r}</td></tr>")
     y0, y1, x0, x1 = rec["box_y0_y1_x0_x1"]
     return (f'<table class="ia-cmp"><tr><th>Layer</th><th>Mean</th><th>Median</th><th>99th pct</th>'
             f'<th>r with ensemble</th></tr>{"".join(rows)}</table>'
@@ -258,8 +263,8 @@ def compare_table(rec):
 
 
 def models_html():
-    rows = "".join(f"<tr><td><b>{html.escape(t)}</b></td><td>{html.escape(b)}</td><td>MIT</td></tr>"
-                   for _, (_, t, b) in A.MODELS.items())
+    rows = "".join(f'<tr><td><b><i class="ia-dot" style="background:{A.LAYER_COLOUR[mid]}"></i>{html.escape(t)}</b>'
+                   f"</td><td>{html.escape(b)}</td><td>MIT</td></tr>" for mid, (_, t, b) in A.MODELS.items())
     return f'<table class="ia-cmp ia-models"><tr><th>Model</th><th>By</th><th>License</th></tr>{rows}</table>'
 
 
@@ -271,10 +276,10 @@ def overview_html():
     return f"""
 <div class="ia-overview">
   <div class="ia-cards ia-cards-4">
-    {card(s['surfaces'], 'traced surfaces, each on one shared 9.6 um canvas')}
-    {card(s['first_letters_surfaces'], 'surfaces of First Letters scrolls')}
-    {card(s['reference_surfaces'], 'PHerc0343 reference surfaces')}
-    {card(len(A.MODELS), 'public ink models, every map kept')}
+    {card(s['surfaces'], 'traced surfaces, each on one shared 9.6 um canvas', 0)}
+    {card(s['first_letters_surfaces'], 'surfaces of First Letters scrolls', 1)}
+    {card(s['reference_surfaces'], 'PHerc0343 reference surfaces', 2)}
+    {card(len(A.MODELS), 'public ink models, every map kept', 3)}
   </div>
   <div class="ia-two">
     <figure><img class="ia-gif" src="{html.escape(gif)}" alt="Every model on one PHerc0343 reference surface" loading="lazy">
@@ -454,6 +459,35 @@ CSS = """
 .ia-prose { max-width:980px; }
 .ia-credit { text-align:center; font-size:13px; color:var(--body-text-color-subdued); padding:18px 0 6px; }
 #ia-main img { cursor:crosshair; }
+.gradio-container { background: radial-gradient(1200px 420px at 8% -8%, rgba(91,75,214,.13), transparent 60%),
+  radial-gradient(900px 380px at 96% -6%, rgba(224,138,60,.13), transparent 60%),
+  radial-gradient(800px 360px at 50% 110%, rgba(194,65,143,.07), transparent 60%) !important; }
+.ia-head { background: linear-gradient(110deg, rgba(91,75,214,.10), rgba(42,86,168,.08) 45%, rgba(224,138,60,.10));
+  border:1px solid rgba(91,75,214,.18); border-radius:18px; padding:14px 18px !important; margin-bottom:6px; }
+.ia-head h1 { background: linear-gradient(90deg, #4b3cbc, #2a56a8 55%, #c2418f); -webkit-background-clip:text;
+  background-clip:text; color:transparent; }
+.dark .ia-head h1 { background: linear-gradient(90deg, #b3a8ff, #8fb8ff 55%, #f39ac8); -webkit-background-clip:text;
+  background-clip:text; }
+.ia-chips .c0 { border-color:#3d8be0; } .ia-chips .c0 b { color:#2a56a8; }
+.ia-chips .c1 { border-color:#e08a3c; } .ia-chips .c1 b { color:#c86a1c; }
+.ia-chips .c2 { border-color:#c2418f; } .ia-chips .c2 b { color:#a8327a; }
+.dark .ia-chips .c0 b { color:#8fb8ff; } .dark .ia-chips .c1 b { color:#f6b26b; } .dark .ia-chips .c2 b { color:#f39ac8; }
+.ia-chips .mcp { background: linear-gradient(90deg, #5b4bd6, #7b2a8c); color:#fff !important; border:0; }
+.ia-card { border-top:4px solid #5b4bd6 !important; }
+.ia-t0 { border-top-color:#5b4bd6 !important; } .ia-t0 .ia-big { color:#4b3cbc; }
+.ia-t1 { border-top-color:#3d8be0 !important; } .ia-t1 .ia-big { color:#2a56a8; }
+.ia-t2 { border-top-color:#e08a3c !important; } .ia-t2 .ia-big { color:#c86a1c; }
+.ia-t3 { border-top-color:#c2418f !important; } .ia-t3 .ia-big { color:#a8327a; }
+.dark .ia-t0 .ia-big { color:#b3a8ff; } .dark .ia-t1 .ia-big { color:#8fb8ff; }
+.dark .ia-t2 .ia-big { color:#f6b26b; } .dark .ia-t3 .ia-big { color:#f39ac8; }
+.ia-info .ia-title { color:#4b3cbc; } .dark .ia-info .ia-title { color:#b3a8ff; }
+.ia-dot { display:inline-block; width:10px; height:10px; border-radius:50%; margin-right:7px; vertical-align:0; }
+.ia-rbar { display:inline-block; height:8px; border-radius:4px; margin-right:8px; vertical-align:1px; opacity:.85; }
+.ia-panel { background: linear-gradient(180deg, rgba(91,75,214,.06), rgba(224,138,60,.05)) !important;
+  border-radius:16px; padding:8px !important; }
+.ia-steps button.primary { background: linear-gradient(90deg, #5b4bd6, #c2418f) !important; border:0 !important; }
+#ia-tabs button[role=tab][aria-selected=true] { color:#4b3cbc !important; }
+.dark #ia-tabs button[role=tab][aria-selected=true] { color:#b3a8ff !important; }
 .ia-steps { gap:6px !important; flex-wrap:nowrap !important; }
 .ia-steps button { flex:1 1 0 !important; }
 .ia-chead p { font-size:14px; }
@@ -607,8 +641,8 @@ def build_demo():
                 f"x {pt[0]}, y {pt[1]}. Click the map in Explore to move it.")
         return png, compare_table(rec), head
 
-    chips = (f'<div class="ia-chips"><span><b>{summary["surfaces"]}</b> surfaces</span><span><b>'
-             f'{summary["scrolls"]}</b> scrolls</span><span><b>{len(A.MODELS)}</b> models</span>'
+    chips = (f'<div class="ia-chips"><span class="c0"><b>{summary["surfaces"]}</b> surfaces</span><span class="c1"><b>'
+             f'{summary["scrolls"]}</b> scrolls</span><span class="c2"><b>{len(A.MODELS)}</b> models</span>'
              '<span class="mcp">MCP server</span></div>')
     with gr.Blocks(title="Ink Atlas", delete_cache=(1800, 3600)) as demo:
         gr.HTML('<div class="ia-head"><div class="ia-mark"></div><div><h1>Ink Atlas</h1><p>Seven public ink models '
@@ -633,7 +667,7 @@ def build_demo():
                         lsize = gr.Radio([("256", 256), ("512", 512), ("1024", 1024)], value=512,
                                          label="Loupe size (pixels, 9.6 um each)")
                         with gr.Accordion("Look", open=True):
-                            cmap = gr.Radio(LOOKS, value="gray", label="Colours")
+                            cmap = gr.Radio(LOOKS, value="ember", label="Colours")
                             lo = gr.Slider(0, 20, value=1, step=0.5, label="Black point (percentile)")
                             hi = gr.Slider(80, 100, value=99.5, step=0.1, label="White point (percentile)")
                             gamma = gr.Slider(0.4, 2.5, value=1.0, step=0.05, label="Gamma")
@@ -642,7 +676,7 @@ def build_demo():
                     with gr.Column(scale=3, min_width=360):
                         main = gr.Image(label="Whole surface", type="pil", format="webp", interactive=False,
                                         height=760, elem_id="ia-main", buttons=["fullscreen", "download"])
-                        leg = gr.HTML(legend("gray", "map"))
+                        leg = gr.HTML(legend("ember", "map"))
                     with gr.Column(scale=2, min_width=320):
                         loupe = gr.ImageSlider(label="Loupe at full resolution: CT left, map right", type="pil",
                                                format="webp", max_height=520, slider_position=50,
@@ -656,7 +690,7 @@ def build_demo():
                                          label="Box size (pixels)")
                         corder = gr.Radio(ORDER_CHOICES, value="forward", label="Depth order")
                         cwin = gr.Radio(WINDOW_CHOICES, value="c+0", label="Depth window")
-                        ccmap = gr.Radio(LOOKS, value="gray", label="Colours")
+                        ccmap = gr.Radio(LOOKS, value="ember", label="Colours")
                     with gr.Column(scale=3, min_width=360):
                         cgrid = gr.Image(label="Every model on the same box", show_label=False, type="filepath",
                                          format="png", interactive=False, height=880,
@@ -706,7 +740,7 @@ def build_demo():
         for c in (lo, hi, gamma, alpha):
             c.release(g_render, look, outs, **hidden)
         main.select(guard(on_click), surface, pt, **hidden).then(g_render, look, outs, **hidden)
-        reset.click(lambda: (1, 99.5, 1.0, 0.75), None, [lo, hi, gamma, alpha], **hidden).then(
+        reset.click(lambda: ("ember", 1, 99.5, 1.0, 0.75), None, [cmap, lo, hi, gamma, alpha], **hidden).then(
             g_render, look, outs, **hidden)
         prev_b.click(guard(lambda s: step(s, -1)), surface, [scroll, surface], **hidden)
         next_b.click(guard(lambda s: step(s, 1)), surface, [scroll, surface], **hidden)

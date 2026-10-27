@@ -49,6 +49,10 @@ RAMPS = {
     "ember": ["#07060f", "#2b1460", "#7b2a8c", "#d4543a", "#f6a53b", "#fff3c4"],
     "ice": ["#05070f", "#10224f", "#2a56a8", "#6ea6e6", "#e9f3ff"],
 }
+# one colour per layer, for labels, bars and legends (balanced: blues, violets, pinks, oranges)
+LAYER_COLOUR = {"ct": "#64748b", "ensemble": "#5b4bd6", "ink_9um-s42": "#2a56a8", "ink_9um-s43": "#3d8be0",
+                "reader-v2": "#7b2a8c", "reader-v3": "#c2418f", "dense-native": "#e08a3c", "d9v2": "#d4543a",
+                "hecate-9.6": "#b7791f"}
 RAMP_LABEL = {"gray": "Gray: ink bright", "papyrus": "Papyrus: ink dark", "ember": "Ember", "ice": "Ice"}
 NO_SURFACE = (14, 16, 26)         # pixels the mesh does not cover
 
@@ -426,6 +430,7 @@ def compare_picture(atlas, sid, box, order="forward", window="c+0", colormap="gr
     ens = atlas.gray(layer_rel(atlas, sid, ENSEMBLE, window, order)[0])[box[0]:box[1], box[2]:box[3]]
     layers = [(CT, "CT, middle layer", None), (ENSEMBLE, "Ensemble", None)]
     layers += [(mid, MODELS[mid][0], mid) for mid in MODELS if mid in m.get("models", {})]
+    ids = [lid for lid, _, _ in layers]
     tiles, stats = [], {}
     for lid, name, mid in layers:
         rel, used = layer_rel(atlas, sid, lid, window, order)
@@ -442,15 +447,17 @@ def compare_picture(atlas, sid, box, order="forward", window="c+0", colormap="gr
                           "r_with_ensemble": None if lid == ENSEMBLE else _pearson(a, ens, valid)}
     cols = 3
     rows = -(-len(tiles) // cols)
-    pad, head = 10, 34
+    pad, head = 12, 40
     canvas = Image.new("RGB", (cols * tile + (cols + 1) * pad, rows * (tile + head) + (rows + 1) * pad), (250, 248, 244))
     d = ImageDraw.Draw(canvas)
     f, fs = font(19), font(14)
     for i, (img, name, sub) in enumerate(tiles):
         cx, cy = pad + (i % cols) * (tile + pad), pad + (i // cols) * (tile + head + pad)
-        d.text((cx + 2, cy + 6), name, fill=(29, 35, 48), font=f)
+        c = tuple(_hex(LAYER_COLOUR.get(ids[i], "#5b4bd6")))
+        d.rounded_rectangle([cx, cy + 4, cx + tile, cy + head - 4], radius=8, fill=c)
+        d.text((cx + 10, cy + 10), name, fill=(255, 255, 255), font=f)
         if sub:
-            d.text((cx + tile - 4, cy + 10), sub, fill=(150, 90, 40), font=fs, anchor="ra")
+            d.text((cx + tile - 10, cy + 13), sub, fill=(255, 240, 220), font=fs, anchor="ra")
         canvas.paste(img.resize((tile, tile), Image.Resampling.BOX if img.width > tile else Image.Resampling.NEAREST),
                      (cx, cy + head))
     return canvas, stats
