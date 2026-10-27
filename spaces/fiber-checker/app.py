@@ -45,12 +45,13 @@ CLAUDE_PATCHES, CLAUDE_CHECK_N = 40, 10
 SETUP = {"weights": None, "error": None}
 
 # Public scrolls on no prize list, scans from 2025 or later, the setting both held-out tests used (2.2 to 2.4 um
-# scans at level 2). PHerc0139 w030 was a training winding of the free judge; the other four were never trained on.
+# scans at level 2). PHerc0139 w030 and the PHerc0009B segment are training windings of the free judge (it trained on
+# windings of PHerc0139 and PHerc0009B); PHerc0814 it never saw; PHerc0500P2 and PHerc0343P were its held-out test.
 EXAMPLES = [
     {"label": "PHerc0500P2 · z_dbg_gen_00440", "sample": "PHerc0500P2", "segment": "20250611171318",
      "volume": "20250526151718"},
     {"label": "PHerc0343P · -3_b2", "sample": "PHerc0343P", "segment": "20250902170447", "volume": "20260304131111"},
-    {"label": "PHerc0009B · auto_grown_20250918234353", "sample": "PHerc0009B", "segment": "20250919064353",
+    {"label": "PHerc0009B · auto_grown_20250918234353 (a training winding)", "sample": "PHerc0009B", "segment": "20250919064353",
      "volume": "20250820154339"},
     {"label": "PHerc0814 · auto_grown_20250925161630", "sample": "PHerc0814", "segment": "20250925161630",
      "volume": "20260309142202"},
