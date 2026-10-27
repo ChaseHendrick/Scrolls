@@ -11,7 +11,7 @@ Third-party software
 
 Data
 - data/lines.json holds the control points of the lines in SharpMeow/vesuvius-center-lines, each
-  under its own licence, listed per line in the file and on the dataset card: Alexey Drobkov
+  under its own license, listed per line in the file and on the dataset card: Alexey Drobkov
   (MIT, Copyright (c) Alexey Drobkov, herculaneum-umbilici), Iyan Dopico (MIT, as shipped in
   Drobkov's repository), Abd Elilah (CC BY 4.0, umbilicus-cross-validation, points unchanged),
   the Vesuvius Challenge open data (CC BY-NC 4.0) and Chase Hendrick's Center Finder
@@ -21,4 +21,4 @@ Data
   CC BY-NC 4.0.
 - CT is not stored here. Visitors' browsers read it from the Vesuvius Challenge open-data bucket
   (https://scrollprize.org/data), CC BY-NC 4.0.
-The Apache licence of the code does not apply to the data.
+The Apache license of the code does not apply to the data.

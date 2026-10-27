@@ -46,7 +46,7 @@ def read_tifxyz(folder):
 
 
 def normals(xyz, valid):
-    """Unit normal per vertex from central differences; ok where it and its four neighbours are valid."""
+    """Unit normal per vertex from central differences; ok where it and its four neighbors are valid."""
     du = np.zeros_like(xyz)
     dv = np.zeros_like(xyz)
     du[:, 1:-1] = xyz[:, 2:] - xyz[:, :-2]
@@ -200,7 +200,7 @@ def render_patches(folder, ct, level, P, K, stride=None, max_patches=None, maske
 
 
 def to_input(img, ref):
-    """The frozen PNG grey scale (1 and 99 percentiles of the on render), then z-scored, as the model was trained."""
+    """The frozen PNG gray scale (1 and 99 percentiles of the on render), then z-scored, as the model was trained."""
     lo, hi = np.percentile(ref, [1, 99])
     a = np.clip((img - lo) / max(hi - lo, 1e-6), 0, 1)
     a = np.round(a * 255) / 255
@@ -327,7 +327,7 @@ def fiber_direction(img):
 
 
 def jump_hints(patches, grid_step):
-    """Patches whose evidence is under 0.5 while every scored neighbour is over 0.8: a drop that may mark a sheet jump
+    """Patches whose evidence is under 0.5 while every scored neighbor is over 0.8: a drop that may mark a sheet jump
     or a stretch off the sheet. Untested idea."""
     at = {(p["r"], p["c"]): p["evidence"] for p in patches}
     out = []
@@ -421,7 +421,7 @@ def write_maps(rec, out, valid=None):
     for p in rec["patches"]:
         m[p["r"]:p["r"] + P, p["c"]:p["c"] + P] = p["evidence"]
     tifffile.imwrite(out / "fiber.tif", m, compression="zlib")
-    rgb = colour(m)
+    rgb = color(m)
     if valid is not None:
         rgb[np.isnan(m) & valid] = (52, 54, 64)          # traced but not scored: the segment's shape
     im = Image.fromarray(rgb)
@@ -429,8 +429,8 @@ def write_maps(rec, out, valid=None):
     im.resize((W * s, H * s), Image.NEAREST).save(out / "fiber_map.png")
 
 
-def colour(m):
-    """Evidence 0.5 to 1 on a colour-blind-safe scale (grey below 0.5 means no sign of fiber), holes transparent-dark."""
+def color(m):
+    """Evidence 0.5 to 1 on a color-blind-safe scale (gray below 0.5 means no sign of fiber), holes transparent-dark."""
     stops = np.array([[68, 1, 84], [59, 82, 139], [33, 145, 140], [94, 201, 98], [253, 231, 37]], float)
     v = np.clip((np.nan_to_num(m, nan=0) - 0.5) / 0.5, 0, 1)
     pos = v * (len(stops) - 1)
@@ -443,7 +443,7 @@ def colour(m):
 
 
 def _img_png(a, save=None):
-    """PNG bytes of a render (1 and 99 percentile grey scale, drawn 2 pixels per voxel); also written to `save`."""
+    """PNG bytes of a render (1 and 99 percentile gray scale, drawn 2 pixels per voxel); also written to `save`."""
     from PIL import Image
     b = np.clip((a - np.percentile(a, 1)) / max(np.percentile(a, 99) - np.percentile(a, 1), 1e-6), 0, 1)
     im = Image.fromarray((b * 255).astype(np.uint8)).resize((a.shape[1] * 2, a.shape[0] * 2), Image.BILINEAR)
@@ -503,7 +503,7 @@ figure img{{width:100%;border-radius:6px}} figcaption{{font-size:13px;color:var(
 <div class="card"><div class="big {'ok' if ck['passed'] else 'bad'}">{'passed' if ck['passed'] else 'failed'}</div>self-check: noise {ck['against']['noise']:.0%}, blur {ck['against']['blur']:.0%}, scramble {ck['against']['scramble']:.0%}</div>
 </div>
 <h2>Fiber map</h2><div class="map"><img src="data:image/png;base64,{mp}" alt="fiber evidence over the segment">
-<div class="sub">Yellow: clear fiber. Purple: weak. Grey: no sign of fiber. Slate: traced but not scored. Black: no surface.</div></div>
+<div class="sub">Yellow: clear fiber. Purple: weak. Gray: no sign of fiber. Slate: traced but not scored. Black: no surface.</div></div>
 <h2>Clearest and weakest patches</h2><div class="grid">{''.join(tiles)}</div>
 <h2>Method</h2><p>The Progress Prize asks entrants to "show visually that papyrus fibers are visible on your output surface"
 (scrollprize.org/prizes). For each patch, the CT is rendered along the surface and the judge compares that render with

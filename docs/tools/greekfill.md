@@ -1,6 +1,6 @@
 # greekfill: Greek gap restoration benchmark, hosted text models against a letter model
 
-Runs and scores the Greek gap restoration benchmark: hosted text models and an order-8 Kneser-Ney letter model fill hidden letters in Philodemus, De Musica, under a frozen rule with a memorisation probe; the frozen files reproduce byte for byte.
+Runs and scores the Greek gap restoration benchmark: hosted text models and an order-8 Kneser-Ney letter model fill hidden letters in Philodemus, De Musica, under a frozen rule with a memorization probe; the frozen files reproduce byte for byte.
 
 | Field | Value |
 | --- | --- |
@@ -25,7 +25,7 @@ Runs and scores the Greek gap restoration benchmark: hosted text models and an o
 
 Ink models and letter readers leave gaps where the ink is faint, and a language prior can propose the missing letters. Large hosted text models have read a great deal of Greek, so they are an obvious candidate prior. This benchmark asks whether they restore hidden letters in a Herculaneum author's prose better than a plain letter model. The test text is the second half of Philodemus, De Musica (Kemke's edition, First1KGreek `tlg1595.tlg221`), written as 24 Greek capitals with lunate sigma and spaces between words.
 
-`prep` cuts the text into 150-symbol windows. 190 windows hide one gap of 1, 2, 3, 5 or 8 letters (38 each); 40 windows are memorisation probes that show 100 symbols and ask for the next letters, to see whether a model simply recalls De Musica. It writes what is sent (`manifest.json`, prompts only), the answers (`key.json`, never sent) and the baseline's fills (`baseline.json`), all before any request. `run` sends the prompts to hosted models through Hugging Face's router at temperature 0 under a cost cap. `score` reduces each reply to Greek capitals, counts letters restored in place, bootstraps the difference from the baseline and applies the frozen verdict (PASS, INCONCLUSIVE, VOID or FAIL). `check` compares the files with the frozen sha256 pins and `chart` draws letter accuracy by gap length.
+`prep` cuts the text into 150-symbol windows. 190 windows hide one gap of 1, 2, 3, 5 or 8 letters (38 each); 40 windows are memorization probes that show 100 symbols and ask for the next letters, to see whether a model simply recalls De Musica. It writes what is sent (`manifest.json`, prompts only), the answers (`key.json`, never sent) and the baseline's fills (`baseline.json`), all before any request. `run` sends the prompts to hosted models through Hugging Face's router at temperature 0 under a cost cap. `score` reduces each reply to Greek capitals, counts letters restored in place, bootstraps the difference from the baseline and applies the frozen verdict (PASS, INCONCLUSIVE, VOID or FAIL). `check` compares the files with the frozen sha256 pins and `chart` draws letter accuracy by gap length.
 
 The baseline, KN for short, is an order-8 interpolated modified Kneser-Ney letter model (`kit/greekkn.py`): a general component fitted on 16 million symbols of public Greek from Perseus and First1KGreek, mixed 0.728 and 0.272 with a component fitted on another Philodemus text, Volumina Rhetorica. `kit/greekkn.py` also holds the corpus builder that turns the TEI editions into one line of capitals per document. It is a different model from the order-5 letter model of Scroll Text Reader ([greeklm](greeklm.md)).
 
@@ -36,7 +36,7 @@ The frozen run of 22 October 2026 ended in FAIL: KN restored 0.331 of hidden let
 - Checking the published result: `check` and `score` on the frozen files, which must reproduce `score.json` byte for byte.
 - Rebuilding the whole baseline from public sources (`corpus`, then `prep`) to confirm the three frozen files.
 - Measuring a new letter model or text model on the same items: write its fills in the `baseline.json` or `replies.jsonl` format and score them with `score`, reported as a new, separate run, not as part of the frozen test.
-- Building the normalised Greek corpus (`corpus`) for another letter-model experiment.
+- Building the normalized Greek corpus (`corpus`) for another letter-model experiment.
 
 Do not use it:
 
@@ -84,10 +84,10 @@ python -m kit.greekfill check work/greekfill-prep
 - **Pins.** `check` fails (exit 1) when any frozen file differs from its sha256 in `PINS` or a prep file is missing; `tests/test_greekfill.py` appends one space to `baseline.json` and sees it fail.
 - **Byte-for-byte reproduction.** The test suite rescores the frozen replies and compares the bytes with `score.json`. As the control that this is not a constant, it sets one model's gap replies to the truth and sees that model's accuracy become 1.0 and the verdict turn to PASS.
 - **The frozen rule could fail in every direction.** A model beats KN only with at least 90 % of requests parsed, a margin of at least 0.05 and a one-sided bootstrap bound above 0 (20,000 resamples, at 0.05 / 3 for three models); a win with probe accuracy of 0.50 or more is INCONCLUSIVE, since it could be recall. The tests feed `verdict()` each case.
-- **Memorisation probe.** In the frozen run every arm, KN included, restored about 0.08 of probe letters (0.078 to 0.085), so no model recited De Musica.
+- **Memorization probe.** In the frozen run every arm, KN included, restored about 0.08 of probe letters (0.078 to 0.085), so no model recited De Musica.
 - **Reproduction from sources** (22 Oct 2026, 4-core cloud container): the rebuilt corpus had sha256 `5c7c4684b7a4515ebd8840b963757b5a7680cfd2c986375a487b3d66bdb594bf` and `prep` wrote `manifest.json`, `key.json` and `baseline.json` byte-identical to the frozen ones ([evidence README](../evidence/greek-restoration-20261022/README.md#reproduction-22-october-2026)).
 
-Claim label: Model output, for every accuracy, bound and verdict above (one run of three hosted models and one letter model on public edited text); Sourced fact, for the text's licence.
+Claim label: Model output, for every accuracy, bound and verdict above (one run of three hosted models and one letter model on public edited text); Sourced fact, for the text's license.
 
 ## Commands and options
 
@@ -214,7 +214,7 @@ usage: python -m kit.greekfill chart [-h] SCORE.json OUT.svg
 | `MixtureLM(components, weights=None)` | language model | None | p = sum of w_i p_i over component models; `fit_weights` fits the weights by EM |
 | `em_weights(component_logprobs, iters=100)` | numpy array | None | EM mixture weights from precomputed per-symbol log probs (equal-length arrays) |
 | `normalise(raw: str)` | str | None | TEI body text to capitals: brackets dropped (letters kept), hyphenation joined, lacuna dots a boundary |
-| `doc_text(path: str)` | (path, str or None) | None | The normalised text of a TEI file's `<body>`, or None when it does not parse or has no body |
+| `doc_text(path: str)` | (path, str or None) | None | The normalized text of a TEI file's `<body>`, or None when it does not parse or has no body |
 | `build_corpus(out_path, roots, nproc=None)` | dict `files`, `kept`, `letters`, `sha256` | `OSError` on unwritable output | Writes `DOCID<TAB>TEXT` per document from every `*grc*.xml` under each root, sorted within each root; documents under 200 symbols are left out |
 
 ## Inputs
@@ -233,13 +233,13 @@ usage: python -m kit.greekfill chart [-h] SCORE.json OUT.svg
 | Field | Type | Meaning |
 | --- | --- | --- |
 | `verdict` | string | `PASS`, `INCONCLUSIVE`, `VOID` or `FAIL` under the frozen rule |
-| `winners` | list | Models that beat KN and are not memorised |
+| `winners` | list | Models that beat KN and are not memorized |
 | `checks` | object | Per model: `parse_ok`, `beats_kn`, `memorised` |
 | `per_model.M.letter_acc` | number, 0 to 1 | Share of hidden letters restored in place over the 190 gaps |
 | `per_model.M.kn_letter_acc` | number | KN's letter accuracy, repeated |
 | `per_model.M.diff`, `diff_lower` | number | Model minus KN, and its one-sided bootstrap lower bound |
 | `per_model.M.parsed_share` | number | Share of the model's 230 requests whose reply held a Greek letter |
-| `per_model.M.memo_acc` | number | Mean probe letter accuracy (memorisation) |
+| `per_model.M.memo_acc` | number | Mean probe letter accuracy (memorization) |
 | `per_model.M.by_len.L` | object | `acc` (letter accuracy) and `exact` (share of gaps restored whole) for gap length L |
 | `kn` | object | KN's `letter_acc`, `memo_acc` and `by_len` |
 | `replies`, `requests` | integer | Replies read and requests in the manifest |
@@ -293,7 +293,7 @@ Measured on 22 October 2026 on a 4-core Claude cloud container (Python 3.13, num
 
 ## Tests
 
-`python -m unittest tests.test_greekfill -v` (skips without numpy). It covers reply normalisation, position-wise letter hits, item cutting, the test-text cut, every verdict branch, the bootstrap's sign, KN fills and continuations on repeated text, KN distributions summing to 1, save and load, mixtures, the TEI corpus builder on small made-up files, the frozen pins (and a changed file failing them), byte-for-byte rescoring of the frozen run with the truth-reply control, and the runner's per-model limit, resume, cap stop, failure stop and dry run with the network replaced. It does not contact the router or rebuild the full corpus; the reproduction from sources is recorded in the evidence README.
+`python -m unittest tests.test_greekfill -v` (skips without numpy). It covers reply normalization, position-wise letter hits, item cutting, the test-text cut, every verdict branch, the bootstrap's sign, KN fills and continuations on repeated text, KN distributions summing to 1, save and load, mixtures, the TEI corpus builder on small made-up files, the frozen pins (and a changed file failing them), byte-for-byte rescoring of the frozen run with the truth-reply control, and the runner's per-model limit, resume, cap stop, failure stop and dry run with the network replaced. It does not contact the router or rebuild the full corpus; the reproduction from sources is recorded in the evidence README.
 
 ## History
 
@@ -302,7 +302,7 @@ Measured on 22 October 2026 on a 4-core Claude cloud container (Python 3.13, num
 ## Related
 
 - [Preregistration and result](../prereg/2026-10-22-greek-restoration.md): the frozen rule and the numbers.
-- [Frozen files](../evidence/greek-restoration-20261022/README.md): hashes, reproduction and the text's licence.
+- [Frozen files](../evidence/greek-restoration-20261022/README.md): hashes, reproduction and the text's license.
 - [greeklm](greeklm.md): Scroll Text Reader's own order-5 letter model, a different model.
 - [letterread](letterread.md): proposes letters on ink maps; this benchmark uses none.
 - `results.json` key `text_restoration_checks`: the numbers with their source.

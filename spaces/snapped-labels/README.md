@@ -25,7 +25,7 @@ along its mesh normal onto the papyrus recto face, drawn over X-ray CT that your
 On fresh test sites, 91% of snapped PHerc0139 vertices sit within one voxel of the face seen in an independent
 1.129 µm scan, against 24% for the published labels.
 
-- **Viewer**: pick a segment and a z plane; orange is the published label, blue the snapped one, grey strokes join
+- **Viewer**: pick a segment and a z plane; orange is the published label, blue the snapped one, gray strokes join
   matching points. Arrow keys step along the label and through z; `?seg=SEGMENT&z=Z` links to a view.
 - **All segments**: every segment with its share snapped, median move and held-back count.
 - **How it works**: the two methods, how they were measured, the files in each segment folder, and the limits.

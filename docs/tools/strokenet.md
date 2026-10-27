@@ -72,7 +72,7 @@ python -m kit strokenet MAP.tif --pixel-mm 0.0024 --out RESULT.json --png RESULT
 - `MAP.tif`: one of the organizers' ink predictions (uint8, 0 to 255, ink bright), such as a PHerc. Paris 4 tracing from https://data.aws.ash2txt.org/samples/PHercParis4/segments/. `.npy`, `.npz` and `.png` work too.
 - `0.0024`: the map's pixel size in mm (2.4 um). A uint8 map at a whole fraction of 0.048 mm is pooled exactly as the training windows were.
 - `RESULT.json`: where to keep the full result; add `--json` to print it instead of the text summary.
-- `RESULT.png`: the map at 0.048 mm with every scored window's score painted over its centre, blue low and red high, uncoloured where a window was skipped (at most 2,000 px a side). It shows where the score is high; it is model output, not a reading.
+- `RESULT.png`: the map at 0.048 mm with every scored window's score painted over its center, blue low and red high, uncolored where a window was skipped (at most 2,000 px a side). It shows where the score is high; it is model output, not a reading.
 - The first run downloads `strokenet-paris4-v1` (589,393 weights) into `~/.cache/scrolls-kit/strokenet/`; pass `--weights FILE.npz` to use a file.
 
 On a synthetic 300 x 400 px uint8 map at 0.048 mm (bands every 9 px, a blank strip on the left) with a small random-weights network made as `tests/test_strokenet.py` makes one (`--weights weights.npz --sample 8 --grid grid --out res.json`), it printed:
@@ -161,7 +161,7 @@ usage: python -m kit strokenet [-h] --pixel-mm PIXEL_MM [--weights WEIGHTS]
 | `--seed SEED` | `0` | Seed of the control sample and of the IAAFT copies; the same seed gives the same controls |
 | `--grid GRID` | none | Also save the window logit grid as `.npy` (`.npy` is added when missing), NaN where a window was skipped. Its rows and columns start at `window_y_px` and `window_x_px` of the result |
 | `--out OUT` | none | Also write the result as JSON (indented) to this file |
-| `--png PNG` | none | Also write a picture: the map at 0.048 mm with each scored window's score painted over its centre, blue low and red high, uncoloured where a window was skipped, at most 2,000 px a side (needs Pillow). The result's `png_file` names it |
+| `--png PNG` | none | Also write a picture: the map at 0.048 mm with each scored window's score painted over its center, blue low and red high, uncolored where a window was skipped, at most 2,000 px a side (needs Pillow). The result's `png_file` names it |
 | `--two-density` | off | Score 48 px label windows with the two-density score instead of the network: no weights, numpy only. `--weights`, `--crop` and `--png` are refused with it; `--stride`, `--sample` and `--seed` are ignored; `map`, `--pixel-mm`, `--key`, `--grid`, `--out` and `--json` work as usual |
 | `--mask MASK` | none | With `--two-density`: a papyrus mask of the map's shape, nonzero on papyrus, read like `map`; labels under half papyrus (`TD_PAPYRUS_MIN` = 0.5) are skipped. Without it every whole label is scored. Ignored without `--two-density` |
 | `--label-stride LABEL_STRIDE` | `6` | With `--two-density`: label step in pooled pixels (`TD_STRIDE`, the tested stride). Ignored without `--two-density` |
@@ -215,7 +215,7 @@ usage: train.py [-h] --work WORK --out OUT [--width WIDTH] [--depth DEPTH]
 | `--wd WD` | `1e-4` | AdamW weight decay |
 | `--seed SEED` | `0` | Seed of every random draw |
 | `--neg-mix NEG_MIX` | `blank=0.4,iaaft=0.2,shuffle=0.2,rot90=0.2` | Shares of the negative kinds: `blank`, `iaaft` (20 iterations), `shuffle`, `rot90`, `strip` (`DEFAULT_MIX`) |
-| `--blank-rot BLANK_ROT` | `0.5` | Share of blank negatives turned by 90 degrees, so fibre direction alone cannot look like text |
+| `--blank-rot BLANK_ROT` | `0.5` | Share of blank negatives turned by 90 degrees, so fiber direction alone cannot look like text |
 | `--jitter JITTER` | `0.25,0.25` | Shares of tile- and strip-jittered (seam-matched) positives and blank negatives (`DEFAULT_JITTER`) |
 | `--positives {text,blank}` | `text` | `blank` is the artifact control: blank windows are the positives and nulls of blank the negatives, so it never sees text |
 | `--no-flip` | off | Turn off the random horizontal and vertical flips |

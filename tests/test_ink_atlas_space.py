@@ -31,7 +31,7 @@ def _load():
 
 def _fake(root, A):
     """One surface of 300 x 400 pixels: a covered rectangle, a model whose map is the ensemble plus noise, a flat
-    model, and Hecate with the centre window only."""
+    model, and Hecate with the center window only."""
     sid, path = "kbh-PHercTEST_1_2_3", "surfaces/PHercTEST/kbh-PHercTEST_1_2_3"
     d = root / path
     rng = np.random.default_rng(0)
@@ -56,7 +56,7 @@ def _fake(root, A):
             "voxel_um": 9.362, "canvas_um": 9.6, "ct": "https://example.invalid/ct.zarr/0",
             "mesh": {"base": "https://example.invalid/mesh"}, "credit": "test",
             "render": {"canvas_hw": [h, w], "layers": 65},
-            "windows": {"centre_only": ["hecate-9.6"], "sweep": [-4, 0, 4]},
+            "windows": {"centre_only": ["hecate-9.6"], "sweep": [-4, 0, 4]},   # the published key, as spelled there
             "ensemble": {"ensemble": {"members": ["reader-v3", "hecate-9.6"], "recipe": "z mean"}},
             "ensemble_png_z_range": [-2, 4],
             "models": {"reader-v3": {"title": "Reader V3", "alive": True, "exposure": {"status": "unknown"}},
@@ -104,7 +104,7 @@ class TestAtlasData(unittest.TestCase):
         self.assertTrue(A.layer_rel(at, self.sid, "ensemble", order="reverse")[0].endswith("ensemble-rev/reverse.png"))
         self.assertTrue(A.layer_rel(at, self.sid, "ensemble", order="forward")[0].endswith("ensemble/forward.png"))
         rel, used = A.layer_rel(at, self.sid, "hecate-9.6", "c+4", "forward")
-        self.assertEqual(used, "c+0")                          # centre window only
+        self.assertEqual(used, "c+0")                          # center window only
         with self.assertRaises(A.AtlasError):
             A.layer_rel(at, self.sid, "reader-v3", "c+9")
         with self.assertRaises(A.AtlasError):
@@ -169,13 +169,25 @@ class TestPage(unittest.TestCase):
         self.assertIn("mcp_server=True", src)
         self.assertIn("connect.html", src)
         self.assertIn("api_name=fn.__name__", src)
+        self.assertIn("head=page_head()", src)
+
+    @unittest.skipUnless(HAVE, "needs numpy and Pillow")
+    def test_head_carries_one_page_scroll(self):
+        """The head handed to launch() ends with onescroll.html, so the page scrolls as a whole."""
+        spec = importlib.util.spec_from_file_location("ink_atlas_app_under_test", SPACE / "app.py")
+        app = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(app)
+        frag = (SPACE / "onescroll.html").read_text()
+        self.assertIn("space-onescroll:start", frag)
+        self.assertTrue(app.page_head().startswith(app.HEAD))
+        self.assertTrue(app.page_head().endswith(frag))
 
     def test_card_and_files(self):
         card = (SPACE / "README.md").read_text()
         self.assertIn("sdk_version: 6.28.0", card)
         self.assertIn("mcp-server", card)
         for f in ("app.py", "atlasdata.py", "requirements.txt", "NOTICE", "LICENSE", "connect.json", "connect.html",
-                  "CONNECT.md", "tools/deploy.py"):
+                  "CONNECT.md", "onescroll.html", "tools/deploy.py"):
             self.assertTrue((SPACE / f).is_file(), f)
         for f in SPACE.rglob("*"):
             if f.is_file() and f.suffix in (".py", ".md", ".json", ".html", ".txt"):

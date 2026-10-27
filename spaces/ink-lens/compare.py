@@ -10,9 +10,9 @@ lands on one 9.6 um grid where the labels are scored:
                  Hugging Face Job and land on the same grid through project3d.py (tools/gallery_job.py).
   scan "native"  the segment's 9.4 um scan (28 layers), as Ink Lens reads it: 9 um models only.
 
-Each model runs on depth windows (runners.window: its own depth, centred `centre` layers from the middle in 9.6 um
+Each model runs on depth windows (runners.window: its own depth, centered `center` layers from the middle in 9.6 um
 layers, `step` layers apart), in both depth orders where it reads depth order. Nothing picks a best cell: the
-headline row of a model is its centre window (c+0, step 1) as stored, against its own control, the same window
+headline row of a model is its center window (c+0, step 1) as stored, against its own control, the same window
 reversed. A model that reads only forward (canonical 2 um) gets its control from Ink Lens reversing the input
 layers. Every map passes ink-sdk's liveness gate before it is scored; a DEGENERATE map is shown, flagged, and never
 ranked.
@@ -43,7 +43,7 @@ import zoo
 GRID_UM = 9.6
 INNER = 64
 BOOT_DRAWS = 200
-CENTRES = (0,)
+CENTERS = (0,)
 STEPS = (1,)
 THRESHOLDS = (0.5, 0.7)
 BLOCK_PX = 104          # 1 mm on the 9.6 um grid
@@ -61,7 +61,7 @@ class CompareError(ValueError):
 def plan(name, scan):
     """How a model reads a scan: {"pool": k, "map_pool": m, "depth_factor": f, "source_um": u} or a CompareError.
     k pools the volume before the model (zoo.scale_plan, ink-sdk's rule), m pools its map onto the 9.6 um grid, f
-    converts 9.6 um layers of a window centre into the model's own layers."""
+    converts 9.6 um layers of a window center into the model's own layers."""
     spec = zoo.get(name)
     if spec["family"] == "ct3d":
         raise CompareError(f"{name} reads the scan itself; its maps come from the precomputed gallery")
@@ -87,7 +87,7 @@ def control_note(name):
 
 def sample_inputs(s, scan="2.4", box=None, size=None, with_labels=True):
     """The volume and labels of a sample region. box: (y0, y1, x0, x1) on the 9.6 um grid ("2.4") or on the native
-    9.4 um grid ("native"); default: the sample's 640 px crop, or `size` px around its centre. Returns
+    9.4 um grid ("native"); default: the sample's 640 px crop, or `size` px around its center. Returns
     (volume uint8, (ink, supervision) or None, info)."""
     import inklens
     import volio
@@ -265,12 +265,16 @@ def _ct_valid(volume, pool_k):
     return v
 
 
-def run(volume, scan, models, labels=None, centres=CENTRES, steps=STEPS, loaded=None, device=None,
-        ensemble_models=None, output_3d=False, draws=BOOT_DRAWS, say=print, sample=None):
+def run(volume, scan, models, labels=None, centers=CENTERS, steps=STEPS, loaded=None, device=None,
+        ensemble_models=None, output_3d=False, draws=BOOT_DRAWS, say=print, sample=None, **renamed):
     """Compare `models` on one region. volume: uint8 (layers, rows, columns) of `scan` ("2.4": the finer scan at
     level 0; "native": the 9.4 um scan); labels: (ink, supervision) boolean arrays on the 9.6 um grid of the region,
-    or None. loaded: {name: runner} already loaded (the Space keeps them); others are loaded here.
+    or None. loaded: {name: runner} already loaded (the Space keeps them); others are loaded here. centers was
+    spelled the British way before 27 Oct 2026; scripts written then still pass it under that name (`renamed`).
     Returns (result dict, maps dict {(model, window, order): 9.6 um map}, volumes {(model, window): 3D})."""
+    centers = renamed.pop("centres", centers)
+    if renamed:
+        raise TypeError(f"run() got unexpected keyword arguments {sorted(renamed)}")
     import numpy as np
     t0 = time.perf_counter()
     vol = np.asarray(volume)
@@ -301,13 +305,13 @@ def run(volume, scan, models, labels=None, centres=CENTRES, steps=STEPS, loaded=
         if v is None:
             v = pooled[p["pool"]] = runners.pool(vol, p["pool"])
         depth = spec["depth"]
-        wins = runners.windows_for(v.shape[0], depth, [int(c) * p["depth_factor"] for c in centres],
+        wins = runners.windows_for(v.shape[0], depth, [int(c) * p["depth_factor"] for c in centers],
                                    [int(s) for s in steps])
         # keys in 9.6 um layer units, whatever the model's own layers
         wins = {f"c{int(round(int(k.split('_')[0][1:]) / p['depth_factor'])):+d}_{k.split('_')[1]}": idx
                 for k, idx in wins.items()}
         if not wins:
-            row["skipped"] = (f"{depth} layers centred at {list(centres)} do not fit the region's {v.shape[0]} "
+            row["skipped"] = (f"{depth} layers centered at {list(centers)} do not fit the region's {v.shape[0]} "
                               "layers at this scale")
             continue
         row["windows"] = {k: [int(i) for i in idx] for k, idx in wins.items()}
@@ -327,7 +331,7 @@ def run(volume, scan, models, labels=None, centres=CENTRES, steps=STEPS, loaded=
                 if output_3d:
                     got, v3 = got
                     for (k, _), arr in v3.items():
-                        if k == "c+0_s1":       # the centre window's volume only (a 2.4 um one is 420 MB)
+                        if k == "c+0_s1":       # the center window's volume only (a 2.4 um one is 420 MB)
                             vols[(name, k)] = arr
             else:     # canonical: forward only; the control is the same layers reversed by Ink Lens
                 got = r.run(v, wins, orders=("forward",), pixel_um=p["source_um"] * p["pool"], device=device)
@@ -355,7 +359,7 @@ def run(volume, scan, models, labels=None, centres=CENTRES, steps=STEPS, loaded=
         head = row["cells"].get("c+0_s1") or next(iter(row["cells"].values()))
         row["alive"] = head["liveness"].get("forward", {}).get("verdict") == "ALIVE"
     result = {"tool": f"Ink Lens compare {VERSION}", "scan": scan, "grid_um": GRID_UM, "grid_shape": list(grid_shape),
-              "centres": [int(c) for c in centres], "steps": [int(s) for s in steps], "models": rows,
+              "centers": [int(c) for c in centers], "steps": [int(s) for s in steps], "models": rows,
               "valid_px": int(valid.sum()), "inner": INNER, "bootstrap_draws": draws, "block_px": block_px,
               "ink_sdk": f"{zoo.INK_SDK_REPO} @ {zoo.INK_SDK_COMMIT}", "note": NOTE}
     if sample is not None:
@@ -364,7 +368,7 @@ def run(volume, scan, models, labels=None, centres=CENTRES, steps=STEPS, loaded=
         for name, row in rows.items():
             st, why, src = zoo.exposure(name, scroll)
             row["exposure"] = {"scroll": scroll, "status": st, "why": why, "source": src}
-    # ensemble of the alive models' centre windows, as stored; its control is the ensemble of their controls
+    # ensemble of the alive models' center windows, as stored; its control is the ensemble of their controls
     members = [n for n in (ensemble_models or [n for n in models if rows[n].get("alive")])
                if (n, "c+0_s1", "forward") in maps and rows[n].get("alive")]
     if len(members) >= 2:
@@ -396,7 +400,7 @@ def run(volume, scan, models, labels=None, centres=CENTRES, steps=STEPS, loaded=
 
 
 def depth_profile(vol3d, labels, pool_k):
-    """Mean 3D ink probability per layer over labelled ink and labelled background pixels (where a 3D model puts
+    """Mean 3D ink probability per layer over labeled ink and labeled background pixels (where a 3D model puts
     ink in depth)."""
     import numpy as np
     if labels is None:
@@ -432,9 +436,9 @@ def environment():
     return out
 
 
-NOTE = ("Model output, not a reading. AUC is the chance a labelled ink pixel scores above a labelled background "
+NOTE = ("Model output, not a reading. AUC is the chance a labeled ink pixel scores above a labeled background "
         "pixel inside the supervision mask; a score on a scroll the model trained on shows the pipeline runs, not "
-        "that it generalises.")
+        "that it generalizes.")
 
 
 # ---------------------------------------------------------------- cost
@@ -477,7 +481,7 @@ def to_rgb(m, mode="absolute", valid=None):
 
 
 def label_outline(rgb, ink, sup, color=(255, 170, 40)):
-    """Draw the labelled ink's outline (inside the supervision mask) on an image of the same grid."""
+    """Draw the labeled ink's outline (inside the supervision mask) on an image of the same grid."""
     import numpy as np
     a = np.asarray(ink, bool) & np.asarray(sup, bool)
     edge = a & ~(np.roll(a, 1, 0) & np.roll(a, -1, 0) & np.roll(a, 1, 1) & np.roll(a, -1, 1))
@@ -543,7 +547,7 @@ def table(result):
         ci = (sc.get("bootstrap") or {}).get("ci95")
         c = (sc.get("control") or {}).get("auc")
         g = sc.get("gap")
-        auc_txt = ("no labelled ink here" if sc and a is None else "" if a is None
+        auc_txt = ("no labeled ink here" if sc and a is None else "" if a is None
                    else f"{a:.3f}" + (f" ({ci[0]:.3f} to {ci[1]:.3f})" if ci else ""))
         lines.append(f"| {row['title']} | {exp} | {live} | {auc_txt} | {'' if c is None else f'{c:.3f}'} | "
                      f"{'' if g is None else f'{g:+.3f}'} | {row.get('seconds', '')} |")
@@ -552,7 +556,7 @@ def table(result):
         sc = e["score"]
         a, c, g = sc["auc"]["auc"], (sc.get("control") or {}).get("auc"), sc.get("gap")
         ci = (sc.get("bootstrap") or {}).get("ci95")
-        auc_txt = "no labelled ink here" if a is None else f"{a:.3f}" + (f" ({ci[0]:.3f} to {ci[1]:.3f})" if ci else "")
+        auc_txt = "no labeled ink here" if a is None else f"{a:.3f}" + (f" ({ci[0]:.3f} to {ci[1]:.3f})" if ci else "")
         lines.append(f"| Ensemble of {len(e['members'])} (z-score) | | | {auc_txt}"
                      f" | {'' if c is None else f'{c:.3f}'} | {'' if g is None else f'{g:+.3f}'} | |")
     return "\n".join(lines)

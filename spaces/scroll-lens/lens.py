@@ -1026,7 +1026,7 @@ def gallery(root=HERE / "gallery"):
     for it in items:
         if not isinstance(it, dict):
             raise LensError("gallery/index.json holds an entry that is not an object")
-        for key in ("title", "note"):     # cubes built before 1.1.0 say "organisers'"; the page uses American spelling
+        for key in ("title", "note"):     # cubes built before 1.1.0 spell it the British way; the page is American
             if isinstance(it.get(key), str):
                 it[key] = it[key].replace("rganisers", "rganizers")
         for key in ("id", "volume", "title", "note", "file", "point_zyx", "size"):
@@ -1052,7 +1052,7 @@ def gallery(root=HERE / "gallery"):
 # ---------------------------------------------------------------- the Space's own files
 
 SPACE_FILES = ("README.md", "app.py", "lens.py", "viewer.js", "requirements.txt", "LICENSE", "NOTICE", "connect.json",
-               "connect.html", "CONNECT.md")
+               "connect.html", "CONNECT.md", "onescroll.html")
 
 
 def space_files(root=HERE):

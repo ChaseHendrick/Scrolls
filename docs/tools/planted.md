@@ -29,9 +29,9 @@ A surface lies on a family of concentric sheets: an Archimedean spiral about a c
 | --- | --- | --- | --- |
 | clean | none | nothing: the control twin of every plant | CORRECT |
 | switch | N2 | rows r0..r1 jump dk windings at column c0 and stay there | INCORRECT |
-| lens | N7 | switch and return: a block on the neighbouring winding | INCORRECT |
+| lens | N7 | switch and return: a block on the neighboring winding | INCORRECT |
 | skip | N6 | a hard switch two windings out | INCORRECT |
-| merger | N3 | the whole height slides onto the neighbour over 4 columns, with no single jump edge, and stays there | INCORRECT |
+| merger | N3 | the whole height slides onto the neighbor over 4 columns, with no single jump edge, and stays there | INCORRECT |
 | hole | Q4 | a punched hole; the rest stays on its sheet | CORRECT |
 | bridge | N12 | a hole filled by the bilinear plane over its four corners; it leaves a curved sheet | INCORRECT on the spiral, CORRECT on planes |
 

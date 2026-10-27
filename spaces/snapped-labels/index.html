@@ -6,6 +6,68 @@
 <title>Snapped Labels</title>
 <meta name="description" content="Published Vesuvius Challenge surface labels moved onto the papyrus surface, shown on live X-ray CT.">
 <link rel="stylesheet" href="style.css">
+<!-- space-onescroll:start -->
+<!-- one page scroll bar: written by python -m kit spaceconnect render; do not edit -->
+<style>iframe[srcdoc]{display:block;max-height:none!important}</style>
+<script>
+(function () {
+  if (window.__oneScroll) return;
+  window.__oneScroll = true;
+  var CSS = 'html,body{height:auto!important;min-height:0!important}html{overflow:hidden!important}';
+  function size(f) {
+    var d, st = f.__os;
+    try { d = f.contentDocument; } catch (e) { return; }
+    if (!d || !d.body || st.off) return;
+    var de = d.documentElement, r = Math.ceil(de.getBoundingClientRect().height), over = de.scrollHeight;
+    var ch = f.clientHeight, t = r;
+    if (over > ch + 1) t = Math.max(r, over);
+    else if (r >= st.r) t = Math.max(r, ch);
+    st.r = r;
+    if (Math.abs(t - ch) < 2) return;
+    var now = Date.now();
+    st.n = now - st.t0 < 4000 ? st.n + 1 : 1;
+    if (st.n === 1) st.t0 = now;
+    if (st.n > 40) { st.off = true; f.removeAttribute('scrolling'); var g = d.getElementById('space-onescroll'); if (g) g.remove(); return; }
+    f.style.setProperty('height', t + 'px', 'important');
+  }
+  function attach(f) {
+    var d, st = f.__os;
+    try { d = f.contentDocument; } catch (e) { return; }
+    if (!d || !d.documentElement || st.doc === d) return;
+    st.doc = d; st.r = Infinity; st.n = 0; st.off = false;
+    if (!d.getElementById('space-onescroll')) {
+      var s = d.createElement('style'); s.id = 'space-onescroll'; s.textContent = CSS;
+      (d.head || d.documentElement).appendChild(s);
+    }
+    f.setAttribute('scrolling', 'no');
+    f.style.setProperty('min-height', '0', 'important');
+    f.style.setProperty('max-height', 'none', 'important');
+    var w = d.defaultView, go = function () { size(f); };
+    if (w && w.ResizeObserver) { var ro = new w.ResizeObserver(go); ro.observe(d.documentElement); if (d.body) ro.observe(d.body); }
+    d.addEventListener('load', go, true);
+    go();
+  }
+  function bind(f) {
+    if (f.__os || f.getAttribute('data-scroll') === 'inner') return;
+    try { if (!f.contentDocument) return; } catch (e) { return; }
+    f.__os = {t0: 0, n: 0, r: 0};
+    f.addEventListener('load', function () { attach(f); });
+    if (f.contentDocument.readyState !== 'loading') attach(f);
+    else f.contentDocument.addEventListener('DOMContentLoaded', function () { attach(f); });
+  }
+  function scan() { var fs = document.getElementsByTagName('iframe'); for (var i = 0; i < fs.length; i++) bind(fs[i]); }
+  function start() {
+    scan();
+    new MutationObserver(scan).observe(document.documentElement, {childList: true, subtree: true});
+    window.addEventListener('resize', function () {
+      var fs = document.getElementsByTagName('iframe');
+      for (var i = 0; i < fs.length; i++) if (fs[i].__os) size(fs[i]);
+    });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
+})();
+</script>
+<!-- space-onescroll:end -->
 </head>
 <body>
 <header class="top">
@@ -55,7 +117,7 @@
       <label class="zl">z <input id="z-range" type="range" min="0" max="0" value="0"> <output id="z-out">0</output></label>
       <label class="zl">Window <select id="win"><option value="96">96 voxels</option><option value="192" selected>192 voxels</option><option value="384">384 voxels</option></select></label>
     </div>
-    <p class="hint">Click the image to centre it. The lines are where each mesh crosses this z plane: orange for the published label, blue for the snapped one, with grey strokes joining matching points. The blue line moves only vertices whose own face was measured (<code>abstain.tif</code> 0). Filled vertices (<code>abstain.tif</code> 2, moved in the dataset by their measured neighbours' offsets) and vertices left in place (1) are drawn at the published position, so the two lines coincide there.</p>
+    <p class="hint">Click the image to center it. The lines are where each mesh crosses this z plane: orange for the published label, blue for the snapped one, with gray strokes joining matching points. The blue line moves only vertices whose own face was measured (<code>abstain.tif</code> 0). Filled vertices (<code>abstain.tif</code> 2, moved in the dataset by their measured neighbors' offsets) and vertices left in place (1) are drawn at the published position, so the two lines coincide there.</p>
     <div id="seg-card" class="card"></div>
   </div>
 </section>
@@ -69,7 +131,7 @@
 <section data-pane="how" hidden class="prose">
   <figure class="fig"><img src="https://huggingface.co/datasets/SharpMeow/vesuvius-snapped-labels/resolve/main/snapped-0139.gif" width="600" height="600" alt="PHerc0139 segment w054 on CT at z 8048: the published label, then the snapped label, then both with the moves, at four stops along the label" loading="lazy"><figcaption>PHerc0139 w054, z 8048: published (orange), snapped (blue), both.</figcaption></figure>
   <h2>What a snap does</h2>
-  <p>A surface label is a mesh (tifxyz: three float grids, x, y and z in scan voxels) that follows one wrap of papyrus. Traced labels sit near the sheet but rarely on it: on fresh test sites only about a quarter of published label vertices were within one voxel of the sheet's recto face. A snap moves each vertex along its mesh normal onto the face of the bright band nearest it, on the side toward the scroll's centre line.</p>
+  <p>A surface label is a mesh (tifxyz: three float grids, x, y and z in scan voxels) that follows one wrap of papyrus. Traced labels sit near the sheet but rarely on it: on fresh test sites only about a quarter of published label vertices were within one voxel of the sheet's recto face. A snap moves each vertex along its mesh normal onto the face of the bright band nearest it, on the side toward the scroll's center line.</p>
   <h2>Two methods</h2>
   <ul>
     <li><b>finesnap</b> (PHerc0139, PHerc0814, PHerc0841): the label's own 9.4 µm scan is registered, vertex by vertex, to a 2.4 µm scan of the same scroll, and the face is found there. Where that fails, the label scan's own face is used (<code>source.tif</code> says which).</li>
@@ -81,12 +143,12 @@
   <h2>What is in each segment folder</h2>
   <ul>
     <li><code>snapped.tifxyz/</code>: the moved mesh, same grid as the source; <code>-1</code> where there is no vertex or it was held back.</li>
-    <li><code>abstain.tif</code>: 0 snapped (face measured at the vertex), 1 not measured and left at its published position, 2 not measured and moved by the offset filled in from measured neighbours (filled), 255 no vertex or held back. Version 1.0.1 added code 2; in 1.0.0 filled vertices were 1.</li>
+    <li><code>abstain.tif</code>: 0 snapped (face measured at the vertex), 1 not measured and left at its published position, 2 not measured and moved by the offset filled in from measured neighbors (filled), 255 no vertex or held back. Version 1.0.1 added code 2; in 1.0.0 filled vertices were 1.</li>
     <li><code>confidence.tif</code> (0 to 1), <code>reason.tif</code> (why no face was measured), <code>source.tif</code> (finesnap: 1 fine scan, 2 label scan).</li>
     <li><code>release_mask.tif</code>: 0 released, 1 held back for evaluation, 255 not in the source mesh. <code>release.json</code>: source URLs, checksums and the summary.</li>
   </ul>
   <h2>Limits</h2>
-  <p>A snap moves along the normal only; it does not fix a label that follows the wrong wrap. Where two sheets touch, the face it finds can belong to the neighbour. Small regions are held back for evaluation and five segments of PHerc0139 and one of PHerc0841 are not included. The meshes are geometry: they say nothing about ink or text.</p>
+  <p>A snap moves along the normal only; it does not fix a label that follows the wrong wrap. Where two sheets touch, the face it finds can belong to the neighbor. Small regions are held back for evaluation and five segments of PHerc0139 and one of PHerc0841 are not included. The meshes are geometry: they say nothing about ink or text.</p>
   <p class="credit">Scans and source meshes: Vesuvius Challenge open data, CC BY-NC 4.0; the snapped meshes are shared under the same terms. Page code Apache 2.0. Made by Chase Hendrick.</p>
 </section>
 

@@ -27,12 +27,14 @@ h1 { margin: 0; font-size: 1.7em; letter-spacing: -.01em;
 .stat:nth-child(3) b { color: var(--pub); } .stat:nth-child(4) b { color: var(--held); }
 .stat span { color: var(--mute); font-size: .88em; }
 main { padding: 12px 24px 32px; }
-.viewer { display: grid; grid-template-columns: 260px 1fr; gap: 16px; }
-.side { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 6px; max-height: 960px; }
+.viewer { display: grid; grid-template-columns: clamp(260px, 25vw, 340px) 1fr; gap: 16px; }   /* wide enough that most names fit one line */
+/* the segment list grows with the page: no box here scrolls on its own, the page does */
+.side { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 6px; align-self: start; min-width: 0; }
 .lbl { font-size: .8em; color: var(--mute); text-transform: uppercase; letter-spacing: .05em; }
 select, input[type="search"] { font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px; }
-.seglist { list-style: none; margin: 4px 0 0; padding: 0; overflow: auto; flex: 1; min-height: 160px; }
-.seglist li { padding: 6px 8px; border-radius: 8px; cursor: pointer; display: flex; justify-content: space-between; gap: 8px; }
+.seglist { list-style: none; margin: 4px 0 0; padding: 0; }
+.seglist li { padding: 6px 8px; border-radius: 8px; cursor: pointer; display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.seglist li span { min-width: 0; overflow-wrap: anywhere; }
 .seglist li:hover { background: var(--bg); }
 .seglist li.on { background: color-mix(in srgb, var(--accent) 16%, transparent); }
 .seglist small { color: var(--mute); white-space: nowrap; }
@@ -60,7 +62,7 @@ canvas { width: 100%; height: 100%; display: block; cursor: crosshair; image-ren
 .legend { font-size: .8em; color: var(--mute); display: flex; gap: 12px; flex-wrap: wrap; }
 .legend i { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 4px; vertical-align: -1px; }
 pre.cmd { background: var(--code); padding: 8px 10px; border-radius: 8px; white-space: pre-wrap; overflow-wrap: anywhere; font-size: .82em; margin: 6px 0 0; }
-.tablewrap { overflow: auto; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; }
+.tablewrap { overflow-x: auto; overflow-y: hidden; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; }
 table { border-collapse: collapse; width: 100%; font-size: .9em; }
 th, td { padding: 6px 10px; border-bottom: 1px solid var(--line); text-align: left; white-space: nowrap; }
 th.n, td.n { text-align: right; font-variant-numeric: tabular-nums; }
@@ -74,6 +76,6 @@ tbody tr { cursor: pointer; } tbody tr:hover { background: var(--bg); }
 @media (max-width: 760px) {
   .top, .stats, main { padding-left: 16px; padding-right: 16px; }
   .viewer { grid-template-columns: 1fr; }
-  .side { max-height: 300px; }
+  .side { order: 1; }   /* on a phone the viewer comes first and the list follows it */
   .zl input[type="range"] { width: 160px; }
 }

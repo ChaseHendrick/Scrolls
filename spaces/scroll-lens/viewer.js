@@ -414,7 +414,7 @@ function linkSlicesOnce() {
 st.linkSlices = linkSlicesOnce();
 
 // Every answer from Python carries a revision (app.next_rev), and answers can arrive out of order: a click answered
-// after another cube was opened, say. Each answer's acknowledgements count, but only the newest answer is shown, so
+// after another cube was opened, say. Each answer's acknowledgments count, but only the newest answer is shown, so
 // a late one never brings back a cube the visitor has left.
 async function onValue(raw) {
   let m = null;

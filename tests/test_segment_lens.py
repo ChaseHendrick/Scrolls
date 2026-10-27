@@ -52,6 +52,22 @@ class TestPage(unittest.TestCase):
                 self.assertNotIn("\u2014", text, f.name)
                 self.assertNotIn("\u2013", text, f.name)
 
+    def test_one_scroll_bar_at_a_time(self):
+        """A one-screen viewer keeps one scrolling box (user decision, 27 October 2026): the segment list scrolls, the card never
+        does, and the table or the guide takes over while it is open."""
+        css = (SPACE / "style.css").read_text(encoding="utf-8")
+        for card in re.findall(r"\.br \{([^}]*)\}", css):
+            self.assertNotRegex(card, r"overflow(-y)?:\s*(auto|scroll|overlay)")
+        # on a window too short for it the card is cut, not scrolled, so its top (and the NUMBERS fold) stays on screen
+        self.assertIn("overflow: clip;", re.search(r"^\.br \{([^}]*)\}", css, re.M).group(1))
+        self.assertIn("html.covered .list { overflow: hidden; }", css)
+        self.assertIn("html.guide .tablewrap { overflow: hidden; }", css)
+        self.assertIn("$('picker').hidden = $('card').hidden = table;", APP)
+        self.assertIn("document.documentElement.classList.toggle('guide', guide);", APP)
+        self.assertIn("$('about').addEventListener('close', cover);", APP)
+        head = (SPACE / "index.html").read_text(encoding="utf-8").split("</head>")[0]
+        self.assertIn("<!-- space-onescroll:start -->", head)
+
     def test_agent_calls_are_documented(self):
         page = (ROOT / "docs" / "tools" / "segment-lens.md").read_text(encoding="utf-8")
         block = re.search(r"window\.segmentLens = \{(.*?)\n\};", APP, re.S).group(1)

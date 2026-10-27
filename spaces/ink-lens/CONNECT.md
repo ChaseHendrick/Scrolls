@@ -145,7 +145,7 @@ result = client.predict(api_name="/list_samples")
 from gradio_client import Client
 
 client = Client("SharpMeow/ink-lens")
-result = client.predict(sample_id="0841-w00", models="ink_9um-s42,reader-v3,hecate-9.6", size=384, scan="2.4", centres="0", steps="1", api_name="/compare_sample")
+result = client.predict(sample_id="0841-w00", models="ink_9um-s42,reader-v3,hecate-9.6", size=384, scan="2.4", centers="0", steps="1", api_name="/compare_sample")
 ```
 
 ### Python /list_models (tested 2026-10-24)

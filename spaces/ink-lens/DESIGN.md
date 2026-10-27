@@ -88,7 +88,7 @@ passes over the same patches, batched together.
 
 Two changes from autopipeline-ink make one call fit in a few seconds:
 
-1. villa's per-patch robust normalisation runs on the GPU, batched (the autopipeline-ink Space ran it on the CPU inside
+1. villa's per-patch robust normalization runs on the GPU, batched (the autopipeline-ink Space ran it on the CPU inside
    the call: about 0.03 s of its 0.06 s per patch, Sourced fact, `inkspace.py` comment of 13 Oct 2026). The port must
    match villa's CPU result within a stated tolerance on a test volume.
 2. fp16, batch 64, model on the device once per process.
@@ -220,13 +220,13 @@ point plus a size; `--from-vc3d` takes the current cursor point.
 | --- | --- |
 | `spaces/ink-lens/README.md` | Space card (Gradio 6.28.0, Python 3.12, `zero-a10g`, MIT model links), use, tools, checks, credits |
 | `spaces/ink-lens/app.py` | Page, one `spaces.GPU` call per region with the computed duration, CPU fallback for small regions, API and MCP tools |
-| `spaces/ink-lens/engine.py` | Pinned downloads with SHA-256, safe load, GPU-batched villa normalisation, sliding window with Hann blending, three windows, both orders; CUDA, MPS or CPU |
+| `spaces/ink-lens/engine.py` | Pinned downloads with SHA-256, safe load, GPU-batched villa normalization, sliding window with Hann blending, three windows, both orders; CUDA, MPS or CPU |
 | `spaces/ink-lens/gate.py` | Papyrus mask, T, excess, status (numpy only) |
 | `spaces/ink-lens/vc3dout.py` | Canvas PNG and mosaic, `ink-detections.json` merge, point collection, grid-to-voxel interpolation, receipt |
 | `spaces/ink-lens/inklens.py` | Client CLI: inputs, `vc_render_tifxyz` call, 9.6 um pooling, Space or local run, Text Reader pins, VC3D files, bridge |
 | `spaces/ink-lens/bridge.py` | Minimal JSON-RPC client for the VC3D agent bridge socket |
 | `spaces/ink-lens/requirements.txt`, `LICENSE`, `NOTICE` | Pins as Scroll Lens; Apache 2.0 code; MIT models credited |
-| `tests/test_inklens.py` | Gate math and its failing cases, pooling equal to the organizers' rule, GPU normalisation equal to villa's CPU result, canvas aspect, record merge keeps existing records, point collection schema, grid-to-voxel mapping, duration formula |
+| `tests/test_inklens.py` | Gate math and its failing cases, pooling equal to the organizers' rule, GPU normalization equal to villa's CPU result, canvas aspect, record merge keeps existing records, point collection schema, grid-to-voxel mapping, duration formula |
 | `docs/prereg/2026-10-20-ink-lens-gate.md` | The control check above, frozen before any map |
 | `docs/tools/ink-lens.md` | Tool page (`python -m kit.tooldocs new`), with "For agents" |
 | `docs/MAP.md`, `GLOSSARY.md`, `docs/HANDOFF.md` | Map row; terms "Ink Lens" and "control-set threshold"; handoff row |

@@ -20,7 +20,7 @@ Exposure, per scroll: "trained" (its training labels include that scroll), "like
 its training reached that scroll, but no training record confirms it), "selected" (not trained on it, but its author
 chose the recipe while looking at it), "held_out" (its stated training data leave it out), "unknown" (nothing
 published says). Each entry names its source. A score on a "trained" scroll shows the pipeline runs, not that the
-model generalises.
+model generalizes.
 
   python3 zoo.py list [--json]            every model, its family, scale, orders, output and exposure
   python3 zoo.py show MODEL               one row in full

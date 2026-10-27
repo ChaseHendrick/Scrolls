@@ -3,13 +3,13 @@
 The model is built by villa's own flat ink inference (vesuvius.ink_detection.inference.infer.configure_model, at the
 commit pinned in VILLA_COMMIT) from a checkpoint downloaded by URL and refused unless its SHA-256 matches. The patch
 schedule (128 px patches, stride 64, the last flush with the end), the layer choice (center crop, reversed for the
-control), villa's per-patch robust normalisation and the Hann blend are villa's; two things differ from villa's
+control), villa's per-patch robust normalization and the Hann blend are villa's; two things differ from villa's
 command line, both to fit one ZeroGPU call:
 
-1. the robust normalisation runs batched on the device (robust_torch), checked against villa's CPU function
+1. the robust normalization runs batched on the device (robust_torch), checked against villa's CPU function
    (robust_np is a line-for-line copy of villa's normalize_robust for a patch with no mask; tests/test_inklens.py
    compares them, and compares robust_np with villa's own function when villa is importable);
-2. the maps stay float (0 to 1) instead of villa's uint8 encoding, so the control-set threshold is not quantised.
+2. the maps stay float (0 to 1) instead of villa's uint8 encoding, so the control-set threshold is not quantized.
 
 run_reference() is the same algorithm in numpy with any predict function: the tests run it with a stand-in model,
 and the torch path is checked against it.
@@ -72,7 +72,7 @@ BATCH = 64
 MIN_SIDE, MAX_SIDE = PATCH, 2048
 MIN_LAYERS, MAX_LAYERS = DEPTH, 65
 # One call's duration: a fixed start plus a per-patch allowance, capped. The per-patch figure is an estimate (3 to
-# 6 ms per patch with batched fp16 and normalisation on the GPU) with a margin; every receipt records the measured
+# 6 ms per patch with batched fp16 and normalization on the GPU) with a margin; every receipt records the measured
 # seconds so the first calls calibrate it.
 GPU_START_S, GPU_PER_PATCH_S, GPU_MAX_S = 4.0, 0.012, 40
 
@@ -175,7 +175,7 @@ def passes(windows):
     return [(o, d) for o in WINDOW_OFFSETS[windows] for d in ("forward", "reverse")]
 
 
-# ---------------------------------------------------------------- villa's normalisation, numpy and torch
+# ---------------------------------------------------------------- villa's normalization, numpy and torch
 
 def robust_np(patch):
     """villa's normalize_robust (vesuvius/image_proc/intensity/normalization.py at VILLA_COMMIT) with no mask:
@@ -469,7 +469,7 @@ class Engine:
                 for b0 in range(0, len(coords), batch):
                     chunk = coords[b0:b0 + batch]
                     raw = torch.stack([sub[:, y:y + PATCH, x:x + PATCH] for y, x in chunk])   # (B, 17, 128, 128)
-                    keep = raw.reshape(len(chunk), -1).any(dim=1)   # villa skips all-zero patches, before normalising
+                    keep = raw.reshape(len(chunk), -1).any(dim=1)   # villa skips all-zero patches, before normalizing
                     if not bool(keep.any()):
                         continue
                     if not bool(keep.all()):

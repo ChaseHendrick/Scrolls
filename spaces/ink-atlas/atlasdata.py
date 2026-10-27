@@ -42,17 +42,17 @@ MODELS = {                        # id: (short name, full title, by); the order 
     "d9v2": ("d9v2", "d9v2", "TAUIL-Abd-Elilah"),
     "hecate-9.6": ("Hecate 9.6", "Hecate 9.6 um", "Vesuvius Challenge"),
 }
-# colour ramps, low to high; maps go 0 to 1 with high meaning more ink by the model
+# color ramps, low to high; maps go 0 to 1 with high meaning more ink by the model
 RAMPS = {
     "gray": ["#000000", "#ffffff"],
     "papyrus": ["#f4ecdc", "#d9c7a4", "#8a6f4e", "#3a2a26", "#120d16"],
     "ember": ["#07060f", "#2b1460", "#7b2a8c", "#d4543a", "#f6a53b", "#fff3c4"],
     "ice": ["#05070f", "#10224f", "#2a56a8", "#6ea6e6", "#e9f3ff"],
 }
-# one colour per layer, for labels, bars and legends (balanced: blues, violets, pinks, oranges)
-LAYER_COLOUR = {"ct": "#64748b", "ensemble": "#5b4bd6", "ink_9um-s42": "#2a56a8", "ink_9um-s43": "#3d8be0",
-                "reader-v2": "#7b2a8c", "reader-v3": "#c2418f", "dense-native": "#e08a3c", "d9v2": "#d4543a",
-                "hecate-9.6": "#b7791f"}
+# one color per layer, for labels, bars and legends (balanced: blues, violets, pinks, oranges)
+LAYER_COLOR = {"ct": "#64748b", "ensemble": "#5b4bd6", "ink_9um-s42": "#2a56a8", "ink_9um-s43": "#3d8be0",
+               "reader-v2": "#7b2a8c", "reader-v3": "#c2418f", "dense-native": "#e08a3c", "d9v2": "#d4543a",
+               "hecate-9.6": "#b7791f"}
 RAMP_LABEL = {"gray": "Gray: ink bright", "papyrus": "Papyrus: ink dark", "ember": "Ember", "ice": "Ice"}
 NO_SURFACE = (14, 16, 26)         # pixels the mesh does not cover
 
@@ -170,6 +170,7 @@ def alive_models(meta):
 
 
 def model_windows(meta, model):
+    # the key is spelled the British way in every published meta.json; it stays so the published dataset still reads
     return ["c+0"] if model in meta.get("windows", {}).get("centre_only", []) else list(WINDOWS)
 
 
@@ -188,7 +189,7 @@ def atlas_summary(atlas):
         "reference_surfaces": roles.get("reference", 0),
         "scrolls": len(scrolls),
         "canvas": "9.6 um per pixel, 65 CT layers 9.6 um apart, one shared canvas per surface",
-        "windows": {"ids": list(WINDOWS), "meaning": "the model's 3D input centred 4 layers below, on, or 4 layers "
+        "windows": {"ids": list(WINDOWS), "meaning": "the model's 3D input centered 4 layers below, on, or 4 layers "
                     "above the traced surface (9.6 um layers); Hecate 9.6 has c+0 only"},
         "orders": {"forward": "depth order as stored", "reverse": "depth order reversed"},
         "ensemble": "ink-sdk ensemble (Erwin Nieuwlaar's PHerc0343 recipe): mean of per-model z-scores of the alive "
@@ -277,7 +278,7 @@ def surface_info(atlas, surface_id):
 # ----- pictures -------------------------------------------------------------------------------------------------
 
 def layer_rel(atlas, sid, layer, window="c+0", order="forward"):
-    """The file behind a layer, and the window actually used (Hecate 9.6 has the centre window only)."""
+    """The file behind a layer, and the window actually used (Hecate 9.6 has the center window only)."""
     s, m = atlas.surface(sid), atlas.meta(sid)
     layer = (layer or ENSEMBLE).strip()
     order = order if order in ORDERS else "forward"
@@ -296,7 +297,7 @@ def layer_rel(atlas, sid, layer, window="c+0", order="forward"):
 
 
 def region(atlas, sid, x=-1, y=-1, size=0):
-    """A size x size box (y0, y1, x0, x1) in canvas pixels centred on (x, y), moved inside the canvas; None for the
+    """A size x size box (y0, y1, x0, x1) in canvas pixels centered on (x, y), moved inside the canvas; None for the
     whole surface (size 0 or x, y below 0)."""
     h, w = atlas.meta(sid)["render"]["canvas_hw"]
     size = int(size or 0)
@@ -323,7 +324,7 @@ def stretch(a, valid, lo=1.0, hi=99.5, gamma=1.0):
     return x, (float(p_lo) / 255, float(p_hi) / 255)
 
 
-def colour(x01, valid, name="gray"):
+def color(x01, valid, name="gray"):
     rgb = ramp(name)[(x01 * 255).astype(np.uint8)]
     if valid is not None:
         rgb[~valid] = NO_SURFACE
@@ -331,7 +332,7 @@ def colour(x01, valid, name="gray"):
 
 
 def overlay(ct01, map01, valid, name="ember", alpha=0.7):
-    """The map in colour over the CT in gray, each pixel as opaque as the map is high (times alpha)."""
+    """The map in color over the CT in gray, each pixel as opaque as the map is high (times alpha)."""
     base = np.repeat((ct01 * 255)[..., None], 3, 2)
     top = ramp(name)[(map01 * 255).astype(np.uint8)].astype(np.float32)
     w = (alpha * map01)[..., None]
@@ -376,7 +377,7 @@ def shrink(a, side):
 def layer_picture(atlas, sid, layer=ENSEMBLE, window="c+0", order="forward", box=None, colormap="gray",
                   lo=1.0, hi=99.5, gamma=1.0, mode="map", alpha=0.7, side=None):
     """A PIL picture of one layer, the whole surface or the box, and a record of how it was made. mode is map (the
-    layer alone), overlay (the layer in colour over the CT) or ct. side shrinks a whole-surface picture first."""
+    layer alone), overlay (the layer in color over the CT) or ct. side shrinks a whole-surface picture first."""
     rel, used = layer_rel(atlas, sid, CT if mode == "ct" else layer, window, order)
 
     def cut(a):
@@ -390,7 +391,7 @@ def layer_picture(atlas, sid, layer=ENSEMBLE, window="c+0", order="forward", box
         ct = cut(atlas.gray(layer_rel(atlas, sid, CT)[0]))
         rgb = overlay(stretch(ct, valid, 0.5, 99.5)[0], x, valid, colormap if colormap != "gray" else "ember", alpha)
     else:
-        rgb = colour(x, valid, "gray" if (mode == "ct" or layer == CT) else colormap)
+        rgb = color(x, valid, "gray" if (mode == "ct" or layer == CT) else colormap)
     rec = {"surface": sid, "layer": CT if mode == "ct" else layer, "window": used, "order": order,
            "mode": mode, "source": atlas.url(rel), "box_y0_y1_x0_x1": list(box) if box else None,
            "stretch": {"low_percentile": lo, "high_percentile": hi, "low_value": round(p_lo, 4),
@@ -402,7 +403,7 @@ def layer_picture(atlas, sid, layer=ENSEMBLE, window="c+0", order="forward", box
 def get_map(atlas, surface_id, layer=ENSEMBLE, window="c+0", order="", x=-1, y=-1, size=0, colormap="gray",
             mode="map", max_side=DISPLAY):
     """One map of one surface as a PNG: the ensemble, one model's map (by model id) or the CT. With size > 0, a
-    full-resolution size x size crop centred on (x, y) in canvas pixels; otherwise the whole surface shrunk to
+    full-resolution size x size crop centered on (x, y) in canvas pixels; otherwise the whole surface shrunk to
     max_side. order is forward (as stored) or reverse; empty uses the face check's majority. Returns the picture and
     a record (the source file's URL, the crop, the contrast stretch)."""
     m = atlas.meta(surface_id)
@@ -423,7 +424,7 @@ def _pearson(a, b, valid):
 
 
 def compare_picture(atlas, sid, box, order="forward", window="c+0", colormap="gray", tile=320):
-    """Every model, the ensemble and the CT on the same box, each stretched on its own, in one labelled grid; and
+    """Every model, the ensemble and the CT on the same box, each stretched on its own, in one labeled grid; and
     per-layer numbers in the box."""
     m = atlas.meta(sid)
     valid = atlas.valid(sid)[box[0]:box[1], box[2]:box[3]]
@@ -436,7 +437,7 @@ def compare_picture(atlas, sid, box, order="forward", window="c+0", colormap="gr
         rel, used = layer_rel(atlas, sid, lid, window, order)
         a = atlas.gray(rel)[box[0]:box[1], box[2]:box[3]]
         x, _ = stretch(a, valid, 1.0 if lid != CT else 0.5, 99.5)
-        img = Image.fromarray(colour(x, valid, "gray" if lid == CT else colormap))
+        img = Image.fromarray(color(x, valid, "gray" if lid == CT else colormap))
         alive = True if mid is None else bool(m["models"][mid].get("alive"))
         sub = ("" if mid is None or used in (None, window) else f"{used} only") + ("" if alive else " flat here")
         tiles.append((img, name, sub.strip()))
@@ -453,7 +454,7 @@ def compare_picture(atlas, sid, box, order="forward", window="c+0", colormap="gr
     f, fs = font(19), font(14)
     for i, (img, name, sub) in enumerate(tiles):
         cx, cy = pad + (i % cols) * (tile + pad), pad + (i // cols) * (tile + head + pad)
-        c = tuple(_hex(LAYER_COLOUR.get(ids[i], "#5b4bd6")))
+        c = tuple(_hex(LAYER_COLOR.get(ids[i], "#5b4bd6")))
         d.rounded_rectangle([cx, cy + 4, cx + tile, cy + head - 4], radius=8, fill=c)
         d.text((cx + 10, cy + 10), name, fill=(255, 255, 255), font=f)
         if sub:
@@ -464,7 +465,7 @@ def compare_picture(atlas, sid, box, order="forward", window="c+0", colormap="gr
 
 
 def compare_models(atlas, surface_id, x=-1, y=-1, size=512, order="", window="c+0", colormap="gray"):
-    """Every model, the ensemble and the CT on the same size x size box of one surface (centred on x, y in canvas
+    """Every model, the ensemble and the CT on the same size x size box of one surface (centered on x, y in canvas
     pixels; the middle of the surface when x or y is below 0), in one grid at full resolution, with each layer's
     mean, median and 99th percentile in the box and its correlation with the ensemble there."""
     m = atlas.meta(surface_id)
@@ -480,7 +481,7 @@ def compare_models(atlas, surface_id, x=-1, y=-1, size=512, order="", window="c+
     return save_png(img, f"{surface_id}-compare"), rec
 
 
-def mark(img, box, scale, colour_=(246, 165, 59)):
+def mark(img, box, scale, color_=(246, 165, 59)):
     """Draw the loupe's box on a whole-surface picture shrunk by scale."""
     if box is None:
         return img
@@ -488,5 +489,5 @@ def mark(img, box, scale, colour_=(246, 165, 59)):
     y0, y1, x0, x1 = (round(v * scale) for v in box)
     d = ImageDraw.Draw(img)
     d.rectangle([x0 - 3, y0 - 3, x1 + 3, y1 + 3], outline=(10, 10, 20), width=5)
-    d.rectangle([x0 - 2, y0 - 2, x1 + 2, y1 + 2], outline=colour_, width=3)
+    d.rectangle([x0 - 2, y0 - 2, x1 + 2, y1 + 2], outline=color_, width=3)
     return img

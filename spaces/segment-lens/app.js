@@ -175,21 +175,23 @@ function kitCommand(row) {
 function setCard(r) {
   $('c-kicker').textContent = `${r.scroll}${r.volume ? ' · VOLUME ' + r.volume : ''}${r.voxel_um ? ' · ' + r.voxel_um + ' µm' : ''}`;
   $('c-title').textContent = r.segment + (r.kind !== 'mesh' ? ' (' + r.mesh + ')' : '');
-  const items = r.error ? [['not measured', r.error]] : [
+  // one line per number, so the card fits beside the list without a scroll bar of its own
+  const dd = (v, cls = '') => `<dd${cls ? ` class="${cls}"` : ''}>${esc(String(v))}</dd>`;
+  const flag = (k, mm2, nodes) => `<dt>${k}</dt>${dd(fmt(mm2), 'v')}${dd((nodes || 0).toLocaleString(), 'u')}`;
+  $('c-nums').innerHTML = r.error ? `<dt>not measured</dt>${dd(r.error, 'wrap')}` : [
     ['area', r.area_cm2 == null ? '-' : fmt(r.area_cm2) + ' cm²'],
     ['grid', `${r.grid_w} x ${r.grid_h}`],
     ['filled', pct(r.filled_share)],
-    ['edges within 10% of the step', pct(r.within_10pct)],
+    ['edges within 10%', pct(r.within_10pct)],
     ['median edge / step', fmt(r.edge_p50, 3)],
-    ['grid angle (median)', fmt(r.angle_p50, 1) + '°'],
-    ['holes', `${fmt(r.holes_mm2)} mm² (${(r.holes_nodes || 0).toLocaleString()} nodes)`],
-    ['folds', `${fmt(r.folds_mm2)} mm² (${(r.folds_nodes || 0).toLocaleString()} nodes)`],
-    ['stretched', `${fmt(r.stretched_mm2)} mm² (${(r.stretched_nodes || 0).toLocaleString()} nodes)`],
+    ['median grid angle', fmt(r.angle_p50, 1) + '°'],
     ['area vs meta.json', r.meta_area_ratio == null ? '-' : fmt(r.meta_area_ratio, 4)],
-  ];
-  $('c-nums').innerHTML = items.map(([k, v]) => `<dt>${k}</dt><dd>${esc(String(v))}</dd>`).join('');
+  ].map(([k, v]) => `<dt>${k}</dt>${dd(v)}`).join('') +
+    '<dt class="hd">flagged</dt><dd class="v hd">mm²</dd><dd class="u hd">nodes</dd>' +
+    flag('holes', r.holes_mm2, r.holes_nodes) + flag('folds', r.folds_mm2, r.folds_nodes) +
+    flag('stretched', r.stretched_mm2, r.stretched_nodes);
   $('a-bucket').href = r.url + '/meta.json';
-  $('a-bucket').textContent = 'meta.json on the bucket';
+  $('a-bucket').textContent = 'open meta.json';
 }
 
 function esc(s) {
@@ -256,7 +258,24 @@ $('b-copy').addEventListener('click', async () => {
   try { await navigator.clipboard.writeText(kitCommand(current)); toast('kit command copied'); }
   catch { toast(kitCommand(current)); }
 });
-$('b-about').addEventListener('click', () => $('about').showModal());
+$('b-about').addEventListener('click', () => { $('about').showModal(); cover(); });
+$('about').addEventListener('close', cover);
+
+// One scroll bar at a time (one-screen viewer): the segment list scrolls, unless the table or the guide is open,
+// which then scrolls instead. The panels under the table step aside; under the guide the list stops scrolling, and
+// so does the table when the guide is opened over it.
+function cover() {
+  const table = !$('table-view').hidden, guide = $('about').open;
+  $('picker').hidden = $('card').hidden = table;
+  document.documentElement.classList.toggle('covered', table || guide);
+  document.documentElement.classList.toggle('guide', guide);
+}
+// On a phone the picker sits above the card and takes the height the card leaves (style.css, --card-h).
+if (window.ResizeObserver) {
+  new ResizeObserver(() => document.documentElement.style.setProperty('--card-h', $('card').offsetHeight + 'px'))
+    .observe($('card'));
+}
+if (window.matchMedia && matchMedia('(max-width: 760px), (max-height: 560px)').matches) $('c-more').open = false;
 
 // ---------------------------------------------------------------- table
 
@@ -296,6 +315,7 @@ $('tbl').addEventListener('click', (e) => {
 function setMode(m) {
   document.querySelectorAll('.chip[data-mode]').forEach((b) => b.classList.toggle('on', b.dataset.mode === m));
   $('table-view').hidden = m !== 'table';
+  cover();
   if (m === 'table') fillTable();
 }
 document.querySelectorAll('.chip[data-mode]').forEach((b) => b.addEventListener('click', () => setMode(b.dataset.mode)));

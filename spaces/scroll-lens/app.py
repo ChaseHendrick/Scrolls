@@ -1830,6 +1830,9 @@ HEAD = """
 <meta property="og:description" content="Look inside a Herculaneum scroll with the Vesuvius Challenge's 3D models,
 and click to search. Model output, not a reading.">
 """
+# One page scroll bar: fits every same-origin iframe to its content so only the page scrolls (kit spaceconnect render).
+ONESCROLL_HTML = HERE / "onescroll.html"
+HEAD = HEAD + (ONESCROLL_HTML.read_text() if ONESCROLL_HTML.exists() else "")
 
 
 def close_url_fetching():

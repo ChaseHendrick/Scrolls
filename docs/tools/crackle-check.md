@@ -80,7 +80,7 @@ The Space's API endpoints, each also an MCP tool (read from `https://sharpmeow-c
 | `/check_example` | `sample_id` (`0841-w00`), `reader` (`readerv3`) | Answers a public example from saved maps |
 | `/check_segment` | `segment` (`SCROLL/segments/SEGMENT`), `volume` (empty: the first), `x`, `y` (the spot, in the surface volume's pixels), `size` (384), `reader` (`readerv3`) | Reads that region's layers from the open data and checks them |
 | `/list_volumes` | `segment` | The segment's surface volumes |
-| `/list_readers` | none | The readers, their licences, sources and SHA-256 pins, the default, the examples, the tool version and the rule |
+| `/list_readers` | none | The readers, their licenses, sources and SHA-256 pins, the default, the examples, the tool version and the rule |
 
 Readers: `readerv3` (Reader V3, Domenico Russo, MIT, the default), `d9v2` (TAUIL-Abd-Elilah, MIT, a fine-tune of the Vesuvius Challenge's `ink_9um`), or both averaged.
 

@@ -39,6 +39,7 @@ CT_KEEP = int(8e9)                  # CT chunks kept between runs; the oldest go
 GAME = HERE / "assets" / "game.npz"
 GUIDE = HERE / "guide" / "index.html"
 CONNECT_HTML = HERE / "connect.html"
+ONESCROLL = HERE / "onescroll.html"       # one page scroll bar: frames fit their content (kit spaceconnect render)
 PATCHES = [("Quick: 60 patches, about 2 minutes", 60), ("Thorough: 150 patches, about 5 minutes", 150),
            ("Whole segment: up to 400 patches, about 15 minutes", 400)]
 CLAUDE_PATCHES, CLAUDE_CHECK_N = 40, 10
@@ -341,8 +342,9 @@ def guide_html():
     if not GUIDE.is_file():
         return "<p>The welcome page is missing from this copy.</p>"
     page = GUIDE.read_text()
-    # its pictures point at Gradio's file route (a <base> cannot do it); in-page anchors scroll inside the frame,
-    # ?tab= links switch the Space's tabs, other links open a new tab (as Lasagna Fields does)
+    # its pictures point at Gradio's file route (a <base> cannot do it); in-page anchors scroll the page to their
+    # section (the frame fits its content, onescroll.html), ?tab= links switch the Space's tabs, other links open a
+    # new tab (as Lasagna Fields does)
     page = page.replace("'assets/", "'/gradio_api/file=assets/").replace('"assets/', '"/gradio_api/file=assets/')
     fix = ('<script>document.addEventListener("click",function(e){var a=e.target.closest&&e.target.closest("a");'
            'if(!a)return;var h=a.getAttribute("href")||"";if(h.charAt(0)==="#"){e.preventDefault();'
@@ -438,7 +440,7 @@ class Game:
         return FC.controls(on, rng)[kind]
 
     def judge_pair(self, a, b, ref):
-        """P(the free judge picks a), both scaled by the on render's grey scale as in the checker."""
+        """P(the free judge picks a), both scaled by the on render's gray scale as in the checker."""
         if self.judge is None:
             self.judge = FC.LocalJudge(str(WEIGHTS))
         p, _ = self.judge.prefer([FC.to_input(a, ref)], [FC.to_input(b, ref)])
@@ -513,7 +515,7 @@ texture: it never reads or finds text.
 <h3 id="read">2. Read the result</h3>
 
 - **The map** is the segment as traced, flattened on its own mesh grid. Yellow and green: clear fibers. Purple: weak.
-  Grey: no sign of fibers. Slate: traced but not scored (holes nearby, masked CT, or not sampled). Black: no surface.
+  Gray: no sign of fibers. Slate: traced but not scored (holes nearby, masked CT, or not sampled). Black: no surface.
 - **Fibers show on** is the share of patches with evidence 0.75 or more. **Median evidence** is the typical patch.
 - **Self-check**: on 40 of your patches, the judge must prefer the real render over a noised, a blurred and a
   scrambled copy at least 80% of the time. If it fails, do not trust that run.
@@ -643,9 +645,9 @@ CSS = """
 .fc-untested { font-size:13.5px; margin-top:8px; } .fc-untested summary { cursor:pointer; }
 .fc-legend { font-size:12.5px; color: var(--body-text-color-subdued); }
 .fc-legend i { display:inline-block; width:11px; height:11px; border-radius:3px; margin:0 4px -1px 10px; }
-.fc-report { width:100%; height:80vh; border:0; border-radius:12px; }
-.fc-guide iframe { width:100%; height:calc(100vh - 150px); min-height:640px; border:0; border-radius:12px;
-  background:#f6f1e7; }
+/* no fixed heights on the frames: onescroll.html fits each to its content, so only the page scrolls */
+.fc-report { width:100%; border:0; border-radius:12px; }
+.fc-guide iframe { width:100%; border:0; border-radius:12px; background:#f6f1e7; }
 .fc-howto img { border-radius:10px; border:1px solid var(--border-color-primary); max-width:min(100%, 820px);
   display:block; margin:10px 0 4px; }
 .fc-howto figure { margin:10px 0 18px; } .fc-howto figcaption { font-size:13px; color: var(--body-text-color-subdued); }
@@ -666,12 +668,17 @@ CSS = """
 .fc-credit { text-align:center; font-size:13px; color: var(--body-text-color-subdued); padding:18px 0 6px; }
 .fc-credit a { color: var(--fc-accent) !important; }
 #fc-dl .empty { min-height: 64px !important; height: 64px !important; }
+/* the twelve patches grow the gallery instead of scrolling inside it (Gradio's grid-wrap always has a scroll bar) */
+#fc-tiles .grid-wrap { height:auto !important; min-height:0 !important; max-height:none !important;
+  overflow-y:visible !important; }
+#fc-tiles .grid-container { grid-template-columns:repeat(6,minmax(0,1fr)) !important; grid-template-rows:none !important;
+  grid-auto-rows:auto !important; }
 @media (max-width: 640px) {
   .fc-head h1 { font-size:24px; }
   .fc-head span { display:none; }
   #fc-tabs .tab-container button { padding:6px 6px !important; font-size:12.5px !important; }
-  .fc-guide iframe { height:calc(100vh - 120px); min-height:520px; }
   .fc-strip { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  #fc-tiles .grid-container { grid-template-columns:repeat(3,minmax(0,1fr)) !important; }
 }
 """
 
@@ -688,6 +695,7 @@ model or by Claude with your own key. Model output, not a reading.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,650&display=swap" rel="stylesheet">
 """
+HEAD += ONESCROLL.read_text() if ONESCROLL.is_file() else ""
 
 TAB_JS = """
 () => {
@@ -699,7 +707,13 @@ TAB_JS = """
     const btn = btns.find((b) => b.getAttribute('role') === 'tab') || btns[btns.length - 1];
     if (btn) btn.click();
   };
-  window.addEventListener('message', (e) => { if (e.data && e.data.fcTab) pick(e.data.fcTab); });
+  window.addEventListener('message', (e) => {
+    if (!(e.data && e.data.fcTab)) return;
+    pick(e.data.fcTab);
+    // the welcome page grows the page (one scroll bar), so a link from it lands at the top of the new tab
+    const bar = document.getElementById('fc-tabs');
+    if (bar && bar.getBoundingClientRect().top < 0) bar.scrollIntoView({block: 'start'});
+  });
   const q = new URLSearchParams(window.location.search).get('tab');
   if (q) setTimeout(() => pick(q), 300);
 }
@@ -854,13 +868,13 @@ def build_demo():
                         summary = gr.HTML("<p class='fc-meta'>Your map and summary appear here. 60 patches take "
                                           "about two minutes; try <b>Fiber or not?</b> while you wait.</p>")
                         tiles = gr.Gallery(label="Clearest and weakest patches (the renders the judge saw)",
-                                           columns=6, height=300, object_fit="contain", allow_preview=True)
+                                           columns=6, object_fit="contain", allow_preview=True, elem_id="fc-tiles")
                         dl = gr.File(label="Download: fiber.json, fiber.tif, fiber_map.png, report.html, tiles/",
-                                     height=88, elem_id="fc-dl")
+                                     elem_id="fc-dl")
                         with gr.Accordion("Full report (report.html)", open=False):
                             report = gr.HTML()
                         with gr.Accordion("Record (fiber.json)", open=False):
-                            record = gr.JSON()
+                            record = gr.JSON(max_height=None)       # grows with the record: the page scrolls
                         with gr.Accordion("About the judges", open=False):
                             gr.Markdown(ABOUT_JUDGE.format(sha=WEIGHTS_SHA256[:16] + "…", cp=CLAUDE_PATCHES))
             with gr.Tab("Fiber or not?", id="game") as game_tab:
@@ -886,7 +900,7 @@ def build_demo():
                 cgo = gr.Button("Compare", variant="primary")
                 cside = gr.HTML()
                 with gr.Accordion("Record (JSON)", open=False):
-                    cout = gr.JSON(label="Side by side")
+                    cout = gr.JSON(label="Side by side", max_height=None)
             with gr.Tab("How-to guides", id="howto"):
                 gr.Markdown(with_figures(HOW_TO), elem_classes="fc-howto")
             with gr.Tab("Agents and API", id="agents"):
@@ -911,19 +925,22 @@ def build_demo():
         segment.input(on_segment, [sample, segment], volume, **hidden)
         judge.change(on_judge, judge, claude_box, **hidden)
         outs = [pic, summary, tiles, dl, report, record]
-        go.click(guard(on_check), [sample, segment, volume, patches, judge, key, max_usd], outs,
-                 concurrency_id="check", concurrency_limit=2, **hidden)
-        go_up.click(guard(on_upload), [upload, up_vol, patches, judge, key, max_usd], outs,
-                    concurrency_id="check", concurrency_limit=2, **hidden)
-        nxt.click(guard(new_pair), st, [img_a, img_b, reveal, score_md, st], **hidden)
+        # progress on the visible outputs only: in the folded report and record it would overflow their boxes
+        run = dict(concurrency_id="check", concurrency_limit=2, show_progress_on=[pic, summary, tiles, dl], **hidden)
+        go.click(guard(on_check), [sample, segment, volume, patches, judge, key, max_usd], outs, **run)
+        go_up.click(guard(on_upload), [upload, up_vol, patches, judge, key, max_usd], outs, **run)
+        # the progress shows on the two pictures: in the one-line score and the reveal it would not fit, and they
+        # would scroll inside the page while the judge works
+        pair_progress = dict(show_progress_on=[img_a, img_b], **hidden)
+        nxt.click(guard(new_pair), st, [img_a, img_b, reveal, score_md, st], **pair_progress)
 
         def first_pair(s):
             if (s or {}).get("i") is not None or not game.ok:
                 return gr.update(), gr.update(), gr.update(), gr.update(), s
             return new_pair(s)
-        game_tab.select(guard(first_pair), st, [img_a, img_b, reveal, score_md, st], **hidden)
-        pick_a.click(lambda s: answer("A", s), st, [reveal, score_md, st], **hidden)
-        pick_b.click(lambda s: answer("B", s), st, [reveal, score_md, st], **hidden)
+        game_tab.select(guard(first_pair), st, [img_a, img_b, reveal, score_md, st], **pair_progress)
+        pick_a.click(lambda s: answer("A", s), st, [reveal, score_md, st], show_progress="hidden", **hidden)
+        pick_b.click(lambda s: answer("B", s), st, [reveal, score_md, st], show_progress="hidden", **hidden)
         def on_compare(a, b):
             res = compare_results(a, b)
             return compare_html(res), res

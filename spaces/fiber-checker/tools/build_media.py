@@ -33,7 +33,7 @@ HERO = [6, 97, 30, 61, 101, 0, 42, 87, 9, 113, 24, 64, 8, 102, 45, 83, 13, 100, 
 PAIRS = [6, 45, 61]
 
 
-def grey(a, size=None):
+def gray(a, size=None):
     lo, hi = np.percentile(a, [1, 99])
     im = Image.fromarray((np.clip((a - lo) / max(hi - lo, 1e-6), 0, 1) * 255).astype(np.uint8))
     return im.resize((size, size), Image.BICUBIC) if size else im
@@ -90,14 +90,14 @@ def main():
     cols, rows, t = 8, 3, 200
     hero = Image.new("L", (cols * t, rows * t))
     for k, i in enumerate(HERO[:cols * rows]):
-        hero.paste(grey(on[i], t), ((k % cols) * t, (k // cols) * t))
+        hero.paste(gray(on[i], t), ((k % cols) * t, (k // cols) * t))
     hero.save(ASSETS / "hero.webp", quality=82)
     meta["pictures"]["hero.webp"] = [f"{src[i]} (judge {p[i]:.2f})" for i in HERO[:cols * rows]]
     for n, i in enumerate(PAIRS):
         x = on[i]
         sh = tile_shuffle(x, 14, f"page:{i}") * x.std() + x.mean()
         for name, img in (("on", x), ("scramble", FC.phase_scramble(x, 7)), ("shuffle", sh), ("off", off[i])):
-            grey(img, 320).save(ASSETS / f"pair-{n}-{name}.webp", quality=88)
+            gray(img, 320).save(ASSETS / f"pair-{n}-{name}.webp", quality=88)
         meta["pictures"][f"pair-{n}-*.webp"] = src[i]
     if a.run:
         shutil.copy2(a.run / "fiber_map.png", ASSETS / "map.png")

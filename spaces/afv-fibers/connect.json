@@ -3,11 +3,11 @@
  "space": "SharpMeow/afv-fibers",
  "title": "AFV Fibers",
  "checked": "2026-10-27",
- "intro": "Six whole-scan fibre sets as public Hugging Face datasets, each a few .afv files (read-only SQLite) plus small per-cell tiles, logged out; the scans they came from are open data, read live. The page is also an API and an MCP server that returns the fibres in any box.",
+ "intro": "Six whole-scan fiber sets as public Hugging Face datasets, each a few .afv files (read-only SQLite) plus small per-cell tiles, logged out; the scans they came from are open data, read live. The page is also an API and an MCP server that returns the fibers in any box.",
  "sources": [
   {
-   "id": "fibres",
-   "title": "Fibres of one 1024-voxel cell of PHerc0139 (178 MB; the whole-scan files PHerc0139_afv_v2.afv and PHerc0139_afv_v2_1mm.afv, and the other five scans, have the same format)",
+   "id": "fibers",
+   "title": "Fibers of one 1024-voxel cell of PHerc0139 (178 MB; the whole-scan files PHerc0139_afv_v2.afv and PHerc0139_afv_v2_1mm.afv, and the other five scans, have the same format)",
    "kind": "hf-dataset",
    "url": "https://huggingface.co/datasets/SharpMeow/pherc0139-afv-fibers",
    "repo": "SharpMeow/pherc0139-afv-fibers",
@@ -24,12 +24,12 @@
    "repo": "SharpMeow/pherc0139-afv-fibers",
    "file": "tiles/index.json",
    "license": "CC BY-NC 4.0 (derived from Vesuvius Challenge open data)",
-   "note": "Each entry gives the cell's box_zyx_l0 (level-0 voxels) and fibre count; tiles/<id>.afv holds every fibre with a block in that cell, whole, with its whole-scan id.",
+   "note": "Each entry gives the cell's box_zyx_l0 (level-0 voxels) and fiber count; tiles/<id>.afv holds every fiber with a block in that cell, whole, with its whole-scan id.",
    "size": "65.7 GB in all"
   },
   {
    "id": "ct",
-   "title": "X-ray CT those fibres came from, PHerc0139 9.362 um",
+   "title": "X-ray CT those fibers came from, PHerc0139 9.362 um",
    "kind": "ome-zarr",
    "url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0139/volumes/20250728140407-9.362um-1.2m-113keV-masked.zarr",
    "zarr_format": 2,
@@ -42,12 +42,12 @@
     ]
    },
    "license": "CC BY-NC 4.0 (Vesuvius Challenge open data)",
-   "note": "Read live from the open-data bucket, never copied here. The fibres' level-0 voxels are this scan's level 0.",
+   "note": "Read live from the open-data bucket, never copied here. The fibers' level-0 voxels are this scan's level 0.",
    "browse": "https://scrollprize.org/data_browser/PHerc0139"
   },
   {
    "id": "api",
-   "title": "Fibres in any box, from code or an agent",
+   "title": "Fibers in any box, from code or an agent",
    "kind": "gradio-api",
    "url": "https://huggingface.co/spaces/SharpMeow/afv-fibers",
    "space": "SharpMeow/afv-fibers",
@@ -63,8 +63,8 @@
      "args": {}
     }
    ],
-   "license": "Code Apache 2.0; fibres CC BY-NC 4.0",
-   "note": "fibres_box(scan, z, y, x, half) lists every fibre touching a box; look(...) adds the CT picture, a 3D view and the box as .afv. Model output, not a reading."
+   "license": "Code Apache 2.0; fibers CC BY-NC 4.0",
+   "note": "fibers_box(scan, z, y, x, half) lists every fiber touching a box; look(...) adds the CT picture, a 3D view and the box as .afv. Model output, not a reading."
   }
  ]
 }

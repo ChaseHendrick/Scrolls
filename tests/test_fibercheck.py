@@ -82,14 +82,14 @@ class FibercheckTest(unittest.TestCase):
         self.assertAlmostEqual(float(b.std()), float(a.std()), places=4)
         self.assertGreater(np.abs(a - b).mean(), 0.1)
 
-    def test_colour_marks_holes_and_no_fiber(self):
+    def test_color_marks_holes_and_no_fiber(self):
         m = np.array([[np.nan, 0.3, 0.75, 1.0]])
-        rgb = FC.colour(m)
+        rgb = FC.color(m)
         self.assertEqual(tuple(rgb[0, 0]), (24, 24, 28))
         self.assertEqual(tuple(rgb[0, 1]), (110, 110, 110))
         self.assertEqual(tuple(rgb[0, 3]), (253, 231, 37))
 
-    def test_jump_hint_needs_bright_neighbours(self):
+    def test_jump_hint_needs_bright_neighbors(self):
         ps = [{"r": 0, "c": 0, "evidence": 0.9}, {"r": 0, "c": 28, "evidence": 0.3},
               {"r": 0, "c": 56, "evidence": 0.95}, {"r": 28, "c": 28, "evidence": 0.6}]
         self.assertEqual(FC.jump_hints(ps, 28), [])

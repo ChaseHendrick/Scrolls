@@ -245,7 +245,7 @@ No local folder is recorded: images and the records file are named by file name 
 | `error: WHERE: y, letter_px, x0 and x1 must be numbers` | A value that is not a number | Give numbers |
 | `error: WHERE: letter_px H: give the letter height in image pixels, over 0` | `letter_px` 0, negative or not finite (or `y` not finite) | Give the letter height |
 | `error: WHERE: crop ...: give four whole numbers, Y0 Y1 X0 X1` | A crop that is not four whole numbers | Fix the crop |
-| `error: WHERE: polarity 'grey': give bright (ink brighter than the ground, as in ink maps) or dark (dark ink on a light ground, as in photographs)` | Another polarity | Give `bright` or `dark` |
+| `error: WHERE: polarity 'gray': give bright (ink brighter than the ground, as in ink maps) or dark (dark ink on a light ground, as in photographs)` | Another polarity | Give `bright` or `dark` |
 | `error: WHERE: text has characters the reader does not write: 'K' (LATIN CAPITAL LETTER K; a Latin letter: type the Greek one), '.' (FULL STOP). Write Greek capitals (ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡϹΤΥΦΧΨΩ), and '?' for a letter you cannot see or restore` | Punctuation, brackets, a Latin look-alike, the reader's own `·`, or another non-Greek character | Write the Greek letter, or `?` |
 | `error: WHERE: text has no letters (only '?' or nothing): nothing to learn from` | A text of only `?` | Leave the line out, or write its letters |
 | `error: WHERE: PATH: no such file or folder (a relative path is relative to the records file's folder, DIR)` | The image does not exist | Fix the path, relative to the records file's folder |

@@ -12,7 +12,7 @@
 | Code | `kit/hfrows.py`, `kit/cli.py` (`cmd_run`) |
 | Tests | `tests/test_hfrows.py` |
 | Needs | Python 3.10 or newer, standard library only. A Hugging Face token with billing read access ("Billing: read billing usage" on a fine-grained token) in `HF_TOKEN`, and a ledger CSV that already has its header row |
-| Runs on | Any machine; about 3 s for 578 labelled Jobs (measured 2026-10-27 in a Claude cloud container, two Hub requests plus one per page of 100 Jobs) |
+| Runs on | Any machine; about 3 s for 578 labeled Jobs (measured 2026-10-27 in a Claude cloud container, two Hub requests plus one per page of 100 Jobs) |
 | Network | huggingface.co: `/api/settings/billing/usage/jobs` (the bill), `/api/whoami-v2` and `/api/jobs/NAMESPACE` (only with `--label`). Read only |
 | Writes | The ledger CSV named by `--ledger` (default `docs/compute/hf-jobs-costs.csv`), replaced atomically, through the same writer and lock as [modal-row](modal-row.md); nothing with `--dry-run` |
 | Go-ahead | Not needed: it reads a bill and edits a local file. A row becomes public only when the change is merged into public Scrolls |
@@ -171,7 +171,7 @@ One line per run, `LEDGER: added N row(s) costing X USD; M already there` (`woul
 
 ## Cost and time
 
-About 3 s and no compute bill (measured 2026-10-27, 578 labelled Jobs, Claude cloud container). Reading the bill is free.
+About 3 s and no compute bill (measured 2026-10-27, 578 labeled Jobs, Claude cloud container). Reading the bill is free.
 
 ## For agents
 

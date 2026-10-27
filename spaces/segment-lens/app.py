@@ -33,7 +33,7 @@ LENS_CACHE = 32
 SORTS = ("area_cm2", "filled_share", "within_10pct", "holes_mm2", "folds_mm2", "stretched_mm2", "grid_h", "segment")
 # the page's colors (app.js COLORS), as 0-255 RGB: plain, hole, fold, stretched
 COLORS = {"base": (204, 214, 219), "hole": (89, 166, 255), "fold": (255, 92, 92), "str": (255, 166, 51)}
-WEB_FILES = ("index.html", "app.js", "style.css", "connect.html", "connect.json", "CONNECT.md")
+WEB_FILES = ("index.html", "app.js", "style.css", "connect.html", "connect.json", "CONNECT.md", "onescroll.html")
 SUMMARY_KEYS = ("id", "scroll", "segment", "mesh", "kind", "volume", "voxel_um", "area_cm2", "filled_share",
                 "within_10pct", "holes_mm2", "folds_mm2", "stretched_mm2", "clean", "prize_lists")
 
@@ -288,7 +288,7 @@ def get_segment(segment_id: str):
 
 def segment_picture(segment_id: str, view: str = "3d", azimuth: float = 30.0, elevation: float = 20.0):
     """A picture of one mesh's preview with its flags painted on, as on the page: holes blue, folds red,
-    stretched cells orange, plain grey. Geometry only: no CT, no ink, and a clean surface is not proof the trace
+    stretched cells orange, plain gray. Geometry only: no CT, no ink, and a clean surface is not proof the trace
     stays on one sheet. Only meshes with a preview (scrolls on no prize list) can be drawn.
 
     Args:

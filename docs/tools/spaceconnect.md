@@ -1,6 +1,6 @@
 # spaceconnect: the Connect your tool panel on every Space
 
-Writes and checks the Connect your tool panel each of Chase's Hugging Face Spaces carries: the data's URLs and ready snippets for Python, villa's vesuvius package, VC3D, neuroglancer, curl, gradio_client and MCP.
+Writes and checks the Connect your tool panel each of Chase's Hugging Face Spaces carries: the data's URLs and ready snippets for Python, villa's vesuvius package, VC3D, neuroglancer, curl, gradio_client and MCP. It also keeps every Space to one page scroll bar and to American English.
 
 | Field | Value |
 | --- | --- |
@@ -8,22 +8,27 @@ Writes and checks the Connect your tool panel each of Chase's Hugging Face Space
 | Status | Current |
 | Kind | kit command |
 | Area | Viewers and apps |
-| Run | `python -m kit spaceconnect render`, `python -m kit spaceconnect check`, `python -m kit spaceconnect run`, `python -m kit spaceconnect new` |
+| Run | `python -m kit spaceconnect render`, `python -m kit spaceconnect check`, `python -m kit spaceconnect run`, `python -m kit spaceconnect new`, `python -m kit spaceconnect scroll`, `python -m kit spaceconnect spelling` |
 | Code | `kit/spaceconnect.py`, `kit/cli.py` (`main`) |
 | Tests | `tests/test_spaceconnect.py` |
-| Needs | Python 3.10 or newer, standard library only. `run` needs a Python with zarr 3, fsspec, aiohttp, huggingface_hub, datasets, pandas, numpy, tifffile and gradio_client, and a second one with `vesuvius[volume-only]` (villa's package pins zarr 2) |
+| Needs | Python 3.10 or newer, standard library only. `scroll` needs Python playwright and a Chromium (preinstalled in Claude cloud containers; `pip install playwright`). `run` needs a Python with zarr 3, fsspec, aiohttp, huggingface_hub, datasets, pandas, numpy, tifffile and gradio_client, and a second one with `vesuvius[volume-only]` (villa's package pins zarr 2) |
 | Runs on | Any CPU. `render` and `check` take well under a second; `run` took a few minutes for 40 snippets on a 4-core cloud container (2026-10-24), mostly network and one Crackle Check call that runs a reader (141 s) |
-| Network | `render`, `check` and `new`: none. `check --live` fetches the first byte of every listed URL. `run` reads the open-data bucket (`vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com`), `huggingface.co` and the running Spaces, logged out |
-| Writes | `render`: `connect.html` and `CONNECT.md` next to each `connect.json`, and the panel between the markers of that folder's `index.html` when it has them. `new`: one `connect.json`. `run`: a temporary folder for the snippets' downloads |
+| Network | `render`, `check`, `spelling` and `new`: none. `scroll` opens each running Space's page (huggingface.co, or with `--direct` the Space's own `*.hf.space` host, where it sends `HF_TOKEN` so a private Space opens; the token goes to no other host). `check --live` fetches the first byte of every listed URL. `run` reads the open-data bucket (`vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com`), `huggingface.co` and the running Spaces, logged out |
+| Writes | `render`: `connect.html`, `CONNECT.md` and `onescroll.html` next to each `connect.json`, and the panel and the one-scroll fragment between their markers in that folder's `index.html` when it has them. `scroll --shots DIR`: one PNG per view. `new`: one `connect.json`. `run`: a temporary folder for the snippets' downloads |
 | Go-ahead | Not needed to render or check. Deploying a Space follows hard rule 8 |
 | Released | Public `main` (this PR) since 2026-10-24 |
-| Checked | 2026-10-24 against commit `2ce4d50` |
+| Checked | 2026-10-27 against commit `aa259e8` |
 
 ## What it does
 
 Chase asked on 24 October 2026 for every one of his Spaces, now and future, to make its data easy to use from villa, villa's tools and other people's tools ("gotta make it easy for everyone"). Each Space keeps a short `connect.json` naming its data sources: an OME-Zarr scan, a public dataset, a tifxyz surface, an open-data folder, a Gradio API or the page's own API. This tool turns that list into one panel, `connect.html`, that a static page splices in and a Gradio app shows with `gr.HTML`, and the same text as `CONNECT.md` for the Space's file browser and for agents.
 
 The panel gives each source its URL with a Copy button and a snippet per tool: Python with zarr, villa's `vesuvius` package, VC3D's File > Attach Remote Zarr, a neuroglancer link, curl, the Hugging Face hub, datasets and pandas, gradio_client, the Gradio call API and the MCP server. A snippet is marked "tested" only when that tool and kind ran against real public data (the `TESTED` table in the code, all on 2026-10-24); the VC3D step is marked "from villa's source" because it was read from villa's code at `6f20245`, not run. Snippets for a paused or undeployed Space say so.
+
+Two rules for every page come with it (user decisions, 27 October 2026).
+
+- **One page scroll bar.** A page scrolls as a whole; nothing inside it keeps a scroll bar of its own. Hugging Face shows a Gradio Space in an iframe it sizes to the app, so only the outer page scrolls, but a guide shown inside the app as an `iframe srcdoc` with a fixed height scrolled on its own, a second bar inside the first. `render` writes `onescroll.html`, a style and a short script that fit every same-origin iframe to its content and refit it when the content changes, so the page scrolls and the frame does not. A Gradio app adds it to its `head`; a static page has it spliced between `<!-- space-onescroll:start -->` and `<!-- space-onescroll:end -->` in its head. An iframe that must keep its own scroll (a map, a 3D view) opts out with `data-scroll="inner"`. One-screen viewers, whose page never scrolls (`"layout": "one-screen"` in `spaces/connect/spaces.json`: Umbilici, Unroll, Segment Lens), keep one scrolling list or panel but never two at once.
+- **American English.** Every word a Space shows, its README, its Connect panel, its code and its release entry use American spelling: fiber, color, center, gray, labeled, license, catalog. Names from other people (a repository, a dataset someone else named, a license's own title) keep theirs; `ALLOW_SPELLING` lists each with its reason. `spelling` finds British words, inside identifiers too (`FibreError`, `fibres_box`).
 
 It does not host data. Scans stay in the Vesuvius Challenge open data and are linked, never copied; `validate` refuses a source on huggingface.co that copies a pre-2025 EduceLab-Scrolls scan (Scrolls 1 to 4), whose terms forbid redistribution.
 
@@ -32,6 +37,7 @@ It does not host data. Scans stay in the Vesuvius Challenge open data and are li
 - A new Space: `python -m kit spaceconnect new spaces/NAME --space SharpMeow/NAME`, fill it in, add a row to `spaces/connect/spaces.json`, render, and show `connect.html` on the page.
 - A Space's data changed: edit its `connect.json` and render again.
 - Before a deploy: `check` (the tests run it) and, with the network, `run`.
+- After a deploy: `scroll --shots DIR` on the Space, to see one scroll bar in every view.
 
 Do not use it:
 
@@ -54,9 +60,15 @@ spaces/umbilici: up to date
 
 It worked when `check` exits 0. After editing a `connect.json`, `render` names the files it rewrote.
 
+```bash
+python -m kit spaceconnect scroll afv-fibers --shots /tmp/shots
+```
+
+prints one line per view, `ok` or the boxes that scroll inside the page, and exits 1 on any problem.
+
 ## Checks and controls
 
-`check` fails (exit 1) when a Space under `spaces/` has no row in `spaces/connect/spaces.json`, a spec is invalid, a rendered file is stale, or a page in this repository does not show the panel. `tests/test_spaceconnect.py` runs it, so a new Space without a panel fails the tests. The control for the snippets is `run`: every Python and shell snippet of every running source, executed logged out against the live data. On 2026-10-24 it printed `34 snippets, 0 failed`. A snippet that fails there must not keep its "tested" badge.
+`check` fails (exit 1) when a Space under `spaces/` has no row in `spaces/connect/spaces.json`, a spec is invalid, a rendered file is stale, a page in this repository does not show the panel or does not carry the one-scroll fragment, or a British spelling is left in `spaces/` or `docs/releases.json`. `tests/test_spaceconnect.py` runs it, so a new Space without a panel fails the tests. The control for the snippets is `run`: every Python and shell snippet of every running source, executed logged out against the live data. On 2026-10-24 it printed `34 snippets, 0 failed`. A snippet that fails there must not keep its "tested" badge. The control for one scroll bar is `scroll`, run on the live pages: it clicks through every tab and fails on any box that scrolls inside a page that scrolls, or on two scroll bars at once in a one-screen viewer. Its own control is the test page in `tests/test_spaceconnect.py`, where a frame marked `data-scroll="inner"` must still be found scrolling.
 
 Claim label: Sourced fact for the VC3D steps (villa `6f20245`, `MenuActionController.cpp`); the "tested" badges are our own runs of 2026-10-24.
 
@@ -94,6 +106,35 @@ usage: python -m kit spaceconnect run [-h] [--python PYTHON]
 | `--python PYTHON` | none | the Python for the snippets (default: the one running kit) |
 | `--vesuvius-python VESUVIUS_PYTHON` | none | a Python with vesuvius[volume-only] for villa's snippets (vesuvius needs zarr 2, the others zarr 3) |
 
+### `python -m kit spaceconnect scroll`
+
+```
+usage: python -m kit spaceconnect scroll [-h] [--direct] [--width WIDTH]
+                                         [--height HEIGHT] [--wait WAIT]
+                                         [--shots SHOTS] [--json]
+                                         [names ...]
+```
+
+| Option | Default | Meaning |
+| --- | --- | --- |
+| `names` | none | Space names (default: every Space in the registry that is running) |
+| `--direct` | off | open the Space's own host (private Spaces: sends HF_TOKEN to that host only) instead of its huggingface.co page |
+| `--width WIDTH` | `1440` | viewport width in CSS pixels |
+| `--height HEIGHT` | `900` | viewport height in CSS pixels |
+| `--wait WAIT` | `12.0` | seconds to let the page settle |
+| `--shots SHOTS` | none | save a screenshot of every view in this folder |
+| `--json` | off | one JSON object per Space instead of lines |
+
+### `python -m kit spaceconnect spelling`
+
+```
+usage: python -m kit spaceconnect spelling [-h] [paths ...]
+```
+
+| Option | Default | Meaning |
+| --- | --- | --- |
+| `paths` | none | files or folders to check (default: `spaces/` and `docs/releases.json`) |
+
 ### `python -m kit spaceconnect new`
 
 ```
@@ -115,10 +156,16 @@ usage: python -m kit spaceconnect new [-h] --space SPACE dir
 | `render_html(spec)` | str | KeyError on an invalid spec | The panel as one HTML fragment. |
 | `render_md(spec)` | str | KeyError on an invalid spec | The panel as Markdown. |
 | `load(d: Path)` | dict | OSError, ValueError | The folder's `connect.json`. |
-| `splice(page: str, fragment: str)` | str | ValueError without both markers | Put the fragment between the markers of a page; the page must have both. |
+| `splice(page: str, fragment: str, start=START, end=END)` | str | ValueError without both markers | Put the fragment between the markers of a page; the page must have both. A fragment that starts with the start marker replaces the markers too. |
 | `render(d: Path, write=True)` | list of str | ValueError on an invalid spec | Write DIR's outputs (or, with write=False, list the ones that are stale). |
 | `registry()` | list of dict | OSError | The rows of `spaces/connect/spaces.json`. |
 | `wired(d: Path, sdk: str)` | bool | Nothing | Does the page show the panel? Static pages splice it; Gradio apps read connect.html. |
+| `onescroll_html()` | str | Nothing | The head fragment every Space page carries: no iframe keeps a scroll bar of its own. |
+| `scroll_wired(d: Path, sdk: str)` | bool | Nothing | Does the page carry the one-scroll fragment? Static pages splice it; Gradio apps add onescroll.html to head. |
+| `scan_page(page)` | list of dict | Nothing | Every box scrolling on its own in an open playwright page, across its frames: {frame, box, shown, content}. |
+| `verdict(found: list[dict], one_screen=False)` | list of str | Nothing | Problems with one view: more than one scroll bar, or on a page that scrolls any box scrolling inside it. |
+| `scroll_check(names, direct=False, width=1440, height=900, wait=12.0, shots=None, token=None, log=print)` | dict | ImportError without playwright | Open each Space, click through every tab, and report each view's scroll boxes and problems: {name: [{view, found, problems}]}. |
+| `spelling(paths=None, root=ROOT)` | list of str | Nothing | `path:line: British word -> American` for every text file under the paths (default `spaces/` and `docs/releases.json`), minus `ALLOW_SPELLING`. |
 | `probe_url(src: dict, url: str)` | str | KeyError on a source without kind | The URL `check --live` asks for: a folder (OME-Zarr, tifxyz) has no object of its own, so its metadata file. |
 | `check(live=False)` | list of str | Nothing | Problems across every registered Space; empty when all is well. With live, also fetches every source (paused or undeployed Gradio APIs are skipped). |
 | `runnable(spec)` | iterator of tuples | Nothing | (source id, tool id, language, code) for every snippet that can run headless, without pip lines or a whole download of a large dataset. |
@@ -142,7 +189,7 @@ usage: python -m kit spaceconnect new [-h] --space SPACE dir
 | `gradio-api` | `space`, `host`, `status` (running, paused or not-deployed), `endpoints` [{`api`, `args`}], optional `zerogpu` (true: the Python, curl and MCP snippets pass the caller's own Hugging Face token, so a call spends the caller's ZeroGPU quota) | python, curl, mcp |
 | `page-api` | `links` [{`label`, `url`}], optional `embed` | links |
 
-A copy of scan data hosted on huggingface.co gives `scroll` and `scan_year`; one of Scrolls 1 to 4 scanned before 2025 is refused. `spaces/connect/spaces.json` lists every Space: `space`, `dir` (where its `connect.json` is), `sdk` (static or gradio) and `source` (here, the Space's own repository, or Scrolls-private, which copies the rendered files).
+A copy of scan data hosted on huggingface.co gives `scroll` and `scan_year`; one of Scrolls 1 to 4 scanned before 2025 is refused. `spaces/connect/spaces.json` lists every Space: `space`, `dir` (where its `connect.json` is), `sdk` (static or gradio), `source` (here, the Space's own repository, or Scrolls-private, which copies the rendered files) and, for a viewer whose page never scrolls, `"layout": "one-screen"`. `scroll --direct` reads `HF_TOKEN` from the environment and sends it only to the Space's own host.
 
 ## Outputs
 
@@ -164,10 +211,14 @@ A copy of scan data hosted on huggingface.co gives `scroll` and `scan_year`; one
 | `spaces/NAME: not in spaces/connect/spaces.json` | A new Space without a panel | Add a spec and a row |
 | `stale ...; run python -m kit spaceconnect render DIR` | A spec or the renderer changed | Render again and commit the outputs |
 | `FAIL ...` from `run` | A URL moved or a package changed | Fix the spec or the snippet; do not keep a "tested" badge on a failing pair |
+| `...: the page does not carry the one-scroll fix` | A page without the fragment | Static: add the onescroll markers to its head and render. Gradio: `HEAD += (HERE / "onescroll.html").read_text()` |
+| `American spelling: path:line: Word -> word` | A British word in a Space's text | Change it, or add an `ALLOW_SPELLING` entry with a reason if it is someone else's name |
+| `tab did not open: not shown` (or a click timeout) from `scroll` | The tab was not on screen when its turn came: its parent tab closed, or it is behind a More tabs menu | Rerun with a wider `--width`; a tab that never opens is a problem with the page |
+| `scrolls inside the page: ...` from `scroll` | A box with a fixed height and `overflow:auto`, or an iframe the fragment could not fit (another origin, or sized in `vh`) | Let the box grow; give a cross-origin frame its own page or mark it `data-scroll="inner"` only if it must scroll (a map) |
 
 ## How it works
 
-`_tools` holds one snippet template per tool and kind, filled from the source's fields. `render_html` writes one block per source (title, license and note, the URL with Copy, then a `<details>` per tool with a badge from `TESTED`, `FROM_VILLA` or the Space's status). `render` compares the new text with the files on disk and rewrites only what changed; `splice` replaces whatever is between `<!-- space-connect:start -->` and `<!-- space-connect:end -->`. Neuroglancer links use `zarr://URL/` and the 4-panel layout; for villa's lasagna OME-Zarr, whose root unit is "pixel", point `ng_path` at a level folder (finding of the lasagna fields page, 24 Oct 2026).
+`_tools` holds one snippet template per tool and kind, filled from the source's fields. `render_html` writes one block per source (title, license and note, the URL with Copy, then a `<details>` per tool with a badge from `TESTED`, `FROM_VILLA` or the Space's status). `render` compares the new text with the files on disk and rewrites only what changed; `splice` replaces whatever is between `<!-- space-connect:start -->` and `<!-- space-connect:end -->`. The one-scroll script binds every same-origin iframe (and any added later, through a MutationObserver), forces its document to `height:auto` with `overflow:hidden`, and sets the iframe's height to the document's height whenever a ResizeObserver in the frame sees it change; it gives up on a frame whose content grows with its own height (a page sized in `vh`) after 40 changes in 4 seconds and lets it scroll. `scroll` runs a script in each frame that lists the document and every element with `overflow` auto or scroll whose content is taller than its box, including inside shadow roots; a frame sized from outside (`scrolling="no"`, as Hugging Face sets on a Gradio app and the fragment sets on a guide) has no scroll bar of its own, but the boxes inside it are still checked. It opens every tab level by level (`TABS_JS` gives each shown tab its depth, so a tab group inside a tab is visited once its parent is open), up to 30 views per Space; at phone width Gradio puts some tabs behind a More tabs menu, which it does not open. `spelling` splits camelCase and snake_case words and looks each up in a table built from British stems (`-ise`, `-our`, `-re`, doubled `l`) and single words (grey, licence, catalogue). Neuroglancer links use `zarr://URL/` and the 4-panel layout; for villa's lasagna OME-Zarr, whose root unit is "pixel", point `ng_path` at a level folder (finding of the lasagna fields page, 24 Oct 2026).
 
 ## Cost and time
 
@@ -175,22 +226,23 @@ Free. `render` and `check` run in a fraction of a second; `run` took a few minut
 
 ## For agents
 
-- **Command:** `python -m kit spaceconnect check`; for a new Space `python -m kit spaceconnect new spaces/NAME --space SharpMeow/NAME`, then `render`.
+- **Command:** `python -m kit spaceconnect check`; for a new Space `python -m kit spaceconnect new spaces/NAME --space SharpMeow/NAME`, then `render`; after a deploy `python -m kit spaceconnect scroll NAME --shots DIR`.
 - **Parse:** each problem line names the Space and what to do; the last line counts Spaces and problems. Agents reading a live Space can fetch its `connect.json` or `CONNECT.md`.
 - **Rerun:** safe; `render` rewrites only stale outputs.
 - **Success:** exit 0 and `0 problems`; for `run`, `0 failed`.
 - **Not a pass:** a badge says "tested" only for pairs in `TESTED`; a new kind or tool needs its own run before it gets one.
 - **Go-ahead:** Nothing to render or check. Uploading a Space follows hard rule 8.
-- **Never:** never list private data or a private bucket in a panel, and never rehost a pre-2025 EduceLab-Scrolls scan.
+- **Never:** never list private data or a private bucket in a panel, never rehost a pre-2025 EduceLab-Scrolls scan, never give a page a box that scrolls inside it, and never rename a key or file that published data already uses just to change its spelling (allow it with a reason instead).
 
 ## Tests
 
-`python -m unittest tests.test_spaceconnect`: validation (including the EduceLab refusal), every kind's tools, the snippet text, neuroglancer links, escaping and the absence of script tags, splicing, stale detection, `runnable`, and `check()` over the real registry. They do not touch the network; `run` is the live check.
+`python -m unittest tests.test_spaceconnect`: validation (including the EduceLab refusal), every kind's tools, the snippet text, neuroglancer links, escaping and the absence of script tags, splicing, stale detection, `runnable`, `check()` over the real registry, the one-scroll fragment in Chromium (a guide frame grows past its fixed height, a short one shrinks, an opted-out frame keeps its scroll, a `vh`-sized page is given up on), `verdict`, and the spelling finder on prose and code. They do not touch the network; `run` and `scroll` are the live checks. The Chromium test skips without playwright.
 
 ## History
 
 - 2026-10-24: first version, branched from public `main` at `2ce4d50`: the panel on Umbilici, Unroll, Crackle Check, Scroll Lens, Ink Lens and AutoPipeline ink.
 - 2026-10-24: Segment Lens, which merged into `main` while this was open, gets its panel in its Guide; `check` caught it ([PR #170](https://github.com/ChaseHendrick/Scrolls/pull/170)).
+- 2026-10-27: one page scroll bar (`onescroll.html`, `scroll`) and American English (`spelling`) on every Space, branched from `main` at `aa259e8`.
 
 ## Related
 

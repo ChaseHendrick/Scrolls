@@ -1,7 +1,7 @@
-"""AFV Fibers: papyrus fibre curves for six whole Herculaneum scans, made with Qual's AFV V2 model and spline
-generator, to download, stream by box, or open in VC3D; and a catalog of every public fibre set we know of.
+"""AFV Fibers: papyrus fiber curves for six whole Herculaneum scans, made with Qual's AFV V2 model and spline
+generator, to download, stream by box, or open in VC3D; and a catalog of every public fiber set we know of.
 
-The web page and the API. The guide to the six scans is guide/index.html, shown in the first tab; reading the fibres
+The web page and the API. The guide to the six scans is guide/index.html, shown in the first tab; reading the fibers
 and CT around a point is fibers.py. Runs on a free CPU Space: nothing here runs a model, it reads the published
 files.
   python3 app.py            serve the page (on a Space, or on any computer)
@@ -17,7 +17,7 @@ import numpy as np
 
 HERE = Path(__file__).resolve().parent
 import fibers as F  # noqa: E402
-from fibers import FibreError  # noqa: E402
+from fibers import FiberError  # noqa: E402
 
 VERSION = "1.0.0"
 OUT = Path(tempfile.gettempdir()) / "afv-fibers-out"
@@ -34,7 +34,7 @@ def log(message):
 # ---------------------------------------------------------------- the API (also the page's buttons)
 
 def list_scans():
-    """The six scans with AFV fibres: each scan's dataset, CT volume, the CT level the model ran on, its voxel size
+    """The six scans with AFV fibers: each scan's dataset, CT volume, the CT level the model ran on, its voxel size
     in um, and the whole-scan files."""
     out = []
     for scan, s in F.SCANS.items():
@@ -51,27 +51,27 @@ def example_points():
     return EXAMPLES
 
 
-def fibres_box(scan, z, y, x, half=128):
-    """Every fibre touching a box around a point: scan name (PHerc0139 ...), z, y, x in level-0 voxels, half the box
+def fibers_box(scan, z, y, x, half=128):
+    """Every fiber touching a box around a point: scan name (PHerc0139 ...), z, y, x in level-0 voxels, half the box
     edge in voxels of the grid the model ran on (16 to 256). Returns counts by family (V vertical, H horizontal), the
-    tiles read, and each fibre's id, family and length in mm."""
+    tiles read, and each fiber's id, family and length in mm."""
     box = F.box_l0(scan, z, y, x, half)
-    fib, tiles = F.fibres_in_box(scan, box)
+    fib, tiles = F.fibers_in_box(scan, box)
     um = F.SCANS[scan]["um"]
     rows = []
     for fid, (fam, p) in sorted(fib.items()):
         L = float(np.linalg.norm(np.diff(p, axis=0), axis=1).sum()) * um / 1000
         rows.append({"id": int(fid), "family": fam, "points": int(len(p)), "length_mm": round(L, 3)})
     return {"scan": scan, "box_zyx_level0": box, "tiles": tiles,
-            "counts": {k: sum(r["family"] == k for r in rows) for k in ("V", "H")}, "fibres": rows}
+            "counts": {k: sum(r["family"] == k for r in rows) for k in ("V", "H")}, "fibers": rows}
 
 
 def look(scan, z, y, x, half=128, axis="z"):
     """A picture of a box: the CT plane through the point (axis z: an axial slice, y: a vertical section) with the
-    fibres near it drawn over (V orange, H cyan), a 3D view of every fibre in the box, and the box's fibres as a small
-    .afv file. Arguments as fibres_box."""
+    fibers near it drawn over (V orange, H cyan), a 3D view of every fiber in the box, and the box's fibers as a small
+    .afv file. Arguments as fibers_box."""
     box = F.box_l0(scan, z, y, x, half)
-    fib, tiles = F.fibres_in_box(scan, box)
+    fib, tiles = F.fibers_in_box(scan, box)
     at = int(z) if axis == "z" else int(y)
     img = F.render_slice(scan, axis, at, box, fib)
     fig = F.plot3d(scan, box, fib)
@@ -79,7 +79,7 @@ def look(scan, z, y, x, half=128, axis="z"):
     dest = OUT / f"{scan}_z{int(z)}_y{int(y)}_x{int(x)}_h{int(half)}.afv"
     n = F.write_box_afv(scan, box, dest) if fib else 0
     counts = {k: sum(f == k for f, _ in fib.values()) for k in ("V", "H")}
-    info = {"scan": scan, "box_zyx_level0": box, "tiles": tiles, "counts": counts, "file_fibres": n}
+    info = {"scan": scan, "box_zyx_level0": box, "tiles": tiles, "counts": counts, "file_fibers": n}
     return img, fig, (str(dest) if n else None), info
 
 
@@ -114,11 +114,11 @@ HOWTO = """
 hf download SharpMeow/pherc0139-afv-fibers --repo-type dataset --include "PHerc0139_afv_v2_1mm.afv" --local-dir .
 ```
 
-Each scan's dataset holds `SCAN_afv_v2.afv` (every traced fibre), `SCAN_afv_v2_1mm.afv` (fibres 1 mm and longer, the
+Each scan's dataset holds `SCAN_afv_v2.afv` (every traced fiber), `SCAN_afv_v2_1mm.afv` (fibers 1 mm and longer, the
 set most people want) and `tiles/` (one small `.afv` per 1024-voxel cell of the model's grid; `tiles/index.json`
 gives each cell's box in level-0 voxels).
 
-### Read fibres in Python (sqlite3 and NumPy only)
+### Read fibers in Python (sqlite3 and NumPy only)
 
 An `.afv` is a read-only SQLite file: `fibers` (family V or H, length, bounds), `blocks` (XYZ float64 points, up to
 257 per block, consecutive blocks sharing one point) and an R-tree `block_bounds` to find blocks by box.
@@ -142,7 +142,7 @@ Every dataset also carries `load_example.py`, the same thing as a script.
 
 ### Open in VC3D
 
-VC3D keeps fibres in an object store. villa's `vc_object_store/scripts/import_afv.py` turns an `.afv` into one; it
+VC3D keeps fibers in an object store. villa's `vc_object_store/scripts/import_afv.py` turns an `.afv` into one; it
 needs the volume id (the number at the start of the volume name, listed on each dataset card):
 
 ```bash
@@ -156,7 +156,7 @@ with that importer's own reader before upload.
 
 ### From code or an agent
 
-The **Agents and API** tab lists the endpoints (`list_scans`, `example_points`, `fibres_box`, `look`). This page is
+The **Agents and API** tab lists the endpoints (`list_scans`, `example_points`, `fibers_box`, `look`). This page is
 also an MCP server.
 """
 
@@ -165,14 +165,14 @@ AGENTS = """
 
 - `list_scans()`: the six scans, their datasets and whole-scan file URLs.
 - `example_points()`: a dense point per scan to start from.
-- `fibres_box(scan, z, y, x, half)`: every fibre touching a box: ids, families, lengths.
-- `look(scan, z, y, x, half, axis)`: the CT plane with fibres over it, a 3D view and the box as a small `.afv`.
+- `fibers_box(scan, z, y, x, half)`: every fiber touching a box: ids, families, lengths.
+- `look(scan, z, y, x, half, axis)`: the CT plane with fibers over it, a 3D view and the box as a small `.afv`.
 
 ```python
 from gradio_client import Client
 c = Client("SharpMeow/afv-fibers")
 print(c.predict(api_name="/list_scans"))
-print(c.predict("PHerc0139", 10000, 3200, 3200, 64, api_name="/fibres_box")["counts"])
+print(c.predict("PHerc0139", 10000, 3200, 3200, 64, api_name="/fibers_box")["counts"])
 ```
 """
 
@@ -188,8 +188,8 @@ CSS = """
   repeating-linear-gradient(0deg, rgba(58,209,255,.85) 0 2px, transparent 2px 7px), #0b1220; }
 .af-head h1 { white-space:nowrap; font-family:Fraunces, Georgia, serif; font-weight:650; font-size:30px; margin:0; }
 .af-head span { color:var(--body-text-color-subdued); font-size:15px; }
-.af-guide iframe { width:100%; height:calc(100vh - 150px); min-height:640px; border:0; border-radius:12px;
-  background:#0b0f17; }
+/* no fixed height: onescroll.html fits the guide's frame to the guide, so the page scrolls and the frame does not */
+.af-guide iframe { width:100%; height:1400px; border:0; border-radius:12px; background:#0b0f17; display:block; }
 .af-cat table { width:100%; border-collapse:collapse; font-size:14.5px; }
 .af-cat th, .af-cat td { text-align:left; vertical-align:top; padding:9px 10px;
   border-bottom:1px solid var(--border-color-primary); }
@@ -201,18 +201,20 @@ CSS = """
 .af-credit { text-align:center; font-size:13px; color:var(--body-text-color-subdued); padding:18px 0 6px; }
 @media (max-width: 640px) {
   .af-head h1 { font-size:24px; } .af-head span { display:none; }
-  .af-guide iframe { height:calc(100vh - 120px); min-height:520px; }
   .af-cat table { font-size:13px; }
 }
 """
 
 HEAD = """
-<meta name="description" content="AFV Fibers: papyrus fibre curves for six whole Herculaneum scans (Qual's AFV V2
-model), to download, stream by box or open in VC3D, plus a catalog of public fibre sets. Model output, not a reading.">
+<meta name="description" content="AFV Fibers: papyrus fiber curves for six whole Herculaneum scans (Qual's AFV V2
+model), to download, stream by box or open in VC3D, plus a catalog of public fiber sets. Model output, not a reading.">
 <meta property="og:title" content="AFV Fibers">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,650&display=swap" rel="stylesheet">
 """
+# one page scroll bar: fits the guide's frame to its content (written by python -m kit spaceconnect render)
+ONESCROLL = HERE / "onescroll.html"
+HEAD += ONESCROLL.read_text() if ONESCROLL.is_file() else ""
 
 TAB_JS = """
 () => {
@@ -250,7 +252,7 @@ def build_demo():
         def wrapped(*args, **kwargs):
             try:
                 return fn(*args, **kwargs)
-            except FibreError as exc:
+            except FiberError as exc:
                 raise gr.Error(str(exc)) from None
             except gr.Error:
                 raise
@@ -270,8 +272,8 @@ def build_demo():
 
     with gr.Blocks(title="AFV Fibers") as demo:
         host = os.environ.get("SPACE_HOST") and f"https://{os.environ['SPACE_HOST']}" or "http://localhost:7860"
-        gr.HTML('<div class="af-head"><div class="mark"></div><h1>AFV Fibers</h1><span>papyrus fibre curves for '
-                'six whole scans, made with Qual\'s AFV V2, plus every public fibre set we know of</span></div>')
+        gr.HTML('<div class="af-head"><div class="mark"></div><h1>AFV Fibers</h1><span>papyrus fiber curves for '
+                'six whole scans, made with Qual\'s AFV V2, plus every public fiber set we know of</span></div>')
         with gr.Tabs(elem_id="af-tabs"):
             with gr.Tab("Six scans", id="scans"):
                 gr.HTML(guide_html())
@@ -287,25 +289,25 @@ def build_demo():
                         gr.Markdown("Level-0 voxels of the scan, as in VC3D.", elem_classes="af-note")
                         half = gr.Slider(32, 256, 128, step=32, label="Half box (voxels of the ~9 um grid)")
                         axis = gr.Radio([("axial slice", "z"), ("vertical section", "y")], value="z", label="Plane")
-                        go = gr.Button("Show fibres", variant="primary")
+                        go = gr.Button("Show fibers", variant="primary")
                         dl = gr.File(first[2], label="This box as .afv (open in VC3D or Python)")
                         info = gr.JSON(first[3], label="What was read")
                     with gr.Column(scale=3):
-                        gr.HTML('<div class="af-legend"><i style="background:var(--af-v)"></i>vertical fibres'
-                                '<i style="background:var(--af-h)"></i>horizontal fibres · the CT is read live from '
+                        gr.HTML('<div class="af-legend"><i style="background:var(--af-v)"></i>vertical fibers'
+                                '<i style="background:var(--af-h)"></i>horizontal fibers · the CT is read live from '
                                 'the Vesuvius Challenge open data · model output, not a reading</div>')
                         with gr.Row():
-                            pic = gr.Image(first[0], label="CT with fibres near the plane", type="pil", format="png")
-                            plot = gr.Plot(first[1], label="Every fibre in the box")
+                            pic = gr.Image(first[0], label="CT with fibers near the plane", type="pil", format="png")
+                            plot = gr.Plot(first[1], label="Every fiber in the box")
             with gr.Tab("Catalog", id="catalog"):
                 gr.HTML(catalog_html())
             with gr.Tab("How-to guides", id="howto"):
                 gr.Markdown(HOWTO, elem_classes="af-howto")
             with gr.Tab("Agents and API", id="agents"):
                 gr.Markdown(AGENTS.format(host=host))
-                with gr.Accordion("Connect your tool: the fibres and scans by URL", open=True):
+                with gr.Accordion("Connect your tool: the fibers and scans by URL", open=True):
                     gr.HTML(CONNECT_HTML.read_text() if CONNECT_HTML.exists() else "")
-        gr.HTML('<footer class="af-credit">Fibre model and spline generator by '
+        gr.HTML('<footer class="af-credit">Fiber model and spline generator by '
                 '<a href="https://huggingface.co/Qualzz20/afv_fiber_9um_v2">Qual</a> (Apache 2.0) · runs and page by '
                 '<a href="https://github.com/ChaseHendrick">Chase Hendrick</a> · scans: '
                 '<a href="https://scrollprize.org">Vesuvius Challenge</a> open data, CC BY-NC 4.0 · '
@@ -333,7 +335,7 @@ def build_demo():
                  **hidden)
         for btn, fn, i, o, name in ((a_btns[0], list_scans, [], a_json, "list_scans"),
                                     (a_btns[1], example_points, [], a_json, "example_points"),
-                                    (a_btns[2], fibres_box, [a_scan, a_z, a_y, a_x, a_half], a_json, "fibres_box"),
+                                    (a_btns[2], fibers_box, [a_scan, a_z, a_y, a_x, a_half], a_json, "fibers_box"),
                                     (a_btns[3], look, [a_scan, a_z, a_y, a_x, a_half, a_axis],
                                      [a_img, a_plot, a_file, a_info], "look")):
             btn.click(guard(fn), i, o, api_name=name, api_description=fn.__doc__.split("\n\n")[0],

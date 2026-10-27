@@ -92,7 +92,7 @@
       "models": "ink_9um-s42,reader-v3,hecate-9.6",
       "size": 384,
       "scan": "2.4",
-      "centres": "0",
+      "centers": "0",
       "steps": "1"
      }
     },

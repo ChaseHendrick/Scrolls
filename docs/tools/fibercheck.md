@@ -182,7 +182,7 @@ frozen-format manifest. `cv` and `train` need the training sets, which are not p
 | --- | --- |
 | `fiber.json` | the record: options, `summary`, `jump_hints`, every patch |
 | `fiber.tif` | float32, the mesh's own grid (same shape as `x.tif`): each scored vertex holds its patch's evidence, NaN elsewhere |
-| `fiber_map.png` | the map in color: yellow clear, purple weak, grey no sign, slate not scored, black no surface |
+| `fiber_map.png` | the map in color: yellow clear, purple weak, gray no sign, slate not scored, black no surface |
 | `report.html` | one page: the summary, the map, the six clearest and six weakest patches, the method in the prize's words |
 | `tiles/` | those twelve renders as PNG |
 

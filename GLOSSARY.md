@@ -46,7 +46,7 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **carbonized**: Turned to carbon-rich material by heat. The Herculaneum scrolls were carbonized in the eruption of Vesuvius in 79 CE.
 
-**catalog (catalogue)**: The challenge's machine-readable list of samples, scans, volumes, segments and models. `kit/vc3d_catalog.py` resolves plans through it.
+**catalog**: The challenge's machine-readable list of samples, scans, volumes, segments and models.
 
 **Center Finder**: Chase Hendrick's tool in `scripts/umbilicus/` that finds a scroll's winding center line (umbilicus) in its CT scan with two small U-Nets; page [`docs/tools/umbilicus.md`](docs/tools/umbilicus.md). Its lines are model output.
 
@@ -110,7 +110,7 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **false 404**: A case where S3 answers "not found" (HTTP 404) for a chunk it actually holds, with the error code `NoSuchBucket` instead of `NoSuchKey`. VC3D then caches the chunk as empty (an empty-chunk marker) and reads it as zeros. `kit/s3retry.py` asks again; `python -m kit s3relay` keeps it away from VC3D and `python -m kit vc3dcache` deletes the false markers ([how-to](docs/vc3d-false-404.md)).
 
-**fiber (fibre)**: A strand of the papyrus plant, visible in CT. Fibers run horizontally on the recto.
+**fiber**: A strand of the papyrus plant, visible in CT. Fibers run horizontally on the recto.
 
 **fiber evidence**: Fiber Checker's per-patch score, from 0.5 to 1: how strongly its judge prefers the CT rendered along a traced surface over a copy with the same texture but its strands scrambled. Near 1 where fibers show, near 0.5 where none do. Model output ([page](docs/tools/fibercheck.md)).
 
@@ -240,7 +240,7 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **MCP (Model Context Protocol)**: A protocol through which an agent discovers tools, sends structured requests and receives results. Headless VC3D uses it to expose its commands to agents.
 
-**memorisation probe**: In the Greek gap restoration benchmark, an item that shows the start of a passage and asks for the next letters exactly; high accuracy would mean a model recalls the text rather than restores it.
+**memorization probe**: In the Greek gap restoration benchmark, an item that shows the start of a passage and asks for the next letters exactly; high accuracy would mean a model recalls the text rather than restores it.
 
 **mask**: An image that marks which pixels or voxels belong to a region, such as papyrus, labeled ink or trusted labels.
 
@@ -285,6 +285,10 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 **OCR (optical character recognition)**: A model proposing text from an image. Its output still needs independent checks and is not a verified reading.
 
 **OME-Zarr**: A zarr layout for large microscopy-style images, with several resolution levels and metadata. The challenge stores its CT volumes this way.
+
+**one-scroll fragment (`onescroll.html`)**: The style and short script every Space page carries so that only the page scrolls: it fits each same-origin frame inside the page (a guide shown with `iframe srcdoc`) to its content, so the frame never shows a scroll bar of its own. Written by `python -m kit spaceconnect render`; a frame that must scroll (a map) opts out with `data-scroll="inner"`. See [`docs/tools/spaceconnect.md`](docs/tools/spaceconnect.md).
+
+**one-screen viewer**: A Space whose page never scrolls (Umbilici, Unroll, Segment Lens), marked `"layout": "one-screen"` in `spaces/connect/spaces.json`. It may keep one scrolling list or panel, never two at once.
 
 **open problems**: The Vesuvius Challenge's published list of unsolved tasks ([scrollprize.org/2026_open_problems](https://scrollprize.org/2026_open_problems)).
 
@@ -386,7 +390,7 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **split rule (windlabel)**: The fixed rule `kit windlabel-box` uses to cut a chain: every step whose grad_mag integral, scaled by 0.765 so one sheet reads about 1, is above 0.95 is cut, so each piece claims only counts the grad_mag agrees with. Digest `c6d2eecbebc2`.
 
-**stage registry (`kit stages`)**: The one list of every option for each stage of reading a scroll (tracer, surface model, lasagna field, flatten, render, 2.5D or 3D ink reader, letter reader and others), with origin, licence and maturity; workflows pick from it with `--use STAGE=NAME` or `KIT_STAGE_<STAGE>` instead of hard-coding a tool ([page](docs/tools/stagereg.md)).
+**stage registry (`kit stages`)**: The one list of every option for each stage of reading a scroll (tracer, surface model, lasagna field, flatten, render, 2.5D or 3D ink reader, letter reader and others), with origin, license and maturity; workflows pick from it with `--use STAGE=NAME` or `KIT_STAGE_<STAGE>` instead of hard-coding a tool ([page](docs/tools/stagereg.md)).
 
 **stackcheck**: `kit stackcheck`, which checks a stack of consecutive tifxyz segments of one scroll against its umbilicus from geometry alone.
 
@@ -408,7 +412,7 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 ## T
 
-**termstyle**: The terminal look of every Scrolls command (`kit/termstyle.py`): colour, wrapping and a title and closing line on a terminal, plain text everywhere else; `kit live` is its mouse viewer ([page](docs/tools/termstyle.md)).
+**termstyle**: The terminal look of every Scrolls command (`kit/termstyle.py`): color, wrapping and a title and closing line on a terminal, plain text everywhere else; `kit live` is its mouse viewer ([page](docs/tools/termstyle.md)).
 
 **Tesseract**: An open-source local OCR engine with separate language packs. The reader can explicitly select an installed pack and records its hash; printed-text accuracy does not establish accuracy on scroll ink maps.
 

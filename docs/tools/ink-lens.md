@@ -113,7 +113,7 @@ development comparison on the same label-chosen windows, not a held-out gain.
 Other controls in every run: the Space's status is recomputed by the client from the maps it returns and the run is
 refused when they differ; the letter pins need the Scroll Text Reader's own nulls and control map to pass. The engine's
 maps equal villa's own flat inference on a real 256 px crop of w00 to 2.4e-7 (both depth orders, CPU, 2026-10-20), and
-its batched normalisation equals villa's `normalize_robust` exactly in the tests.
+its batched normalization equals villa's `normalize_robust` exactly in the tests.
 
 Claim label: Model output for every map, status and check number (the check numbers come from development windows
 chosen with the labels, not a blind test); Untested idea for the GPU timings until the Space runs.
@@ -187,14 +187,14 @@ inklens.py run --from-vc3d [--bridge NAME] --volume OME_ZARR [--size 1024] ...
 ### Model comparison: `zoo.py`, `compare.py`, `tools/gallery_job.py`
 
 `zoo.py` lists every model with its family (`villa9`, `hecate`, `canonical`, `ct3d`), scale, depth, depth orders,
-pinned weights (revision, SHA-256, size), licence, the control it is judged against, and its training exposure on
+pinned weights (revision, SHA-256, size), license, the control it is judged against, and its training exposure on
 each public scroll (`trained`, `likely`, `selected`, `held_out`, `unknown`) with a source URL.
 `compare.run(volume, scan, models, labels=...)` runs the chosen models on one region and returns the record, every
 map on the 9.6 um grid and Hecate's 3D volumes; the Space's `compare_sample` and `compare_region` call it.
 
 ```text
 zoo.py list [--json]          zoo.py show MODEL
-gallery_job.py flat --out DIR [--samples ID ...] [--models NAME ...] [--centres C ...] [--steps S ...]
+gallery_job.py flat --out DIR [--samples ID ...] [--models NAME ...] [--centers C ...] [--steps S ...]
                    [--device cuda] [--draws N] [--no-orient] [--size PX] [--smoke]
 gallery_job.py ct3d --out DIR --ap ROOT [--samples ID ...] [--models NAME ...] [--device cuda] [--size PX] [--smoke]
 gallery_job.py assemble --flat DIR [--ct3d DIR] --out GALLERY [--draws N]
@@ -207,12 +207,12 @@ gallery_job.py assemble --flat DIR [--ct3d DIR] --out GALLERY [--draws N]
 | `--out` | required | `flat`: maps, records, labels and orientation reports; `ct3d`: each model's projected map, control and record; `assemble`: the Space's gallery folder (`index.json`, one record and mosaic per sample, `maps/`) |
 | `--samples` | every sample with a 2.4 um scan | `flat`, `ct3d`: the samples to run |
 | `--models` | `flat`: every model but the scan-space 3D ones; `ct3d`: both of those | The models to run |
-| `--centres` | `-4 0 4` | `flat`: window centres in 9.6 um layers from the middle |
+| `--centers` | `-4 0 4` | `flat`: window centers in 9.6 um layers from the middle |
 | `--steps` | `1 2` | `flat`: layer steps |
 | `--device` | `flat`: CUDA if present; `ct3d`: `cuda` | Torch device |
-| `--draws` | 300 | `flat`, `assemble`: bootstrap draws for the centre window's interval |
+| `--draws` | 300 | `flat`, `assemble`: bootstrap draws for the center window's interval |
 | `--no-orient` | off | `flat`: skip ink-sdk's label-free orientation check |
-| `--size` | the whole 640 px crop | `flat`, `ct3d`: a square this many 9.6 um px around the crop's centre |
+| `--size` | the whole 640 px crop | `flat`, `ct3d`: a square this many 9.6 um px around the crop's center |
 | `--smoke` | off | `flat`, `ct3d`: one sample, one window, no interval, a 128 px square with `ink_9um-s42` and `hecate-9.6`, one model per runner (`ct3d`: 32 px and the gambiarra model only), a CPU check of the whole path that fits a 10 min cpu-basic Job; `--models` overrides |
 | `--ap` | required | `ct3d`: AutoPipeline's folder (holding `kit/ink3d.py`) in a public Scrolls checkout |
 | `--flat` | required | `assemble`: the `flat` output |
@@ -410,8 +410,9 @@ In a cloud session with `HF_TOKEN` set, the same commands work; `deploy.py` stil
 | `choose at least one model (list_models names them)` (`choose at least one model`) | No model was chosen | Pick models; `list_models` names them |
 | `unknown models [...]; list_models names them` | A name is not in the zoo | Use a name from `list_models` or `zoo.py list` |
 | `the scan-space 3D models need minutes of GPU per sample and do not run live; tools/gallery_job.py runs them on a GPU` | Only `ct3d` models were chosen for a live comparison | Choose surface-volume models, or run `tools/gallery_job.py ct3d` on a GPU |
-| `give one to five values` | Too many or no window centres or steps | One to five whole numbers |
-| `'TEXT': give whole numbers separated by spaces` | Centres or steps are not whole numbers | Give whole numbers |
+| `give one to five values` | Too many or no window centers or steps | One to five whole numbers |
+| `'TEXT': give whole numbers separated by spaces` | Centers or steps are not whole numbers | Give whole numbers |
+| `run() got unexpected keyword arguments [...]` | A script passes `compare.run` a keyword it does not take (it takes the British spelling of `centers` only, from scripts written before 27 Oct 2026) | Use the names in `compare.run`'s signature |
 | `scan is 2.4 (the about 2.4 um scan) or native (about 9.4 um)` | Unknown scan | `2.4` or `native` |
 | `a region is uint8, layers x rows x columns` | The uploaded volume is not a 3D uint8 array | Convert with `volio.to_uint8`, layers first |
 | `a region is 128 to 512 px a side on the 9.6 um grid (512 to 2048 px of this scan)` | The compared region is too small or too large | Resize it; a 2.4 um region is 4 times the grid size |
@@ -458,7 +459,7 @@ In a cloud session with `HF_TOKEN` set, the same commands work; `deploy.py` stil
 2. **Engine** (`engine.py`). villa's `configure_model` builds the reader at villa `8aa507c12` from a checkpoint checked
    by SHA-256 and opened with `weights_only=True`. The middle 21 layers (`STACK`) hold three 17-layer windows
    (`WINDOW_OFFSETS` 0, 2, 4; 2 is villa's own center window). Each window runs as stored and reversed: 128 px patches
-   at stride 64 (`PATCH`, `STRIDE`), villa's robust normalisation batched on the device (`robust_torch`, batch 64,
+   at stride 64 (`PATCH`, `STRIDE`), villa's robust normalization batched on the device (`robust_torch`, batch 64,
    fp16 autocast on CUDA as the checkpoint asks), villa's floored Hann blend. All-zero patches are skipped as villa
    does. F and R are the means of the three windows (and of the readers with `both`).
 3. **Gate** (`gate.py`, `ink-lens-gate-v1`). Papyrus: middle CT layer above its 5th percentile and above 0. T: 99th
@@ -509,9 +510,9 @@ z windows also works as a simple ensemble", read 2026-10-20).
 ## Tests
 
 `python3 -m unittest tests.test_inklens -v` (numpy only; with torch the engine checks run too, and with
-`VILLA_SRC=PATH/vesuvius/src` the normalisation is compared with villa's own function). They cover the gate and its
+`VILLA_SRC=PATH/vesuvius/src` the normalization is compared with villa's own function). They cover the gate and its
 failing cases, the prereg's constants, patch counts and the duration formula, window and layer choice, villa's
-normalisation and Hann map, the numpy reference against the torch engine with a stand-in model, the PNG, canvas
+normalization and Hann map, the numpy reference against the torch engine with a stand-in model, the PNG, canvas
 aspect, record merge, point collections and grid mapping, the zarr reader, the client's full local run on a synthetic
 segment, its refusals (no token, too big, outside the canvas, bad records file, Space status mismatch), the Space's
 upload checks, card, files and the plugin manifest. Not covered: a real VC3D opening the files, `vc_render_tifxyz`,
@@ -519,6 +520,7 @@ the live Space, and the agent bridge against a running VC3D.
 
 ## History
 
+- 2026-10-27: one scroll bar for the whole page (user decision, 27 October 2026): `app.py` adds `onescroll.html` (written by `python -m kit spaceconnect render`) to the page head, the run records (`gr.JSON`) grow with their content instead of scrolling in a 500 px box, and `tools/deploy.py` uploads `onescroll.html`. American spelling throughout: the window-center argument of `compare_sample` and `compare_region`, spelled the British way until now, is `centers`, and so are the run record's key, `compare.run(centers=...)` (it still takes the British keyword from scripts written before), `runners.window(center=...)`, `runners.windows_for(centers=...)` and `gallery_job.py flat --centers`; branched from `main` at `aa259e8`.
 - 2026-10-27: model comparison: `zoo.py` (eleven models, 2.5D and 3D, with pins and training exposure), `runners.py`, `compare.py` (fair 2.4 um canvas, controls, ink-sdk's liveness gate, ensemble, stability, mosaics, block-bootstrap intervals, run record), the Compare models and Gallery tabs, `compare_sample`, `compare_region`, `list_models` and `gallery` endpoints, and `tools/gallery_job.py`; branched from `main` at `152da8a`.
 - 2026-10-24: Connect your tool accordion, branched from `main` at `2ce4d50`.
 - 2026-10-21: rows for the positional arguments of `estimate`, `engine.py estimate` and `deploy.py`, and every refusal written whole, including `not a PNG`, `cannot read URL: ERROR` and the `demo --size` refusal (`bbecb37`).
