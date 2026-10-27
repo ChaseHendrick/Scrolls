@@ -179,8 +179,8 @@ class TestPage(unittest.TestCase):
             self.assertTrue((SPACE / f).is_file(), f)
         for f in SPACE.rglob("*"):
             if f.is_file() and f.suffix in (".py", ".md", ".json", ".html", ".txt"):
-                self.assertNotIn("—", f.read_text(), f)
-                self.assertNotIn("–", f.read_text(), f)
+                self.assertNotIn(chr(0x2014), f.read_text(), f)
+                self.assertNotIn(chr(0x2013), f.read_text(), f)
 
 
 if __name__ == "__main__":
