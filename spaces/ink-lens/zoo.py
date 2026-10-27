@@ -179,8 +179,11 @@ MODELS = {
         "license": "MIT", "scale_um": 2.4, "tolerance_um": 0.048, "out_um": 4.8, "depth": None,
         "orders": ("forward",), "outputs": ("3d-scan",), "no_ink_floor": None,
         "floor_source": "no threshold supplied (its card)",
-        "exposure": {"PHerc0139": ("held_out", "trained on PHercParis4 scribbles only", "gambiarra-card"),
-                     "PHerc0841": ("held_out", "trained on PHercParis4 scribbles only", "gambiarra-card")}},
+        "exposure": {"PHerc0139": ("held_out", "trained on PHercParis4 scribbles only; its self-supervised backbone "
+                                               "(dinovol_v2_ps8_with_paris4_352500) saw PHerc0139's CT, without labels",
+                                   "gambiarra-card"),
+                     "PHerc0841": ("held_out", "trained on PHercParis4 scribbles only; its backbone's pretraining "
+                                               "volumes do not include PHerc0841", "gambiarra-card")}},
     "dino-guided-3d": {
         "title": "Paris 4 volumetric 3D ink (DINO-guided, self-distilled)", "by": "Vesuvius Challenge",
         "family": "ct3d", "sdk_profile": None, "engine": "villa-full3d",
