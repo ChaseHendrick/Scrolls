@@ -217,7 +217,7 @@ def compare_volume(volume, scan, models, centres, steps, sample=None, labels=Non
     path = OUT / f"inklens-compare-{int(time.time() * 1000)}.npz"
     np.savez_compressed(path, **{"|".join(kk): np.asarray(v, np.float16) for kk, v in maps.items()})
     result["mosaic"] = {"rows": order, "columns": [f"{kk} {o}" for kk, o in cols]}
-    return result, str(path), mos
+    return api_json(result), str(path), mos
 
 
 def compare_sample(sample_id="0841-w00", models="ink_9um-s42,reader-v2,reader-v3,hecate-9.6", size=384, scan="2.4",
@@ -251,12 +251,22 @@ def compare_region(volume_npz, models="ink_9um-s42,reader-v2,hecate-9.6", scan="
     return compare_volume(read_npz(path), scan, models, _ints(centres, (0,)), _ints(steps, (1,)))
 
 
+def api_json(obj):
+    """A record as the API returns it: every dict key "path" (a weight file inside its repo) becomes "file", because
+    gradio_client takes any JSON dict holding "path" for a file to download and fails on it."""
+    if isinstance(obj, dict):
+        return {("file" if k == "path" else k): api_json(v) for k, v in obj.items()}
+    if isinstance(obj, (list, tuple)):
+        return [api_json(v) for v in obj]
+    return obj
+
+
 def list_models():
     """Every ink model Ink Lens compares: family, scale, depth, licence, pinned weights, the control each is judged
     against, and on which public scroll its training saw labels (with the source)."""
-    return {"models": zoo.listing(), "ink_sdk": f"{zoo.INK_SDK_REPO} @ {zoo.INK_SDK_COMMIT}",
+    return api_json({"models": zoo.listing(), "ink_sdk": f"{zoo.INK_SDK_REPO} @ {zoo.INK_SDK_COMMIT}",
             "gallery": sorted(json.loads((GALLERY / "index.json").read_text())["samples"])
-            if (GALLERY / "index.json").is_file() else []}
+            if (GALLERY / "index.json").is_file() else []})
 
 
 def gallery(sample_id="0841-w00"):
@@ -271,7 +281,7 @@ def gallery(sample_id="0841-w00"):
     import numpy as np
     from PIL import Image
     rec = json.loads((GALLERY / entry["record"]).read_text())
-    return rec, np.asarray(Image.open(GALLERY / entry["mosaic"]).convert("RGB"))
+    return api_json(rec), np.asarray(Image.open(GALLERY / entry["mosaic"]).convert("RGB"))
 
 
 def compare_md(result):
