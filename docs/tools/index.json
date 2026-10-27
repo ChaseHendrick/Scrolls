@@ -4696,6 +4696,164 @@
    ]
   },
   {
+   "id": "ink-atlas",
+   "name": "ink-atlas",
+   "tagline": "browse and compare seven ink models on the First Letters surfaces, from a page or an agent",
+   "summary": "A Space and an MCP server over the public First Letters ink atlas: seven public ink models on 32 traced surfaces, one shared 9.6 um canvas, with a loupe, an all-model compare and six agent tools.",
+   "status": "Current",
+   "kind": [
+    "app",
+    "agent tool",
+    "data"
+   ],
+   "area": "Viewers and apps",
+   "commands": [
+    "Client(\"SharpMeow/ink-atlas\").predict(..., api_name=\"/get_map\")",
+    "https://sharpmeow-ink-atlas.hf.space/gradio_api/mcp/",
+    "python3 spaces/ink-atlas/app.py",
+    "spaces/ink-atlas/"
+   ],
+   "imports": [
+    "import atlasdata"
+   ],
+   "code": [
+    {
+     "path": "spaces/ink-atlas/app.py",
+     "symbols": []
+    },
+    {
+     "path": "spaces/ink-atlas/atlasdata.py",
+     "symbols": []
+    },
+    {
+     "path": "spaces/ink-atlas/tools/deploy.py",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_ink_atlas_space.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed to use. Making the Space public, and every later new Space or card change, needs Chase's yes (the go-ahead rule, hard rule 8); redeploys of the approved Space from merged `main` fall under the standing yes"
+   },
+   "checked": {
+    "date": "2026-10-27",
+    "commit": "ff82a63"
+   },
+   "license": "Page code Apache 2.0 ([`spaces/ink-atlas/LICENSE`](../../spaces/ink-atlas/LICENSE), [`NOTICE`](../../spaces/ink-atlas/NOTICE)); the dataset CC BY-NC 4.0, derived from the Vesuvius Challenge open data and ketchupbyheinz's meshes; every model MIT",
+   "fields": {
+    "Id": "`ink-atlas`",
+    "Status": "Current",
+    "Kind": "app, agent tool, data",
+    "Area": "Viewers and apps",
+    "Run": "[huggingface.co/spaces/SharpMeow/ink-atlas](https://huggingface.co/spaces/SharpMeow/ink-atlas) (the page: Explore, Compare models, The atlas, How to read it, Agents and API), `Client(\"SharpMeow/ink-atlas\").predict(..., api_name=\"/get_map\")`, the MCP server `https://sharpmeow-ink-atlas.hf.space/gradio_api/mcp/`, `python3 spaces/ink-atlas/app.py` (the page on any computer), `import atlasdata` from `spaces/ink-atlas/`",
+    "Code": "`spaces/ink-atlas/app.py` (the page, API and MCP tools), `spaces/ink-atlas/atlasdata.py` (reading the dataset, pictures, records), `spaces/ink-atlas/tools/deploy.py` (upload to Hugging Face). The data is the dataset [SharpMeow/first-letters-ink-atlas](https://huggingface.co/datasets/SharpMeow/first-letters-ink-atlas)",
+    "Tests": "`tests/test_ink_atlas_space.py`, 9 tests on a fake atlas laid out like the dataset (no network, no gradio)",
+    "Needs": "A browser for the page; `gradio_client` to call it from Python; any MCP client for agents. To serve it yourself: Python 3.12, gradio 6.28.0, numpy, Pillow, huggingface_hub (`spaces/ink-atlas/requirements.txt`)",
+    "Runs on": "The Space's free CPU. Live calls on 2026-10-27 from a cloud container: `list_surfaces` 3.2 s, a whole-surface `get_map` 2.4 s, a 512 px crop 1.6 s, `compare_models` 3.2 s the first time on a surface and 1.9 s after (maps cached)",
+    "Network": "`huggingface.co` (the dataset's files, read on demand and cached by huggingface_hub). Links on the page point at `raw.githubusercontent.com` (meshes) and `vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` (CT); the page does not read them",
+    "Writes": "Nothing of the caller's. The server writes pictures to `ink-atlas-out/` in its temp folder and keeps the dataset's files in the Hugging Face cache",
+    "Go-ahead": "Not needed to use. Making the Space public, and every later new Space or card change, needs Chase's yes (the go-ahead rule, hard rule 8); redeploys of the approved Space from merged `main` fall under the standing yes",
+    "Released": "Dataset and Space public on Hugging Face since 2026-10-27 (Chase's yes to each); README \"Released tools\" entry `ink-atlas`",
+    "License": "Page code Apache 2.0 ([`spaces/ink-atlas/LICENSE`](../../spaces/ink-atlas/LICENSE), [`NOTICE`](../../spaces/ink-atlas/NOTICE)); the dataset CC BY-NC 4.0, derived from the Vesuvius Challenge open data and ketchupbyheinz's meshes; every model MIT",
+    "Checked": "2026-10-27 against commit `ff82a63`"
+   },
+   "page": "docs/tools/ink-atlas.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 23,
+     "end_line": 30,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 31,
+     "end_line": 42,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 43,
+     "end_line": 65,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 66,
+     "end_line": 73,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 74,
+     "end_line": 141,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 142,
+     "end_line": 156,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 157,
+     "end_line": 160,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 161,
+     "end_line": 180,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 181,
+     "end_line": 194,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 195,
+     "end_line": 198,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 199,
+     "end_line": 202,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 203,
+     "end_line": 212,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 213,
+     "end_line": 216,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 217,
+     "end_line": 221,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 222,
+     "end_line": 227,
+     "applicable": true
+    }
+   ]
+  },
+  {
    "id": "ink-lens",
    "name": "ink-lens",
    "tagline": "every ink model side by side with controls, and control-checked ink maps of your own region for VC3D",

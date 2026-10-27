@@ -1,0 +1,20 @@
+Ink Atlas
+Copyright 2026 Chase Hendrick and Scrolls contributors
+
+The Ink Atlas code (app.py, atlasdata.py and tools/, also in https://github.com/ChaseHendrick/Scrolls spaces/ink-atlas)
+is licensed under the Apache License, Version 2.0. See LICENSE.
+
+The page shows the public dataset SharpMeow/first-letters-ink-atlas (https://huggingface.co/datasets/SharpMeow/first-letters-ink-atlas),
+read at run time and not stored in this Space. Its maps are model output computed from the Vesuvius Challenge open data
+along traced meshes by ketchupbyheinz, so the dataset is derived data under CC BY-NC 4.0
+(https://creativecommons.org/licenses/by-nc/4.0/).
+
+Scan data: Giorgio Angelotti, Stephen Parsons, Sean Johnson, Elian Rafael Dal Prà, Johannes Rudolph, Paul Tafforeau,
+Alessandro Mirone, Paul Henderson, Hendrik Schilling, Forrest McDonald, David Josey, Youssef Nader, C. Seth Parker,
+W. Brent Seales. Vesuvius Challenge: CT Scans of Herculaneum Papyri. Vesuvius Challenge. https://scrollprize.org/data
+
+Meshes and the face check: ketchupbyheinz, vesuvius-scroll-survey (https://github.com/ketchupbyheinz/vesuvius-scroll-survey;
+code MIT, meshes CC BY-NC 4.0) and ScrollPrize/villa PR #2318 (MIT).
+
+Ink models, all MIT: ink_9um and Hecate (Vesuvius Challenge), Reader v2 and Reader V3 (Domenico Russo), dense_native
+(Erwin Nieuwlaar), d9v2 (TAUIL-Abd-Elilah). Ensemble recipe: Erwin Nieuwlaar, through LimeGS's ink-sdk.

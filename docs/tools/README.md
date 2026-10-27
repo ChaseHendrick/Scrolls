@@ -166,6 +166,7 @@ The table below is generated from the pages by `python -m kit.tooldocs index`; e
 
 | Tool | Status | Run | Go-ahead | What it does |
 | --- | --- | --- | --- | --- |
+| [ink-atlas](ink-atlas.md) | Current | `Client("SharpMeow/ink-atlas").predict(..., api_name="/get_map")` | Not needed | A Space and an MCP server over the public First Letters ink atlas: seven public ink models on 32 traced surfaces, one shared 9.6 um canvas, with a loupe, an all-model compare and six agent tools. |
 | [scroll-lens](scroll-lens.md) | Current | `https://sharpmeow-scroll-lens.hf.space/gradio_api/mcp/` | Needed | A Hugging Face ZeroGPU Space that reads a 128³ or 256³ cube of a public 2.2 to 2.4 µm scroll scan and shows what three Vesuvius Challenge 3D models see in it: click search, slice views and a 3D view drawn in the browser, and agent tools (API and MCP). |
 | [segment-lens](segment-lens.md) | Current | `https://sharpmeow-segment-lens.hf.space/agents/` | Needed | A Hugging Face Space that shows each published tifxyz segment of a scan on no prize list as a 3D surface colored by `kit tifxyz check`'s flags, beside the Segment Atlas numbers, with a sortable table of every mesh, and the same atlas as an API and MCP server for agents. |
 | [sheetview](sheetview.md) | Current | `python -m kit sheetview build` | Not needed | Turn a tifxyz segment into a Neuroglancer mesh whose vertices carry a volume's value (3D ink, CT), so the volume reads as a picture on the curved sheet in the hosted viewer, with no install. |

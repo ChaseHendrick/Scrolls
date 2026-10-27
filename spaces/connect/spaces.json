@@ -10,6 +10,7 @@
   {"space": "SharpMeow/crackle-check", "dir": "spaces/connect/crackle-check", "sdk": "gradio", "source": "Scrolls-private"},
   {"space": "SharpMeow/dinovol-embeddings", "dir": "spaces/dinovol-embeddings", "sdk": "static", "source": "here"},
   {"space": "SharpMeow/lasagna-fields", "dir": "spaces/lasagna-fields", "sdk": "gradio", "source": "here"},
-  {"space": "SharpMeow/fiber-checker", "dir": "spaces/fiber-checker", "sdk": "gradio", "source": "here"}
+  {"space": "SharpMeow/fiber-checker", "dir": "spaces/fiber-checker", "sdk": "gradio", "source": "here"},
+  {"space": "SharpMeow/ink-atlas", "dir": "spaces/ink-atlas", "sdk": "gradio", "source": "here"}
  ]
 }

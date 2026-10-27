@@ -31,6 +31,7 @@ Every released tool, one line each; each name opens its guide. Generated from [`
 | --- | --- |
 | [AutoPipeline](docs/tools/autopipeline.md) | Runs villa's VC3D tools and ink detection on a released scan, from surface checks to ink maps scored with controls (package, 0.1.9). |
 | [Unroll (interactive 3D scroll viewer)](docs/tools/unroll.md) | Virtually unrolls scroll scans in 3D in your browser, with ink layers, CT tools and an Ink Bench for comparing ink models (Space). |
+| [Ink Atlas (seven ink models on the First Letters surfaces)](docs/tools/ink-atlas.md) | Seven public ink models on the same First Letters surfaces, one 9.6 um canvas: a dataset, a Space with a loupe and compare, and an MCP server. |
 | [Lasagnetta (fast preview of villa's lasagna field)](docs/tools/lasagnetta.md) | A fast preview of villa's lasagna field, about 5 times faster than villa predict3d (6.6 times with larger tiles), with a built-in self-check against villa. |
 | [Fiber Checker (are papyrus fibers visible on a traced surface?)](docs/tools/fibercheck.md) | A free per-patch fiber map of any traced segment or your own tifxyz, with a self-check on every run, as a Space and a command line tool. |
 | [Lasagna Fields (villa lasagna fields for ten scans)](docs/tools/lasagna-fields.md) | villa's lasagna fields for ten whole scans that had none in the open data, one dataset each, with a Space to view and make them. |

@@ -1,0 +1,43 @@
+{
+ "schema": "space-connect/1",
+ "space": "SharpMeow/ink-atlas",
+ "title": "Ink Atlas",
+ "checked": "2026-10-27",
+ "intro": "Every map on this page is a PNG in a public Hugging Face dataset, and each surface's meta.json links the mesh and the CT it was rendered from; here they are for your own tools, with the page's API and MCP server.",
+ "sources": [
+  {"id": "atlas", "title": "The atlas: every map of every surface (SharpMeow/first-letters-ink-atlas)", "kind": "hf-dataset",
+   "url": "https://huggingface.co/datasets/SharpMeow/first-letters-ink-atlas",
+   "repo": "SharpMeow/first-letters-ink-atlas",
+   "file": "atlas.json",
+   "size": "about 1.7 GB in 1,447 files",
+   "license": "CC BY-NC 4.0 (derived from Vesuvius Challenge open data and ketchupbyheinz's meshes)",
+   "note": "atlas.json lists every surface and its folder. Each folder holds maps/MODEL/WINDOW_s1_ORDER.png (8-bit, 0 to 1 as 0 to 255), ensemble/ and ensemble-rev/, ct_mid.png, preview.jpg and meta.json. Model output, not a reading."},
+  {"id": "map", "title": "One map: the ensemble of PHerc0343 reference surface 4937_3336_11593", "kind": "file",
+   "url": "https://huggingface.co/datasets/SharpMeow/first-letters-ink-atlas/resolve/main/surfaces/PHerc0343/kbh-PHerc0343_4937_3336_11593/ensemble/forward.png",
+   "format": "image",
+   "license": "CC BY-NC 4.0",
+   "note": "2016 x 2016 pixels at 9.6 um, the same grid as every other map of that surface, so maps stack pixel for pixel. The ensemble PNG maps z from -2 to 4 onto 0 to 255."},
+  {"id": "mesh", "title": "The traced mesh behind that surface (tifxyz, ketchupbyheinz)", "kind": "tifxyz",
+   "url": "https://raw.githubusercontent.com/ketchupbyheinz/vesuvius-scroll-survey/1f12c1ceb14c1f24acc48249eaad60bcdf541721/results/meshes/PHerc0343_4937_3336_11593",
+   "license": "Meshes CC BY-NC 4.0, code MIT (vesuvius-scroll-survey)",
+   "note": "x.tif, y.tif and z.tif in level-0 voxels of the 8.64 um PHerc0343 scan. Every surface's meta.json names its mesh in mesh.base."},
+  {"id": "ct", "title": "The CT that mesh is on: PHerc0343, 8.64 um", "kind": "ome-zarr",
+   "url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0343/volumes/20250521140437-8.640um-1.2m-116keV-masked.zarr",
+   "zarr_format": 2, "example": {"level": "2", "start": [2880, 832, 1216]},
+   "license": "CC BY-NC 4.0 (Vesuvius Challenge open data)",
+   "note": "Read live from the open-data bucket; the atlas rendered level 0. Every surface's meta.json names its CT in ct.",
+   "browse": "https://scrollprize.org/data_browser/PHerc0343"},
+  {"id": "api", "title": "Browse the atlas from code or an agent", "kind": "gradio-api",
+   "url": "https://huggingface.co/spaces/SharpMeow/ink-atlas",
+   "space": "SharpMeow/ink-atlas",
+   "host": "https://sharpmeow-ink-atlas.hf.space",
+   "status": "running",
+   "endpoints": [
+    {"api": "/atlas_summary", "args": {}},
+    {"api": "/list_scrolls", "args": {}},
+    {"api": "/list_surfaces", "args": {"scroll": "PHerc0343"}}
+   ],
+   "license": "Code Apache 2.0; data CC BY-NC 4.0",
+   "note": "get_map and compare_models return pictures and records; surface_info gives every file's URL. Runs on the Space's CPU, no key. Model output, not a reading."}
+ ]
+}
