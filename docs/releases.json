@@ -114,7 +114,7 @@
       "line": "Command-line tools, benchmarks and script folders that run from a clone of this repository.",
       "area": "Releases and repository",
       "page": "docs/tools/cli.md",
-      "released": "2026-10-25",
+      "released": "2026-10-27",
       "summary": "Command-line tools, benchmarks and script folders that run from a clone of this repository. Each line gives the tool's release date, its weights where it has them, one command to start with, its tool page and its evidence; each page lists the tool's own needs. Their outputs are model output or geometry measurements for a person to check, not readings.",
       "commands": [
         "git clone --depth 1 https://github.com/ChaseHendrick/Scrolls.git",
@@ -652,6 +652,15 @@
           "summary": "Runs a local command and records its elapsed time and estimated electricity cost, or adds records of past runs.",
           "command": "python -m kit run local --help",
           "page": "docs/tools/run-local.md"
+        },
+        {
+          "id": "hf-rows",
+          "name": "Hugging Face Jobs ledger importer",
+          "area": "Compute and cost",
+          "released": "2026-10-27",
+          "summary": "Adds finished Hugging Face Jobs to a cost ledger with the cost from Hugging Face's own bill, once per Job, and restricts public ledgers to generic work.",
+          "command": "python -m kit run hf-rows --help",
+          "page": "docs/tools/hf-rows.md"
         },
         {
           "id": "modal-row",

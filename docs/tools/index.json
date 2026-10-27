@@ -4059,6 +4059,155 @@
    ]
   },
   {
+   "id": "hf-rows",
+   "name": "hf-rows",
+   "tagline": "add Hugging Face Jobs to a cost ledger from Hugging Face's own bill",
+   "summary": "`python -m kit run hf-rows` reads Hugging Face's bill for the current period and appends one row per finished Job (date, purpose, flavor, billed minutes, billed USD) to a cost ledger CSV, never twice for the same Job.",
+   "status": "Current",
+   "kind": [
+    "kit command",
+    "kit module"
+   ],
+   "area": "Compute and cost",
+   "commands": [
+    "python -m kit run hf-rows"
+   ],
+   "imports": [],
+   "code": [
+    {
+     "path": "kit/hfrows.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/cli.py",
+     "symbols": [
+      "cmd_run"
+     ]
+    }
+   ],
+   "tests": [
+    "tests/test_hfrows.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed: it reads a bill and edits a local file. A row becomes public only when the change is merged into public Scrolls"
+   },
+   "checked": {
+    "date": "2026-10-27",
+    "commit": "bcd1a7f"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`hf-rows`",
+    "Status": "Current",
+    "Kind": "kit command, kit module",
+    "Area": "Compute and cost",
+    "Run": "`python -m kit run hf-rows`",
+    "Code": "`kit/hfrows.py`, `kit/cli.py` (`cmd_run`)",
+    "Tests": "`tests/test_hfrows.py`",
+    "Needs": "Python 3.10 or newer, standard library only. A Hugging Face token with billing read access (\"Billing: read billing usage\" on a fine-grained token) in `HF_TOKEN`, and a ledger CSV that already has its header row",
+    "Runs on": "Any machine; about 3 s for 578 labelled Jobs (measured 2026-10-27 in a Claude cloud container, two Hub requests plus one per page of 100 Jobs)",
+    "Network": "huggingface.co: `/api/settings/billing/usage/jobs` (the bill), `/api/whoami-v2` and `/api/jobs/NAMESPACE` (only with `--label`). Read only",
+    "Writes": "The ledger CSV named by `--ledger` (default `docs/compute/hf-jobs-costs.csv`), replaced atomically, through the same writer and lock as [modal-row](modal-row.md); nothing with `--dry-run`",
+    "Go-ahead": "Not needed: it reads a bill and edits a local file. A row becomes public only when the change is merged into public Scrolls",
+    "Released": "Public `main` since 2026-10-27",
+    "Checked": "2026-10-27 against commit `bcd1a7f`"
+   },
+   "page": "docs/tools/hf-rows.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 22,
+     "end_line": 31,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 32,
+     "end_line": 44,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 45,
+     "end_line": 75,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 76,
+     "end_line": 84,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 85,
+     "end_line": 106,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 107,
+     "end_line": 124,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 125,
+     "end_line": 130,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 131,
+     "end_line": 147,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 148,
+     "end_line": 164,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 165,
+     "end_line": 171,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 172,
+     "end_line": 175,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 176,
+     "end_line": 185,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 186,
+     "end_line": 193,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 194,
+     "end_line": 197,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 198,
+     "end_line": 204,
+     "applicable": true
+    }
+   ]
+  },
+  {
    "id": "hfpull",
    "name": "hfpull",
    "tagline": "download a Hugging Face bucket folder fast, each distinct file once",
@@ -7261,7 +7410,8 @@
     "python scripts/media/tifxyz_stills.py",
     "python scripts/media/isometry_media.py",
     "python scripts/media/coverage_still.py",
-    "python scripts/media/vc3d_agent_session.py"
+    "python scripts/media/vc3d_agent_session.py",
+    "python scripts/media/hfrows_demo.py"
    ],
    "imports": [],
    "code": [
@@ -7288,7 +7438,7 @@
     "Status": "Current",
     "Kind": "script folder",
     "Area": "Releases and repository",
-    "Run": "`python scripts/media/hero.py`, `python scripts/media/encode.py`, `python scripts/media/capture_web.py`, `python scripts/media/record_ap_monitor.py`, `python scripts/media/sweep.py`, `python scripts/media/tifxyz_stills.py`, `python scripts/media/isometry_media.py`, `python scripts/media/coverage_still.py`, `python scripts/media/vc3d_agent_session.py`",
+    "Run": "`python scripts/media/hero.py`, `python scripts/media/encode.py`, `python scripts/media/capture_web.py`, `python scripts/media/record_ap_monitor.py`, `python scripts/media/sweep.py`, `python scripts/media/tifxyz_stills.py`, `python scripts/media/isometry_media.py`, `python scripts/media/coverage_still.py`, `python scripts/media/vc3d_agent_session.py`, `python scripts/media/hfrows_demo.py`",
     "Code": "`scripts/media/`",
     "Tests": "`tests/test_media.py`, `tests/test_repo.py` (`test_assets_are_listed_labeled_and_within_limits`)",
     "Needs": "Python 3.10 or newer. `hero.py` and `sweep.py`: numpy and Pillow, and the Inter font for social cards. `encode.py`: ffmpeg (libx264) and gifsicle. `capture_web.py`: the `playwright` package and a Chromium it can start (it never downloads one). `common.py` is standard library only",
@@ -7330,67 +7480,67 @@
     {
      "name": "Commands and options",
      "start_line": 85,
-     "end_line": 249,
+     "end_line": 257,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 250,
-     "end_line": 253,
+     "start_line": 258,
+     "end_line": 261,
      "applicable": false
     },
     {
      "name": "Inputs",
-     "start_line": 254,
-     "end_line": 260,
+     "start_line": 262,
+     "end_line": 268,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 261,
-     "end_line": 297,
+     "start_line": 269,
+     "end_line": 305,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 298,
-     "end_line": 351,
+     "start_line": 306,
+     "end_line": 359,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 352,
-     "end_line": 374,
+     "start_line": 360,
+     "end_line": 382,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 375,
-     "end_line": 390,
+     "start_line": 383,
+     "end_line": 398,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 391,
-     "end_line": 400,
+     "start_line": 399,
+     "end_line": 408,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 401,
-     "end_line": 404,
+     "start_line": 409,
+     "end_line": 412,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 405,
-     "end_line": 411,
+     "start_line": 413,
+     "end_line": 419,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 412,
-     "end_line": 417,
+     "start_line": 420,
+     "end_line": 425,
      "applicable": true
     }
    ]
@@ -7661,43 +7811,43 @@
     {
      "name": "Failure modes",
      "start_line": 160,
-     "end_line": 175,
+     "end_line": 176,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 176,
-     "end_line": 183,
+     "start_line": 177,
+     "end_line": 184,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 184,
-     "end_line": 187,
+     "start_line": 185,
+     "end_line": 188,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 188,
-     "end_line": 197,
+     "start_line": 189,
+     "end_line": 198,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 198,
-     "end_line": 205,
+     "start_line": 199,
+     "end_line": 206,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 206,
-     "end_line": 210,
+     "start_line": 207,
+     "end_line": 211,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 211,
-     "end_line": 218,
+     "start_line": 212,
+     "end_line": 219,
      "applicable": true
     }
    ]
@@ -9704,43 +9854,43 @@
     {
      "name": "Failure modes",
      "start_line": 246,
-     "end_line": 271,
+     "end_line": 272,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 272,
-     "end_line": 293,
+     "start_line": 273,
+     "end_line": 294,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 294,
-     "end_line": 297,
+     "start_line": 295,
+     "end_line": 298,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 298,
-     "end_line": 307,
+     "start_line": 299,
+     "end_line": 308,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 308,
-     "end_line": 316,
+     "start_line": 309,
+     "end_line": 317,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 317,
-     "end_line": 324,
+     "start_line": 318,
+     "end_line": 325,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 325,
-     "end_line": 332,
+     "start_line": 326,
+     "end_line": 333,
      "applicable": true
     }
    ]
