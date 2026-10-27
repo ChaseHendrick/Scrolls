@@ -170,7 +170,7 @@ function card(seg) {
       <div><b>${fmt(held)}</b><span>held back for evaluation</span></div>
     </div>
     <div class="meter"><i style="width:${100 * sn / Math.max(1, v + held)}%;background:var(--snap)"></i><i style="width:${100 * ab / Math.max(1, v + held)}%;background:var(--pub)"></i><i style="width:${100 * held / Math.max(1, v + held)}%;background:var(--held)"></i></div>
-    <div class="legend"><span><i style="background:var(--snap)"></i>snapped</span><span><i style="background:var(--pub)"></i>not measured (moved with neighbours)</span><span><i style="background:var(--held)"></i>held back</span></div>
+    <div class="legend"><span><i style="background:var(--snap)"></i>snapped</span><span><i style="background:var(--pub)"></i>not measured (drawn at the published position)</span><span><i style="background:var(--held)"></i>held back</span></div>
     <pre class="cmd"><code>hf download SharpMeow/vesuvius-snapped-labels --repo-type dataset --include "${seg.path}/*" --local-dir snapped-labels</code></pre>
     <p class="hint">Mesh: <a href="${base}/snapped.tifxyz/meta.json" target="_blank" rel="noopener">${seg.path}/snapped.tifxyz</a> · record: <a href="${base}/release.json" target="_blank" rel="noopener">release.json</a> · CT: <a href="${S.view ? S.view.volume : '#'}/.zattrs" target="_blank" rel="noopener">${S.view ? S.view.volume.split('/').pop() : ''}</a></p>`;
 }
