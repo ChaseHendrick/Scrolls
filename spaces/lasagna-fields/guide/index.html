@@ -79,12 +79,12 @@ dl.facts{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;margin:0;font-
 dl.facts dt{color:var(--ink3)}dl.facts dd{margin:0;word-break:break-word}
 .links{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
 .codebox{position:relative;margin-top:10px}
-pre{max-height:340px;background:var(--code);color:var(--codeink);border-radius:10px;padding:14px 16px;overflow:auto;margin:0;line-height:1.55}
+pre{background:var(--code);color:var(--codeink);border-radius:10px;padding:14px 16px;overflow-x:auto;overflow-y:hidden;margin:0;line-height:1.55}
 pre .c{color:#9a8f7e}
 .codebox pre{padding-top:34px}
 .copy{position:absolute;top:8px;right:8px;border:1px solid #ffffff22;background:#ffffff14;color:#efe6d6;border-radius:7px;padding:3px 9px;font-size:12px;cursor:pointer}
 .copy:hover{background:#ffffff26}
-.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-top:18px}
+.tabs{display:flex;flex-wrap:wrap;gap:4px;border-bottom:1px solid var(--line);margin-top:18px}
 .tabs button{border:0;background:none;padding:8px 12px;color:var(--ink2);cursor:pointer;font:inherit;font-size:14px;border-bottom:2px solid transparent;margin-bottom:-1px}
 .tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent);font-weight:600}
 .detail>*,.region>*,.panel,.codebox,.cards3>*{min-width:0}
@@ -430,7 +430,7 @@ let drag=false;$('map').onpointerdown=e=>{drag=true;mapAt(e)};addEventListener('
 
 /* copy */
 document.addEventListener('click',e=>{const b=e.target.closest('.copy');if(!b)return;
- const t=$(b.dataset.copy).textContent;const done=()=>{$('toast').classList.add('on');setTimeout(()=>$('toast').classList.remove('on'),1200)};
+ const t=$(b.dataset.copy).textContent;const done=()=>{b.textContent='Copied';$('toast').classList.add('on');setTimeout(()=>{b.textContent='Copy';$('toast').classList.remove('on')},1200)};
  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(done,()=>fallback(t,done));else fallback(t,done)});
 function fallback(t,done){const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy');done()}catch(e){}a.remove()}
 

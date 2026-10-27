@@ -62,6 +62,14 @@ class TestBox(unittest.TestCase):
                     self.assertTrue(o <= c < o + s or s < size * 4, (point, size, p["origin_level0_zyx"]))
                     self.assertEqual(o % (self.L.ALIGN * 4), 0)
 
+    def test_plan_names_the_point_in_american_english(self):
+        """plan_field's JSON and the receipt name the point center_level0_zyx (American spelling since 27 Oct 2026);
+        the zip's name is built from it."""
+        p = self.L.plan("20260930100252", 39424, 10752, 13824)
+        self.assertEqual(p["center_level0_zyx"], [39424, 10752, 13824])
+        self.assertEqual(sorted(k for k in p if "level0" in k),
+                         ["center_level0_zyx", "origin_level0_zyx", "size_level0_zyx"])
+
     def test_refuses_points_outside_and_sizes_not_offered(self):
         with self.assertRaises(self.L.FieldError):
             self.L.plan("20260930100252", 80000, 10, 10)
@@ -100,18 +108,61 @@ class TestGuidePictures(unittest.TestCase):
         import html
         raw = (SPACE / "guide" / "index.html").read_text(encoding="utf-8")
         self.assertIn("'assets/", raw)                      # the control: the guide itself uses relative paths
-        sys.path.insert(0, str(SPACE))
-        try:
-            spec = importlib.util.spec_from_file_location("lasagna_app_under_test", SPACE / "app.py")
-            app = importlib.util.module_from_spec(spec)
-            spec.loader.exec_module(app)
-        finally:
-            sys.path.remove(str(SPACE))
+        app = _load_app()
         page = html.unescape(app.guide_html())
         self.assertNotIn("<base", page)
         self.assertNotIn("'assets/", page)
         self.assertNotIn('"assets/', page)
         self.assertIn("'/gradio_api/file=assets/", page)
+
+
+def _load_app():
+    sys.path.insert(0, str(SPACE))
+    try:
+        spec = importlib.util.spec_from_file_location("lasagna_app_under_test", SPACE / "app.py")
+        app = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(app)
+    finally:
+        sys.path.remove(str(SPACE))
+    return app
+
+
+@unittest.skipUnless(HAVE_NUMPY, "needs numpy")
+class TestOneScrollBar(unittest.TestCase):
+    """User decision, 27 October 2026: the page scrolls as a whole, and nothing inside it keeps a vertical scroll bar."""
+
+    def test_head_carries_the_one_scroll_fragment(self):
+        app = _load_app()
+        frag = (SPACE / "onescroll.html").read_text(encoding="utf-8")
+        self.assertIn("<!-- space-onescroll:start -->", frag)
+        self.assertIn(frag, app.HEAD)
+
+    def test_guide_frame_has_no_fixed_height(self):
+        import re
+        app = _load_app()
+        rule = re.search(r"\.lf-guide iframe\s*\{([^}]*)\}", app.CSS)
+        self.assertIsNotNone(rule)                           # the control: the rule the old fixed height lived in
+        self.assertNotIn("100vh", app.CSS)
+        self.assertNotRegex(rule.group(1), r"(^|[;\s])height\s*:")
+
+    def test_guide_code_blocks_grow(self):
+        import re
+        raw = (SPACE / "guide" / "index.html").read_text(encoding="utf-8")
+        rule = re.search(r"(?m)^pre\{([^}]*)\}", raw)
+        self.assertIsNotNone(rule)                           # the control: the guide still styles its code blocks
+        self.assertNotIn("max-height", rule.group(1))
+        self.assertIn("overflow-x:auto", rule.group(1))
+        self.assertNotRegex(rule.group(1), r"(^|;)overflow:(auto|scroll)")
+
+    def test_receipt_and_download_grow(self):
+        """After a run, the receipt (Gradio's JSON caps itself at 500 px) and the download's file row (height=88)
+        would scroll inside the page; both grow instead."""
+        app = _load_app()
+        src = (SPACE / "app.py").read_text(encoding="utf-8")
+        self.assertIn('elem_id="lf-dl"', src)                # the control: the boxes the rules name exist
+        self.assertIn('gr.JSON(max_height=None, elem_id="lf-receipt")', src)
+        self.assertRegex(app.CSS, r"#lf-dl \.file-preview-holder\s*\{[^}]*max-height:none !important;[^}]*overflow:visible")
+        self.assertRegex(app.CSS, r"#lf-receipt\s*\{[^}]*max-height:none !important;[^}]*overflow:visible")
 
 
 @unittest.skipUnless(HAVE_NUMPY and "fork" in mp.get_all_start_methods(), "needs numpy and fork")

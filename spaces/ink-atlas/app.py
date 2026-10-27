@@ -26,6 +26,7 @@ from atlasdata import AtlasError  # noqa: E402
 VERSION = "1.0.0"
 SPACE = "SharpMeow/ink-atlas"
 CONNECT_HTML = HERE / "connect.html"
+ONESCROLL_HTML = HERE / "onescroll.html"      # python -m kit spaceconnect render writes it
 THUMBS = A.OUT / "thumbs"
 _ATLAS = {"atlas": None, "error": None}
 _LOCK = threading.Lock()
@@ -100,13 +101,13 @@ def get_map(surface_id: str, layer: str = "ensemble", window: str = "c+0", order
     Args:
         surface_id: a surface id from list_surfaces.
         layer: "ensemble", "ct" or a model: ink_9um-s42, ink_9um-s43, reader-v2, reader-v3, dense-native, d9v2, hecate-9.6.
-        window: the depth window centre in 9.6 um layers: "c-4", "c+0" or "c+4" (Hecate 9.6 has c+0 only).
+        window: the depth window center in 9.6 um layers: "c-4", "c+0" or "c+4" (Hecate 9.6 has c+0 only).
         order: "forward" (depth order as stored) or "reverse"; empty uses the face check's majority.
-        x: crop centre across the canvas in pixels (9.6 um each); below 0 shows the whole surface.
-        y: crop centre down the canvas in pixels; below 0 shows the whole surface.
+        x: crop center across the canvas in pixels (9.6 um each); below 0 shows the whole surface.
+        y: crop center down the canvas in pixels; below 0 shows the whole surface.
         size: crop side in pixels, up to 1024; 0 shows the whole surface shrunk to 1400 pixels.
         colormap: "gray" (ink bright), "papyrus" (ink dark on papyrus), "ember" or "ice".
-        mode: "map" (the layer alone), "overlay" (the layer in colour over the CT) or "ct".
+        mode: "map" (the layer alone), "overlay" (the layer in color over the CT) or "ct".
 
     Returns:
         The picture (PNG) and a record: the source file's URL, the crop box, the contrast stretch.
@@ -116,13 +117,13 @@ def get_map(surface_id: str, layer: str = "ensemble", window: str = "c+0", order
 
 def compare_models(surface_id: str, x: float = -1, y: float = -1, size: int = 512, order: str = "",
                    window: str = "c+0"):
-    """Every ink model, the ensemble and the CT on the same box of one surface, in one labelled grid at full
+    """Every ink model, the ensemble and the CT on the same box of one surface, in one labeled grid at full
     resolution, with numbers for each layer in the box.
 
     Args:
         surface_id: a surface id from list_surfaces.
-        x: box centre across the canvas in pixels; below 0 uses the middle of the surface.
-        y: box centre down the canvas in pixels; below 0 uses the middle of the surface.
+        x: box center across the canvas in pixels; below 0 uses the middle of the surface.
+        y: box center down the canvas in pixels; below 0 uses the middle of the surface.
         size: box side in pixels, 256 to 1024.
         order: "forward" (as stored) or "reverse"; empty uses the face check's majority.
         window: "c-4", "c+0" or "c+4".
@@ -214,7 +215,7 @@ def info_html(sid, layer, window, order):
     rel, used = A.layer_rel(at, sid, layer, window, order)
     mesh = m.get("mesh", {}).get("base", "")
     link = f"https://huggingface.co/spaces/{SPACE}?surface={sid}&layer={layer}&order={order}"
-    note = (f'<p class="ia-note">Hecate 9.6 has the centre window only, so this shows c+0.</p>'
+    note = (f'<p class="ia-note">Hecate 9.6 has the center window only, so this shows c+0.</p>'
             if used and used != window else "")
     ref = ('<p class="ia-note">A PHerc0343 reference surface: the scroll behind the First Letters prize awarded on '
            '8 October 2026.</p>' if s["role"] == "reference" else "")
@@ -248,7 +249,7 @@ def compare_table(rec):
         by = "" if lid == A.ENSEMBLE else A.MODELS[lid][2]
         r = "" if st["r_with_ensemble"] is None else f"{st['r_with_ensemble']:+.2f}"
         flat = "" if st["alive"] else ' <em class="ia-flat">flat here</em>'
-        col = A.LAYER_COLOUR.get(lid, "#5b4bd6")
+        col = A.LAYER_COLOR.get(lid, "#5b4bd6")
         rv = st["r_with_ensemble"]
         bar = ("" if rv is None else f'<i class="ia-rbar" style="width:{max(0.0, rv) * 90:.0f}px;background:{col}"></i>')
         rows.append(f'<tr><td><b><i class="ia-dot" style="background:{col}"></i>{html.escape(name)}</b>{flat}'
@@ -263,7 +264,7 @@ def compare_table(rec):
 
 
 def models_html():
-    rows = "".join(f'<tr><td><b><i class="ia-dot" style="background:{A.LAYER_COLOUR[mid]}"></i>{html.escape(t)}</b>'
+    rows = "".join(f'<tr><td><b><i class="ia-dot" style="background:{A.LAYER_COLOR[mid]}"></i>{html.escape(t)}</b>'
                    f"</td><td>{html.escape(b)}</td><td>MIT</td></tr>" for mid, (_, t, b) in A.MODELS.items())
     return f'<table class="ia-cmp ia-models"><tr><th>Model</th><th>By</th><th>License</th></tr>{rows}</table>'
 
@@ -330,10 +331,10 @@ letters.
 | --- | --- |
 | **Click the map** | opens the loupe there: the CT and the map at full resolution, with a slider between them |
 | **Layer** | the ensemble (mean z-score of the alive models), one model, or the CT |
-| **Depth window** | where the model's 3D input is centred: on the traced surface (0) or 4 layers to either side |
+| **Depth window** | where the model's 3D input is centered: on the traced surface (0) or 4 layers to either side |
 | **Depth order** | as stored, or reversed: which face of the sheet the model reads as the writing side |
-| **View** | the map alone, the map in colour over the CT, or the CT alone |
-| **Look** | colours, contrast (the low and high percentiles that go to black and white) and gamma |
+| **View** | the map alone, the map in color over the CT, or the CT alone |
+| **Look** | colors, contrast (the low and high percentiles that go to black and white) and gamma |
 | **Compare models** tab | every model on the loupe's box, side by side, with numbers |
 
 ### Which depth order?
@@ -386,7 +387,7 @@ claude mcp add --transport http ink-atlas {host}/gradio_api/mcp/
 
 Things to ask an agent once it is connected:
 
-- "List the Ink Atlas surfaces of PHerc0483A, then show me the ensemble of the first one in papyrus colours."
+- "List the Ink Atlas surfaces of PHerc0483A, then show me the ensemble of the first one in papyrus colors."
 - "Compare all models on the middle 512 pixels of kbh-PHerc0343_4937_3336_11593 and tell me which agree most with
   the ensemble."
 - "Get surface_info for kbh-PHerc0358_2358_2561_4423 and download its Reader V3 maps."
@@ -492,8 +493,9 @@ CSS = """
 .ia-steps button { flex:1 1 0 !important; }
 .ia-chead p { font-size:14px; }
 .ia-gallery .caption-label { font-size:11.5px !important; }
+.ia-gallery .grid-wrap { max-height:none !important; height:auto !important; overflow-y:visible !important; }
 .ia-two img.ia-gif { max-width:440px; }
-.ia-legend { flex-wrap:nowrap; white-space:nowrap; }
+.ia-legend { flex-wrap:wrap; row-gap:4px; } .ia-legend span { white-space:nowrap; }
 .ia-legend .bar { width:140px; flex:none; }
 .ia-kv, .ia-kv tr, .ia-kv th, .ia-kv td, .ia-cmp, .ia-cmp tr, .ia-cmp th, .ia-cmp td { border-left:0 !important;
   border-right:0 !important; border-top:0 !important; background:transparent !important; }
@@ -502,7 +504,8 @@ CSS = """
   .ia-cards, .ia-cards-4 { grid-template-columns:repeat(2,minmax(0,1fr)); }
   .ia-two { grid-template-columns:1fr; } .ia-chips { margin-left:0; }
 }
-@media (max-width: 640px) { .ia-head h1 { font-size:25px; } .ia-head p { display:none; } }
+@media (max-width: 640px) { .ia-head h1 { font-size:25px; } .ia-head p { display:none; }
+  .ia-cmp { font-size:12.5px; } .ia-cmp th, .ia-cmp td { padding:6px 4px; } .ia-cmp .ia-rbar { display:none; } }
 """
 
 HEAD = """
@@ -514,6 +517,11 @@ on one shared 9.6 um canvas. Browse, compare, or connect an agent.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,650&display=swap" rel="stylesheet">
 """
+
+
+def page_head():
+    """HEAD plus onescroll.html, so the page scrolls as a whole and no frame inside it keeps a scroll bar of its own."""
+    return HEAD + (ONESCROLL_HTML.read_text() if ONESCROLL_HTML.exists() else "")
 
 
 def legend(cmap, mode):
@@ -574,7 +582,7 @@ def build_demo():
     gallery_ids = [s["id"] for s in sorted(at.index["surfaces"],
                                            key=lambda s: (s["role"] != "eligible", s["scroll"], s["id"]))]
 
-    def centre(sid):
+    def center(sid):
         h, w = at.meta(sid)["render"]["canvas_hw"]
         return [w // 2, h // 2]
 
@@ -582,7 +590,7 @@ def build_demo():
         lo, hi = float(lo), float(hi)
         if hi <= lo:
             hi = min(100.0, lo + 0.5)
-        pt = pt or centre(sid)
+        pt = pt or center(sid)
         h, w = at.meta(sid)["render"]["canvas_hw"]
         side = A.DISPLAY
         img, _ = A.layer_picture(at, sid, layer, window, order, None, cmap, lo, hi, gamma, mode, alpha, side=side)
@@ -603,7 +611,7 @@ def build_demo():
         _, opens = A.face_votes(m)
         ch = layer_choices(sid)
         keep = layer if layer in [c[1] for c in ch] else A.ENSEMBLE
-        return gr.update(choices=ch, value=keep), gr.update(value=opens), centre(sid)
+        return gr.update(choices=ch, value=keep), gr.update(value=opens), center(sid)
 
     def step(sid, k):
         i = order_ids.index(sid) if sid in order_ids else 0
@@ -630,11 +638,11 @@ def build_demo():
         order = q.get("order") if q.get("order") in A.ORDERS else A.face_votes(at.meta(sid))[1]
         tab = q.get("tab") if q.get("tab") in ("explore", "compare", "atlas", "howto", "agents") else "explore"
         return (gr.update(value=s["scroll"]), gr.update(choices=surface_choices(s["scroll"]), value=sid),
-                gr.update(choices=layer_choices(sid), value=layer), gr.update(value=order), centre(sid),
+                gr.update(choices=layer_choices(sid), value=layer), gr.update(value=order), center(sid),
                 gr.Tabs(selected=tab))
 
     def on_compare(sid, pt, size, order, window, cmap):
-        pt = pt or centre(sid)
+        pt = pt or center(sid)
         png, rec = A.compare_models(at, sid, pt[0], pt[1], int(size), order, window, cmap)
         s = at.surface(sid)
         head = (f"**{s['scroll']} · {A.short_id(sid, s['scroll'])}**, box of {int(size)} pixels around "
@@ -648,7 +656,7 @@ def build_demo():
         gr.HTML('<div class="ia-head"><div class="ia-mark"></div><div><h1>Ink Atlas</h1><p>Seven public ink models '
                 'on the same traced surfaces of the First Letters scrolls, side by side on one 9.6 um canvas.</p>'
                 f'</div>{chips}</div>')
-        pt = gr.State(centre(first))
+        pt = gr.State(center(first))
         with gr.Tabs(elem_id="ia-tabs") as tabs:
             with gr.Tab("Explore", id="explore"):
                 with gr.Row(equal_height=False):
@@ -667,7 +675,7 @@ def build_demo():
                         lsize = gr.Radio([("256", 256), ("512", 512), ("1024", 1024)], value=512,
                                          label="Loupe size (pixels, 9.6 um each)")
                         with gr.Accordion("Look", open=True):
-                            cmap = gr.Radio(LOOKS, value="ember", label="Colours")
+                            cmap = gr.Radio(LOOKS, value="ember", label="Colors")
                             lo = gr.Slider(0, 20, value=1, step=0.5, label="Black point (percentile)")
                             hi = gr.Slider(80, 100, value=99.5, step=0.1, label="White point (percentile)")
                             gamma = gr.Slider(0.4, 2.5, value=1.0, step=0.05, label="Gamma")
@@ -690,7 +698,7 @@ def build_demo():
                                          label="Box size (pixels)")
                         corder = gr.Radio(ORDER_CHOICES, value="forward", label="Depth order")
                         cwin = gr.Radio(WINDOW_CHOICES, value="c+0", label="Depth window")
-                        ccmap = gr.Radio(LOOKS, value="ember", label="Colours")
+                        ccmap = gr.Radio(LOOKS, value="ember", label="Colors")
                     with gr.Column(scale=3, min_width=360):
                         cgrid = gr.Image(label="Every model on the same box", show_label=False, type="filepath",
                                          format="png", interactive=False, height=880,
@@ -786,7 +794,7 @@ def fix_mcp_multiple_outputs():
 
 def launch_kwargs():
     A.OUT.mkdir(parents=True, exist_ok=True)
-    return dict(theme=theme(), css=CSS, head=HEAD, footer_links=["api", "gradio"], mcp_server=True,
+    return dict(theme=theme(), css=CSS, head=page_head(), footer_links=["api", "gradio"], mcp_server=True,
                 allowed_paths=[str(A.OUT)], ssr_mode=False)
 
 

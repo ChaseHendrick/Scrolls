@@ -834,6 +834,13 @@ class Page(unittest.TestCase):
         self.assertIn(".slv-more[open] > summary { display:none", self.app.CSS)
         self.assertNotIn(".slv-more > summary { display:none", self.app.CSS)
 
+    def test_head_carries_the_one_scroll_fragment(self):
+        # one page scroll bar (user decision, 27 October 2026): the head fits same-origin iframes to their content, and the
+        # fragment ships with the Space
+        self.assertIn("<!-- space-onescroll:start -->", self.app.HEAD)
+        self.assertIn("head=HEAD", (SPACE / "app.py").read_text(encoding="utf-8"))
+        self.assertIn("onescroll.html", lens.SPACE_FILES)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -86,7 +86,7 @@ usage: python -m kit axispolish [-h] --out OUT [--grids GRIDS]
 | `--grids` | none (found on the bucket) | The scan's level-0 normal-grid folder or URL, holding `xy/NNNNNN.grid` |
 | `--scroll` | none (from `metadata.source_volume`) | The scroll id, used to find the grids |
 | `--every` | `100` | Polish one slice every this many; the test read its lines at most 100 slices from a polished slice |
-| `--voxel-um` | none (from the metadata) | Voxel size in micrometres, when the line names none |
+| `--voxel-um` | none (from the metadata) | Voxel size in micrometers, when the line names none |
 | `--cache` | none | Keep downloaded grid files here, so a rerun fetches nothing |
 | `--verbose` | off | Print each slice's move on stderr |
 | `--json` | off | Print the summary as JSON |

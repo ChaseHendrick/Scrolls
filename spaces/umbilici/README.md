@@ -31,7 +31,7 @@ on 2.4 µm scans from v2.6) as the newest version of each line, with the origina
 superseded (the dataset's superseded_by). Since 1.10.0 the lines come from center lines v2.6.1: 57 lines on 35
 scans.
 
-- **Array**: every scan's lines side by side, heights to scale in millimetres: the prize scans in the front two rows
+- **Array**: every scan's lines side by side, heights to scale in millimeters: the prize scans in the front two rows
   (people's lines, then the Center Finder's), the other public scans in the back row. Each maker has its own color
   (Vesuvius Challenge cyan, Alexey Drobkov pink, Abd Elilah violet, Iyan Dopico white, Chase Hendrick's Center
   Finder amber, its polished lines lime); click a maker in the key to hide its lines, or untick one line on a scan card, and the view link
@@ -42,21 +42,23 @@ scans.
   (0.15 to 0.23 mm on a 2.4 µm scan, with fewer heights),
   the lines inside it, and an axial slice at 70 to 80 µm per pixel with every line's crossing marked. The slice
   follows its height slider live (from the 0.3 mm CT already loaded, then sharpens when the slider rests), can turn
-  with the 3D view ("turn with view"), and can be hidden and brought back from the bottom right.
+  with the 3D view ("turn with view"), and can be hidden and brought back from the bottom right. In X-ray and
+  Lasagna the scan list steps aside and the menu next to the scan's name on its card opens another scan, so one
+  panel scrolls at a time (the list, the card, or an open dialog); the page itself never scrolls.
 - **Lasagna**: PHerc0175A with villa's lasagna field: its sheet channel (cos) at nine heights, its surface
-  normals as short needles coloured by orientation, and the Center Finder's line through them.
+  normals as short needles colored by orientation, and the Center Finder's line through them.
 - **Data**: every number on the page as sortable tables (57 lines, 35 scans), with `lines.csv`, `scans.csv`,
   `points.csv` and `umbilici.json` downloads.
-- **Guide**: five tabs for every level of reader: Start here, VC3D and villa, For researchers (every statistic
-  defined), Data details (frames, pyramids, encodings) and Credits.
+- **Guide**: six tabs for every level of reader: Start here, VC3D and villa, For researchers (every statistic
+  defined), Data details (frames, pyramids, encodings), Connect your tool and Credits.
 
-Each scan card has, per line, a download link and a copyable URL for the raw file, its sha256, licence, upstream
+Each scan card has, per line, a download link and a copyable URL for the raw file, its sha256, license, upstream
 and every statistic; the scan's OME-Zarr URL and CT pyramid; each line's x, y, z at the slice you are on; a link
 that reopens the exact view; and the scan's points as CSV or JSON.
 
 ## Where the lines come from
 
-| Source | Scans | Licence |
+| Source | Scans | License |
 | --- | --- | --- |
 | Alexey Drobkov ([herculaneum-umbilici](https://github.com/AlexeyDrobkovStrikesBack/herculaneum-umbilici)) | 10 | MIT |
 | Abd Elilah, manual curves ([umbilicus-cross-validation](https://github.com/TAUIL-Abd-Elilah/umbilicus-cross-validation)) | 6 | CC BY 4.0 |
@@ -155,7 +157,7 @@ URL parameters: `?mode=scan&scan=PHerc0191&z=10400`, `?mode=lasagna&scan=PHerc01
 film grain, spin), saved in the browser.
 `data/lines.json` is the page's whole line table, built by `tools/build_lines.py` from a copy of the dataset.
 
-## Licence
+## License
 
 Code: Apache 2.0, Chase Hendrick (`LICENSE`, `NOTICE`); three.js is MIT. Data keeps its own terms (`NOTICE`).
 A sibling of [Unroll](https://huggingface.co/spaces/SharpMeow/unroll). A center line is geometry; nothing here

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Umbilici · center lines of 35 Herculaneum scans</title>
-<meta name="description" content="Every public center line (umbilicus) for the 22 prize-eligible Herculaneum scans and 13 other public scans, in X-ray, with the PHerc0175A lasagna field. Data links, sources and licences included.">
+<meta name="description" content="Every public center line (umbilicus) for the 22 prize-eligible Herculaneum scans and 13 other public scans, in X-ray, with the PHerc0175A lasagna field. Data links, sources and licenses included.">
 <meta property="og:title" content="Umbilici · center lines of 35 Herculaneum scans">
 <meta property="og:description" content="Every public center line for the 22 prize-eligible scans and 13 others, streamed over live X-ray CT, plus the PHerc0175A lasagna field.">
 <meta property="og:image" content="https://huggingface.co/spaces/SharpMeow/umbilici/resolve/main/og.jpg">
@@ -17,13 +17,75 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=8">
+<link rel="stylesheet" href="style.css?v=9">
 <script type="importmap">
 { "imports": {
   "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
   "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
 } }
 </script>
+<!-- space-onescroll:start -->
+<!-- one page scroll bar: written by python -m kit spaceconnect render; do not edit -->
+<style>iframe[srcdoc]{display:block;max-height:none!important}</style>
+<script>
+(function () {
+  if (window.__oneScroll) return;
+  window.__oneScroll = true;
+  var CSS = 'html,body{height:auto!important;min-height:0!important}html{overflow:hidden!important}';
+  function size(f) {
+    var d, st = f.__os;
+    try { d = f.contentDocument; } catch (e) { return; }
+    if (!d || !d.body || st.off) return;
+    var de = d.documentElement, r = Math.ceil(de.getBoundingClientRect().height), over = de.scrollHeight;
+    var ch = f.clientHeight, t = r;
+    if (over > ch + 1) t = Math.max(r, over);
+    else if (r >= st.r) t = Math.max(r, ch);
+    st.r = r;
+    if (Math.abs(t - ch) < 2) return;
+    var now = Date.now();
+    st.n = now - st.t0 < 4000 ? st.n + 1 : 1;
+    if (st.n === 1) st.t0 = now;
+    if (st.n > 40) { st.off = true; f.removeAttribute('scrolling'); var g = d.getElementById('space-onescroll'); if (g) g.remove(); return; }
+    f.style.setProperty('height', t + 'px', 'important');
+  }
+  function attach(f) {
+    var d, st = f.__os;
+    try { d = f.contentDocument; } catch (e) { return; }
+    if (!d || !d.documentElement || st.doc === d) return;
+    st.doc = d; st.r = Infinity; st.n = 0; st.off = false;
+    if (!d.getElementById('space-onescroll')) {
+      var s = d.createElement('style'); s.id = 'space-onescroll'; s.textContent = CSS;
+      (d.head || d.documentElement).appendChild(s);
+    }
+    f.setAttribute('scrolling', 'no');
+    f.style.setProperty('min-height', '0', 'important');
+    f.style.setProperty('max-height', 'none', 'important');
+    var w = d.defaultView, go = function () { size(f); };
+    if (w && w.ResizeObserver) { var ro = new w.ResizeObserver(go); ro.observe(d.documentElement); if (d.body) ro.observe(d.body); }
+    d.addEventListener('load', go, true);
+    go();
+  }
+  function bind(f) {
+    if (f.__os || f.getAttribute('data-scroll') === 'inner') return;
+    try { if (!f.contentDocument) return; } catch (e) { return; }
+    f.__os = {t0: 0, n: 0, r: 0};
+    f.addEventListener('load', function () { attach(f); });
+    if (f.contentDocument.readyState !== 'loading') attach(f);
+    else f.contentDocument.addEventListener('DOMContentLoaded', function () { attach(f); });
+  }
+  function scan() { var fs = document.getElementsByTagName('iframe'); for (var i = 0; i < fs.length; i++) bind(fs[i]); }
+  function start() {
+    scan();
+    new MutationObserver(scan).observe(document.documentElement, {childList: true, subtree: true});
+    window.addEventListener('resize', function () {
+      var fs = document.getElementsByTagName('iframe');
+      for (var i = 0; i < fs.length; i++) if (fs[i].__os) size(fs[i]);
+    });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
+})();
+</script>
+<!-- space-onescroll:end -->
 </head>
 <body>
 <canvas id="gl" aria-label="3D view of the center lines"></canvas>
@@ -73,9 +135,9 @@
 
 <section class="card" id="card" hidden>
   <div class="card-top">
-    <div>
+    <div class="c-head">
       <div class="mono dim small" id="c-kick"></div>
-      <h2 id="c-title"></h2>
+      <div class="c-row"><h2 id="c-title"></h2><select id="c-pick" class="mono" aria-label="Open another scan" title="Open another scan"></select></div>
     </div>
     <button class="x" id="c-close" aria-label="Back to the array">&times;</button>
   </div>
@@ -160,13 +222,13 @@
     <h3>How to look around</h3>
     <ol class="steps">
       <li><b>Array</b> stands every scan's lines side by side at true height. Drag to orbit, scroll or pinch to zoom, hover for names. The front rows hold the prize scans (lines made by people behind, the Center Finder's in front); the back row holds the scans not on the prize page.</li>
-      <li><b>Click a scan</b> (in the 3D view or the list) to open its <b>X-ray</b>: a radiograph your browser builds from CT it streams from the open data, with the lines inside.</li>
+      <li><b>Click a scan</b> (in the 3D view or the list) to open its <b>X-ray</b>: a radiograph your browser builds from CT it streams from the open data, with the lines inside. The list steps aside there; the menu next to the scan's name on its card opens another scan.</li>
       <li>The square at the bottom right is one <b>horizontal slice</b> through the scan. Drag its slider or scroll over it to move up and down. Rings mark where each line crosses that slice; a good line sits in the middle of the innermost turns.</li>
       <li><b>Lasagna</b> shows villa's sheet model on PHerc0175A: where it thinks papyrus is, and which way each sheet faces.</li>
       <li><b>Data</b> opens every number on this page as tables you can sort and download.</li>
       <li><b>Hide a line</b>: click a maker in the key under the list to hide all of its lines, or untick one line on a scan card. The link you copy keeps what you hid.</li>
     </ol>
-    <h3>Colours and grades</h3>
+    <h3>Colors and grades</h3>
     <p>Each maker has its own color: <span style="color:#89f0ff">Vesuvius Challenge</span>, <span style="color:#ff7eb6">Alexey Drobkov</span>, <span style="color:#b69cff">Abd Elilah</span>, <span style="color:#f2f5f7">Iyan Dopico</span>, all made by people. <span class="amber">Amber</span> lines are model output from Chase Hendrick's Center Finder, made for the nine 1.2 m prize scans nobody had traced and for nine scans not on the prize page (seven since 1.8.0, PHerc1667 and PHerc0172 since 1.10.0); no person has checked their ends on CT. <span style="color:#c6f36b">Lime</span> lines are the Center Finder lines after the coverage polish (Scrolls <code>kit axispolish</code>), marked NEWEST: the twelve on 1.2 m scans since 1.9.0, and since 1.10.0 three on 2.4 µm scans (PHerc1299, PHercMAN5, PHercMANB), where the polish ran on level 2 and is untested. The originals stay on the page, faded and marked SUPERSEDED, so a later polish can replace a line without losing the one before: on all ten scans of a frozen test the 1.2 m polished lines sat deeper in villa's traced sheet than the line before the polish, and kit takes them first, but they are jumpier and their ends were not re-checked, so the grades below are the original line's. An automatic CT end check graded each end of each Center Finder line (release v2.2, 23 Oct 2026). It compares the end with the scroll center the CT itself shows there, estimated from the scan alone (sheet orientations in three slices, never the line), 0, 1 and 2 mm inside the end, with a 4 mm bar. A planted fake tilt is caught at all 18 ends. 14 of the 18 ends pass and 4 are flagged. The same check on the seven newer lines (24 Oct 2026) passes all 14 ends, 2 after a CT recap, but four of those scans are 2.4 µm scans the check was never tuned on, so their grades are marked untested and no end there is usable. Of the two lines added in release v2.6 (25 Oct 2026), PHerc1667's (a 2.4 µm scan) passes both ends, untested, and PHerc0172's (a 7.91 µm scan) is flagged at both ends, so treat its ends with care.</p>
     <p>Scan names and grades use a traffic light: <span class="grade lt-good">green</span> when both ends passed, <span class="grade lt-caution">yellow</span> for caution (a pass that rests on a CT recap, an end the check could not judge, or an untested scan), <span class="grade lt-bad">red</span> when an end was flagged.</p>
     <ul>
@@ -199,13 +261,13 @@
   </section>
 
   <section data-pane="research" hidden>
-    <p>Every statistic below is in the <b>Data</b> tables and the downloads, computed in your browser from the control points (rounded to whole level-0 voxels; the downloaded files keep full precision). Millimetres use each scan's voxel size.</p>
+    <p>Every statistic below is in the <b>Data</b> tables and the downloads, computed in your browser from the control points (rounded to whole level-0 voxels; the downloaded files keep full precision). Millimeters use each scan's voxel size.</p>
     <table class="defs">
       <tr><th>points</th><td>number of control points</td></tr>
       <tr><th>z start, end</th><td>first and last control point height, level-0 voxels</td></tr>
       <tr><th>height</th><td>z end minus z start, in mm</td></tr>
       <tr><th>coverage</th><td>height as a share of the scan's z extent</td></tr>
-      <tr><th>median, max step</th><td>median and largest z gap between neighbouring control points, voxels; a big max step is a stretch the line interpolates across</td></tr>
+      <tr><th>median, max step</th><td>median and largest z gap between neighboring control points, voxels; a big max step is a stretch the line interpolates across</td></tr>
       <tr><th>mean x, y</th><td>average position of the control points, voxels</td></tr>
       <tr><th>off center</th><td>distance from that mean to the middle of the scan grid, mm</td></tr>
       <tr><th>stray</th><td>largest distance of any control point from the mean, mm</td></tr>
@@ -365,7 +427,7 @@ Page source and build scripts: https://huggingface.co/spaces/SharpMeow/umbilici/
     <ul>
       <li>CT scans: <a href="https://scrollprize.org/data" target="_blank" rel="noopener">Vesuvius Challenge open data</a>, CC BY-NC 4.0.</li>
       <li>Lasagna: <a href="https://github.com/ScrollPrize/villa" target="_blank" rel="noopener">ScrollPrize/villa</a> and <a href="https://huggingface.co/scrollprize/lasagna" target="_blank" rel="noopener">scrollprize/lasagna</a>; the field dataset is CC BY-NC 4.0.</li>
-      <li>The lines bundle is non-commercial because some files are; each file keeps its own licence (above).</li>
+      <li>The lines bundle is non-commercial because some files are; each file keeps its own license (above).</li>
       <li>This page: Apache 2.0, by Chase Hendrick, a sibling of <a href="https://huggingface.co/spaces/SharpMeow/unroll" target="_blank" rel="noopener">Unroll</a>. three.js is MIT.</li>
     </ul>
     <p class="dim small">A center line is geometry. Nothing here is a reading of any text.</p>
@@ -388,6 +450,6 @@ Page source and build scripts: https://huggingface.co/spaces/SharpMeow/umbilici/
   <div class="tbl-wrap"><table class="tbl" id="tbl"></table></div>
 </dialog>
 
-<script type="module" src="app.js?v=12"></script>
+<script type="module" src="app.js?v=13"></script>
 </body>
 </html>

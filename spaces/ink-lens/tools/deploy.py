@@ -31,7 +31,7 @@ ROOT = SPACE.parents[1]
 HARDWARE = "zero-a10g"
 SPACE_FILES = ("README.md", "app.py", "engine.py", "gate.py", "inklens.py", "vc3dout.py", "volio.py", "bridge.py",
                "zoo.py", "runners.py", "compare.py", "samples.json", "requirements.txt", "LICENSE", "NOTICE",
-               "connect.json", "connect.html", "CONNECT.md")
+               "connect.json", "connect.html", "CONNECT.md", "onescroll.html")
 KIT_MODULES = ("__init__", "auc", "fetch", "layers", "s3retry", "verify")
 
 

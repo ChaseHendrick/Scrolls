@@ -148,7 +148,7 @@ def train(patches, epochs, lr, batch=32, seed=SEED, say=print, negatives=("phase
 
 
 def scores(m, paths):
-    """Fiber score of each image: the mean over the centre crop and its four quarter turns."""
+    """Fiber score of each image: the mean over the center crop and its four quarter turns."""
     import torch
     out = {}
     with torch.no_grad():

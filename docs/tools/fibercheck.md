@@ -182,7 +182,7 @@ frozen-format manifest. `cv` and `train` need the training sets, which are not p
 | --- | --- |
 | `fiber.json` | the record: options, `summary`, `jump_hints`, every patch |
 | `fiber.tif` | float32, the mesh's own grid (same shape as `x.tif`): each scored vertex holds its patch's evidence, NaN elsewhere |
-| `fiber_map.png` | the map in color: yellow clear, purple weak, grey no sign, slate not scored, black no surface |
+| `fiber_map.png` | the map in color: yellow clear, purple weak, gray no sign, slate not scored, black no surface |
 | `report.html` | one page: the summary, the map, the six clearest and six weakest patches, the method in the prize's words |
 | `tiles/` | those twelve renders as PNG |
 
@@ -254,6 +254,7 @@ procedure is absent). Not covered: the network reads and the judges themselves, 
 ## History
 
 - 2026-10-26: Fiber Checker: free fiber map of traced segments, Space and command line tool (`2cbb856`).
+- 2026-10-27: one page scroll bar and American English ([PR #253](https://github.com/ChaseHendrick/Scrolls/pull/253)): the app's head carries `onescroll.html`, the welcome guide, report and records grow with the page instead of scrolling inside it, a tab link from the guide opens its tab at the top, and `fibercheck.color()` (was `colour()`); the frozen judge prompt keeps its words.
 - 2026-10-27: the Space gains a Welcome tab (hero mosaic, the judge's pairs, an example map), GIFs and stills in its How-to guides, a side-by-side Compare table, and tab links that work on phones ([#233](https://github.com/ChaseHendrick/Scrolls/pull/233)).
 
 ## Related

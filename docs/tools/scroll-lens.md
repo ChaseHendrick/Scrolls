@@ -112,7 +112,7 @@ usage: lens.py look [-h] [--size {128,256}] [--layers LAYERS] [--tta]
 
 ### `python3 spaces/scroll-lens/lens.py files`
 
-Prints each Space file (`lens.SPACE_FILES`: `README.md`, `app.py`, `lens.py`, `viewer.js`, `requirements.txt`, `LICENSE`, `NOTICE`) with its SHA-256. No options.
+Prints each Space file (`lens.SPACE_FILES`: `README.md`, `app.py`, `lens.py`, `viewer.js`, `requirements.txt`, `LICENSE`, `NOTICE`, `connect.json`, `connect.html`, `CONNECT.md`, `onescroll.html`) with its SHA-256. No options.
 
 ### `python3 spaces/scroll-lens/lens.py stage`
 
@@ -412,6 +412,7 @@ Free to use and to run locally. On the Space, model runs (Run the models, `look`
 
 ## History
 
+- 2026-10-27: one page scroll bar (user decision, 27 October 2026): the app's head carries `onescroll.html` (from `python -m kit spaceconnect render`), which fits any same-origin iframe to its content so only the page scrolls, and `lens.SPACE_FILES` ships it; American spelling in two code comments. The live Space showed no box scrolling inside the page before the change (`kit spaceconnect scroll`, 1440x900) ([PR #253](https://github.com/ChaseHendrick/Scrolls/pull/253)).
 - 2026-10-24: a test ties the release entry's version to `lens.VERSION`, after an unrelated PR (#162) had set the entry to 1.3.0 while the Space ran 1.1.0 ([PR #180](https://github.com/ChaseHendrick/Scrolls/pull/180)).
 - 2026-10-24: v1.1.1: a visitor's events change one state in place instead of each putting back the copy it started from, so clicks made during a run are kept and a click answered late no longer brings back the cube before; the viewer shows only the newest answer for any cube, sends each click with its own cube, lets Undo and Clear reach clicks still on their way, and aborts the downloads of a cube it leaves; revisions are time-based so they keep growing across restarts; the CPU fallback runs the 128³ around the point instead of the middle of the cube, which near a scan's edge could miss the point; a page opened narrow and then widened keeps the More controls summary, so its sliders and buttons can still be opened ([PR #178](https://github.com/ChaseHendrick/Scrolls/pull/178)).
 - 2026-10-24: Connect your tool accordion (branch of `main` at `2ce4d50`). Chase had the Space unpaused, and it was redeployed as Space commit `51360104`, which also brought #117's merged changes live (a click moves the crosshair by default, one-line gallery names).

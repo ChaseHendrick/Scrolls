@@ -53,6 +53,9 @@ COMPARE_LOADED = {}
 COMPARE_LOCK = threading.Lock()
 GPU_REFUSALS = ("ZeroGPU quota exceeded", "ZeroGPU illegal duration", "ZeroGPU pending credits exceeded",
                 "ZeroGPU queue timeout", "ZeroGPU client error")
+# One scroll bar for the whole page (user decision, 27 October 2026): the fragment python -m kit spaceconnect render writes fits
+# every same-origin frame to its content, so nothing inside the page scrolls on its own
+HEAD = (HERE / "onescroll.html").read_text() if (HERE / "onescroll.html").exists() else ""
 
 
 class LensError(ValueError):
@@ -144,9 +147,9 @@ def run_engine(volume, reader, windows):
 
 # ---------------------------------------------------------------- comparison: many models, one region
 
-def _compare_duration(volume, scan, models, centres, steps, labels=None, sample=None):
+def _compare_duration(volume, scan, models, centers, steps, labels=None, sample=None):
     k = 4 if scan == "2.4" else 1
-    return compare.estimate(models, volume.shape[1] // k, volume.shape[2] // k, len(centres) * len(steps))
+    return compare.estimate(models, volume.shape[1] // k, volume.shape[2] // k, len(centers) * len(steps))
 
 
 def _compare_on_gpu(fn):
@@ -154,11 +157,11 @@ def _compare_on_gpu(fn):
 
 
 @_compare_on_gpu
-def gpu_compare(volume, scan, models, centres, steps, labels=None, sample=None):
+def gpu_compare(volume, scan, models, centers, steps, labels=None, sample=None):
     """Every chosen model, every window, both depth orders: one GPU call, so no map runs without its control."""
     import torch
     device = "cuda" if torch.cuda.is_available() else "cpu"
-    return compare.run(volume, scan, models, labels=labels, centres=centres, steps=steps, loaded=COMPARE_LOADED,
+    return compare.run(volume, scan, models, labels=labels, centers=centers, steps=steps, loaded=COMPARE_LOADED,
                        device=device, say=log, sample=sample)
 
 
@@ -186,7 +189,7 @@ def _ints(text, default):
     return vals
 
 
-def compare_volume(volume, scan, models, centres, steps, sample=None, labels=None):
+def compare_volume(volume, scan, models, centers, steps, sample=None, labels=None):
     scan = str(scan)
     if scan not in compare.SCANS:
         raise LensError("scan is 2.4 (the about 2.4 um scan) or native (about 9.4 um)")
@@ -205,8 +208,8 @@ def compare_volume(volume, scan, models, centres, steps, sample=None, labels=Non
                     COMPARE_LOADED[n] = runners.load(n, device="cpu")
                 except Exception as exc:  # noqa: BLE001  (run() reports the model's error in its row)
                     log(f"{n} failed to load: {exc}")
-    requested = _compare_duration(volume, scan, models, centres, steps)
-    result, maps, _ = gpu_compare(volume, scan, models, centres, steps, labels=labels, sample=sample)
+    requested = _compare_duration(volume, scan, models, centers, steps)
+    result, maps, _ = gpu_compare(volume, scan, models, centers, steps, labels=labels, sample=sample)
     result["gpu_seconds_requested"] = requested
     import numpy as np
     order = [n for n in models if (n, "c+0_s1", "forward") in maps] + (["ensemble"] if result.get("ensemble") else [])
@@ -221,25 +224,25 @@ def compare_volume(volume, scan, models, centres, steps, sample=None, labels=Non
 
 
 def compare_sample(sample_id="0841-w00", models="ink_9um-s42,reader-v2,reader-v3,hecate-9.6", size=384, scan="2.4",
-                   centres="0", steps="1"):
+                   centers="0", steps="1"):
     """Several ink models on one public sample, side by side: same pixels, same labels, each with its own control.
 
     sample_id: a public sample (list_samples). models: comma-separated names from list_models (the scan-space 3D
-    models are in the gallery endpoint). size: 128 to 512 px of the 9.6 um grid around the sample's crop centre.
+    models are in the gallery endpoint). size: 128 to 512 px of the 9.6 um grid around the sample's crop center.
     scan: 2.4 (default; every model reads the about 2.4 um scan at its own scale: 9 um models pooled 4x) or native
-    (the 9.4 um scan, 9 um models only). centres, steps: depth windows (9.6 um layers from the middle; spacing).
+    (the 9.4 um scan, 9 um models only). centers, steps: depth windows (9.6 um layers from the middle; spacing).
     Returns the record (per model: AUC, control AUC, gap, 95 % interval, liveness, training exposure; the ensemble;
-    stability), an .npz of every map, and a mosaic (rows: models; columns: windows, as stored then reversed; labelled
+    stability), an .npz of every map, and a mosaic (rows: models; columns: windows, as stored then reversed; labeled
     ink outlined). Model output, not a reading."""
     s = inklens.sample_by(str(sample_id))
-    centres, steps = _ints(centres, (0,)), _ints(steps, (1,))
+    centers, steps = _ints(centers, (0,)), _ints(steps, (1,))
     size = max(128, min(COMPARE_MAX_SIDE, int(size or 384)))
     vol, lab, info = compare.sample_inputs(s, str(scan), size=size)
     meta = {"id": s["id"], "scroll": s["scroll"], "segment": s["segment"], "box": info["box"], "grid": info["grid"]}
-    return compare_volume(vol, scan, models, centres, steps, sample=meta, labels=lab)
+    return compare_volume(vol, scan, models, centers, steps, sample=meta, labels=lab)
 
 
-def compare_region(volume_npz, models="ink_9um-s42,reader-v2,hecate-9.6", scan="2.4", centres="0", steps="1"):
+def compare_region(volume_npz, models="ink_9um-s42,reader-v2,hecate-9.6", scan="2.4", centers="0", steps="1"):
     """Several ink models on your own region, side by side, each with its own control (no labels, so no AUC).
 
     volume_npz: an .npz with one array 'volume' (uint8, layers x rows x columns): scan 2.4 for an about 2.4 um
@@ -248,7 +251,7 @@ def compare_region(volume_npz, models="ink_9um-s42,reader-v2,hecate-9.6", scan="
     if not volume_npz:
         raise LensError("upload an .npz first")
     path = volume_npz if isinstance(volume_npz, str) else volume_npz.get("path")
-    return compare_volume(read_npz(path), scan, models, _ints(centres, (0,)), _ints(steps, (1,)))
+    return compare_volume(read_npz(path), scan, models, _ints(centers, (0,)), _ints(steps, (1,)))
 
 
 def api_json(obj):
@@ -262,7 +265,7 @@ def api_json(obj):
 
 
 def list_models():
-    """Every ink model Ink Lens compares: family, scale, depth, licence, pinned weights, the control each is judged
+    """Every ink model Ink Lens compares: family, scale, depth, license, pinned weights, the control each is judged
     against, and on which public scroll its training saw labels (with the source)."""
     return api_json({"models": zoo.listing(), "ink_sdk": f"{zoo.INK_SDK_REPO} @ {zoo.INK_SDK_COMMIT}",
             "gallery": sorted(json.loads((GALLERY / "index.json").read_text())["samples"])
@@ -294,7 +297,7 @@ def compare_md(result):
         lines.append(f"Stability: on average {st['0.5']['mean_share']:.0%} of the {st['0.5']['cells']} alive cells "
                      "put a pixel at or above 0.5.")
     lines += ["", f"Mosaic rows: {', '.join(result.get('mosaic', {}).get('rows', []))}; columns: "
-              f"{', '.join(result.get('mosaic', {}).get('columns', []))}. Labelled ink is outlined in amber.",
+              f"{', '.join(result.get('mosaic', {}).get('columns', []))}. Labeled ink is outlined in amber.",
               "", f"*{compare.NOTE}*"]
     return "\n".join(lines)
 
@@ -463,7 +466,7 @@ COMPARE_INTRO = """Every released ink model on **the same pixels, scored against
 from its about 2.4 um scan, and each model reads it at its own scale (9 um models pooled 4x, as villa prepares their
 training data; Hecate 2.4 and canonical 2 um natively, their maps pooled onto the 9.6 um grid the labels use). Every
 map comes with its own control (the same layers reversed), passes ink-sdk's liveness check, and its row says whether
-the model's training saw labels from this scroll: a score there shows the pipeline runs, not that it generalises.
+the model's training saw labels from this scroll: a score there shows the pipeline runs, not that it generalizes.
 Choose several depth windows to get a sweep, a stability share and a z-score ensemble. Model output, not a reading."""
 
 GALLERY_INTRO = """Precomputed on a GPU Job: every model on each sample's whole 640 px crop, with depth sweeps, Hecate's
@@ -498,8 +501,8 @@ def build_demo():
         result, maps, img = guard(lens_region)(f, reader, windows)
         return summary_md(result), result, maps, img
 
-    def page_compare(sid, models, size, scan, centres, steps):
-        result, maps, img = guard(compare_sample)(sid, ",".join(models or []), size, scan, centres, steps)
+    def page_compare(sid, models, size, scan, centers, steps):
+        result, maps, img = guard(compare_sample)(sid, ",".join(models or []), size, scan, centers, steps)
         return compare_md(result), result, maps, img
 
     def page_gallery(sid):
@@ -522,16 +525,18 @@ def build_demo():
                     c_scan = gr.Radio([("2.4 um scan (every model)", "2.4"), ("9.4 um scan (9 um models)", "native")],
                                       value="2.4", label="Scan")
                     with gr.Row():
-                        c_centres = gr.Textbox("0", label="Window centres (layers from the middle)")
+                        c_centers = gr.Textbox("0", label="Window centers (layers from the middle)")
                         c_steps = gr.Textbox("1", label="Layer steps")
                     run_c = gr.Button("Compare", variant="primary")
                 with gr.Column(scale=3, min_width=320):
                     c_img = gr.Image(label="Mosaic: rows are models, columns are depth windows", type="numpy",
                                      format="png")
                     c_md = gr.Markdown("Choose models, then compare.")
-                    c_res = gr.JSON(label="Run record")
+                    # Every record box grows with its content (max_height=None): gradio's default 500 px box would
+                    # scroll inside the page (one scroll bar, user decision, 27 October 2026)
+                    c_res = gr.JSON(label="Run record", max_height=None)
                     c_maps = gr.File(label="Every map (.npz, 9.6 um grid)")
-            run_c.click(page_compare, [c_sid, c_models, c_size, c_scan, c_centres, c_steps],
+            run_c.click(page_compare, [c_sid, c_models, c_size, c_scan, c_centers, c_steps],
                         [c_md, c_res, c_maps, c_img], api_visibility="private", concurrency_id="gpu",
                         concurrency_limit=2)
         with gr.Tab("Gallery: every model, 3D included", visible=HAS_GALLERY):
@@ -540,7 +545,7 @@ def build_demo():
             g_btn = gr.Button("Show")
             g_img = gr.Image(label="Every model on the whole crop", type="numpy", format="png")
             g_md = gr.Markdown()
-            g_res = gr.JSON(label="Record")
+            g_res = gr.JSON(label="Record", max_height=None)
             g_btn.click(page_gallery, [g_sid], [g_md, g_res, g_img], api_visibility="private")
         with gr.Tab("One model, gated"), gr.Row():
             with gr.Column(scale=2, min_width=300):
@@ -562,7 +567,7 @@ def build_demo():
             with gr.Column(scale=3, min_width=320):
                 img = gr.Image(label="Middle CT layer, kept ink in amber", type="numpy", format="png")
                 md = gr.Markdown("Choose a sample or upload a region, then run.")
-                res = gr.JSON(label="Result")
+                res = gr.JSON(label="Result", max_height=None)
                 maps = gr.File(label="Maps (.npz: forward, reverse, kept)")
         outs = [md, res, maps, img]
         run_s.click(page_sample, [sid, size, reader, windows], outs, api_visibility="private",
@@ -577,7 +582,7 @@ def build_demo():
             a_json, a_maps, a_img, a_info = gr.JSON(), gr.File(), gr.Image(type="numpy", format="png"), gr.JSON()
             a_models = gr.Textbox("ink_9um-s42,reader-v2,hecate-9.6", label="models")
             a_scan = gr.Textbox("2.4", label="scan")
-            a_centres, a_steps = gr.Textbox("0", label="centres"), gr.Textbox("1", label="steps")
+            a_centers, a_steps = gr.Textbox("0", label="centers"), gr.Textbox("1", label="steps")
             a_csize = gr.Number(384, precision=0, label="size")
             btns = [gr.Button() for _ in range(8)]
         for btn, fn, ins, o, conc in (
@@ -585,9 +590,9 @@ def build_demo():
                 (btns[1], lens_sample, [a_sid, a_size, a_reader, a_windows], [a_json, a_maps, a_img], "gpu"),
                 (btns[2], list_samples, [], a_info, None),
                 (btns[3], estimate, [a_h, a_w, a_windows, a_reader], a_info, None),
-                (btns[4], compare_sample, [a_sid, a_models, a_csize, a_scan, a_centres, a_steps],
+                (btns[4], compare_sample, [a_sid, a_models, a_csize, a_scan, a_centers, a_steps],
                  [a_json, a_maps, a_img], "gpu"),
-                (btns[5], compare_region, [a_file, a_models, a_scan, a_centres, a_steps], [a_json, a_maps, a_img],
+                (btns[5], compare_region, [a_file, a_models, a_scan, a_centers, a_steps], [a_json, a_maps, a_img],
                  "gpu"),
                 (btns[6], list_models, [], a_info, None)) + (
                 ((btns[7], gallery, [a_sid], [a_json, a_img], None),) if HAS_GALLERY else ()):
@@ -603,4 +608,4 @@ def build_demo():
 if __name__ == "__main__":
     startup()
     build_demo().queue(max_size=128, default_concurrency_limit=4).launch(
-        mcp_server=True, max_file_size=f"{MAX_UPLOAD_BYTES >> 20}mb", allowed_paths=[str(OUT)])
+        mcp_server=True, max_file_size=f"{MAX_UPLOAD_BYTES >> 20}mb", allowed_paths=[str(OUT)], head=HEAD)

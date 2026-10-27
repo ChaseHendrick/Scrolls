@@ -1,6 +1,6 @@
 """Ink Lens (spaces/ink-lens): the gate, the engine's algorithm with a stand-in model, VC3D's files and the client's
 refusals. numpy only, except the torch checks (skipped without torch) and the comparison with villa's own
-normalisation (run when VILLA_SRC names a villa vesuvius/src). No network, no gradio, no real model."""
+normalization (run when VILLA_SRC names a villa vesuvius/src). No network, no gradio, no real model."""
 
 import contextlib
 import io
@@ -765,6 +765,23 @@ class Space(unittest.TestCase):
         reqs = (SPACE / "requirements.txt").read_text()
         for pin in ("torch==2.13.0", "numpy==2.5.2", "mcp=="):
             self.assertIn(pin, reqs)
+
+    def test_one_scroll_bar(self):
+        # user decision, 27 October 2026: the page scrolls as a whole and nothing inside it keeps a scroll bar of its own
+        import re
+        import app
+        frag = (SPACE / "onescroll.html").read_text()
+        self.assertIn("<!-- space-onescroll:start -->", frag)
+        self.assertEqual(app.HEAD, frag)                         # launch(head=HEAD) carries the fragment
+        self.assertIn("head=HEAD", (SPACE / "app.py").read_text())
+        sys.path.insert(0, str(SPACE / "tools"))
+        import deploy
+        self.assertIn("onescroll.html", deploy.space_files())
+        # gradio's JSON box is 500 px high by default and scrolls inside the page once a record is longer
+        boxes = re.findall(r"gr\.JSON\(label=[^)]*\)", (SPACE / "app.py").read_text())
+        self.assertGreaterEqual(len(boxes), 3)                   # the control: the record boxes are still found
+        for b in boxes:
+            self.assertIn("max_height=None", b)
 
     def test_bundled_kit_imports_only_bundled_modules(self):
         # The live Space failed this way on 27 Oct 2026: kit/fetch.py imports kit.s3retry, which was not uploaded

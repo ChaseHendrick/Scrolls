@@ -77,7 +77,11 @@ body.focus .kicker::after { content: ""; }
 /* scan rail */
 .rail { position: fixed; z-index: 5; right: var(--gut); top: calc(var(--gut) + 50px); width: 292px;
   max-height: calc(100vh - 2 * var(--gut) - 140px); overflow: auto; border: 1px solid var(--line);
-  background: var(--panel); scrollbar-width: thin; scrollbar-color: var(--line-strong) transparent; }
+  background: var(--panel); scrollbar-width: thin; scrollbar-color: var(--line-strong) transparent; scrollbar-gutter: stable; }
+/* One scrolling panel at a time (the page itself never scrolls): the list in Array, the scan card in X-ray and
+   Lasagna (the card's scan menu stands in for the list there), an open dialog above everything else. */
+body.focus .rail { display: none; }
+body.modal .rail, body.modal .card { overflow: hidden; }
 .rail-head { display: grid; grid-template-columns: 1fr 86px 52px; padding: 8px 12px; color: var(--dim);
   border-bottom: 1px solid var(--line); position: sticky; top: 0; background: rgba(3,12,18,.95); font-size: 9.5px; }
 .rail ol { list-style: none; margin: 0; padding: 0; }
@@ -95,7 +99,7 @@ body.focus .kicker::after { content: ""; }
 .grade.PASS { color: var(--pass); } .grade.FLAG { color: var(--flag); } .grade.VOID { color: var(--void); }
 .grade.ut { opacity: .55; text-decoration: underline dotted; }
 .rail li.sep { display: block; color: var(--dim); font-size: 9px; letter-spacing: .12em; padding: 10px 0 4px; cursor: default; pointer-events: none; padding-left: 12px; }
-/* per-end grades: a small coloured pill per end, so a FLAG never reads as the Center Finder's amber */
+/* per-end grades: a small colored pill per end, so a FLAG never reads as the Center Finder's amber */
 .end { display: inline-flex; gap: 4px; align-items: baseline; white-space: nowrap; }
 .end .grade { text-align: left; font-size: inherit; padding: 0 4px; border: 1px solid currentColor; line-height: 1.5; }
 .end .rc { color: var(--caution); font-size: .9em; }
@@ -119,10 +123,17 @@ body.focus .kicker::after { content: ""; }
 .who .show { display: inline-flex; margin-right: 6px; vertical-align: middle; }
 .who .show input { accent-color: var(--ice); margin: 0; }
 
-/* detail card */
-.card { position: fixed; z-index: 6; left: var(--gut); top: calc(var(--gut) + 34px); max-height: calc(100vh - 2 * var(--gut) - 120px); overflow: auto; width: min(380px, calc(100vw - 2 * var(--gut)));
+/* detail card: under the kicker, lower when the kicker wraps (app.js measures --head-b) */
+.card { --card-t: max(calc(var(--gut) + 34px), calc(var(--head-b, 0px) + 12px));
+  position: fixed; z-index: 6; left: var(--gut); top: var(--card-t); max-height: calc(100vh - var(--card-t) - var(--gut) - 86px); overflow: auto; width: min(380px, calc(100vw - 2 * var(--gut)));
   border: 1px solid var(--line-strong); background: var(--panel); padding: 14px 16px 12px; }
-.card-top { display: flex; justify-content: space-between; align-items: start; }
+.card-top { display: flex; justify-content: space-between; align-items: start; gap: 10px; }
+.c-head { flex: 1; min-width: 0; }
+.c-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0 10px; }
+.c-row select { flex: none; max-width: 150px; height: 26px; padding: 0 4px; font-size: 10.5px; letter-spacing: .04em; color: var(--fg);
+  background: var(--panel); border: 1px solid var(--line-strong); border-radius: 0; cursor: pointer; }
+.c-row select:hover, .c-row select:focus-visible { border-color: var(--ice); color: var(--ice); outline: none; }
+.c-row select option, .c-row select optgroup { background: #041019; color: var(--fg); }
 .card h2 { font-family: var(--serif); font-weight: 400; font-size: 34px; margin: 2px 0 8px; line-height: 1; }
 .x { font-size: 22px; line-height: 1; color: var(--dim); padding: 0 4px; }
 .x:hover { color: var(--ice); }
@@ -172,18 +183,22 @@ body.focus .kicker::after { content: ""; }
 .about ul { padding-left: 18px; margin: 4px 0; }
 .about code { font-size: 11.5px; color: var(--ice); }
 
+/* wide screens: the kicker wraps before it runs under the view buttons */
+@media (min-width: 861px) {
+  .kicker { max-width: calc(100vw - 2 * var(--gut) - var(--nav-w, 0px) - 24px); }
+}
 @media (max-width: 860px) {
   .rail { top: auto; bottom: 0; left: 0; right: 0; width: auto; max-height: 30vh; border-left: 0; border-right: 0; }
-  body.focus .rail { display: none; }
   .tl { right: var(--gut); }
   .lede { display: none; }
   h1 { font-size: 26px; }
-  .tr { top: calc(var(--gut) + 74px); left: var(--gut); right: auto; }
-  body.focus .tr { top: calc(var(--gut) + 22px); }
+  /* the view buttons sit under the header text and wrap within the screen; the card, hint and settings sit under
+     them (app.js measures --head-b and --nav-b; the fallbacks are the one-row places) */
+  .tr { top: max(var(--gut), calc(var(--head-b, calc(var(--gut) + 64px)) + 10px)); left: var(--gut); right: var(--gut); flex-wrap: wrap; }
   .bl { bottom: calc(30vh + 8px); right: var(--gut); gap: 6px; }
   body.focus .bl { bottom: var(--gut); }
   .bl .ctl .dim { display: none; }
-  .card { top: calc(var(--gut) + 70px); max-height: 26vh; padding: 10px 12px; }
+  .card { --card-t: calc(var(--nav-b, calc(var(--gut) + 55px)) + 10px); max-height: 26vh; padding: 10px 12px; }
   .card h2 { font-size: 26px; }
   .inset { bottom: calc(var(--gut) + 84px); width: min(210px, calc(100vw - 2 * var(--gut))); }
   #labels { display: none; }
@@ -236,7 +251,8 @@ table.defs { border-collapse: collapse; width: 100%; font-size: 12px; }
 table.defs th { text-align: left; font-weight: 500; color: var(--ice); padding: 4px 14px 4px 0; vertical-align: top; white-space: nowrap; }
 table.defs td { padding: 4px 0; border-bottom: 1px solid var(--line); }
 .sheet { max-width: min(1280px, calc(100vw - 32px)); }
-.tbl-wrap { overflow: auto; max-height: calc(100vh - 230px); border: 1px solid var(--line); }
+.sheet[open] { display: flex; flex-direction: column; overflow: hidden; }
+.tbl-wrap { overflow: auto; flex: 1 1 auto; min-height: 0; border: 1px solid var(--line); }
 table.tbl { border-collapse: collapse; font-size: 11px; white-space: nowrap; width: 100%; }
 table.tbl th { position: sticky; top: 0; background: #041019; text-align: left; font-weight: 500; color: var(--dim); padding: 7px 9px; cursor: pointer; letter-spacing: .06em; border-bottom: 1px solid var(--line-strong); }
 table.tbl th:hover { color: var(--fg); }
@@ -251,7 +267,7 @@ table.tbl tr.wd { opacity: .55; }
 .ver.old { color: #9aa7b0; border-color: rgba(154,167,176,.5); }
 @media (max-width: 860px) {
   .tbtn { height: 31px; padding: 0 9px; font-size: 10px; }
-  .hint { position: fixed; z-index: 8; left: var(--gut); margin: 0; top: calc(var(--gut) + 128px); bottom: auto; width: calc(100vw - 2 * var(--gut)); justify-content: space-between; }
+  .hint { position: fixed; z-index: 8; left: var(--gut); margin: 0; top: calc(var(--nav-b, calc(var(--gut) + 107px)) + 21px); bottom: auto; width: calc(100vw - 2 * var(--gut)); justify-content: space-between; }
   .acts button { padding: 4px 6px; }
   .about { padding: 16px 16px; }
   .tabs [data-tab] { padding: 6px 8px; font-size: 9.5px; }
@@ -273,12 +289,31 @@ a.soon { color: var(--dim); border-bottom-style: dotted; cursor: default; }
 .settings #s-reset { color: var(--ice); border: 1px solid var(--line-strong); padding: 3px 8px; letter-spacing: .1em; text-transform: uppercase; font-size: 9.5px; }
 #b-set { font-family: var(--mono); font-style: normal; font-size: 15px; }
 body.nofilm .film::after, body.nofilm .scan-lines { display: none; }
-@media (max-width: 860px) { .settings { top: calc(var(--gut) + 112px); left: var(--gut); right: var(--gut); width: auto; } body.focus .settings { top: calc(var(--gut) + 60px); } }
+@media (max-width: 860px) { .settings { top: calc(var(--nav-b, calc(var(--gut) + 107px)) + 5px); left: var(--gut); right: var(--gut); width: auto; } }
 .chip { white-space: nowrap; }
 @media (max-width: 860px) { .chip { padding: 8px 10px; letter-spacing: .1em; } }
+/* narrow phones: two rows of view buttons that fill the width (Array, X-ray, Lasagna; then Data, Guide, Connect and
+   the gear), so none runs off the screen; in X-ray and Lasagna the kicker steps aside like the title */
+@media (max-width: 480px) {
+  .tr { gap: 5px; }
+  .tr .seg { flex: 1 1 100%; }
+  .tr .chip { flex: 1 1 0; padding: 7px 4px; }
+  .tr .tbtn { flex: 1 1 0; min-width: 0; height: 30px; padding: 0 4px; }
+  .tr .icon { width: 30px; height: 30px; }
+  body.focus .kicker { display: none; }
+  .settings { gap: 8px; padding: 10px 12px; }
+}
 /* v1.5: slice panel hide and show */
 .i-btns { display: inline-flex; gap: 6px; }
 .i-show { position: fixed; z-index: 6; right: var(--gut); bottom: calc(var(--gut) + 64px); padding: 7px 11px; border: 1px solid var(--line-strong); background: var(--panel);
   color: var(--ice); letter-spacing: .12em; text-transform: uppercase; }
 .i-show:hover { border-color: var(--ice); }
 @media (max-width: 860px) { .i-show { bottom: calc(var(--gut) + 84px); } }
+/* short screens (a phone on its side): the Data dialog's heading and buttons take less height, so its table, the one
+   box that scrolls there, keeps room */
+@media (max-height: 520px) {
+  .sheet { padding: 12px 16px; }
+  .sheet h2 { font-size: 26px; margin: 0; }
+  .sheet .tabs { margin: 2px 0 6px; }
+  .sheet .tabs .grow { flex: 1 1 auto; height: auto; }
+}

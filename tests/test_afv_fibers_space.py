@@ -1,5 +1,5 @@
-"""AFV Fibers (spaces/afv-fibers): the box around a point, which tiles a box needs, reading fibres from tiles that share
-fibre ids, and writing a box as its own .afv.
+"""AFV Fibers (spaces/afv-fibers): the box around a point, which tiles a box needs, reading fibers from tiles that share
+fiber ids, and writing a box as its own .afv.
 
 Runs without network: two small synthetic tiles in the AFV schema sit in the Space's cache, so nothing is downloaded."""
 
@@ -43,12 +43,12 @@ def _load():
     return mod
 
 
-def _tile(path, fibres, box):
-    """A tile with whole fibres {id: (family, points xyz)}, one block per 3 segments (blocks share end points)."""
+def _tile(path, fibers, box):
+    """A tile with whole fibers {id: (family, points xyz)}, one block per 3 segments (blocks share end points)."""
     db = sqlite3.connect(str(path))
     db.executescript(SCHEMA)
     bid = 0
-    for fid, (fam, q) in fibres.items():
+    for fid, (fam, q) in fibers.items():
         q = np.asarray(q, float)
         L = float(np.linalg.norm(np.diff(q, axis=0), axis=1).sum())
         b = (q[:, 0].min(), q[:, 0].max(), q[:, 1].min(), q[:, 1].max(), q[:, 2].min(), q[:, 2].max())
@@ -61,7 +61,7 @@ def _tile(path, fibres, box):
             db.execute("INSERT INTO block_bounds VALUES(?,?,?,?,?,?,?)",
                        (bid, blk[:, 0].min(), blk[:, 0].max(), blk[:, 1].min(), blk[:, 1].max(), blk[:, 2].min(),
                         blk[:, 2].max()))
-    meta = {"complete": True, "fiber_count": len(fibres), "tile_box_zyx": box,
+    meta = {"complete": True, "fiber_count": len(fibers), "tile_box_zyx": box,
             "root": {"voxel_size_mm": 0.009362, "coordinate_order": "XYZ"}, "frame": {}}
     db.executemany("INSERT INTO metadata VALUES(?,?)", [(k, json.dumps(v)) for k, v in meta.items()])
     db.commit()
@@ -76,14 +76,14 @@ class AfvFibersSpace(unittest.TestCase):
         self.F = _load()
         t = Path(self.tmp.name) / "PHerc0139" / "tiles"
         t.mkdir(parents=True)
-        # fibre 1 crosses from tile a into tile b, so both tiles hold it whole; fibre 2 is in a only, 3 in b only
+        # fiber 1 crosses from tile a into tile b, so both tiles hold it whole; fiber 2 is in a only, 3 in b only
         cross = ("H", [[1000, 500, 500], [1010, 500, 500], [1020, 500, 500], [1030, 500, 500], [1040, 500, 500]])
         _tile(t / "a.afv", {1: cross, 2: ("V", [[900, 400, 500], [900, 400, 510], [900, 400, 520]])},
               [0, 1024, 0, 1024, 0, 1024])
         _tile(t / "b.afv", {1: cross, 3: ("V", [[1100, 400, 500], [1100, 400, 510]])},
               [0, 1024, 0, 1024, 1024, 2048])
-        index = {"tiles": [{"id": "a", "box_zyx_l0": [0, 1024, 0, 1024, 0, 1024], "fibres": 2},
-                           {"id": "b", "box_zyx_l0": [0, 1024, 0, 1024, 1024, 2048], "fibres": 2}]}
+        index = {"tiles": [{"id": "a", "box_zyx_l0": [0, 1024, 0, 1024, 0, 1024], "fibers": 2},
+                           {"id": "b", "box_zyx_l0": [0, 1024, 0, 1024, 1024, 2048], "fibers": 2}]}
         (t / "index.json").write_text(json.dumps(index))
 
     def tearDown(self):
@@ -95,13 +95,13 @@ class AfvFibersSpace(unittest.TestCase):
         self.assertEqual(F.box_l0("PHerc0139", 500, 500, 1000, 64), [436, 564, 436, 564, 936, 1064])
         self.assertEqual(F.box_l0("PHerc0139", 0, 0, 0, 5000)[1], F.MAX_HALF)
         self.assertEqual(F.box_l0("PHerc0332", 400, 400, 400, 16), [336, 464, 336, 464, 336, 464])
-        with self.assertRaises(F.FibreError):
+        with self.assertRaises(F.FiberError):
             F.box_l0("PHercNope", 1, 1, 1, 64)
 
-    def test_box_across_tiles_reads_each_fibre_once(self):
+    def test_box_across_tiles_reads_each_fiber_once(self):
         F = self.F
         box = F.box_l0("PHerc0139", 500, 500, 1000, 128)
-        fib, tiles = F.fibres_in_box("PHerc0139", box)
+        fib, tiles = F.fibers_in_box("PHerc0139", box)
         self.assertEqual(sorted(tiles), ["a", "b"])
         self.assertEqual(sorted(fib), [1, 2, 3])
         fam, pts = fib[1]
@@ -114,7 +114,7 @@ class AfvFibersSpace(unittest.TestCase):
         box = F.box_l0("PHerc0139", 400, 400, 700, 32)
         self.assertEqual([t["id"] for t in F.tiles_for("PHerc0139", box)], ["a"])
 
-    def test_box_afv_holds_whole_fibres_once(self):
+    def test_box_afv_holds_whole_fibers_once(self):
         F = self.F
         out = Path(self.tmp.name) / "box.afv"
         n = F.write_box_afv("PHerc0139", F.box_l0("PHerc0139", 500, 500, 1000, 128), out)

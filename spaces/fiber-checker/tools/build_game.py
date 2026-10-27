@@ -4,7 +4,7 @@ list, scanned in 2025 or later, read from the open data with the checker's own r
   python3 tools/build_game.py [--per 24] [--out assets/game.npz]
 
 Writes, for each patch, the render on the surface (the checker's frozen depth rule) and the render 5 voxels off the
-traced surface on the far side, as 8-bit grey arrays on the on render's scale, with where each came from. The game
+traced surface on the far side, as 8-bit gray arrays on the on render's scale, with where each came from. The game
 makes its other controls (scrambled, shuffled, blurred, noisy) from the on render as it plays. The file stays on the
 Space only, never in git (docs/media/README.md).
 """
@@ -29,7 +29,7 @@ SOURCES = [("PHerc0500P2", "20250526151718", "20250611171318"),
 
 
 def to_u8(on, off):
-    """Both renders as 8-bit grey on the on render's 0.5 and 99.5 percentile scale (small enough for the Space)."""
+    """Both renders as 8-bit gray on the on render's 0.5 and 99.5 percentile scale (small enough for the Space)."""
     lo, hi = np.percentile(on, [0.5, 99.5])
     scale = lambda a: np.round(np.clip((a - lo) / max(hi - lo, 1e-6), 0, 1) * 255).astype(np.uint8)  # noqa: E731
     return scale(on), scale(off)

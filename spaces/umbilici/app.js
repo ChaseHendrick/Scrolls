@@ -7,7 +7,7 @@ import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 
-const VERSION = '1.10.0';
+const VERSION = '1.11.0';
 const DATASET = 'https://huggingface.co/datasets/SharpMeow/vesuvius-center-lines';
 const LASAGNA_SCROLL = 'PHerc0175A';
 const ICE = new THREE.Color('#89f0ff');
@@ -134,7 +134,7 @@ function usable(l) {
 }
 // one end's grade as the dataset words it, e.g. "low PASS (CT recap)"
 function endText(l, k) { const e = l.ends && l.ends[k]; return e ? `${k} ${e.grade}${e.recapped ? ' (CT recap)' : ''}` : ''; }
-// the same, as coloured HTML
+// the same, as colored HTML
 function endHTML(l, k) { const e = l.ends && l.ends[k]; return e ? `<span class="end">${k} <span class="grade ${e.grade}">${e.grade}</span>${e.recapped ? '<span class="rc">CT recap</span>' : ''}</span>` : ''; }
 function endsHTML(l) { return `<span class="ends">${['low', 'high'].map((k) => endHTML(l, k)).filter(Boolean).join('')}</span>`; }
 function endsText(l) { return l.ends && Object.keys(l.ends).length ? ['low', 'high'].map((k) => endText(l, k)).filter(Boolean).join(', ') : ''; }
@@ -147,6 +147,9 @@ const UNTESTED = 'the CT end check was tuned on 1.2 m (about 9 µm) scans only; 
 
 // ---------- statistics (definitions: Guide, For researchers) ----------
 const RAW = (l) => `${DATASET}/resolve/main/${l.file}`;
+// a line's license, under the key the dataset publishes (index.json, and data/lines.json built from it); kept as
+// published so every reader of those files keeps working. The page's own tables and labels say license.
+const lic = (l) => l.licence;
 const median = (a) => { if (!a.length) return null; const b = [...a].sort((u, v) => u - v); const k = b.length >> 1; return b.length % 2 ? b[k] : (b[k - 1] + b[k]) / 2; };
 function lineStats(s, l) {
   const p = linePts(l), n = p.length;
@@ -185,7 +188,7 @@ function lineRows() {
     return {
       scroll: s.scroll, scan: s.scan, volume: s.volume, voxel_um: s.voxel_um, source: l.source, maker: S.data.sources[l.source].label,
       kind: l.kind, grade: l.grade || '', ct_untested: !!l.untested, ct_end_low: endText(l, 'low'), ct_end_high: endText(l, 'high'), usable_ends: isFinder(l) ? (usable(l) || '') : '', withdrawn: l.note.includes('withdrawn'), superseded: !!l.superseded_by,
-      ...t, licence: l.licence, sha256: l.sha256, file: RAW(l), upstream: l.upstream, note: l.note,
+      ...t, license: lic(l), sha256: l.sha256, file: RAW(l), upstream: l.upstream, note: l.note,
     };
   }));
 }
@@ -641,6 +644,23 @@ document.addEventListener('click', (e) => { const b = e.target.closest('#legend 
 document.addEventListener('change', (e) => { const c = e.target.closest('input[data-line]'); if (c) showLines('line', c.dataset.line, c.checked); });
 
 // ---------- UI ----------
+// The header text and the view buttons wrap at different widths (on a phone the buttons take two rows), so the panels
+// under them are placed from what is measured here, not from fixed offsets: --nav-w (the buttons' width, which the
+// header's kicker keeps clear of on wide screens), --head-b (where the header text ends) and --nav-b (where the
+// buttons end; the scan card, the first-visit hint and the settings sit under it on phones). style.css has fallbacks.
+const NAV = document.querySelector('nav.tr');
+function placeHud() {
+  const css = document.documentElement.style;
+  css.setProperty('--nav-w', `${Math.ceil(NAV.getBoundingClientRect().width)}px`);
+  const head = Math.max(0, ...[...document.querySelectorAll('.tl .kicker, .tl h1')].map((e) => e.getBoundingClientRect().bottom));
+  css.setProperty('--head-b', `${Math.ceil(head)}px`);
+  css.setProperty('--nav-b', `${Math.ceil(NAV.getBoundingClientRect().bottom)}px`);
+}
+let hudQueued = false;
+const placeHudSoon = () => { if (!hudQueued) { hudQueued = true; requestAnimationFrame(() => { hudQueued = false; placeHud(); }); } };
+if (window.ResizeObserver) { const ro = new ResizeObserver(placeHudSoon); ro.observe(document.querySelector('.tl')); ro.observe(NAV); }
+addEventListener('resize', placeHudSoon);
+placeHud();
 function railRow(s) {
   const li = document.createElement('li'); li.dataset.scroll = s.scroll;
   const srcs = s.lines.map((l) => `<span class="src s-${l.source}" title="${S.data.sources[l.source].label}">${S.data.sources[l.source].short}</span>`).join('');
@@ -660,7 +680,15 @@ function buildRail() {
     ol.appendChild(railRow(s));
   }
 }
+// the scan menu on the card: in X-ray and Lasagna the list is hidden, so the page keeps one scrolling panel (the card)
+function buildPick() {
+  const opt = (s) => `<option value="${s.scroll}">${s.scroll}${prizeTag(s) ? ' ' + prizeTag(s) : ''}</option>`;
+  const on = S.data.scrolls.filter(onPrize), off = S.data.scrolls.filter((s) => !onPrize(s));
+  $('c-pick').innerHTML = `<optgroup label="Prize page">${on.map(opt).join('')}</optgroup>` + (off.length ? `<optgroup label="Not on the prize page">${off.map(opt).join('')}</optgroup>` : '');
+}
+$('c-pick').addEventListener('change', (e) => { const name = e.target.value; select(name, S.mode === 'lasagna' && name !== LASAGNA_SCROLL ? 'scan' : S.mode === 'array' ? 'scan' : S.mode); e.target.blur(); });
 function buildCard(s) {
+  $('c-pick').value = s.scroll;
   $('c-kick').textContent = `SCAN ${s.scan} · ${s.voxel_um} µm · ${prizeWords(s)}`;
   $('c-title').textContent = s.scroll;
   $('c-lines').innerHTML = s.lines.map((l, i) => {
@@ -675,7 +703,7 @@ function buildCard(s) {
     const row = (k, v) => `<tr><th>${k}</th><td>${v}</td></tr>`;
     const k = lineKey(s, l);
     return `<div class="ln${shown(s, l) ? '' : ' off'}"><div class="who"><label class="show" title="show or hide this line"><input type="checkbox" data-line="${k}"${OFF.line.has(k) ? '' : ' checked'}${OFF.src.has(l.source) ? ' disabled' : ''}></label><b style="color:${hexOf(l)}">${src.label}</b>${ver}${grade}</div>
-      <div class="meta">${t.points} points · z ${t.z_start} to ${t.z_end} (${fmt(t.height_mm, 0)} mm, ${fmt(t.coverage * 100, 0)}% of the scan) · strays up to ${fmt(t.stray_mm, 1)} mm from its mean · ${l.licence}</div>${was}${note}
+      <div class="meta">${t.points} points · z ${t.z_start} to ${t.z_end} (${fmt(t.height_mm, 0)} mm, ${fmt(t.coverage * 100, 0)}% of the scan) · strays up to ${fmt(t.stray_mm, 1)} mm from its mean · ${lic(l)}</div>${was}${note}
       <div class="links"><a href="${RAW(l)}" download>download</a><button class="lk" data-copy="${RAW(l)}" data-what="file URL copied">copy URL</button><button class="lk" data-copy="python -m kit centerline get ${s.scroll} --source ${l.source} --into YOUR_PROJECT_FOLDER" data-what="kit command copied: it writes YOUR_PROJECT_FOLDER/umbilicus.json" title="A command for the Scrolls kit that downloads this line, checks its sha256 and writes it as umbilicus.json where VC3D looks">copy kit command</button><a href="${DATASET}/blob/main/${l.file}" target="_blank" rel="noopener">view</a>${up}</div>
       <details class="full"><summary>every number</summary><table class="kv">
         ${row('credit', l.credit)}${row('kind', l.kind)}${row('points', t.points)}
@@ -686,7 +714,7 @@ function buildCard(s) {
         ${row('stray', `${fmt(t.stray_mm, 2)} mm`)}${row('tilt', `${fmt(t.tilt_deg, 2)}°`)}${row('wiggle', `${fmt(t.wiggle_mm, 3)} mm RMS`)}
         ${row('path', `${fmt(t.path_mm, 1)} mm, ${fmt(t.path_over_height, 4)} times its height`)}
         ${row('stamped', t.stamped ? `yes: ${l.stamp.voxelsize_um} µm, ${l.stamp.volume_width} x ${l.stamp.volume_height} x ${l.stamp.volume_slices}` : 'no: bare points')}
-        ${row('licence', l.licence)}
+        ${row('license', lic(l))}
         ${row('sha256', `<button class="lk mono" data-copy="${l.sha256}" data-what="sha256 copied" title="copy">${l.sha256.slice(0, 16)}…</button>`)}
         ${row('file', `<code>${l.file}</code>`)}
         ${l.ends && Object.keys(l.ends).length ? row('CT end check', ['low', 'high'].filter((k) => l.ends[k]).map((k) => `${endHTML(l, k)} ${fmt(l.ends[k].D_mm, 2)} mm from the CT center`).join('<br>')) : ''}
@@ -710,7 +738,7 @@ function setMode(m) {
   if (m === 'lasagna' && !S.las) m = 'scan';
   if ((m === 'scan' || m === 'lasagna') && !S.sel) { select(m === 'lasagna' ? LASAGNA_SCROLL : S.data.scrolls[0].scroll, m); return; }
   if (m === 'lasagna' && S.sel.scroll !== LASAGNA_SCROLL) { select(LASAGNA_SCROLL, 'lasagna'); return; }
-  const prev = S.mode; S.mode = m; document.body.classList.toggle('focus', m !== 'array');
+  const prev = S.mode; S.mode = m; document.body.classList.toggle('focus', m !== 'array'); placeHud();
   document.querySelectorAll('.chip').forEach((c) => c.classList.toggle('on', c.dataset.mode === m));
   arrayGroup.visible = m === 'array'; scanGroup.visible = m !== 'array';
   $('card').hidden = m === 'array'; showInset();
@@ -808,14 +836,17 @@ req = urllib.request.Request(f"{VOL}/{L}/{zl // cz}/{yl // cy}/{xl // cx}",
 plane = np.frombuffer(urllib.request.urlopen(req).read(), np.uint8).reshape(cy, cx)
 print(plane[yl % cy, xl % cx])`;
 }
-function openGuide(tab = 'basics') { snippets(); tabs($('about'), tab); if (!$('about').open) $('about').showModal(); }
+// while a dialog is open it is the one scrolling panel: the list and the card behind it stop scrolling (style.css body.modal)
+function modalState() { document.body.classList.toggle('modal', !!document.querySelector('dialog[open]')); }
+document.querySelectorAll('dialog').forEach((d) => d.addEventListener('close', modalState));
+function openGuide(tab = 'basics') { snippets(); tabs($('about'), tab); if (!$('about').open) $('about').showModal(); modalState(); }
 $('about').querySelector('.tabs').addEventListener('click', (e) => { const b = e.target.closest('[data-tab]'); if (b) { if (b.dataset.tab === 'vc3d') snippets(); tabs($('about'), b.dataset.tab); } });
 
 // data sheet
 const COLS = {
   lines: [['scroll', 'scroll'], ['maker', 'maker'], ['grade', 'grade'], ['ct_end_low', 'low end'], ['ct_end_high', 'high end'], ['points', 'pts'], ['z_start', 'z start'], ['z_end', 'z end'], ['height_mm', 'height mm'],
     ['coverage', 'cover'], ['median_step_vox', 'step'], ['max_step_vox', 'max step'], ['off_center_mm', 'off ctr mm'], ['stray_mm', 'stray mm'], ['tilt_deg', 'tilt °'],
-    ['wiggle_mm', 'wiggle mm'], ['path_over_height', 'path/ht'], ['stamped', 'stamp'], ['usable_ends', 'usable ends'], ['superseded', 'superseded'], ['licence', 'licence'], ['sha256', 'sha256']],
+    ['wiggle_mm', 'wiggle mm'], ['path_over_height', 'path/ht'], ['stamped', 'stamp'], ['usable_ends', 'usable ends'], ['superseded', 'superseded'], ['license', 'license'], ['sha256', 'sha256']],
   scans: [['scroll', 'scroll'], ['scan', 'scan'], ['voxel_um', 'µm'], ['slices', 'z'], ['height_px', 'y'], ['width_px', 'x'], ['height_mm', 'height mm'], ['width_mm', 'width mm'],
     ['levels', 'levels'], ['grand_prize', 'GP'], ['first_letters', 'FL'], ['lines', 'lines'], ['sources', 'sources'], ['grade', 'grade'], ['pair_median_mm', 'pair gap mm'], ['pair_max_mm', 'pair max mm']],
 };
@@ -838,7 +869,7 @@ function renderSheet() {
     <tbody>${rows.map((r) => `<tr data-scroll="${r.scroll}" class="${r.source?.startsWith('finder') ? 'cf' : ''}${r.withdrawn || r.superseded ? ' wd' : ''}">${cols.map(([k]) => `<td>${cellHTML(k, r[k])}</td>`).join('')}</tr>`).join('')}</tbody>`;
   $('sheet-note').textContent = `${rows.length} ${SHEET.tab}. Click a column to sort, a row to open its scan. Definitions: Guide, For researchers. Downloads hold every column and the full notes.`;
 }
-function openSheet(tab = 'lines') { SHEET.tab = tab; tabs($('sheet'), tab); renderSheet(); if (!$('sheet').open) $('sheet').showModal(); }
+function openSheet(tab = 'lines') { SHEET.tab = tab; tabs($('sheet'), tab); renderSheet(); if (!$('sheet').open) $('sheet').showModal(); modalState(); }
 $('sheet').querySelector('.tabs').addEventListener('click', (e) => {
   const t = e.target.closest('[data-tab]'); if (t) { SHEET.tab = t.dataset.tab; SHEET.key = null; tabs($('sheet'), SHEET.tab); renderSheet(); return; }
   const d = e.target.closest('[data-dl]'); if (!d) return;
@@ -993,7 +1024,7 @@ function tick(now = performance.now()) {
   $('a-sources').innerHTML = Object.entries(S.data.sources).map(([k, v]) => {
     const l = S.data.scrolls.flatMap((s) => s.lines).find((q) => q.source === k); const n = S.data.scrolls.filter((s) => s.lines.some((q) => q.source === k)).length;
     const names = S.data.scrolls.filter((s) => s.lines.some((q) => q.source === k)).map((s) => s.scroll).join(', ');
-    return `<li><b class="${k.startsWith('finder') ? 'amber' : 'ice'}">${v.label}</b> (${v.short}): ${n} scan${n === 1 ? '' : 's'}, ${l ? l.licence : ''}. <span class="dim">Credit as given: ${l ? l.credit : ''}. ${names}.</span></li>`;
+    return `<li><b class="${k.startsWith('finder') ? 'amber' : 'ice'}">${v.label}</b> (${v.short}): ${n} scan${n === 1 ? '' : 's'}, ${l ? lic(l) : ''}. <span class="dim">Credit as given: ${l ? l.credit : ''}. ${names}.</span></li>`;
   }).join('');
   const all = S.data.scrolls.flatMap((s) => s.lines.map((l) => [s, l]));
   const bare = all.filter(([s, l]) => !statsOf(s, l).stamped);
@@ -1013,7 +1044,7 @@ function tick(now = performance.now()) {
   if (q.get('ex')) { S.ex = Math.max(1, Math.min(30, +q.get('ex'))); $('ex').value = S.ex; $('ex-v').textContent = S.ex; }
   for (const k of (q.get('off') || '').split(',').filter(Boolean)) (k.includes(':') ? OFF.line : OFF.src).add(k);
   buildLegend();
-  applySettings(false); buildRail(); buildArray();
+  applySettings(false); buildRail(); buildPick(); buildArray();
   $('boot').remove();
   tick();
   if (q.get('scan')) { const m = q.get('mode') || 'scan'; select(q.get('scan'), m); if (q.get('z')) setZ(+q.get('z'), true); }

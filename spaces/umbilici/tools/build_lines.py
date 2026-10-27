@@ -76,6 +76,8 @@ def main(src, out):
                 if m:
                     grade = m.group(1)
             use = md.get("usable_ends")
+            # the license key keeps the dataset index's own published spelling, so data/lines.json reads like
+            # index.json and its readers keep working (the page's tables and labels say license; app.js lic())
             lines.append({
                 "source": f["source"], "kind": f["kind"], "credit": f["credit"], "licence": f["licence"],
                 "upstream": f["upstream"], "file": f["file"], "sha256": f["sha256"], "z": f["z"],

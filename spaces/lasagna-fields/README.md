@@ -74,7 +74,7 @@ The page is also an API and an MCP server (`https://sharpmeow-lasagna-fields.hf.
 `list_scans`, `list_models`, `example_points`, `plan_field` and `make_field`. See the page's **Agents and API** tab.
 A field uses the caller's ZeroGPU time.
 
-## Credit and licences
+## Credit and licenses
 
 Made by Chase Hendrick. Code: Apache 2.0 (see `LICENSE` and `NOTICE`). Model and code it runs: villa's lasagna authors,
 MIT. Scans: Vesuvius Challenge open data, CC BY-NC 4.0; the fields, made from them, are CC BY-NC 4.0 too. Source and

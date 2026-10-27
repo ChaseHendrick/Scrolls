@@ -1,7 +1,7 @@
-"""AFV fibre files for the AFV Fibers Space: which scans have them, where they live, and reading the fibres and the CT
+"""AFV fiber files for the AFV Fibers Space: which scans have them, where they live, and reading the fibers and the CT
 around a point.
 
-Every scan's fibres are one public Hugging Face dataset (SharpMeow/<scan>-afv-fibers): the whole-scan .afv, a 1 mm
+Every scan's fibers are one public Hugging Face dataset (SharpMeow/<scan>-afv-fibers): the whole-scan .afv, a 1 mm
 set, and tiles/ with one small .afv per 1024-voxel cell of the scan grid the model ran on, so a box needs one to eight
 small files, never the whole scan. The CT comes live from the Vesuvius Challenge open data at that same grid; nothing
 is rehosted. All coordinates in and out are native level-0 voxels (x, y, z in the files, z, y, x in the arguments),
@@ -45,7 +45,7 @@ for _scan, _s in SCANS.items():
     _s["f"] = 2 ** _s["level"]
 
 
-class FibreError(Exception):
+class FiberError(Exception):
     """A refusal or failure shown to the visitor as is."""
 
 
@@ -64,12 +64,12 @@ def http_get(url, timeout=120, tries=5):
         except (urllib.error.URLError, OSError) as exc:
             err = exc
         time.sleep(1.5 * (i + 1))
-    raise FibreError(f"could not read {url}: {err}")
+    raise FiberError(f"could not read {url}: {err}")
 
 
 def scan_info(scan):
     if scan not in SCANS:
-        raise FibreError(f"no AFV fibres for {scan!r} here; scans: {', '.join(SCANS)}")
+        raise FiberError(f"no AFV fibers for {scan!r} here; scans: {', '.join(SCANS)}")
     return SCANS[scan]
 
 
@@ -90,7 +90,7 @@ def _download(scan, path):
         return dest
     data = http_get(dataset_url(scan, path), timeout=600)
     if data is None:
-        raise FibreError(f"{scan_info(scan)['repo']} has no {path} (yet)")
+        raise FiberError(f"{scan_info(scan)['repo']} has no {path} (yet)")
     dest.parent.mkdir(parents=True, exist_ok=True)
     tmp = dest.with_suffix(dest.suffix + ".part")
     tmp.write_bytes(data)
@@ -109,7 +109,7 @@ def _trim():
 
 
 def tile_index(scan):
-    """The scan's tiles/index.json: each tile's id, box (z0, z1, y0, y1, x0, x1) in level-0 voxels and fibre count."""
+    """The scan's tiles/index.json: each tile's id, box (z0, z1, y0, y1, x0, x1) in level-0 voxels and fiber count."""
     with _lock:
         if scan not in _index:
             _index[scan] = json.loads(_download(scan, "tiles/index.json").read_text())
@@ -133,9 +133,9 @@ def tiles_for(scan, box):
     return out
 
 
-def fibres_in_box(scan, box):
-    """{id: (family, (N, 3) xyz level-0 points)} for every fibre with a block touching the level-0 box (z0, z1, y0,
-    y1, x0, x1); tiles share fibre ids, so a fibre crossing tiles appears once."""
+def fibers_in_box(scan, box):
+    """{id: (family, (N, 3) xyz level-0 points)} for every fiber with a block touching the level-0 box (z0, z1, y0,
+    y1, x0, x1); tiles share fiber ids, so a fiber crossing tiles appears once."""
     ts = tiles_for(scan, box)
     if not ts:
         return {}, []
@@ -158,13 +158,13 @@ def fibres_in_box(scan, box):
 
 
 def write_box_afv(scan, box, dest):
-    """The fibres touching a box as their own small .afv (same schema, whole fibres, whole-scan ids), for VC3D or any
+    """The fibers touching a box as their own small .afv (same schema, whole fibers, whole-scan ids), for VC3D or any
     AFV reader."""
     ts = tiles_for(scan, box)
     dest = Path(dest)
     dest.unlink(missing_ok=True)
     if not ts:
-        raise FibreError("no fibres there")
+        raise FiberError("no fibers there")
     src = _download(scan, f"tiles/{ts[0]['id']}.afv")
     db = sqlite3.connect(str(dest))
     schema = [r[0] for r in sqlite3.connect(f"file:{src}?mode=ro", uri=True).execute(
@@ -212,7 +212,7 @@ def ct_plane(scan, axis, at, box):
         if url not in _zarray:
             meta = json.loads(http_get(url + "/.zarray") or b"null")
             if not meta or meta.get("compressor") is not None or meta["dtype"] not in ("|u1", "<u1"):
-                raise FibreError(f"unexpected CT layout at {url}")
+                raise FiberError(f"unexpected CT layout at {url}")
             _zarray[url] = meta
         meta = _zarray[url]
     f = s["f"]
@@ -227,7 +227,7 @@ def ct_plane(scan, axis, at, box):
     c1 = (np.minimum(hi, shape) + ch - 1) // ch
     keys = [(i, j, k) for i in range(c0[0], c1[0]) for j in range(c0[1], c1[1]) for k in range(c0[2], c1[2])]
     if len(keys) > 64:
-        raise FibreError("that box needs too much CT; make it smaller")
+        raise FiberError("that box needs too much CT; make it smaller")
 
     def get(key):
         return key, http_get(f"{url}/{key[0]}/{key[1]}/{key[2]}")
@@ -252,8 +252,8 @@ def ct_plane(scan, axis, at, box):
     return plane
 
 
-def render_slice(scan, axis, at, box, fibres, slab=6, width=900):
-    """The CT plane with the fibres near it drawn over, each segment faded by its distance from the plane (V orange,
+def render_slice(scan, axis, at, box, fibers, slab=6, width=900):
+    """The CT plane with the fibers near it drawn over, each segment faded by its distance from the plane (V orange,
     H cyan). `slab` is in voxels of the model's grid."""
     from PIL import Image, ImageDraw
     s = scan_info(scan)
@@ -270,7 +270,7 @@ def render_slice(scan, axis, at, box, fibres, slab=6, width=900):
     r0, c0 = (box[2], box[4]) if axis == "z" else (box[0], box[4])
     lw = max(2, int(round(2.2 * ss * min(1.0, scale * 1.6))))
     half = slab * f
-    for fam, p in fibres.values():
+    for fam, p in fibers.values():
         dist = np.abs(p[:, cut] - at)
         X = (p[:, col] - c0) / f * scale * ss
         Y = (p[:, row] - r0) / f * scale * ss
@@ -284,17 +284,17 @@ def render_slice(scan, axis, at, box, fibres, slab=6, width=900):
     return img.resize((int(w * scale), int(h * scale)), Image.LANCZOS)
 
 
-def plot3d(scan, box, fibres, max_points=250000):
-    """A plotly figure of every fibre inside the box (clipped to it), V orange and H cyan, in level-0 voxels."""
+def plot3d(scan, box, fibers, max_points=250000):
+    """A plotly figure of every fiber inside the box (clipped to it), V orange and H cyan, in level-0 voxels."""
     import plotly.graph_objects as go
     lo = np.array([box[4], box[2], box[0]], float)
     hi = np.array([box[5], box[3], box[1]], float)
-    total = sum(len(p) for _, p in fibres.values()) or 1
+    total = sum(len(p) for _, p in fibers.values()) or 1
     step = max(1, int(np.ceil(total / max_points)))
     traces = []
-    for fam, name in (("V", "vertical fibres"), ("H", "horizontal fibres")):
+    for fam, name in (("V", "vertical fibers"), ("H", "horizontal fibers")):
         xs, ys, zs = [], [], []
-        for f_, p in fibres.values():
+        for f_, p in fibers.values():
             if f_ != fam:
                 continue
             q = p[::step] if len(p) > 2 * step else p

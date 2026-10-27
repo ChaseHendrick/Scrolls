@@ -3,11 +3,12 @@
   python3 tools/deploy.py OWNER/NAME [--private] [--yes]
 
 Stages the Space's files in a temporary folder: the page (app.py, fibercat.py, README.md, requirements.txt, NOTICE,
-LICENSE, connect.html, guide/index.html), the checker itself from scripts/fibercheck/ (fibercheck.py, fcmodel.py), the
-free judge's weights (weights/fibercheck-local.pt, refused unless its SHA-256 is the tested one) and every file in
-assets/: the game's pictures (game.npz, from tools/build_game.py) and the welcome page's and guides' pictures
-(tools/build_media.py). Lists them with their SHA-256, asks y/N unless --yes, then creates the
-Space if needed and uploads them in one commit. Needs huggingface_hub and a logged-in token with write access.
+LICENSE, connect.html, connect.json, CONNECT.md, onescroll.html, guide/index.html), the checker itself from
+scripts/fibercheck/ (fibercheck.py, fcmodel.py), the free judge's weights (weights/fibercheck-local.pt, refused unless
+its SHA-256 is the tested one) and every file in assets/: the game's pictures (game.npz, from tools/build_game.py) and
+the welcome page's and guides' pictures (tools/build_media.py). Lists them with their SHA-256, asks y/N unless --yes,
+then creates the Space if needed and uploads them in one commit. Needs huggingface_hub and a logged-in token with
+write access.
 """
 import argparse
 import hashlib
@@ -19,7 +20,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent.parent
 TOOL = HERE.parent.parent / "scripts" / "fibercheck"
 PAGE = ["app.py", "fibercat.py", "README.md", "requirements.txt", "NOTICE", "LICENSE", "connect.html",
-        "connect.json", "CONNECT.md", "guide/index.html"]
+        "connect.json", "CONNECT.md", "onescroll.html", "guide/index.html"]
 MAX_PICTURE = 4_000_000             # docs/media/README.md: every picture at most 4 MB
 WEIGHTS_SHA256 = "e43c25b322816f9f821a154a472eb51e0af86baa194ca5d65094083e8c4b35d7"
 

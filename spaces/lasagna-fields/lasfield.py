@@ -252,19 +252,19 @@ def plan(vid, z, y, x, size=DEFAULT_SIZE, level=None, model="lasagna"):
     meta = zarray(v, level)
     shape = [int(s) for s in meta["shape"]]
     f = 2 ** level
-    centre = [int(round(float(c))) for c in (z, y, x)]
-    for c, n in zip(centre, base["shape"]):
+    center = [int(round(float(c))) for c in (z, y, x)]
+    for c, n in zip(center, base["shape"]):
         if not 0 <= c < n:
-            raise FieldError(f"the point {centre} is outside the scan (level-0 shape {base['shape']})")
+            raise FieldError(f"the point {center} is outside the scan (level-0 shape {base['shape']})")
     origin = [max(0, min((c // f - size // 2 + ALIGN // 2) // ALIGN * ALIGN, (n - 1) // ALIGN * ALIGN))
-              for c, n in zip(centre, shape)]
+              for c, n in zip(center, shape)]
     box_size = [min(size, n - o) for o, n in zip(origin, shape)]
     read = [[max(0, o - MARGIN), min(n, o + s + MARGIN)] for o, s, n in zip(origin, box_size, shape)]
     ch = meta["chunks"]
     nchunks = math.prod((b - 1) // c - a // c + 1 for (a, b), c in zip(read, ch))
     out = {"volume": v["volume"], "sample": v["sample"], "long_id": v["long_id"], "voxel_um": v["voxel_um"],
             "url": v["url"], "level": level, "level_shape_zyx": shape, "base_shape_zyx": base["shape"],
-            "centre_level0_zyx": centre, "origin_zyx": origin, "size_zyx": box_size,
+            "center_level0_zyx": center, "origin_zyx": origin, "size_zyx": box_size,
             "origin_level0_zyx": [o * f for o in origin], "size_level0_zyx": [s * f for s in box_size],
             "read_zyx": read, "chunks": nchunks, "chunk_bytes": math.prod(ch) * np.dtype(meta["dtype"]).itemsize,
             "model": model}
@@ -669,7 +669,7 @@ def _resize(img, shape):
 
 
 def picture(ct, arrays, boxes, axis=0):
-    """One middle slice through the box along `axis` (0 z, 1 y, 2 x): CT, cos, grad_mag and the normal as colour
+    """One middle slice through the box along `axis` (0 z, 1 y, 2 x): CT, cos, grad_mag and the normal as color
     (|x| red, |y| green, |z| blue), side by side at the CT's grid. Returns an RGB uint8 array."""
     def mid(a):
         return np.take(a, a.shape[axis] // 2, axis=axis)
@@ -691,7 +691,7 @@ def picture(ct, arrays, boxes, axis=0):
 
 
 PANELS = ("CT", "cos", "grad_mag", "normal")
-LEGEND = "normal as colour: x red, y green, z blue · villa lasagna, model output"
+LEGEND = "normal as color: x red, y green, z blue · villa lasagna, model output"
 
 
 def compose(pictures, title="", note=LEGEND):
@@ -799,7 +799,7 @@ def finish(p, prep, ran, work, out_root):
                "claim": "Model output: a lasagna field is geometry fitted by a model, not a reading of any text."}
     out_root = Path(out_root)
     out_root.mkdir(parents=True, exist_ok=True)
-    stem = f"{p['sample']}-{p['volume']}-z{p['centre_level0_zyx'][0]}-y{p['centre_level0_zyx'][1]}-x{p['centre_level0_zyx'][2]}-s{p['size_zyx'][0]}"
+    stem = f"{p['sample']}-{p['volume']}-z{p['center_level0_zyx'][0]}-y{p['center_level0_zyx'][1]}-x{p['center_level0_zyx'][2]}-s{p['size_zyx'][0]}"
     zpath = package(Path(ran["manifest"]).parent, p, arrays, receipt, out_root / f"{stem}.zip")
     return {"receipt": receipt, "zip": str(zpath), "pictures": pictures, "arrays": arrays}
 

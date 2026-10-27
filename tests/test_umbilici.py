@@ -27,19 +27,21 @@ def load(name, path):
 
 
 build_lines = load("umbilici_build_lines", SPACE / "tools" / "build_lines.py")
+# the dataset's own published spelling of its license key (index.json); data/lines.json and app.js keep it
+PUBLISHED = "licence"
 
 
 def fake_dataset(root):
     """A two-scan copy of the center-lines dataset: one scan with two people's lines, one with a finder line."""
     files = [
         {"scroll": "PHerc0001", "scan": "20250101000000", "source": "drobkov", "kind": "person", "credit": "Alexey Drobkov",
-         "licence": "MIT", "upstream": "https://example.org/a", "file": "lines/PHerc0001/a.json", "sha256": "0" * 64,
+         PUBLISHED: "MIT", "upstream": "https://example.org/a", "file": "lines/PHerc0001/a.json", "sha256": "0" * 64,
          "z": [100.0, 300.0], "note": "", "volume": "20250101000000-9.362um-1.2m-113keV-masked.zarr"},
         {"scroll": "PHerc0001", "scan": "20250101000000", "source": "tauil", "kind": "person", "credit": "Abd Elilah",
-         "licence": "CC BY 4.0", "upstream": "https://example.org/b", "file": "lines/PHerc0001/b.json", "sha256": "1" * 64,
+         PUBLISHED: "CC BY 4.0", "upstream": "https://example.org/b", "file": "lines/PHerc0001/b.json", "sha256": "1" * 64,
          "z": [120.0, 280.0], "note": "withdrawn from recommended use by its author", "volume": None},
         {"scroll": "PHerc0002", "scan": "20250202000000", "source": "finder", "kind": "model", "credit": "Chase Hendrick",
-         "licence": "CC BY-NC 4.0", "upstream": "made here", "file": "lines/PHerc0002/c.json", "sha256": "2" * 64,
+         PUBLISHED: "CC BY-NC 4.0", "upstream": "made here", "file": "lines/PHerc0002/c.json", "sha256": "2" * 64,
          "z": [10.0, 50.0], "note": "end check FLAG; usable ends: high; no end checked on CT by a person",
          "volume": "20250202000000-8.640um-1.2m-116keV-masked.zarr"},
     ]
@@ -109,6 +111,8 @@ class BuildLines(unittest.TestCase):
                                                   "volume_width": 64, "volume_height": 64, "volume_slices": 400})
         self.assertEqual(a["lines"][1]["stamp"], {})
         self.assertIsNone(b["lines"][0]["superseded_by"])  # copied from index.json; none in this copy
+        # the license key is copied under the dataset's own spelling, so data/lines.json reads like index.json
+        self.assertEqual([l[PUBLISHED] for l in a["lines"]], ["MIT", "CC BY 4.0"])
         self.assertEqual(set(t["sources"]), {"bucket", "drobkov", "tauil", "dopico", "finder", "finder-polished"})
 
     def test_every_source_has_a_color_and_a_chip_style(self):
@@ -261,6 +265,57 @@ class Page(unittest.TestCase):
         self.assertIn("Blosc().decode(raw)", app)  # the guide's Python snippet decodes a whole chunk there
         # the Data dialog's scan rows have no source; reading one must not throw (the Scans tab was empty in 1.9.0)
         self.assertIn("class=\"${r.source?.startsWith('finder') ? 'cf' : ''}", app)
+
+    def test_one_scrolling_panel_at_a_time(self):
+        # user decision, 27 October 2026: the page never scrolls, and one panel scrolls at a time: the list in Array,
+        # the scan card in X-ray and Lasagna (whose scan menu stands in for the list), an open dialog above both, and in
+        # the Data dialog only its table
+        html, css, app = self.text("index.html"), self.text("style.css"), self.text("app.js")
+        head = html.split("</head>", 1)[0]
+        self.assertRegex(head, r"(?s)<!-- space-onescroll:start -->.+<!-- space-onescroll:end -->")
+        self.assertIn("html, body { margin: 0; height: 100%; background: var(--bg); color: var(--fg); overflow: hidden; }", css)
+        top = re.sub(r"@media[^{]*\{(?:[^{}]*\{[^{}]*\})*[^{}]*\}", "", css)  # rules outside media queries
+        self.assertIn("body.focus .rail { display: none; }", top)
+        self.assertIn("body.modal .rail, body.modal .card { overflow: hidden; }", top)
+        self.assertIn(".sheet[open] { display: flex; flex-direction: column; overflow: hidden; }", top)
+        self.assertNotIn("max-height", re.search(r"\.tbl-wrap \{([^}]*)\}", css).group(1))
+        for fn in ("openGuide", "openSheet"):
+            self.assertRegex(re.search(rf"function {fn}\(.*", app).group(0), r"showModal\(\); modalState\(\); \}$", fn)
+        self.assertIn("document.querySelectorAll('dialog').forEach((d) => d.addEventListener('close', modalState));", app)
+        self.assertIn('<select id="c-pick"', html)
+        self.assertIn("buildRail(); buildPick();", app)
+
+    def test_top_bar_fits_on_phones(self):
+        # 1.10.0 ran the view buttons off a 390 px screen (Connect cut off, the settings gear unreachable). On phones they
+        # wrap within the screen (two full-width rows on narrow phones), and the card, the first-visit hint and the
+        # settings sit under them from where app.js measures they end (--nav-b), not from offsets fixed for one row
+        css, app = self.text("style.css"), self.text("app.js")
+        phone = "\n".join(m.group(1) for m in re.finditer(r"@media \(max-width: 860px\) \{((?:[^{}]*\{[^{}]*\})*[^{}]*)\}", css))
+        nav = re.search(r"(?m)^\s*\.tr \{([^}]*)\}", phone).group(1)
+        self.assertIn("right: var(--gut)", nav)
+        self.assertIn("flex-wrap: wrap", nav)
+        self.assertIn("var(--head-b", nav)
+        for sel in (".card", ".hint", ".settings"):
+            rule = re.search(rf"(?m)(?:^|\{{)\s*{re.escape(sel)} \{{([^}}]*)\}}", phone).group(1)
+            self.assertIn("var(--nav-b", rule, sel)
+            self.assertNotRegex(rule, r"top: calc\(var\(--gut\) \+ \d+px\)", sel)
+        narrow = re.search(r"@media \(max-width: 480px\) \{((?:[^{}]*\{[^{}]*\})*[^{}]*)\}", css).group(1)
+        self.assertIn(".tr .seg { flex: 1 1 100%; }", narrow)
+        self.assertIn(".tr .tbtn { flex: 1 1 0;", narrow)
+        wide = re.search(r"@media \(min-width: 861px\) \{([^}]*\})", css).group(1)
+        self.assertIn(".kicker { max-width: calc(100vw - 2 * var(--gut) - var(--nav-w, 0px)", wide)
+        place = re.search(r"function placeHud\(\) \{(.*?)\n\}", app, re.S).group(1)
+        for var in ("--nav-w", "--head-b", "--nav-b"):
+            self.assertIn(f"css.setProperty('{var}'", place)
+        self.assertIn("document.body.classList.toggle('focus', m !== 'array'); placeHud();", app)
+
+    def test_labels_say_license(self):
+        # the page reads the dataset's key in one place; its labels, tables and CSV columns say license
+        app = self.text("app.js")
+        self.assertEqual([l.strip() for l in app.splitlines() if PUBLISHED in l], [f"const lic = (l) => l.{PUBLISHED};"])
+        self.assertIn("['license', 'license']", app)
+        self.assertIn("${row('license', lic(l))}", app)
+        self.assertIn("license: lic(l),", app)
 
     def test_card_links_both_datasets(self):
         readme = self.text("README.md")

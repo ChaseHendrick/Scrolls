@@ -74,7 +74,7 @@ function ringOrder() {
   S.order = idx;
 }
 
-function centreOn(k) {
+function centerOn(k) {
   const r = planeRows();
   if (!S.order.length) return;
   S.at = ((k % S.order.length) + S.order.length) % S.order.length;
@@ -127,7 +127,7 @@ async function draw() {
   const css = getComputedStyle(document.documentElement);
   const lw = Math.max(1.5, Math.min(3, k * 0.4));
   if ($('l-move').checked) {
-    // grey strokes from the published line to the snapped one, at each piece's midpoint
+    // gray strokes from the published line to the snapped one, at each piece's midpoint
     cx2d.strokeStyle = css.getPropertyValue('--move').trim() || 'rgba(200,200,200,.6)';
     cx2d.lineWidth = Math.max(1, lw * 0.45); cx2d.beginPath();
     for (let i = 0; i < m; i++) {
@@ -137,8 +137,8 @@ async function draw() {
     }
     cx2d.stroke();
   }
-  const line = (o, colour) => {
-    cx2d.strokeStyle = colour; cx2d.lineWidth = lw; cx2d.lineCap = 'round'; cx2d.beginPath();
+  const line = (o, color) => {
+    cx2d.strokeStyle = color; cx2d.lineWidth = lw; cx2d.lineCap = 'round'; cx2d.beginPath();
     for (let i = 0; i < m; i++) { const a = R * i + o; cx2d.moveTo(X(r[a]), Y(r[a + 1])); cx2d.lineTo(X(r[a + 2]), Y(r[a + 3])); }
     cx2d.stroke();
   };
@@ -166,7 +166,7 @@ function card(seg) {
     <div class="row">
       <div><b>${fmt(v)}</b><span>released vertices</span></div>
       <div><b>${pct(sn, v)}</b><span>snapped onto a face</span></div>
-      <div><b>${pct(fl, v)}</b><span>filled from measured neighbours</span></div>
+      <div><b>${pct(fl, v)}</b><span>filled from measured neighbors</span></div>
       ${fine}
       <div><b>${mv.median != null ? mv.median.toFixed(2) : 'n/a'} vx</b><span>median move (90th pct ${mv.p90 != null ? mv.p90.toFixed(1) : 'n/a'})</span></div>
       <div><b>${fmt(held)}</b><span>held back for evaluation</span></div>
@@ -191,10 +191,18 @@ async function openSeg(seg, z) {
   // start on the busiest plane near the middle, so the first view shows the label
   if (z == null) { let best = -1; for (let i = Math.floor(pi * 0.6); i <= Math.min(view.planes.length - 1, Math.ceil(pi * 1.4)); i++) if (view.planes[i].count > best) { best = view.planes[i].count; pi = i; } }
   S.plane = pi; zr.value = String(pi);
-  ringOrder(); centreOn(middle());
+  ringOrder(); centerOn(middle());
   card(seg);
   ctImage = null;
   await draw();
+}
+
+// The segment list and the table grow with the page, so a pick far down them can leave the image out of view:
+// bring the viewer back when less than a fifth of the image shows.
+function showStage() {
+  const r = document.querySelector('.canvaswrap').getBoundingClientRect();
+  const seen = Math.min(r.bottom, innerHeight) - Math.max(r.top, 0);
+  if (seen < 0.2 * Math.min(r.height, innerHeight)) document.querySelector('.stage').scrollIntoView({ block: 'start', behavior: 'smooth' });
 }
 
 function listSegs() {
@@ -207,7 +215,7 @@ function listSegs() {
     const nm = s.segment.replace(/^\d{14}-/, '');
     li.innerHTML = `<span>${nm}</span><small>${pct(s.snapped, s.vertices_released)}</small>`;
     li.title = s.segment;
-    li.onclick = () => openSeg(s).catch((e) => msg(e.message));
+    li.onclick = () => { showStage(); openSeg(s).catch((e) => msg(e.message)); };
     if (S.seg && S.seg.segment === s.segment) li.classList.add('on');
     ul.appendChild(li);
   }
@@ -218,7 +226,7 @@ function table() {
   for (const s of S.index) {
     const tr = document.createElement('tr');
     tr.innerHTML = `<td>${s.scroll}</td><td>${s.segment}</td><td>${s.method}</td><td class="n">${fmt(s.vertices_released)}</td><td class="n">${pct(s.snapped, s.vertices_released)}</td><td class="n">${s.move_voxels && s.move_voxels.median != null ? s.move_voxels.median.toFixed(2) : 'n/a'}</td><td class="n">${fmt(s.vertices_held_back)}</td>`;
-    tr.onclick = () => { tab('view'); openSeg(s).catch((e) => msg(e.message)); };
+    tr.onclick = () => { tab('view'); showStage(); openSeg(s).catch((e) => msg(e.message)); };
     tb.appendChild(tr);
   }
 }
@@ -236,8 +244,8 @@ $('f-find').oninput = listSegs;
 ['l-pub', 'l-snap', 'l-move'].forEach((id) => { $(id).onchange = () => draw(); });
 $('z-range').oninput = () => { S.plane = Number($('z-range').value); ringOrder(); const r = planeRows(); if (r.length) { let best = Infinity, bi = 0; for (let i = 0; i < r.length / R; i++) { const d = (r[R * i] - S.cx) ** 2 + (r[R * i + 1] - S.cy) ** 2; if (d < best) { best = d; bi = i; } } S.at = Math.max(0, S.order.indexOf(bi)); } draw(); };
 $('win').onchange = () => { S.win = Number($('win').value); draw(); };
-$('b-next').onclick = () => { centreOn(S.at + Math.max(1, Math.round(S.order.length / 24))); draw(); };
-$('b-prev').onclick = () => { centreOn(S.at - Math.max(1, Math.round(S.order.length / 24))); draw(); };
+$('b-next').onclick = () => { centerOn(S.at + Math.max(1, Math.round(S.order.length / 24))); draw(); };
+$('b-prev').onclick = () => { centerOn(S.at - Math.max(1, Math.round(S.order.length / 24))); draw(); };
 document.addEventListener('keydown', (e) => {
   if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
   if (e.key === 'ArrowRight') $('b-next').click();
@@ -254,7 +262,7 @@ window.snappedLabels = {
   data: DATA,
   segments: () => S.index.slice(),
   open: (segment, z) => { const s = S.index.find((x) => x.segment === segment); if (!s) throw new Error(`no segment ${segment}`); return openSeg(s, z); },
-  view: () => (S.view ? { ...S.view, plane: S.view.planes[S.plane], centre: [S.cx, S.cy] } : null),
+  view: () => (S.view ? { ...S.view, plane: S.view.planes[S.plane], center: [S.cx, S.cy] } : null),
 };
 
 (async function init() {

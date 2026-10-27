@@ -1,6 +1,6 @@
 # stagereg: pick any stage's option by name, in any workflow
 
-The stage registry lists every option we know for each stage of reading a scroll (ours, the community's, the organisers' team models), with licence and maturity, and lets every workflow pick one by name.
+The stage registry lists every option we know for each stage of reading a scroll (ours, the community's, the organizers' team models), with license and maturity, and lets every workflow pick one by name.
 
 | Field | Value |
 | --- | --- |
@@ -21,11 +21,11 @@ The stage registry lists every option we know for each stage of reading a scroll
 
 ## What it does
 
-Each stage of reading a scroll (centre line, surface prediction, lasagna field, spiral fit, trace, repair, snap, flatten, render, ink, ensemble, letters and others) has more than one option: villa's tools, community models, the organisers' team models and our own. The registry is one list of them. Each option says who made it (origin: ours, community, team or published), its licence, its maturity, why it has that maturity, and which workflows can run it, so a workflow swaps a stage by naming an option instead of by editing code.
+Each stage of reading a scroll (center line, surface prediction, lasagna field, spiral fit, trace, repair, snap, flatten, render, ink, ensemble, letters and others) has more than one option: villa's tools, community models, the organizers' team models and our own. The registry is one list of them. Each option says who made it (origin: ours, community, team or published), its license, its maturity, why it has that maturity, and which workflows can run it, so a workflow swaps a stage by naming an option instead of by editing code.
 
 Maturity is one scale for every stage: `default` (what a workflow runs when nothing is named), `validated` (a held-out or published benchmark with its control), `experimental` (it runs; no passing held-out result here yet), `pending` (still in development checks; refused until it passes) and `failed` (failed a frozen test or its controls; kept for comparisons). Naming an option is the opt-in: an experimental option runs when named, and its maturity and why go into the run's record. The registry never makes an experimental option a default.
 
-Licences are stated per option. Code or weights with no stated licence are only read from their own host at run time (`fetch: runtime`), never copied; `check` fails a row that breaks this.
+Licenses are stated per option. Code or weights with no stated license are only read from their own host at run time (`fetch: runtime`), never copied; `check` fails a row that breaks this.
 
 Where a workflow already has a backend table, an extension module `kit/stagereg_ext_NAME.py` reads it instead of repeating it, and can add workflows. The facts no code table carries live in `kit/data/stages.json`. In this repository the workflow that picks through it is [scroll2ink](scroll2ink.md) (`--use ink=d9v2`).
 
@@ -60,9 +60,9 @@ It worked when `pick` exits 0 and prints the option with `picked_by`.
 
 ## Checks and controls
 
-`python -m kit stages check` (and `tests/test_stagereg.py`) fails when an option names an unknown stage, a maturity off the scale or an origin off the list; when a data row has no licence, or is unlicensed without `fetch: runtime`; when an experimental, pending or failed data row does not say why; when no workflow runs an option and no `reach` says how to get it; when a data row is listed twice (a later file may annotate an earlier file's option with a row that has no `by` but never list it again); or when a workflow's default is missing or cannot run there. The test plants each of these faults and requires the check to name it.
+`python -m kit stages check` (and `tests/test_stagereg.py`) fails when an option names an unknown stage, a maturity off the scale or an origin off the list; when a data row has no license, or is unlicensed without `fetch: runtime`; when an experimental, pending or failed data row does not say why; when no workflow runs an option and no `reach` says how to get it; when a data row is listed twice (a later file may annotate an earlier file's option with a row that has no `by` but never list it again); or when a workflow's default is missing or cannot run there. The test plants each of these faults and requires the check to name it.
 
-Claim label: Sourced fact, for the catalogue's own consistency; each option's `why` carries its own label in its source.
+Claim label: Sourced fact, for the catalog's own consistency; each option's `why` carries its own label in its source.
 
 ## Commands and options
 
@@ -80,7 +80,7 @@ The rest of the line goes to the registry's own parser (`usage: python -m kit st
 | `list [STAGE] [--workflow W] [--json]` | every stage | Every option, or a stage's; with `--workflow`, only those that workflow can run |
 | `show STAGE NAME [--json]` | none | One option in full |
 | `pick STAGE --workflow W [--use NAME] [--json]` | the workflow's default | What the workflow would use and why; NAME may list several with commas |
-| `check [--json]` | none | The catalogue against its rules; exit 1 with the problems |
+| `check [--json]` | none | The catalog against its rules; exit 1 with the problems |
 
 ### `--use STAGE=NAME` in a workflow
 
@@ -108,7 +108,7 @@ The rest of the line goes to the registry's own parser (`usage: python -m kit st
 | `uses(values)` | `{stage: name}` | `StageError` | {stage: name} from --use STAGE=NAME values; refuses a malformed one or a stage named twice. |
 | `picks(values, workflow, env=None, stages=None)` | `{stage: option}` | `StageError` | {stage: picked option} for every stage named by --use (or the environment), checked for this workflow. |
 | `ap_settings(picked)` | AutoPipeline settings | `StageError` | AutoPipeline settings for the picked options: AutoPipeline's backends shorthand, for copies that run AutoPipeline |
-| `check(files=FILES, folder=DATA)` | list of problems | `StageError` on a bad data file | Problems with the catalogue: every option names a known stage, a maturity on the scale, an origin and a licence |
+| `check(files=FILES, folder=DATA)` | list of problems | `StageError` on a bad data file | Problems with the catalog: every option names a known stage, a maturity on the scale, an origin and a license |
 | `main(argv=None)` | exit code | none | The command line |
 
 
@@ -164,7 +164,7 @@ Under a second; it reads one JSON file.
 
 ## Tests
 
-`python -m unittest tests.test_stagereg`: the shipped catalogue passes `check`; planted faults each fail; picks by name, environment and default; refusals for unknown and unrunnable options; `--use` parsing; scroll2ink's `--use` setting `--model` and recording the pick. It does not run any stage.
+`python -m unittest tests.test_stagereg`: the shipped catalog passes `check`; planted faults each fail; picks by name, environment and default; refusals for unknown and unrunnable options; `--use` parsing; scroll2ink's `--use` setting `--model` and recording the pick. It does not run any stage.
 
 ## History
 

@@ -229,11 +229,19 @@ class Run(unittest.TestCase):
         self.assertIn("| Ensemble of 3", compare.table(res))
 
     def test_sweep_keys_are_in_grid_layers(self):
-        res, maps, _ = self.run_compare(["ink_9um-s42", "hecate-2.4"], centres=(-2, 0, 2), steps=(1,))
+        res, maps, _ = self.run_compare(["ink_9um-s42", "hecate-2.4"], centers=(-2, 0, 2), steps=(1,))
         for n in ("ink_9um-s42", "hecate-2.4"):
             self.assertEqual(sorted(res["models"][n]["windows"]), ["c+0_s1", "c+2_s1", "c-2_s1"], n)
         self.assertEqual(res["models"]["hecate-2.4"]["windows"]["c+2_s1"][32] -
                          res["models"]["hecate-2.4"]["windows"]["c+0_s1"][32], 8)    # 2 grid layers = 8 layers
+
+    def test_the_british_keyword_of_older_scripts_still_works(self):
+        # compare.run's centers was spelled the British way until 27 Oct 2026; scripts written then still pass it
+        res, _, _ = self.run_compare(["ink_9um-s42"], centres=(-2, 0), steps=(1,))
+        self.assertEqual(res["centers"], [-2, 0])
+        self.assertEqual(sorted(res["models"]["ink_9um-s42"]["windows"]), ["c+0_s1", "c-2_s1"])
+        with self.assertRaises(TypeError):                       # any other unknown keyword is still refused
+            self.run_compare(["ink_9um-s42"], windows=(0,))
 
     def test_one_failure_does_not_hide_the_others(self):
         class Broken:

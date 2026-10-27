@@ -52,8 +52,8 @@ supervision mask, against its own control:
 What each comparison gives, after the features of [ink-sdk](https://github.com/LimeGS/ink-sdk) (LimeGS, MIT), which
 also runs Hecate and canonical here:
 
-- **depth sweeps**: windows at several centres and layer steps, both depth orders, as a mosaic (rows: models;
-  columns: windows; labelled ink outlined), and a **stability map** (the share of cells that put a pixel above 0.5);
+- **depth sweeps**: windows at several centers and layer steps, both depth orders, as a mosaic (rows: models;
+  columns: windows; labeled ink outlined), and a **stability map** (the share of cells that put a pixel above 0.5);
 - **ink-sdk's liveness gate** on every map (EMPTY, DEGENERATE, ALIVE): a DEGENERATE map is shown, flagged and never
   ranked; and its forward and reverse asymmetry;
 - the **z-score ensemble** of the chosen models (ink-sdk's recipe after Erwin Nieuwlaar's), scored against the
@@ -61,13 +61,13 @@ also runs Hecate and canonical here:
 - **AUC with a 95 % block-bootstrap interval** (1 mm blocks) for each map, its control and their gap;
 - ink-sdk's **label-free orientation check** (mesh and CT) in `tools/gallery_job.py`, which says which face layer 0
   is on;
-- Hecate's **3D volume** as a depth profile over labelled ink and background;
+- Hecate's **3D volume** as a depth profile over labeled ink and background;
 - **checkpoint pins**: every file downloaded by URL, refused unless its SHA-256 matches, pins checked against
   ink-sdk's profiles in the tests;
 - a **JSON run record** of everything: pins, scale plan, windows, timings, liveness, scores, environment.
 
 Each row also says whether the model's training saw labels from the shown scroll. A score there shows the pipeline
-runs; only rows marked no are a test of generalisation.
+runs; only rows marked no are a test of generalization.
 
 | Model | By | Reads | Scale (um) | License | Trained on PHerc0841 labels? | On PHerc0139? |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -118,7 +118,7 @@ a running mosaic of every region, and a VC3D point collection.
 Scores: public `docs/results.json` of ChaseHendrick/Scrolls (640 px crops, 64 px inner edge, villa's flat inference;
 windows chosen with the labels, so development numbers). `both` runs the two and averages them (twice the GPU time).
 Checkpoints are downloaded by URL, refused unless their SHA-256 matches, and opened with `weights_only=True`. The
-models are built by villa's own flat ink inference at a pinned commit; the per-patch normalisation runs batched on the
+models are built by villa's own flat ink inference at a pinned commit; the per-patch normalization runs batched on the
 GPU and matches villa's CPU function exactly in the tests.
 
 ## GPU time

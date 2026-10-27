@@ -24,7 +24,7 @@ A Hugging Face dataset of the published surface labels of PHerc0139, PHerc0814, 
 
 A surface label is a tifxyz mesh that follows one wrap of papyrus in a scan. Published labels sit near the sheet but rarely on it: on fresh test sites, only about a quarter of their vertices were within one voxel of the recto face. Models trained on such labels learn that offset.
 
-The dataset holds every published label of four scrolls after a snap: each vertex moved along its normal onto the face of the bright papyrus band, on the side toward the scroll's centre line. On PHerc0139, PHerc0814 and PHerc0841 the face is found in a 2.4 µm scan of the same scroll registered vertex by vertex to the label's scan (finesnap); on PHerc0172 in the label's own 7.9 µm scan (labelsnap). Where a vertex's own face is unclear, nothing is measured at that vertex: it takes a Gaussian-weighted average of its measured neighbours' offsets when one lies within two grid cells (filled, `abstain.tif` 2), and otherwise keeps its published position (`abstain.tif` 1). Of 32.9 million released vertices, 66.0 % are snapped, 33.0 % filled (median move 2.7 voxels) and 1.0 % left in place. The snapped share counts measured vertices only; keep `abstain.tif` 0 to use only vertices whose own face was found. Version 1.0.1 (27 Oct 2026) added code 2; in 1.0.0 filled vertices were marked 1. Each mesh keeps the grid and voxel frame of its source, so it lines up with it vertex for vertex.
+The dataset holds every published label of four scrolls after a snap: each vertex moved along its normal onto the face of the bright papyrus band, on the side toward the scroll's center line. On PHerc0139, PHerc0814 and PHerc0841 the face is found in a 2.4 µm scan of the same scroll registered vertex by vertex to the label's scan (finesnap); on PHerc0172 in the label's own 7.9 µm scan (labelsnap). Where a vertex's own face is unclear, nothing is measured at that vertex: it takes a Gaussian-weighted average of its measured neighbors' offsets when one lies within two grid cells (filled, `abstain.tif` 2), and otherwise keeps its published position (`abstain.tif` 1). Of 32.9 million released vertices, 66.0 % are snapped, 33.0 % filled (median move 2.7 voxels) and 1.0 % left in place. The snapped share counts measured vertices only; keep `abstain.tif` 0 to use only vertices whose own face was found. Version 1.0.1 (27 Oct 2026) added code 2; in 1.0.0 filled vertices were marked 1. Each mesh keeps the grid and voxel frame of its source, so it lines up with it vertex for vertex.
 
 The Space draws a segment's published and snapped lines on the CT plane you pick, and lists every segment.
 
@@ -39,7 +39,7 @@ The meshes are geometry. They say nothing about ink or text.
 Do not use it:
 
 - To fix a label that follows the wrong wrap: a snap moves along the normal only. Check the wrap first.
-- Where two sheets touch without a visible gap: the face found there can belong to the neighbour.
+- Where two sheets touch without a visible gap: the face found there can belong to the neighbor.
 - For five PHerc0139 segments and PHerc0841 auto_grown_20260220174252405, which are held out for evaluation: they are not included.
 
 ## Quick start
@@ -64,7 +64,7 @@ Claim label: Model output (the snapped meshes come from a band finder on CT; the
 
 ### The Space
 
-[huggingface.co/spaces/SharpMeow/snapped-labels](https://huggingface.co/spaces/SharpMeow/snapped-labels): Viewer (scroll, segment, z plane, a 96, 192 or 384 voxel window, layers), All segments, How it works, Connect your tool. Keys: left and right step along the label, up and down step z. URL parameters: `seg=SEGMENT`, `z=Z`, `data=URL` (another copy of the dataset).
+[huggingface.co/spaces/SharpMeow/snapped-labels](https://huggingface.co/spaces/SharpMeow/snapped-labels): Viewer (scroll, segment, z plane, a 96, 192 or 384 voxel window, layers), All segments, How it works, Connect your tool. Keys: left and right step along the label, up and down step z. URL parameters: `seg=SEGMENT`, `z=Z`, `data=URL` (another copy of the dataset). The page has one scroll bar: the segment list grows with the page instead of scrolling on its own, picking a segment far down the list or the table brings the image back into view, and on a phone the list follows the viewer.
 
 ### `load_example.py` (in the dataset)
 
@@ -83,7 +83,7 @@ usage: load_example.py [-h] [--root ROOT] [--segment SEGMENT]
 | --- | --- | --- | --- |
 | `window.snappedLabels.segments()` (page) | the index rows | | In the browser console or a headless browser |
 | `window.snappedLabels.open(SEGMENT, Z)` (page) | a promise | `Error` for an unknown segment | Opens a segment at the plane nearest Z |
-| `window.snappedLabels.view()` (page) | the open view: planes, step, voxel size, centre | | `null` before a segment opens |
+| `window.snappedLabels.view()` (page) | the open view: planes, step, voxel size, `center` ([x, y] in voxels; spelled the British way before 27 Oct 2026) | | `null` before a segment opens |
 
 ## Inputs
 
@@ -94,7 +94,7 @@ None to use it. The dataset was made from the published meshes and scans of the 
 | File | Type | Meaning |
 | --- | --- | --- |
 | `SCROLL/SEGMENT/snapped.tifxyz/{x,y,z}.tif` | float32 grids | Moved vertices, level-0 voxels of the label scan; `-1` none or held back |
-| `abstain.tif` | float32 grid of codes | 0 snapped (face measured at the vertex), 1 not measured and left at its published position, 2 not measured and moved by its measured neighbours' filled offset (since 1.0.1), 255 no vertex or held back |
+| `abstain.tif` | float32 grid of codes | 0 snapped (face measured at the vertex), 1 not measured and left at its published position, 2 not measured and moved by its measured neighbors' filled offset (since 1.0.1), 255 no vertex or held back |
 | `confidence.tif` | float32 grid | 0 to 1 |
 | `reason.tif` | float32 grid of codes | Why no face was measured at a vertex |
 | `source.tif` | float32 grid of codes | finesnap only: 1 placed in the 2.4 µm scan, 2 in the label scan |
@@ -141,10 +141,11 @@ The snap ran on Hugging Face CPU Jobs on 27 Oct 2026, under 9 USD in caps; stitc
 
 ## History
 
+- 2026-10-27: one page scroll bar and American English ([PR #253](https://github.com/ChaseHendrick/Scrolls/pull/253)): the segment list grows with the page (after the viewer on phones), a pick from far down the list or table brings the image back into view, and `view()` returns `center` (was `centre`).
 - 2026-10-27: dataset and Space released, page added (`bd34a59`).
 
 ## Related
 
 - [`spaces/snapped-labels/`](../../spaces/snapped-labels/): the page source.
 - [segment-lens](segment-lens.md): every published mesh's geometry.
-- [umbilici](umbilici.md): the centre lines the snap faces toward.
+- [umbilici](umbilici.md): the center lines the snap faces toward.

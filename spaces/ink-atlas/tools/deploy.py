@@ -3,8 +3,8 @@
   python3 tools/deploy.py OWNER/NAME [--private] [--yes]
 
 Stages the page's files in a temporary folder (app.py, atlasdata.py, README.md, requirements.txt, NOTICE, LICENSE,
-connect.html, CONNECT.md, connect.json), lists them with their SHA-256, asks y/N unless --yes, then creates the Space
-if needed and uploads them in one commit. The Space holds code only: the maps stay in the dataset
+connect.html, CONNECT.md, connect.json, onescroll.html), lists them with their SHA-256, asks y/N unless --yes, then
+creates the Space if needed and uploads them in one commit. The Space holds code only: the maps stay in the dataset
 SharpMeow/first-letters-ink-atlas and are read at run time. Needs huggingface_hub and a token with write access.
 """
 import argparse
@@ -16,7 +16,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent.parent
 PAGE = ["app.py", "atlasdata.py", "README.md", "requirements.txt", "NOTICE", "LICENSE", "connect.html", "CONNECT.md",
-        "connect.json"]
+        "connect.json", "onescroll.html"]
 
 
 def sha256(p):
@@ -27,7 +27,8 @@ def stage(dst):
     dst.mkdir(parents=True)
     for f in PAGE:
         if not (HERE / f).is_file():
-            sys.exit(f"{f} is missing (connect.html and CONNECT.md: python -m kit spaceconnect render spaces/ink-atlas)")
+            sys.exit(f"{f} is missing (connect.html, CONNECT.md and onescroll.html: "
+                     "python -m kit spaceconnect render spaces/ink-atlas)")
         shutil.copy2(HERE / f, dst / f)
     return dst
 

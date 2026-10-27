@@ -1,5 +1,7 @@
 """Tests for kit/spaceconnect.py: the Connect your tool panel every Space carries."""
 
+import html
+import importlib.util
 import json
 import tempfile
 import unittest
@@ -126,11 +128,12 @@ class Render(unittest.TestCase):
             d = Path(d)
             (d / "connect.json").write_text(json.dumps(spec(ZARR)))
             (d / "index.html").write_text(f"<body>{sc.START}{sc.END}</body>")
-            self.assertEqual(len(sc.render(d)), 3)
+            self.assertEqual(len(sc.render(d)), 4)
             self.assertEqual(sc.render(d, write=False), [])
             self.assertIn('id="connect"', (d / "index.html").read_text())
             self.assertTrue(sc.wired(d, "static"))
             self.assertFalse(sc.wired(d, "gradio"))
+            self.assertTrue((d / "onescroll.html").read_text().startswith(sc.SCROLL_START))
 
     def test_runnable_skips_paused_and_large_downloads(self):
         got = list(sc.runnable(spec(dict(DATASET, size="50 GB"), dict(API, status="paused"))))
@@ -138,6 +141,174 @@ class Render(unittest.TestCase):
         hub = got[0][3]
         self.assertFalse(any(l.startswith("pip install") for c in got for l in c[3].splitlines()))
         self.assertNotIn("folder = snapshot_download", hub)
+
+
+HAVE_PLAYWRIGHT = importlib.util.find_spec("playwright") is not None
+
+
+class OneScroll(unittest.TestCase):
+    def test_static_page_gets_the_fragment_spliced_and_kept_current(self):
+        with tempfile.TemporaryDirectory() as d:
+            d = Path(d)
+            (d / "connect.json").write_text(json.dumps(spec(ZARR)))
+            (d / "index.html").write_text(f"<head>{sc.SCROLL_START}{sc.SCROLL_END}</head><body>{sc.START}{sc.END}</body>")
+            sc.render(d)
+            page = (d / "index.html").read_text()
+            self.assertEqual(page.count(sc.SCROLL_START), 1)
+            self.assertIn("__oneScroll", page)
+            self.assertTrue(sc.scroll_wired(d, "static"))
+            self.assertEqual(sc.render(d, write=False), [])
+            (d / "index.html").write_text(page.replace("__oneScroll", "__old"))
+            self.assertIn(str(d / "index.html"), sc.render(d, write=False))
+
+    def test_gradio_app_is_wired_when_it_reads_the_fragment(self):
+        with tempfile.TemporaryDirectory() as d:
+            d = Path(d)
+            (d / "app.py").write_text("HEAD = ''\n")
+            self.assertFalse(sc.scroll_wired(d, "gradio"))
+            (d / "app.py").write_text('HEAD = (HERE / "onescroll.html").read_text()\n')
+            self.assertTrue(sc.scroll_wired(d, "gradio"))
+
+    def test_verdict(self):
+        page = {"frame": "top", "box": "page", "shown": 900, "content": 2000}
+        box = {"frame": "srcdoc", "box": "page", "shown": 700, "content": 4000}
+        panel = {"frame": "app", "box": "aside#rail", "shown": 600, "content": 1200}
+        self.assertEqual(sc.verdict([page]), [])
+        self.assertTrue(sc.verdict([page, box]))                      # a guide frame scrolling inside the page
+        self.assertTrue(any("inside the page" in p for p in sc.verdict([page, panel])))
+        self.assertEqual(sc.verdict([panel], one_screen=True), [])     # a one-screen viewer keeps one list
+        self.assertTrue(sc.verdict([panel, dict(panel, box="aside#card")], one_screen=True))
+
+    @unittest.skipUnless(HAVE_PLAYWRIGHT, "needs playwright and a Chromium")
+    def test_fragment_fits_frames_to_their_content(self):
+        from playwright.sync_api import sync_playwright
+        guide = "<html><body style='margin:20px'>" + "".join(f"<p id=p{i}>line {i}</p>" for i in range(120)) + "</body></html>"
+        short = "<html><body><p>short</p></body></html>"
+        tall = "<html><body><div style='height:100vh'></div><p>more</p></body></html>"
+        page = (f"<html><head>{sc.onescroll_html()}<style>iframe{{width:100%;height:calc(100vh - 150px);"
+                f"min-height:640px;border:0}}</style></head><body><h1>App</h1>"
+                f'<iframe id="g" srcdoc="{html.escape(guide, quote=True)}"></iframe>'
+                f'<iframe id="s" srcdoc="{html.escape(short, quote=True)}"></iframe>'
+                f'<iframe id="k" data-scroll="inner" srcdoc="{html.escape(guide, quote=True)}"></iframe></body></html>')
+        size = ("(id) => { const f = document.getElementById(id); "
+                "return [f.clientHeight, f.contentDocument.documentElement.scrollHeight]; }")
+        with tempfile.TemporaryDirectory() as d, sync_playwright() as pw:
+            f = Path(d) / "page.html"
+            f.write_text(page)
+            b = pw.chromium.launch()
+            try:
+                pg = b.new_page(viewport={"width": 1000, "height": 800})
+                pg.goto(f.as_uri())
+                pg.wait_for_timeout(800)
+                h, content = pg.evaluate(size, "g")
+                self.assertGreater(h, 2000)                            # grew past the 640 px box to its content
+                self.assertLessEqual(content, h + 1)
+                self.assertLess(pg.evaluate(size, "s")[0], 200)       # shrank below min-height to a short page
+                frames = {x["shown"] for x in sc.scan_page(pg) if x["frame"] == "srcdoc"}
+                self.assertEqual(len(frames), 1)                       # only the opted-out frame still scrolls
+                pg.evaluate("() => { const d = document.getElementById('g').contentDocument;"
+                            " for (let i = 20; i < 120; i++) d.getElementById('p' + i).remove(); }")
+                pg.wait_for_timeout(400)
+                self.assertLess(pg.evaluate(size, "g")[0], 1000)      # shrank with its content
+                pg.evaluate(f"() => {{ document.getElementById('s').srcdoc = {json.dumps(tall)}; }}")
+                pg.wait_for_timeout(1500)                              # a page sized in vh: gives up, keeps its scroll
+                self.assertIsNone(pg.evaluate("() => document.getElementById('s').getAttribute('scrolling')"))
+            finally:
+                b.close()
+
+
+    @unittest.skipUnless(HAVE_PLAYWRIGHT, "needs playwright and a Chromium")
+    def test_scan_looks_inside_frames_sized_from_outside(self):
+        from playwright.sync_api import sync_playwright
+        inner = ("<html><body style='margin:0'><div id=box style='height:120px;overflow:auto'>"
+                 + "<p>row</p>" * 60 + "</div>" + "<p>tall</p>" * 80 + "</body></html>")
+        page = (f'<html><body><iframe scrolling="no" style="width:600px;height:300px;border:0" '
+                f'srcdoc="{html.escape(inner, quote=True)}"></iframe></body></html>')
+        with tempfile.TemporaryDirectory() as d, sync_playwright() as pw:
+            f = Path(d) / "page.html"
+            f.write_text(page)
+            b = pw.chromium.launch()
+            try:
+                pg = b.new_page(viewport={"width": 800, "height": 600})
+                pg.goto(f.as_uri())
+                pg.wait_for_timeout(300)
+                found = sc.scan_page(pg)
+            finally:
+                b.close()
+        boxes = [(x["frame"], x["box"]) for x in found]
+        self.assertIn(("srcdoc", "div#box"), boxes)                # a box inside a frame sized from outside counts
+        self.assertNotIn(("srcdoc", "page"), boxes)                # the frame's own document has no scroll bar
+        self.assertTrue(sc.verdict(found))
+
+    @unittest.skipUnless(HAVE_PLAYWRIGHT, "needs playwright and a Chromium")
+    def test_tabs_are_listed_with_their_depth_and_only_when_shown(self):
+        from playwright.sync_api import sync_playwright
+        page = ("<html><body><div role=tablist><button role=tab>A</button><button role=tab>B</button></div>"
+                "<div role=tabpanel><div role=tablist><button role=tab>A1</button></div></div>"
+                "<div role=tabpanel style='display:none'><div role=tablist><button role=tab>B1</button></div></div>"
+                "</body></html>")
+        with tempfile.TemporaryDirectory() as d, sync_playwright() as pw:
+            f = Path(d) / "page.html"
+            f.write_text(page)
+            b = pw.chromium.launch()
+            try:
+                pg = b.new_page()
+                pg.goto(f.as_uri())
+                tabs = pg.evaluate(sc.TABS_JS)
+            finally:
+                b.close()
+        self.assertEqual([(t["label"], t["depth"]) for t in tabs], [("A", 0), ("B", 0), ("A1", 1)])
+
+class Spelling(unittest.TestCase):
+    def test_british_words_are_found_in_prose_and_code(self):
+        with tempfile.TemporaryDirectory() as d:
+            d = Path(d)
+            (d / "app.py").write_text("class FibreError(Exception):\n    pass\n"
+                                      "def fibres_box(colour='grey'):\n    \"\"\"Labelled centres, normalised.\"\"\"\n")
+            got = sc.spelling([d], root=d)
+            words = sorted(x.split(": ")[1].split(" ->")[0] for x in got)
+            self.assertEqual(words, ["Fibre", "Labelled", "centres", "colour", "fibres", "grey", "normalised"])
+            self.assertIn("app.py:3: colour -> color", got)
+
+    def test_less_common_british_words_are_known(self):
+        for gb, us in (("smouldering", "smoldering"), ("sceptical", "skeptical"), ("splendour", "splendor"),
+                       ("synchronised", "synchronized"), ("manoeuvring", "maneuvering"), ("speciality", "specialty")):
+            self.assertEqual(sc.BRITISH.get(gb), us)
+
+    def test_american_and_shared_words_pass(self):
+        with tempfile.TemporaryDirectory() as d:
+            d = Path(d)
+            (d / "a.md").write_text("Fibers, colors and centers, labeled and modeled. The analyses advertise an "
+                                    "exercise: realize, organize, travel toward the catalog. License: MIT.\n")
+            self.assertEqual(sc.spelling([d], root=d), [])
+
+    def test_allow_list_keeps_names_from_others(self):
+        with tempfile.TemporaryDirectory() as d:
+            d = Path(d)
+            (d / "NOTICE").write_text("Data under the Open Government Licence v3.0.\n")
+            old = list(sc.ALLOW_SPELLING)
+            try:
+                sc.ALLOW_SPELLING.append(("NOTICE", "Open Government Licence", "a license's own name"))
+                self.assertEqual(sc.spelling([d], root=d), [])
+            finally:
+                sc.ALLOW_SPELLING[:] = old
+            self.assertEqual(len(sc.spelling([d], root=d)), 1)
+
+    def test_allow_entry_covers_every_occurrence_on_a_line(self):
+        with tempfile.TemporaryDirectory() as d:
+            d = Path(d)
+            (d / "a.md").write_text("Keys: `licence`, `file`; `licence` is the dataset's own spelling.\n")
+            old = list(sc.ALLOW_SPELLING)
+            try:
+                sc.ALLOW_SPELLING.append(("a.md", "`licence`", "a published key named twice on one line"))
+                self.assertEqual(sc.spelling([d], root=d), [])
+            finally:
+                sc.ALLOW_SPELLING[:] = old
+            self.assertEqual(len(sc.spelling([d], root=d)), 2)
+
+    def test_every_allow_entry_has_a_reason(self):
+        for glob, text, reason in sc.ALLOW_SPELLING:
+            self.assertTrue(glob and text and len(reason) > 8, (glob, text, reason))
 
 
 class Repository(unittest.TestCase):

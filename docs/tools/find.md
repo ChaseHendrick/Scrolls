@@ -1,6 +1,6 @@
 # find: everything public for one scroll, and how to credit it
 
-`python -m kit find SCROLL` lists a scroll's volumes, segments, predictions, center lines and Hugging Face matches in one screen; `python -m kit cite SCROLL` prints the credit and licence lines to paste under a figure.
+`python -m kit find SCROLL` lists a scroll's volumes, segments, predictions, center lines and Hugging Face matches in one screen; `python -m kit cite SCROLL` prints the credit and license lines to paste under a figure.
 
 | Field | Value |
 | --- | --- |
@@ -23,13 +23,13 @@
 
 What exists for a scroll is spread over the open-data bucket (volumes, segments, `representations/predictions/`), the data browser, Hugging Face (community datasets and Spaces) and our center lines dataset. People on the Discord ask where a scroll's surface predictions or umbilicus are, and which volume a segment was traced on. `find` puts it on one screen:
 
-- every volume of the scroll: id, voxel size, shape (z y x), licence, whether it has been superseded, and which open prizes name it (from kit's dated prize snapshot, [prizes](prizes.md));
+- every volume of the scroll: id, voxel size, shape (z y x), license, whether it has been superseded, and which open prizes name it (from kit's dated prize snapshot, [prizes](prizes.md));
 - how many segments it has, per original volume;
 - every folder under `SCROLL/representations/` in the bucket: surface, lasagna and fiber predictions, umbilicus files;
 - the center lines in `SharpMeow/vesuvius-center-lines` for that scroll;
 - public Hugging Face datasets, models and Spaces whose names or cards match the scroll's id.
 
-`cite` prints one credit line per volume, as `metadata.json` states its licence, and with `--centerline` one per center line, as the dataset's index states it.
+`cite` prints one credit line per volume, as `metadata.json` states its license, and with `--centerline` one per center line, as the dataset's index states it.
 
 A Hub match is a name match, not a check that the data is what it says; read its card. Prize eligibility comes from the snapshot's date, not the live page; `python -m kit prizes` shows that date.
 
@@ -37,7 +37,7 @@ A Hub match is a name match, not a check that the data is what it says; read its
 
 - Before starting on a scroll: what volumes, segments and predictions already exist, and on which volume.
 - To find a scroll's published umbilicus, surface prediction or lasagna run without browsing the bucket.
-- To write the credit line for a figure, a README or a Space from the bucket's own licence field.
+- To write the credit line for a figure, a README or a Space from the bucket's own license field.
 
 Do not use it:
 
@@ -81,7 +81,7 @@ It worked when the exit code is 0 and the volumes list is not empty.
 
 ## Checks and controls
 
-- **The listing is the bucket's own.** Volumes, shapes and licences are read from `metadata.json`; folders from the bucket's ListObjectsV2 listing, all pages. Nothing is inferred from names except the volume id prefix of a representation folder.
+- **The listing is the bucket's own.** Volumes, shapes and licenses are read from `metadata.json`; folders from the bucket's ListObjectsV2 listing, all pages. Nothing is inferred from names except the volume id prefix of a representation folder.
 - **An unknown scroll fails loudly.** A scroll not in `metadata.json` exits 2 with the close names (`PHerc139` suggests `PHerc0139`), tested with a fake `metadata.json`.
 - **Private Hub repos are skipped.** Only rows the search API marks public are listed.
 

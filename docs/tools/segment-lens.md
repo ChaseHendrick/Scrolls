@@ -40,6 +40,8 @@ Do not use it:
 
 Open the Space, pick a scroll in the bottom-left panel, then a segment (largest first). Drag to turn the surface, scroll to zoom, and switch the flag colors on or off in the card. **Table** lists every top-level mesh; click a row with "view" to open it.
 
+One scroll bar at a time: the page never scrolls, the segment list is the one box that does, and the card grows to fit (its numbers fold under **NUMBERS**, folded at first on a phone or a window under 560 px tall; on a window too short for the open card, its bottom is cut instead of scrolled, so its top and the NUMBERS fold stay on screen). While the table or the Guide is open, it scrolls instead: the panels step aside under the table, and the list, or the table when the Guide is opened over it, stops scrolling under the Guide. On a phone the picker sits under the title and the card below it, leaving the picker room for its controls and a row of the list; a phone on its side shows the two side by side.
+
 Locally, after a build (see [atlas](atlas.md)):
 
 ```bash
@@ -155,7 +157,7 @@ Free to use. The Space is a static page on Hugging Face; the data comes from the
 
 ## Tests
 
-`python3 -m unittest tests.test_segment_lens -v`: the page's Lens reader against `kit.atlas.lens_grid` (in Node.js when installed), the header offsets, the card's dataset link, no long dashes, no hard-coded mesh URL, and every `window.segmentLens` call documented on this page.
+`python3 -m unittest tests.test_segment_lens -v`: the page's Lens reader against `kit.atlas.lens_grid` (in Node.js when installed), the header offsets, the card's dataset link, one scroll bar at a time (the card never scrolls; the table and the Guide take over while open), no long dashes, no hard-coded mesh URL, and every `window.segmentLens` call documented on this page.
 
 ## History
 
@@ -163,6 +165,7 @@ Free to use. The Space is a static page on Hugging Face; the data comes from the
 - 2026-10-24: Connect your tool panel in the Guide ([spaceconnect](spaceconnect.md)): the Segment Atlas with huggingface_hub, datasets, pandas, hf and curl snippets, an example mesh with numpy and tifffile, all run live.
 - 2026-10-24: 1.1.0, opens a little more zoomed out (camera 4.0 from the segment instead of 3.2), and the same atlas becomes an API and MCP server for agents at `/agents/` (`list_scrolls`, `list_segments`, `get_segment`, `segment_picture`), as Chase asked ([#187](https://github.com/ChaseHendrick/Scrolls/pull/187)).
 - 2026-10-24: 1.1.0 startup fix: the agent tools are mounted with server-side rendering off, because on Spaces it started a Node server on port 7860 and the app could not bind there ([#194](https://github.com/ChaseHendrick/Scrolls/pull/194)).
+- 2026-10-27: one scroll bar at a time (user decision, 27 October 2026): the card no longer scrolls (one line per number, the flagged areas as a small mm² and nodes table, a folding NUMBERS section), the list (or the table) stops scrolling while the Guide is open and the panels step aside while the table is open; on a window too short for the open card its bottom is cut, not scrolled; on a phone the card stays below the picker, and a phone on its side shows them side by side; American spelling in the agent tools' text (gray). Checked in headless Chromium against the published atlas at 1440x900, 1366x768, 1280x600, 1024x520, 800x561, 761x600, 390x844, 375x667, 375x553, 360x640, 430x739, 667x375, 740x360, 844x390 and 568x320 with `kit.spaceconnect.scan_page`, in the 3D, Table and Guide views and the Guide over the Table: one scrolling box in every view, no horizontal scroll, and the picker and card apart ([PR #253](https://github.com/ChaseHendrick/Scrolls/pull/253)).
 
 ## Related
 

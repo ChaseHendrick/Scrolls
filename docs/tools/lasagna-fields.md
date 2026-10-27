@@ -134,7 +134,7 @@ Claim label: Model output (the fields); Measurement (the seam ratios, hashes and
 | `/list_scans` | none | every open-data volume it can read, with the level the model reads |
 | `/list_models` | none | the model slot: models, which are offered, what they were tested on |
 | `/example_points` | none | ready points inside the papyrus of scans on no prize list |
-| `/plan_field` | `volume, z, y, x, size=256, model="lasagna"` | the box (input level and level 0), the CT it reads, tiles, the GPU seconds it asks for, and the field it will be checked against; runs nothing |
+| `/plan_field` | `volume, z, y, x, size=256, model="lasagna"` | the box (input level and level 0: `center_level0_zyx` is your point, `origin_level0_zyx` and `size_level0_zyx` the box), the CT it reads, tiles, the GPU seconds it asks for, and the field it will be checked against; runs nothing |
 | `/make_field` | the same | the picture (PNG), the receipt (JSON) and the zip |
 
 `volume` is the 14-digit open-data volume id; z, y, x are level-0 voxels; `size` is 256 or 512. The same calls are MCP tools at `https://sharpmeow-lasagna-fields.hf.space/gradio_api/mcp/`. Locally, `python lasfield.py selftest` checks the parts that need neither network nor model, and `python lasfield.py run VOLUME Z Y X [SIZE]` makes one box on this machine (it needs villa's lasagna and the checkpoint; on 4 CPUs a 256 box took 958 s).
@@ -171,7 +171,7 @@ A made field comes back as one zip, `SCAN-VOLUME-zZ-yY-xX-sSIZE.zip`:
 | `villa/` | villa's own output folder: `*.lasagna.json` and the four OME-Zarr channels, in the scan's coordinates with only the box written; lasagna's fit opens it as is |
 | `field.npz` | the box's arrays: cos at half, grad_mag, nx and ny at a quarter of the input level's grid |
 | `receipt.json` | the plan, villa commit, checkpoint and its SHA-256, the exact `predict3d` command line, timings and the check |
-| `README.txt` | what the files are, and the licences |
+| `README.txt` | what the files are, and the licenses |
 
 Coordinates are the scan's own voxels (z, y, x), divided by 2 for cos and by 4 for the other channels. Regions the masked scan leaves empty are absent and read as 0.
 
@@ -218,10 +218,11 @@ Downloads are free to use: users rent nothing. A whole scan is 32 to 82 GB (abou
 
 ## Tests
 
-`tests/test_lasagna_fields_space.py`: the box holds the point on whole 256-voxel blocks, villa's `--crop` is level-0 x y z, sizes and points outside are refused, the ten own fields match the card, `lasfield.py selftest` passes, and a worker pool starts inside a daemon process only with the ZeroGPU fix (the control: without it, the pool is refused). For the data, none in this repository: The datasets' `SHA256SUMS` and `load_example.py` are the checks; the streaming snippet above was run on 2026-10-24.
+`tests/test_lasagna_fields_space.py`: the box holds the point on whole 256-voxel blocks, villa's `--crop` is level-0 x y z, sizes and points outside are refused, the plan names the point `center_level0_zyx`, the ten own fields match the card, the page carries the one-scroll fragment (`onescroll.html` in its head), the guide's frame has no fixed height and its code blocks grow instead of scrolling, the receipt and the download's file row grow after a run, `lasfield.py selftest` passes, and a worker pool starts inside a daemon process only with the ZeroGPU fix (the control: without it, the pool is refused). For the data, none in this repository: The datasets' `SHA256SUMS` and `load_example.py` are the checks; the streaming snippet above was run on 2026-10-24.
 
 ## History
 
+- 2026-10-27: one scroll bar (user decision, 27 October 2026): the page carries `onescroll.html`, which fits the guide's frame to the guide, so the page scrolls and the frame does not; the guide's code blocks grow instead of scrolling (wide lines still scroll sideways) and its tab buttons wrap on a phone; after a run, the receipt (Gradio's JSON stopped at 500 px) and the download's file row grow too. American spelling throughout: `plan_field`'s JSON and the receipt now name the point `center_level0_zyx` (receipts made before 27 Oct 2026 spell it the British way). Not deployed yet; made [PR #253](https://github.com/ChaseHendrick/Scrolls/pull/253).
 - 2026-10-25: the page uses the window's width (up to 1600 px) and the ten scan previews load again; they had 404ed since 2.0.0 (`63a2d05`).
 - 2026-10-25: Space 2.0.0 (Space commit `0640a74`), a Gradio app on ZeroGPU: Make a field for any box of any public scan with villa's own lasagna, checked against published fields; How-to guides with pictures; API, MCP server and Connect your tool panel (Chase's yes, 25 Oct 2026).
 - 2026-10-24: all ten datasets, the bucket and the guide Space public; README "Released tools" entry added (`76beeba` is the commit this page was checked against).

@@ -1,10 +1,10 @@
 # Connect your tool: AFV Fibers
 
-Six whole-scan fibre sets as public Hugging Face datasets, each a few .afv files (read-only SQLite) plus small per-cell tiles, logged out; the scans they came from are open data, read live. The page is also an API and an MCP server that returns the fibres in any box.
+Six whole-scan fiber sets as public Hugging Face datasets, each a few .afv files (read-only SQLite) plus small per-cell tiles, logged out; the scans they came from are open data, read live. The page is also an API and an MCP server that returns the fibers in any box.
 
 Checked 2026-10-27. Generated from `connect.json` by `kit spaceconnect` in [ChaseHendrick/Scrolls](https://github.com/ChaseHendrick/Scrolls).
 
-## Fibres of one 1024-voxel cell of PHerc0139 (178 MB; the whole-scan files PHerc0139_afv_v2.afv and PHerc0139_afv_v2_1mm.afv, and the other five scans, have the same format)
+## Fibers of one 1024-voxel cell of PHerc0139 (178 MB; the whole-scan files PHerc0139_afv_v2.afv and PHerc0139_afv_v2_1mm.afv, and the other five scans, have the same format)
 
 `https://huggingface.co/datasets/SharpMeow/pherc0139-afv-fibers`
 
@@ -37,7 +37,7 @@ curl -L -O https://huggingface.co/datasets/SharpMeow/pherc0139-afv-fibers/resolv
 
 `https://huggingface.co/datasets/SharpMeow/pherc0139-afv-fibers`
 
-License: CC BY-NC 4.0 (derived from Vesuvius Challenge open data). Each entry gives the cell's box_zyx_l0 (level-0 voxels) and fibre count; tiles/<id>.afv holds every fibre with a block in that cell, whole, with its whole-scan id.
+License: CC BY-NC 4.0 (derived from Vesuvius Challenge open data). Each entry gives the cell's box_zyx_l0 (level-0 voxels) and fiber count; tiles/<id>.afv holds every fiber with a block in that cell, whole, with its whole-scan id.
 
 ### Python (huggingface_hub) (tested 2026-10-24)
 
@@ -62,11 +62,11 @@ hf download SharpMeow/pherc0139-afv-fibers tiles/index.json --repo-type dataset 
 curl -L -O https://huggingface.co/datasets/SharpMeow/pherc0139-afv-fibers/resolve/main/tiles/index.json
 ```
 
-## X-ray CT those fibres came from, PHerc0139 9.362 um
+## X-ray CT those fibers came from, PHerc0139 9.362 um
 
 `https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0139/volumes/20250728140407-9.362um-1.2m-113keV-masked.zarr`
 
-License: CC BY-NC 4.0 (Vesuvius Challenge open data). Read live from the open-data bucket, never copied here. The fibres' level-0 voxels are this scan's level 0.
+License: CC BY-NC 4.0 (Vesuvius Challenge open data). Read live from the open-data bucket, never copied here. The fibers' level-0 voxels are this scan's level 0.
 
 ### Python (zarr) (tested 2026-10-24)
 
@@ -104,7 +104,7 @@ It accepts http, https and s3 OME-Zarr roots.
 ### neuroglancer (tested 2026-10-24)
 
 ```text
-https://neuroglancer-demo.appspot.com/#!%7B%22layers%22%3A%5B%7B%22type%22%3A%22image%22%2C%22source%22%3A%22zarr%3A%2F%2Fhttps%3A%2F%2Fvesuvius-challenge-open-data.s3.us-east-1.amazonaws.com%2FPHerc0139%2Fvolumes%2F20250728140407-9.362um-1.2m-113keV-masked.zarr%2F%22%2C%22name%22%3A%22X-ray%20CT%20those%20fibres%20came%20from%2C%20PHerc0139%209.362%20um%22%7D%5D%2C%22layout%22%3A%224panel%22%7D
+https://neuroglancer-demo.appspot.com/#!%7B%22layers%22%3A%5B%7B%22type%22%3A%22image%22%2C%22source%22%3A%22zarr%3A%2F%2Fhttps%3A%2F%2Fvesuvius-challenge-open-data.s3.us-east-1.amazonaws.com%2FPHerc0139%2Fvolumes%2F20250728140407-9.362um-1.2m-113keV-masked.zarr%2F%22%2C%22name%22%3A%22X-ray%20CT%20those%20fibers%20came%20from%2C%20PHerc0139%209.362%20um%22%7D%5D%2C%22layout%22%3A%224panel%22%7D
 ```
 
 ### curl (tested 2026-10-24)
@@ -114,11 +114,11 @@ curl -s https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc013
 curl -s https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0139/volumes/20250728140407-9.362um-1.2m-113keV-masked.zarr/0/.zarray     # one level: shape, chunks, dtype, codec
 ```
 
-## Fibres in any box, from code or an agent
+## Fibers in any box, from code or an agent
 
 `https://huggingface.co/spaces/SharpMeow/afv-fibers`
 
-License: Code Apache 2.0; fibres CC BY-NC 4.0. fibres_box(scan, z, y, x, half) lists every fibre touching a box; look(...) adds the CT picture, a 3D view and the box as .afv. Model output, not a reading.
+License: Code Apache 2.0; fibers CC BY-NC 4.0. fibers_box(scan, z, y, x, half) lists every fiber touching a box; look(...) adds the CT picture, a 3D view and the box as .afv. Model output, not a reading.
 
 ### Python /list_scans (tested 2026-10-24)
 

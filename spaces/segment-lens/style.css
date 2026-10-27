@@ -30,7 +30,9 @@ a { color: var(--accent); }
 .tl a { pointer-events: auto; }
 .tr { z-index: 5; top: var(--gut); right: var(--gut); display: flex; gap: 8px; align-items: center; }
 .bl { left: var(--gut); bottom: var(--gut); width: 300px; max-height: 52vh; }
-.br { right: var(--gut); bottom: var(--gut); width: 320px; max-height: 70vh; overflow: auto; }
+/* One-screen viewer: the segment list is the one box that scrolls. The card grows to fit and never scrolls; on a
+   window too short for it, its bottom is cut (NUMBERS folds it back), so its top stays on screen below the buttons. */
+.br { right: var(--gut); bottom: var(--gut); width: 330px; max-height: calc(100vh - 2 * var(--gut) - 44px); overflow: hidden; overflow: clip; }
 .kicker { font-size: 10.5px; letter-spacing: .14em; }
 h1 { font-family: var(--serif); font-weight: 400; font-size: clamp(34px, 5vw, 54px); margin: .15em 0 .1em; line-height: 1; }
 h1 em, h2 em { color: var(--accent); }
@@ -52,10 +54,15 @@ select, input[type=search] { background: #0a1217; color: var(--fg); border: 1px 
 .chip.on { background: var(--fg); color: var(--bg); }
 .seg { display: flex; gap: 4px; }
 h2 { font-family: var(--serif); font-weight: 400; font-size: 24px; margin: .2em 0 .4em; word-break: break-word; }
-.nums { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; margin: 0 0 10px; }
+.more > summary { cursor: pointer; font-size: 10.5px; letter-spacing: .14em; margin: 0 0 6px; }
+.nums { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 3px 10px; margin: 0 0 8px; }
 .nums dt { color: var(--dim); }
-.nums dd { margin: 0; text-align: right; }
-.legend { display: flex; flex-wrap: wrap; gap: 6px 12px; margin: 8px 0; }
+.nums dd { margin: 0; text-align: right; white-space: nowrap; grid-column: span 2; }
+.nums dd.v, .nums dd.u { grid-column: auto; }
+.nums dd.u { color: var(--dim); }
+.nums dd.wrap { white-space: normal; }
+.nums .hd { color: var(--dim); font-size: 10.5px; padding-top: 4px; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 10px; margin: 8px 0; }
 .legend label { display: flex; align-items: center; gap: 5px; cursor: pointer; }
 .sw { display: inline-block; width: 10px; height: 10px; border-radius: 2px; }
 .sw.hole { background: var(--hole); } .sw.fold { background: var(--fold); } .sw.str { background: var(--str); }
@@ -74,11 +81,27 @@ tbody tr.go { cursor: pointer; }
 .sheet-dialog { background: #0a1217; color: var(--fg); border: 1px solid var(--line-strong); border-radius: 12px; max-width: min(680px, calc(100vw - 32px)); padding: 18px 22px; line-height: 1.55; font-size: 13px; }
 .sheet-dialog::backdrop { background: rgba(0, 0, 0, .6); }
 .sheet-dialog .x { float: right; background: none; color: var(--fg); border: 0; font-size: 22px; cursor: pointer; }
-.sheet-dialog pre { background: #05080b; padding: 10px; border-radius: 6px; overflow: auto; }
+.sheet-dialog pre { background: #05080b; padding: 10px; border-radius: 6px; overflow-x: auto; }
 .toast { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%); z-index: 6; background: var(--fg); color: var(--bg); padding: 8px 14px; border-radius: 999px; }
 .loading { position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 2; color: var(--dim); }
+/* While the table or the guide is open it is the one box that scrolls: the panels under it step aside. */
+html.covered .list { overflow: hidden; }
+html.guide .tablewrap { overflow: hidden; }
+@media (max-height: 640px) {
+  .br h2 { font-size: 19px; }
+  .nums { gap: 2px 10px; }
+}
 @media (max-width: 760px) {
   .tl .lede { display: none; }
-  .bl { width: calc(100vw - 2 * var(--gut)); max-height: 34vh; bottom: auto; top: 150px; }
-  .br { width: calc(100vw - 2 * var(--gut)); max-height: 34vh; }
+  /* Stacked under the title: the picker, then the card. The card keeps its own height (app.js writes it to
+     --card-h) up to what leaves the picker 225px, room for one row of the list; the picker takes what is left. */
+  .bl { width: calc(100vw - 2 * var(--gut)); bottom: auto; top: calc(var(--gut) + 78px);
+        max-height: max(225px, min(40vh, calc(100vh - 78px - 3 * var(--gut) - var(--card-h, 34vh)))); }
+  .br { width: calc(100vw - 2 * var(--gut)); max-height: calc(100vh - 78px - 3 * var(--gut) - 225px); }
+  .list { min-height: 56px; }
+}
+@media (max-width: 760px) and (max-height: 500px) {
+  /* a phone on its side: the picker and the card side by side, as on a wide screen */
+  .bl { top: auto; bottom: var(--gut); width: calc(50vw - 1.5 * var(--gut)); max-height: calc(100vh - 78px - 3 * var(--gut)); }
+  .br { width: calc(50vw - 1.5 * var(--gut)); max-height: calc(100vh - 2 * var(--gut) - 44px); }
 }

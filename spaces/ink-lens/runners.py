@@ -1,7 +1,7 @@
 """Run any zoo model on a surface volume: weights fetched and checked, then the model's own inference code.
 
   villa9     villa's flat ink inference model (configure_model at engine.VILLA_COMMIT), run here batched on the device
-             with villa's per-patch normalisation (engine.robust_torch) and its floored Hann blend, at the patch size
+             with villa's per-patch normalization (engine.robust_torch) and its floored Hann blend, at the patch size
              the checkpoint's own config names (Reader V3: 384 px; the others: 128 px), overlap 0.5.
   hecate     ink-sdk's Hecate adapter (LimeGS/ink-sdk at zoo.INK_SDK_COMMIT), in this process: the released
              hecate.py architecture, both depth orders, and its 3D volume in the render's layers.
@@ -11,7 +11,7 @@
 
 Every run takes explicit depth windows. A window is a list of layer indices into the volume, in the order the model
 reads them; its reverse-depth control is the same layers reversed (the same CT, the wrong order). window() builds
-ink-sdk's battery windows: the model's depth, centred `centre` layers from the middle, `step` layers apart.
+ink-sdk's battery windows: the model's depth, centered `center` layers from the middle, `step` layers apart.
 
 Weights are downloaded once into CACHE/models, at ink-sdk's own layout for its eight profiles (so `ink-sdk doctor`
 reads the same files), and refused unless their size and SHA-256 match the zoo's pins. Checkpoints are opened with
@@ -43,19 +43,19 @@ class RunError(ValueError):
 
 # ---------------------------------------------------------------- depth windows (ink-sdk's battery rule)
 
-def window(n_layers, depth, centre=0, step=1):
-    """Layer indices of one window: `depth` layers, centred `centre` from the middle, `step` apart; None when it
+def window(n_layers, depth, center=0, step=1):
+    """Layer indices of one window: `depth` layers, centered `center` from the middle, `step` apart; None when it
     does not fit (ink_sdk.battery.window)."""
     mid = n_layers // 2
-    idx = [mid + centre + step * (k - depth // 2) for k in range(depth)]
+    idx = [mid + center + step * (k - depth // 2) for k in range(depth)]
     return idx if min(idx) >= 0 and max(idx) < n_layers else None
 
 
-def windows_for(n_layers, depth, centres=(0,), steps=(1,)):
-    """{"c+0_s1": [...], ...} for every centre and step that fits; a window that does not fit is left out."""
+def windows_for(n_layers, depth, centers=(0,), steps=(1,)):
+    """{"c+0_s1": [...], ...} for every center and step that fits; a window that does not fit is left out."""
     out = {}
     for s in steps:
-        for c in centres:
+        for c in centers:
             idx = window(n_layers, depth, int(c), int(s))
             if idx is not None:
                 out[f"c{int(c):+d}_s{int(s)}"] = idx

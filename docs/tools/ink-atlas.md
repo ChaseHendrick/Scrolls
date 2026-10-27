@@ -10,7 +10,7 @@ A Space and an MCP server over the public First Letters ink atlas: seven public 
 | Area | Viewers and apps |
 | Run | [huggingface.co/spaces/SharpMeow/ink-atlas](https://huggingface.co/spaces/SharpMeow/ink-atlas) (the page: Explore, Compare models, The atlas, How to read it, Agents and API), `Client("SharpMeow/ink-atlas").predict(..., api_name="/get_map")`, the MCP server `https://sharpmeow-ink-atlas.hf.space/gradio_api/mcp/`, `python3 spaces/ink-atlas/app.py` (the page on any computer), `import atlasdata` from `spaces/ink-atlas/` |
 | Code | `spaces/ink-atlas/app.py` (the page, API and MCP tools), `spaces/ink-atlas/atlasdata.py` (reading the dataset, pictures, records), `spaces/ink-atlas/tools/deploy.py` (upload to Hugging Face). The data is the dataset [SharpMeow/first-letters-ink-atlas](https://huggingface.co/datasets/SharpMeow/first-letters-ink-atlas) |
-| Tests | `tests/test_ink_atlas_space.py`, 9 tests on a fake atlas laid out like the dataset (no network, no gradio) |
+| Tests | `tests/test_ink_atlas_space.py`, 10 tests on a fake atlas laid out like the dataset (no network, no gradio) |
 | Needs | A browser for the page; `gradio_client` to call it from Python; any MCP client for agents. To serve it yourself: Python 3.12, gradio 6.28.0, numpy, Pillow, huggingface_hub (`spaces/ink-atlas/requirements.txt`) |
 | Runs on | The Space's free CPU. Live calls on 2026-10-27 from a cloud container: `list_surfaces` 3.2 s, a whole-surface `get_map` 2.4 s, a 512 px crop 1.6 s, `compare_models` 3.2 s the first time on a surface and 1.9 s after (maps cached) |
 | Network | `huggingface.co` (the dataset's files, read on demand and cached by huggingface_hub). Links on the page point at `raw.githubusercontent.com` (meshes) and `vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` (CT); the page does not read them |
@@ -24,7 +24,7 @@ A Space and an MCP server over the public First Letters ink atlas: seven public 
 
 Seven public ink models (ink_9um seeds 42 and 43, Reader v2, Reader V3, dense_native, d9v2 and Hecate 9.6) were run on the same traced surfaces of the First Letters scrolls. Every surface was rendered once from level 0 of the public CT onto a 9.6 um canvas, so the maps of all seven line up pixel for pixel. Each model kept both depth orders and three depth windows, and an ensemble (the mean of per-model z-scores, Erwin Nieuwlaar's PHerc0343 recipe from ink-sdk) sits beside them. The public dataset holds 32 surfaces: 25 from 13 First Letters scrolls and 7 PHerc0343 reference surfaces.
 
-The Space makes that dataset easy to look at and to use from code. **Explore** shows any layer of any surface, as a map, an overlay on the CT or the CT alone, in four colour ramps with adjustable contrast; a click opens a full-resolution loupe with a slider between CT and map. **Compare models** puts every model, the ensemble and the CT on one box in a grid, with each layer's mean, median, 99th percentile and correlation with the ensemble there. **The atlas** gives the overview and a clickable gallery; **How to read it** explains depth order, windows, liveness and exposure; **Agents and API** documents the six MCP tools and carries the Connect your tool panel.
+The Space makes that dataset easy to look at and to use from code. **Explore** shows any layer of any surface, as a map, an overlay on the CT or the CT alone, in four color ramps with adjustable contrast; a click opens a full-resolution loupe with a slider between CT and map. **Compare models** puts every model, the ensemble and the CT on one box in a grid, with each layer's mean, median, 99th percentile and correlation with the ensemble there. **The atlas** gives the overview and a clickable gallery; **How to read it** explains depth order, windows, liveness and exposure; **Agents and API** documents the six MCP tools and carries the Connect your tool panel.
 
 It does not run any model: every picture comes from the dataset's PNGs. Every map is model output, not a reading. "Alive" (a model with real spread on a surface) and the face check (ketchupbyheinz's per-pair score from villa PR #2318 of which face two models' strongest marks agree on) come from the dataset's `meta.json`.
 
@@ -101,19 +101,19 @@ No arguments. One row per scroll: `scroll`, `surfaces`, `role`.
 | --- | --- | --- |
 | `surface_id` | required | a surface id |
 | `layer` | `ensemble` | `ensemble`, `ct` or a model id: `ink_9um-s42`, `ink_9um-s43`, `reader-v2`, `reader-v3`, `dense-native`, `d9v2`, `hecate-9.6` |
-| `window` | `c+0` | depth window centre in 9.6 um layers: `c-4`, `c+0`, `c+4` (Hecate 9.6 has `c+0` only) |
+| `window` | `c+0` | depth window center in 9.6 um layers: `c-4`, `c+0`, `c+4` (Hecate 9.6 has `c+0` only) |
 | `order` | `""` | `forward` (as stored) or `reverse`; empty uses the face check's majority |
-| `x`, `y` | `-1` | crop centre in canvas pixels (x across, y down); below 0 shows the whole surface |
+| `x`, `y` | `-1` | crop center in canvas pixels (x across, y down); below 0 shows the whole surface |
 | `size` | `0` | crop side in pixels, at most `MAX_CROP` = 1024; 0 shows the whole surface shrunk to `DISPLAY` = 1400 px |
 | `colormap` | `gray` | `gray`, `papyrus`, `ember`, `ice` |
-| `mode` | `map` | `map`, `overlay` (map in colour over the CT) or `ct` |
+| `mode` | `map` | `map`, `overlay` (map in color over the CT) or `ct` |
 
 ### `/compare_models`
 
 | Option | Default | Meaning |
 | --- | --- | --- |
 | `surface_id` | required | a surface id |
-| `x`, `y` | `-1` | box centre in canvas pixels; below 0 uses the middle of the surface |
+| `x`, `y` | `-1` | box center in canvas pixels; below 0 uses the middle of the surface |
 | `size` | `512` | box side in pixels |
 | `order` | `""` | as in `get_map` |
 | `window` | `c+0` | as in `get_map` |
@@ -183,18 +183,18 @@ Pictures are PNGs (RGB). `get_map`'s record:
 | What you see | Why | What to do |
 | --- | --- | --- |
 | `the atlas could not be read from...:...` | the Hub or `ATLAS_ROOT` could not be read at start | check the network or the folder; restart |
-| `colormap...is not one of...` | an unknown colour ramp | use `gray`, `papyrus`, `ember` or `ice` |
+| `colormap...is not one of...` | an unknown color ramp | use `gray`, `papyrus`, `ember` or `ice` |
 | `no scroll...in the atlas; list_scrolls gives them` | the scroll has no surface in this release | call `list_scrolls` |
 | `layer...is not ensemble, ct or one of...` | an unknown layer | use `ensemble`, `ct` or a model id |
 | `window...is not one of...` | an unknown window | use `c-4`, `c+0` or `c+4` |
-| `(...,...) is outside the...x...canvas (x across, y down)` | the crop centre is off the canvas | take the size from `surface_info`'s `canvas_hw` (height, width) |
+| `(...,...) is outside the...x...canvas (x across, y down)` | the crop center is off the canvas | take the size from `surface_info`'s `canvas_hw` (height, width) |
 | `no surface...in the atlas; list_surfaces gives the ids` | an unknown surface id | call `list_surfaces` |
 | `...is not in the atlas` | a file missing under `ATLAS_ROOT` | copy the whole surface folder |
 | `could not fetch...from...:...` | the Hub refused or timed out | retry later |
 
 ## How it works
 
-`Atlas` downloads `atlas.json` and every surface's `meta.json` and `preview.jpg` once (`snapshot_download` with allow patterns), and fetches each map PNG on first use with `hf_hub_download`; decoded maps stay in an LRU cache of 40. A picture is the map's covered pixels stretched between two percentiles (1 and 99.5 by default), gamma-corrected, and passed through a 256-entry colour ramp; whole-surface pictures are box-averaged to `DISPLAY` = 1400 px first. The overlay blends the coloured map over the CT with per-pixel opacity equal to the map value times the overlay strength. The ensemble layer is `ensemble/forward.png` for the stored order and `ensemble-rev/reverse.png` for the reversed one, so each uses the statistics of its own reading side. The page opens a surface on the depth order more alive model pairs agree on in the face check, as stored on a tie.
+`Atlas` downloads `atlas.json` and every surface's `meta.json` and `preview.jpg` once (`snapshot_download` with allow patterns), and fetches each map PNG on first use with `hf_hub_download`; decoded maps stay in an LRU cache of 40. A picture is the map's covered pixels stretched between two percentiles (1 and 99.5 by default), gamma-corrected, and passed through a 256-entry color ramp; whole-surface pictures are box-averaged to `DISPLAY` = 1400 px first. The overlay blends the colored map over the CT with per-pixel opacity equal to the map value times the overlay strength. The ensemble layer is `ensemble/forward.png` for the stored order and `ensemble-rev/reverse.png` for the reversed one, so each uses the statistics of its own reading side. The page opens a surface on the depth order more alive model pairs agree on in the face check, as stored on a tie.
 
 ## Cost and time
 
@@ -212,11 +212,12 @@ Free: a CPU Space with no GPU. Times are in Runs on. The server's memory is domi
 
 ## Tests
 
-`python -m unittest tests.test_ink_atlas_space -v` covers the data layer on a fake atlas (lists, files, crops, pictures, the compare numbers' control) and the page's tool docstrings, MCP flag and files. The Hub download path and the gradio page are not tested offline; they were checked live on 2026-10-27.
+`python -m unittest tests.test_ink_atlas_space -v` covers the data layer on a fake atlas (lists, files, crops, pictures, the compare numbers' control) and the page's tool docstrings, MCP flag, files and the one-scroll head. The Hub download path and the gradio page are not tested offline; they were checked live on 2026-10-27.
 
 ## History
 
-- 2026-10-27: colour: ember maps by default, a colour per model in Compare and the tables, coloured header and cards (`ef7e9ba`).
+- 2026-10-27: one page scroll bar: the head carries `onescroll.html` (written by `python -m kit spaceconnect render`, [spaceconnect](spaceconnect.md)), so the page scrolls as a whole, and `tools/deploy.py` uploads it; the gallery on The atlas grows to show every surface instead of scrolling inside the page (Gradio caps a gallery at 55% of the window), and on a phone the Compare models table drops its bars and fits the screen instead of scrolling sideways; American spelling in the page, its API docstrings and code (the color helpers in `atlasdata` are now `LAYER_COLOR`, `color` and `mark(color_=)`). The published dataset's `meta.json` keeps the British spelling of its center-only windows key, and the page still reads that key.
+- 2026-10-27: color: ember maps by default, a color per model in Compare and the tables, colored header and cards (`ef7e9ba`).
 - 2026-10-27: first version: page, API, MCP server, Connect panel (`5d25489`).
 
 ## Related

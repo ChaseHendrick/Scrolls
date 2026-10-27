@@ -1,11 +1,40 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>AFV Fibers</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,650&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 :root { --bg:#0b0f17; --card:#121826; --line:#243047; --fg:#eef2f8; --sub:#9aa5b8; --v:#ff8a3d; --h:#3ad1ff; }
 * { box-sizing:border-box; }
 body { margin:0; background:var(--bg); color:var(--fg); font:16px/1.55 Inter, system-ui, sans-serif; }
-main { max-width:1180px; margin:0 auto; padding:28px 16px 48px; }
+main { max-width:1180px; margin:0 auto; padding:8px 16px 48px; }
+header.hero { position:relative; overflow:hidden; border-bottom:1px solid var(--line); }
+.hero .art { position:absolute; top:-10%; bottom:-10%; right:-3%; width:68%; pointer-events:none;
+  background:url("https://huggingface.co/datasets/SharpMeow/pherc0139-afv-fibers/resolve/main/previews/cross-section.png") center 47% / cover no-repeat; mix-blend-mode:screen; opacity:.9;
+  animation:drift 40s ease-in-out infinite alternate; }
+@keyframes drift { from { transform:scale(1); } to { transform:scale(1.07) translate(-1.5%, 1%); } }
+@media (prefers-reduced-motion:reduce) { .hero .art { animation:none; } }
+.hero:after { content:""; position:absolute; inset:0; pointer-events:none;
+  background:linear-gradient(90deg, var(--bg) 0, var(--bg) 40%, rgba(11,15,23,.82) 54%, rgba(11,15,23,.32) 76%,
+    rgba(11,15,23,0) 100%), linear-gradient(0deg, var(--bg) 0, rgba(11,15,23,0) 24%),
+    linear-gradient(180deg, var(--bg) 0, rgba(11,15,23,0) 14%); }
+.hero .wrap { position:relative; z-index:2; max-width:1180px; margin:0 auto; padding:34px 16px 30px; }
+.eyebrow { text-transform:uppercase; letter-spacing:.14em; font-size:12px; font-weight:600; color:var(--v); }
+.hero h1 { font-size:clamp(34px, 4.6vw, 54px); max-width:640px; margin:10px 0 14px; }
+.lede { font-size:18px; color:var(--fg); max-width:600px; }
+.by { color:var(--sub); font-size:14.5px; max-width:600px; margin-top:12px; } .by b { color:var(--fg); }
+.hero .stats { grid-template-columns:repeat(4, minmax(0, 1fr)); max-width:720px; margin:22px 0 0; }
+.hero .stat { background:rgba(18,24,38,.86); backdrop-filter:blur(4px); padding:10px 14px; }
+.hero .stat b { font-family:Fraunces, Georgia, serif; font-size:25px; white-space:nowrap; }
+.hero .stat span { white-space:nowrap; }
+.cta { display:flex; gap:10px; flex-wrap:wrap; margin-top:22px; }
+.btn { display:inline-flex; align-items:center; border-radius:10px; padding:9px 15px; font-weight:600; font-size:15px;
+  border:1px solid var(--line); background:var(--card); color:var(--fg); text-decoration:none; cursor:pointer; }
+.btn.primary { background:var(--v); border-color:var(--v); color:#1a0d03; }
+.btn.blue { background:var(--h); border-color:var(--h); color:#03141a; }
+.btn:hover { filter:brightness(1.08); }
+.whole { display:grid; grid-template-columns:minmax(0, 480px) 1fr; gap:24px; align-items:center; margin-bottom:18px; }
+.whole img { width:100%; border-radius:12px; border:1px solid var(--line); display:block; }
 h1 { font:650 40px/1.1 Fraunces, Georgia, serif; margin:0 0 10px; }
 h2 { font:650 26px/1.2 Fraunces, Georgia, serif; margin:44px 0 12px; }
 p { margin:0 0 12px; color:#d8dee9; }
@@ -14,7 +43,6 @@ a { color:var(--h); }
 .credit { display:flex; gap:14px; align-items:center; background:var(--card); border:1px solid var(--line);
   border-left:4px solid var(--v); border-radius:12px; padding:14px 16px; margin:18px 0 8px; }
 .credit b { color:var(--fg); }
-.hero { width:100%; border-radius:14px; border:1px solid var(--line); display:block; margin:18px 0 6px; }
 .cap { font-size:13px; color:var(--sub); }
 .stats { display:grid; grid-template-columns:repeat(auto-fit, minmax(170px, 1fr)); gap:12px; margin:18px 0; }
 .stat { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:14px 16px; }
@@ -33,92 +61,115 @@ a { color:var(--h); }
 .pair img, .wide { width:100%; border-radius:12px; border:1px solid var(--line); display:block; }
 .legend i { display:inline-block; width:22px; height:4px; border-radius:2px; margin:0 6px 3px 10px; }
 ol li, ul li { margin-bottom:6px; color:#d8dee9; }
-@media (max-width:700px) { h1 { font-size:30px; } .pair { grid-template-columns:1fr; } }
+@media (max-width:900px) { .hero:after { background:rgba(11,15,23,.88); } .hero .art { width:100%; right:0; opacity:.6; }
+  .whole { grid-template-columns:1fr; } }
+@media (max-width:700px) { h1 { font-size:30px; } .pair { grid-template-columns:1fr; }
+  .hero .stats { grid-template-columns:repeat(2, minmax(0, 1fr)); }
+  .hero .stat b { font-size:21px; white-space:normal; } .hero .stat span { white-space:normal; } }
 </style></head>
-<body><main>
-<h1>Papyrus fibres for six whole scrolls</h1>
-<p class="lead">Every horizontal and vertical papyrus fibre that <b>Qual's AFV V2</b> model finds in six whole
-Herculaneum scans, traced into curves with his <b>AVF_SPLINE_GENERATOR</b>: <b>23,201,743 fibres</b>,
-3,806,584 of them 1 mm or longer. Download a scan, explore any box over the CT, or open them in VC3D.</p>
-<div class="credit"><div><b>Built on Qual's work.</b> The fibre model
+<body>
+<header class="hero" id="top">
+<div class="art" aria-hidden="true"></div>
+<div class="wrap">
+<div class="eyebrow">Vesuvius Challenge open data, ready to use</div>
+<h1>Papyrus fibers for six whole scrolls</h1>
+<p class="lede">Every horizontal and vertical papyrus fiber that <b>Qual's AFV V2</b> model finds in six whole
+Herculaneum scans, traced into curves: <b>23,201,743 fibers</b>, 3,806,584 of them 1 mm or longer.</p>
+<p class="by">Made and shared by <b>Chase Hendrick</b>, October 2026. Model, spline generator and <code>.afv</code>
+format by <b>Qual</b>, Apache 2.0.</p>
+<div class="stats">
+<div class="stat"><b>6</b><span>whole scans</span></div>
+<div class="stat"><b>23.2 million</b><span>fibers traced</span></div>
+<div class="stat"><b>20 km</b><span>of fiber, scan scale</span></div>
+<div class="stat"><b>1,725</b><span>regions stitched</span></div>
+</div>
+<div class="cta">
+<a class="btn primary" href="#" onclick="parent.postMessage({afTab:'look'}, '*'); return false;">Explore a box over the CT</a>
+<a class="btn blue" href="#scans" onclick="document.getElementById('scans').scrollIntoView({behavior:'smooth'}); return false;">Download a scan</a>
+<a class="btn" href="#" onclick="parent.postMessage({afTab:'howto'}, '*'); return false;">Open in VC3D</a>
+<a class="btn" href="#" onclick="parent.postMessage({afTab:'catalog'}, '*'); return false;">Every public fiber set</a>
+<a class="btn" href="#" onclick="parent.postMessage({afTab:'agents'}, '*'); return false;">Agents and API</a>
+</div>
+</div>
+</header>
+<main>
+<div class="credit"><div><b>Built on Qual's work.</b> The fiber model
 (<a href="https://huggingface.co/Qualzz20/afv_fiber_9um_v2" target="_blank">Qualzz20/afv_fiber_9um_v2</a>), the spline
 generator (<a href="https://github.com/Qualzz/AVF_SPLINE_GENERATOR" target="_blank">AVF_SPLINE_GENERATOR</a>) and
 the <code>.afv</code> format are his, Apache 2.0, as are the sets he published himself (see the Catalog tab). These
 six are the same recipe run on scans he had not done.</div></div>
-<img class="hero" src="https://huggingface.co/datasets/SharpMeow/pherc0139-afv-fibers/resolve/main/previews/cross-section.png" alt="An axial slice through PHerc0139 with its fibres drawn over the CT">
-<p class="cap">PHerc0139, one axial slice through the whole scroll; fibres within 6 voxels of the slice drawn over
-the CT. <span class="legend"><i style="background:var(--h)"></i>horizontal fibres<i style="background:var(--v)"></i>vertical
-fibres</span>. Model output over CT.</p>
-<div class="stats">
-<div class="stat"><b>6</b><span>whole scans, every region traced</span></div>
-<div class="stat"><b>23.2 million</b><span>fibres in all</span></div>
-<div class="stat"><b>20 km</b><span>of fibre at scan scale</span></div>
-<div class="stat"><b>1,725</b><span>1024-voxel regions, stitched</span></div>
-</div>
 
-<h2>The six scans</h2>
+<h2 id="scans">The six scans</h2>
 <div class="grid">
-<div class="scan"><img src="https://huggingface.co/datasets/SharpMeow/pherc0139-afv-fibers/resolve/main/previews/cross-section.png" alt="PHerc0139 cross-section with fibres" loading="lazy"><div class="body">
-<h3>PHerc0139</h3><p>6,812,631 fibres, 1,105,762 at 1 mm or longer · 9.362 um voxels · 65.7 GB in all</p>
+<div class="scan"><img src="https://huggingface.co/datasets/SharpMeow/pherc0139-afv-fibers/resolve/main/previews/cross-section.png" alt="PHerc0139 cross-section with fibers" loading="lazy"><div class="body">
+<h3>PHerc0139</h3><p>6,812,631 fibers, 1,105,762 at 1 mm or longer · 9.362 um voxels · 65.7 GB in all</p>
 <div class="btns"><a class="go" href="https://huggingface.co/datasets/SharpMeow/pherc0139-afv-fibers" target="_blank">Dataset</a><a
 href="https://huggingface.co/datasets/SharpMeow/pherc0139-afv-fibers/resolve/main/PHerc0139_afv_v2_1mm.afv" target="_blank">1 mm set (10.50 GB)</a><a href="#" onclick="parent.postMessage({afTab:'look'}, '*'); return false;">Explore</a></div></div></div>
-<div class="scan"><img src="https://huggingface.co/datasets/SharpMeow/pherc0814-afv-fibers/resolve/main/previews/cross-section.png" alt="PHerc0814 cross-section with fibres" loading="lazy"><div class="body">
-<h3>PHerc0814</h3><p>5,542,700 fibres, 1,073,424 at 1 mm or longer · 9.362 um voxels · 46.4 GB in all</p>
+<div class="scan"><img src="https://huggingface.co/datasets/SharpMeow/pherc0814-afv-fibers/resolve/main/previews/cross-section.png" alt="PHerc0814 cross-section with fibers" loading="lazy"><div class="body">
+<h3>PHerc0814</h3><p>5,542,700 fibers, 1,073,424 at 1 mm or longer · 9.362 um voxels · 46.4 GB in all</p>
 <div class="btns"><a class="go" href="https://huggingface.co/datasets/SharpMeow/pherc0814-afv-fibers" target="_blank">Dataset</a><a
 href="https://huggingface.co/datasets/SharpMeow/pherc0814-afv-fibers/resolve/main/PHerc0814_afv_v2_1mm.afv" target="_blank">1 mm set (8.17 GB)</a><a href="#" onclick="parent.postMessage({afTab:'look'}, '*'); return false;">Explore</a></div></div></div>
-<div class="scan"><img src="https://huggingface.co/datasets/SharpMeow/pherc0841-afv-fibers/resolve/main/previews/cross-section.png" alt="PHerc0841 cross-section with fibres" loading="lazy"><div class="body">
-<h3>PHerc0841</h3><p>8,147,573 fibres, 1,237,950 at 1 mm or longer · 9.366 um voxels · 53.5 GB in all</p>
+<div class="scan"><img src="https://huggingface.co/datasets/SharpMeow/pherc0841-afv-fibers/resolve/main/previews/cross-section.png" alt="PHerc0841 cross-section with fibers" loading="lazy"><div class="body">
+<h3>PHerc0841</h3><p>8,147,573 fibers, 1,237,950 at 1 mm or longer · 9.366 um voxels · 53.5 GB in all</p>
 <div class="btns"><a class="go" href="https://huggingface.co/datasets/SharpMeow/pherc0841-afv-fibers" target="_blank">Dataset</a><a
 href="https://huggingface.co/datasets/SharpMeow/pherc0841-afv-fibers/resolve/main/PHerc0841_afv_v2_1mm.afv" target="_blank">1 mm set (8.59 GB)</a><a href="#" onclick="parent.postMessage({afTab:'look'}, '*'); return false;">Explore</a></div></div></div>
-<div class="scan"><img src="https://huggingface.co/datasets/SharpMeow/pherc0009b-afv-fibers/resolve/main/previews/cross-section.png" alt="PHerc0009B cross-section with fibres" loading="lazy"><div class="body">
-<h3>PHerc0009B</h3><p>1,341,032 fibres, 136,991 at 1 mm or longer · 8.64 um voxels · 8.4 GB in all</p>
+<div class="scan"><img src="https://huggingface.co/datasets/SharpMeow/pherc0009b-afv-fibers/resolve/main/previews/cross-section.png" alt="PHerc0009B cross-section with fibers" loading="lazy"><div class="body">
+<h3>PHerc0009B</h3><p>1,341,032 fibers, 136,991 at 1 mm or longer · 8.64 um voxels · 8.4 GB in all</p>
 <div class="btns"><a class="go" href="https://huggingface.co/datasets/SharpMeow/pherc0009b-afv-fibers" target="_blank">Dataset</a><a
 href="https://huggingface.co/datasets/SharpMeow/pherc0009b-afv-fibers/resolve/main/PHerc0009B_afv_v2_1mm.afv" target="_blank">1 mm set (1.22 GB)</a><a href="#" onclick="parent.postMessage({afTab:'look'}, '*'); return false;">Explore</a></div></div></div>
-<div class="scan"><img src="https://huggingface.co/datasets/SharpMeow/pherc0332-afv-fibers/resolve/main/previews/cross-section.png" alt="PHerc0332 cross-section with fibres" loading="lazy"><div class="body">
-<h3>PHerc0332 <span>Scroll 3</span></h3><p>712,045 fibres, 157,658 at 1 mm or longer · 2.399 um voxels · 7.6 GB in all</p>
+<div class="scan"><img src="https://huggingface.co/datasets/SharpMeow/pherc0332-afv-fibers/resolve/main/previews/cross-section.png" alt="PHerc0332 cross-section with fibers" loading="lazy"><div class="body">
+<h3>PHerc0332 <span>Scroll 3</span></h3><p>712,045 fibers, 157,658 at 1 mm or longer · 2.399 um voxels · 7.6 GB in all</p>
 <div class="btns"><a class="go" href="https://huggingface.co/datasets/SharpMeow/pherc0332-afv-fibers" target="_blank">Dataset</a><a
 href="https://huggingface.co/datasets/SharpMeow/pherc0332-afv-fibers/resolve/main/PHerc0332_afv_v2_1mm.afv" target="_blank">1 mm set (1.43 GB)</a><a href="#" onclick="parent.postMessage({afTab:'look'}, '*'); return false;">Explore</a></div></div></div>
-<div class="scan"><img src="https://huggingface.co/datasets/SharpMeow/pherc1667-afv-fibers/resolve/main/previews/cross-section.png" alt="PHerc1667 cross-section with fibres" loading="lazy"><div class="body">
-<h3>PHerc1667 <span>Scroll 4</span></h3><p>645,762 fibres, 94,799 at 1 mm or longer · 2.399 um voxels · 5.3 GB in all</p>
+<div class="scan"><img src="https://huggingface.co/datasets/SharpMeow/pherc1667-afv-fibers/resolve/main/previews/cross-section.png" alt="PHerc1667 cross-section with fibers" loading="lazy"><div class="body">
+<h3>PHerc1667 <span>Scroll 4</span></h3><p>645,762 fibers, 94,799 at 1 mm or longer · 2.399 um voxels · 5.3 GB in all</p>
 <div class="btns"><a class="go" href="https://huggingface.co/datasets/SharpMeow/pherc1667-afv-fibers" target="_blank">Dataset</a><a
 href="https://huggingface.co/datasets/SharpMeow/pherc1667-afv-fibers/resolve/main/PHerc1667_afv_v2_1mm.afv" target="_blank">1 mm set (0.86 GB)</a><a href="#" onclick="parent.postMessage({afTab:'look'}, '*'); return false;">Explore</a></div></div></div>
 </div>
 
 <h2>Up close</h2>
+<div class="whole">
+<img src="https://huggingface.co/datasets/SharpMeow/pherc0139-afv-fibers/resolve/main/previews/cross-section.png" alt="An axial slice through PHerc0139 with its fibers drawn over the CT" loading="lazy">
+<div><h3>A whole scroll, one slice</h3>
+<p>Horizontal fibers run along each sheet of papyrus; vertical fibers cross the slice, so they show as short
+marks. Each scan's dataset page has the same pictures.</p>
+<p class="cap">PHerc0139, one axial slice through the whole scroll; fibers within 6 voxels of the slice drawn over
+the CT. <span class="legend"><i style="background:var(--h)"></i>horizontal fibers<i style="background:var(--v)"></i>vertical
+fibers</span>. Model output over CT.</p></div>
+</div>
 <div class="pair">
-<div><img src="https://huggingface.co/datasets/SharpMeow/pherc0814-afv-fibers/resolve/main/previews/zoom.png" alt="zoom of an axial slice with fibres"><p class="cap">PHerc0814: 512 x 512 voxels. Horizontal
-fibres follow each sheet; vertical fibres cross the slice as short marks.</p></div>
-<div><img src="https://huggingface.co/datasets/SharpMeow/pherc0814-afv-fibers/resolve/main/previews/orbit.gif" alt="every fibre in a cube, turning"><p class="cap">PHerc0814: every fibre in a 256-voxel
+<div><img src="https://huggingface.co/datasets/SharpMeow/pherc0814-afv-fibers/resolve/main/previews/zoom.png" alt="zoom of an axial slice with fibers"><p class="cap">PHerc0814: 512 x 512 voxels. Horizontal
+fibers follow each sheet; vertical fibers cross the slice as short marks.</p></div>
+<div><img src="https://huggingface.co/datasets/SharpMeow/pherc0814-afv-fibers/resolve/main/previews/orbit.gif" alt="every fiber in a cube, turning"><p class="cap">PHerc0814: every fiber in a 256-voxel
 cube.</p></div>
 </div>
 
 <h2>How it was made</h2>
 <ol>
-<li><b>Fibre maps</b> from Qual's AFV V2 model on Hugging Face Jobs, his recipe exactly: 128-voxel windows at stride
-64 on one global lattice, Gaussian blending, bf16. 21.2 GPU hours on RTX PRO 6000 for all six scans.</li>
+<li><b>Fiber maps</b> from Qual's AFV V2 model on Hugging Face Jobs, his recipe exactly: 128-voxel windows at stride
+64 on one global lattice, Gaussian blending, bf16, on RTX PRO 6000 GPUs.</li>
 <li><b>Curves</b> from his AVF_SPLINE_GENERATOR, one 1024-voxel region at a time with a 128-voxel halo, on CPU Jobs.</li>
 <li><b>Stitching</b> the regions into one file per scan, joining curves where their ends meet across region faces,
 then Qual's CT exterior cleaning.</li>
-<li><b>Checks</b>: on a test cube of Qual's own published V2 set the pipeline matches his fibres to 98% within one voxel,
+<li><b>Checks</b>: on a test cube of Qual's own published V2 set the pipeline matches his fibers to 98% within one voxel,
 lengths within 1%; stitched regions match one unsplit run to 99.75 to 99.99%; every published file passes villa's own
 AFV reader.</li>
 </ol>
 <p>The six scans used the plain model. For the next ones, compiling it (PyTorch max-autotune, with the compiled
-kernels cached between Jobs) runs 1.47 times faster on the same GPU and gives the same fibres, so a run like this one
-now costs about a third less.</p>
-<img class="wide" src="https://huggingface.co/spaces/SharpMeow/afv-fibers/resolve/main/assets/gpu-speed-cost.png" alt="GPU speed and cost per million windows">
+kernels cached between Jobs) runs 1.47 times faster on the same GPU and gives the same fibers.</p>
+<img class="wide" src="https://huggingface.co/spaces/SharpMeow/afv-fibers/resolve/main/assets/gpu-speed.png" alt="GPU speed in windows per second">
 <p class="cap">Measured end to end on Hugging Face Jobs, 27 October 2026.</p>
-<img class="wide" src="https://huggingface.co/spaces/SharpMeow/afv-fibers/resolve/main/assets/settings-agreement.png" alt="how much faster settings change the fibres">
-<p class="cap">Bigger windows and wider strides are faster but move 4 to 8% of the fibres, so they stay off; the
+<img class="wide" src="https://huggingface.co/spaces/SharpMeow/afv-fibers/resolve/main/assets/settings-agreement.png" alt="how much faster settings change the fibers">
+<p class="cap">Bigger windows and wider strides are faster but move 4 to 8% of the fibers, so they stay off; the
 compiled model changes 0.2%, the same as running the plain model twice. Test cube: 640 voxels of PHerc0125.</p>
 
 <h2>Use them</h2>
 <ul>
-<li><b>Explore a box</b> tab: the CT with fibres, a 3D view, and the box as its own <code>.afv</code>.</li>
+<li><b>Explore a box</b> tab: the CT with fibers, a 3D view, and the box as its own <code>.afv</code>.</li>
 <li><b>Python</b>: an <code>.afv</code> is a read-only SQLite file; every dataset has <code>load_example.py</code>.</li>
-<li><b>VC3D</b>: villa's <code>import_afv.py</code> turns any file here into a fibre object store.</li>
+<li><b>VC3D</b>: villa's <code>import_afv.py</code> turns any file here into a fiber object store.</li>
 <li><b>Agents</b>: the page is an API and an MCP server (Agents and API tab).</li>
 </ul>
-<p class="cap">Fibres are model output about papyrus structure: geometry, not a reading of any text. Scans: Vesuvius
-Challenge open data, CC BY-NC 4.0; the fibre files are derived from them under the same terms.</p>
+<p class="cap">Fibers are model output about papyrus structure: geometry, not a reading of any text. Scans: Vesuvius
+Challenge open data, CC BY-NC 4.0; the fiber files are derived from them under the same terms.</p>
 </main></body></html>

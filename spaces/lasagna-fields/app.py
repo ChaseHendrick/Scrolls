@@ -316,7 +316,7 @@ def make_field(volume: str, z: float, y: float, x: float, size: float = 256, mod
         size: the box side in voxels of the level the model reads, 256 or 512.
         model: a model id from list_models; 'lasagna' is villa's own predict3d.
 
-    Returns a picture (middle slices along z, y and x: CT, cos, grad_mag, normals as colour), the receipt (the
+    Returns a picture (middle slices along z, y and x: CT, cos, grad_mag, normals as color), the receipt (the
     box, the model and its pinned commit and checkpoint, timings, and the agreement with the open data's own field
     with a shifted control), and a zip with villa's output folder, field.npz and receipt.json. Uses the caller's
     ZeroGPU time. Model output: geometry, not a reading.
@@ -324,7 +324,7 @@ def make_field(volume: str, z: float, y: float, x: float, size: float = 256, mod
     p = L.plan(volume, z, y, x, int(size), model=model)
     with one_run(request):
         r = run_field(p, progress)
-    c = p["centre_level0_zyx"]
+    c = p["center_level0_zyx"]
     pic = L.compose(r["pictures"], f"{p['sample']} · {p['size_zyx'][0]}-voxel box at z {c[0]}, y {c[1]}, x {c[2]}")
     return pic, r["receipt"], r["zip"]
 
@@ -361,7 +361,7 @@ says which way the sheet faces at each point. villa's lasagna surface fit and th
 
 ![The CT of one box of PHerc0139 next to villa's lasagna field, stepping through the box](/gradio_api/file=media/howto-slices.gif)
 
-*PHerc0139 (not on any prize list), one box about 2.5 mm a side: the CT, cos and the normal as colour, stepping
+*PHerc0139 (not on any prize list), one box about 2.5 mm a side: the CT, cos and the normal as color, stepping
 through z. Model output: geometry, not a reading of any text.*
 
 <h3 id="first">1. Make your first field (one minute)</h3>
@@ -378,7 +378,7 @@ through z. Model output: geometry, not a reading of any text.*
 ![A result: three rows of slices, each row CT, cos, grad_mag and normal](/gradio_api/file=media/example-result.png)
 
 - **Rows** are the middle slice of your box along z, y and x. **Columns** are the CT, cos, grad_mag and the
-  normal as colour (red for x, green for y, blue for z).
+  normal as color (red for x, green for y, blue for z).
 - **cos** should run along the papyrus in the CT, one bright and one dark band per layer. Where layers touch or
   the CT is unclear, the bands bend or merge: that is where surface tracing is hard too.
 - **The check** compares your field with the published one for the same box, and with a **control**: the same
@@ -404,7 +404,7 @@ through z. Model output: geometry, not a reading of any text.*
 
 Boxes are whole 256-voxel blocks of the scan, because villa writes the field in 64-voxel chunks of its quarter
 grid and puts its tiles on one lattice over the whole scan: that is why a box's field is the whole-scan field
-there. The box is the block nearest your point, so your point is inside it but not always at its centre.
+there. The box is the block nearest your point, so your point is inside it but not always at its center.
 
 <h3 id="download">4. Use the download</h3>
 
@@ -444,7 +444,7 @@ python scripts/bootstrap_venv.py --venv .venv
 ```
 
 Measured on an NVIDIA L4 (25 Oct 2026): about 2 million voxels a second end to end, so about ten minutes per
-cubic centimetre at 9.4 um. It fits in 5.6 GB of GPU memory at its default tile, 2.3 GB at `--tile-size 128`.
+cubic centimeter at 9.4 um. It fits in 5.6 GB of GPU memory at its default tile, 2.3 GB at `--tile-size 128`.
 
 <h3 id="wrong">When something goes wrong</h3>
 
@@ -492,8 +492,9 @@ CSS = """
   background:repeating-linear-gradient(180deg,#c2462b 0 4px,#e07a3f 4px 7px,#f3e2bf 7px 10px,#4f7a3a 10px 11px,#f3e2bf 11px 12px); }
 .lf-head h1 { white-space:nowrap; font-family: Fraunces, Georgia, serif; font-weight:650; font-size:30px; margin:0; letter-spacing:-.01em; }
 .lf-head span { color: var(--body-text-color-subdued); font-size:15px; }
-.lf-guide iframe { width:100%; height:calc(100vh - 150px); min-height:640px; border:0; border-radius:12px;
-  background:#f7f2ea; }
+/* no fixed height: onescroll.html fits the guide's frame to the guide, so the page scrolls and the frame does not;
+   min-height only holds the place until it has */
+.lf-guide iframe { width:100%; min-height:640px; border:0; border-radius:12px; background:#f7f2ea; }
 .lf-note p { font-size:13px; color: var(--body-text-color-subdued); margin:0; }
 .lf-est p { font-size:13.5px; color: var(--body-text-color-subdued); }
 .lf-point { flex-wrap: nowrap !important; }
@@ -502,6 +503,9 @@ CSS = """
 .lf-howto img { border-radius:10px; border:1px solid var(--border-color-primary); max-width:min(100%, 760px); display:block; margin:8px 0; }
 #lf-dl .empty { min-height: 64px !important; height: 64px !important; }
 #lf-dl .empty .icon { height: 28px; }
+/* one page scroll bar: the download's file row and the receipt grow with what they hold, so the page scrolls */
+#lf-dl .file-preview-holder { max-height:none !important; overflow:visible !important; }
+#lf-receipt { max-height:none !important; overflow:visible !important; }
 .lf-howto { max-width: 1000px; margin: 0 auto !important; }
 .lf-howto h3 { scroll-margin-top: 16px; margin-top: 1.6em !important; }
 .lf-howto em { color: var(--body-text-color-subdued); font-size: 13.5px; }
@@ -510,7 +514,6 @@ CSS = """
 @media (max-width: 640px) {
   .lf-head h1 { font-size:24px; }
   .lf-head span { display:none; }
-  .lf-guide iframe { height:calc(100vh - 120px); min-height:520px; }
   #lf-tabs .tab-container button { padding:6px 6px !important; font-size:12.5px !important; }
 }
 """
@@ -524,6 +527,9 @@ ten whole scans to download, and any box made on demand. Model output, not a rea
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,650&display=swap" rel="stylesheet">
 """
+# one page scroll bar: fits the guide's frame to its content (written by python -m kit spaceconnect render)
+ONESCROLL = HERE / "onescroll.html"
+HEAD += ONESCROLL.read_text() if ONESCROLL.is_file() else ""
 
 
 def theme():
@@ -548,7 +554,8 @@ def guide_html():
     import html
     page = GUIDE.read_text()
     # its pictures (assets/..., built in its script) point at Gradio's file route; a <base> cannot do it, because a
-    # base of /gradio_api/file= resolves assets/x to /gradio_api/assets/x. Anchors scroll inside the frame
+    # base of /gradio_api/file= resolves assets/x to /gradio_api/assets/x. Anchors scroll to their section (the frame
+    # is as tall as the guide, so the page scrolls, not the frame)
     page = page.replace("'assets/", "'/gradio_api/file=assets/").replace('"assets/', '"/gradio_api/file=assets/')
     fix = ('<style>.wrap{max-width:1480px!important}</style>'
            '<script>document.addEventListener("click",function(e){var a=e.target.closest&&e.target.closest("a");'
@@ -644,7 +651,7 @@ def build_demo():
                         dl = gr.File(label="Download: villa output folder, field.npz, receipt.json", height=88,
                                      elem_id="lf-dl")
                         with gr.Accordion("Receipt", open=False):
-                            receipt = gr.JSON()
+                            receipt = gr.JSON(max_height=None, elem_id="lf-receipt")
                         with gr.Accordion("About the model", open=False):
                             gr.Markdown(ABOUT_MODEL.format(commit=L.VILLA["commit"][:12],
                                                            sha=L.WEIGHTS["sha256"][:16] + "…"))
