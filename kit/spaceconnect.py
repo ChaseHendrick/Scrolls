@@ -31,7 +31,9 @@ A SOURCE has "id", "title", "kind", "url", "license" and an optional "note"; eac
   file        one file at a URL: "format" (json, csv, image or bytes)
   tifxyz      a tifxyz surface folder (x.tif, y.tif, z.tif, meta.json) at a URL
   s3-prefix   a folder of the open-data bucket: "url" is the HTTPS bucket root, "prefix" the folder, "browse" a page
-  gradio-api  a Gradio Space's API: "space", "host", "status" (running or paused), "endpoints": [{"api", "args"}]
+  gradio-api  a Gradio Space's API: "space", "host", "status" (running or paused), "endpoints": [{"api", "args"}],
+              optional "zerogpu": true (a ZeroGPU Space: the snippets pass the caller's own Hugging Face token, so a
+              call spends the caller's GPU quota and not the small logged-out one)
   page-api    a static page's own API: "links": [{"label", "url"}], optional "embed"
 A source may list "tools" to show only some of its kind's tools.
 
@@ -181,23 +183,33 @@ def _tools(src):
                     f'print(re.findall(r"<Prefix>([^<]+)</Prefix>", xml))  # subfolders; <Key> gives files'))
     elif k == "gradio-api":
         space, host = src["space"], src["host"].rstrip("/")
+        gpu = bool(src.get("zerogpu"))
+        client = (f"import os\nfrom gradio_client import Client\n\n"
+                  f"client = Client({_q(space)}, token=os.environ.get(\"HF_TOKEN\"))  # your token: your own ZeroGPU quota"
+                  if gpu else f"from gradio_client import Client\n\nclient = Client({_q(space)})")
         for ep in src["endpoints"]:
             args = ep.get("args", {})
             kw = ", ".join(f"{a}={json.dumps(v)}" for a, v in args.items())
             out.append(("python", f"Python {ep['api']}", "python",
-                        f"# pip install gradio_client\nfrom gradio_client import Client\n\n"
-                        f"client = Client({_q(space)})\n"
+                        f"# pip install gradio_client\n{client}\n"
                         f"result = client.predict({kw + ', ' if kw else ''}api_name={_q(ep['api'])})"))
         ep = src["endpoints"][0]
         body = json.dumps({"data": list(ep.get("args", {}).values())})
+        auth = ' ${HF_TOKEN:+-H "Authorization: Bearer $HF_TOKEN"}' if gpu else ""
         out.append(("curl", f"curl {ep['api']}", "bash",
-                    f"URL={host}\n"
-                    f"EVENT=$(curl -s -X POST $URL/gradio_api/call{ep['api']} -H 'Content-Type: application/json' \\\n"
+                    (f"# HF_TOKEN, when set, is your own token: the call spends your ZeroGPU quota\n" if gpu else "")
+                    + f"URL={host}\n"
+                    f"EVENT=$(curl -s -X POST $URL/gradio_api/call{ep['api']} -H 'Content-Type: application/json'{auth} \\\n"
                     f"  -d '{body}' | python3 -c 'import json,sys; print(json.load(sys.stdin)[\"event_id\"])')\n"
-                    f"curl -sN $URL/gradio_api/call{ep['api']}/$EVENT"))
+                    f"curl -sN{auth} $URL/gradio_api/call{ep['api']}/$EVENT"))
         name = space.split("/")[1]
+        server = {"url": f"{host}/gradio_api/mcp/sse"}
+        if gpu:
+            server["headers"] = {"Authorization": "Bearer YOUR_HF_TOKEN"}
         out.append(("mcp", "MCP (Claude, Cursor and other agents)", "json",
-                    json.dumps({"mcpServers": {name: {"url": f"{host}/gradio_api/mcp/sse"}}}, indent=2)
+                    json.dumps({"mcpServers": {name: server}}, indent=2)
+                    + (f"\n\nYOUR_HF_TOKEN is your own Hugging Face token (huggingface.co/settings/tokens): each call "
+                       f"spends your ZeroGPU quota; without it, calls share the small logged-out quota." if gpu else "")
                     + f"\n\nTool list: {host}/gradio_api/mcp/schema"))
     elif k == "page-api":
         lines = [f"{l['label']}: {l['url']}" for l in src["links"]]

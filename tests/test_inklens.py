@@ -766,6 +766,26 @@ class Space(unittest.TestCase):
         for pin in ("torch==2.13.0", "numpy==2.5.2", "mcp=="):
             self.assertIn(pin, reqs)
 
+    def test_bundled_kit_imports_only_bundled_modules(self):
+        # The live Space failed this way on 27 Oct 2026: kit/fetch.py imports kit.s3retry, which was not uploaded
+        import re
+        sys.path.insert(0, str(SPACE / "tools"))
+        import deploy
+        bundled = set(deploy.KIT_MODULES)
+        for m in bundled:
+            src = (ROOT / "kit" / f"{m}.py").read_text()
+            used = set(re.findall(r"^\s*from \.(\w+) import", src, re.M))
+            for names in re.findall(r"^\s*from \. import ([\w, ]+)", src, re.M):
+                used |= {n.strip() for n in names.split(",")}
+            self.assertLessEqual(used, bundled, f"kit/{m}.py imports kit modules the Space does not get")
+
+    def test_api_records_hold_no_path_keys(self):
+        # gradio_client downloads any JSON dict holding "path" as a file; a weight's repo path made it fail
+        import app
+        rec = app.api_json({"models": [{"weights": {"path": "a/b.pth", "sha256": "x"}}], "path": 1})
+        self.assertEqual(rec, {"models": [{"weights": {"file": "a/b.pth", "sha256": "x"}}], "file": 1})
+        self.assertNotIn('"path"', json.dumps(app.list_models()))
+
     def test_plugin_manifest(self):
         m = json.loads((SPACE / "vc3d-plugin.json").read_text())
         self.assertEqual(m["id"], "ink-lens")

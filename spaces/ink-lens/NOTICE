@@ -1,14 +1,15 @@
 Ink Lens
 Copyright 2026 Chase Hendrick and Scrolls contributors
 
-The Ink Lens code (app.py, engine.py, gate.py, inklens.py, vc3dout.py, volio.py, bridge.py and tools/) is licensed
+The Ink Lens code (app.py, engine.py, gate.py, inklens.py, vc3dout.py, volio.py, bridge.py, zoo.py, runners.py,
+compare.py and tools/) is licensed
 under the Apache License, Version 2.0. See LICENSE. The staged Space also carries five modules of the Scrolls kit
 (kit/__init__.py, auc.py, fetch.py, layers.py, verify.py), Apache License 2.0, same copyright.
 
 engine.robust_np restates villa's normalize_robust and engine.hann2d villa's floored Hann blend map (both MIT,
-Copyright (c) Vesuvius Challenge) so the batched device version can be checked against them. Ink Lens copies no other
-third-party code. When it starts, it downloads the following at pinned versions and uses them under their own
-licenses, which still apply:
+Copyright (c) Vesuvius Challenge) so the batched device version can be checked against them. Apart from the ink-sdk
+rules restated below, Ink Lens copies no other third-party code. When it starts, it downloads the following at
+pinned versions and uses them under their own licenses, which still apply:
 
 - villa's vesuvius package, https://github.com/ScrollPrize/villa at commit
   8aa507c1215f1fa8758f13d0538f7af9710e02d7: MIT License, Copyright (c) Vesuvius Challenge.
@@ -16,6 +17,23 @@ licenses, which still apply:
   MIT License, Copyright (c) TAUIL-Abd-Elilah. A fine-tune of ink_9um.
 - scrollprize/ink_9um hybrid_3d2d-seed42/step-075000.pth, https://huggingface.co/scrollprize/ink_9um: MIT License,
   Copyright (c) Vesuvius Challenge.
+
+The model comparison (zoo.py, runners.py, compare.py, tools/gallery_job.py) restates ink-sdk's liveness thresholds,
+its ensemble input mapping and its depth-window and scale rules (compare._assess_local, compare.map_values,
+runners.window, zoo.scale_plan; ink-sdk, https://github.com/LimeGS/ink-sdk, MIT License, Copyright (c) LimeGS), so
+they hold when ink-sdk is absent and can be checked against it. It installs ink-sdk at commit
+1dbfac2178958ca4bca7469582477963d4d08ecf and runs its Hecate and canonical adapters, liveness gate and orientation
+check in process. It downloads, at the revisions and SHA-256 pinned in zoo.py, under their own licenses:
+
+- scrollprize/ink_9um seeds 42 and 43, scrollprize/hecate (2.4 and 9.6 um), scrollprize/ink_canonical_2um,
+  scrollprize/ink_paris4_3d_4.8um_gambiarra and scrollprize/ink_3d_dino_guided: MIT License, Copyright (c)
+  Vesuvius Challenge.
+- domenicor046/reader-v2 and domenicor046/reader-v3: MIT License, Copyright (c) Domenico Russo.
+- Nieuwlaar/ink9um-dense-native: MIT License, Copyright (c) Erwin Nieuwlaar.
+
+The gallery job (tools/gallery_job.py) runs the scan-space 3D models through AutoPipeline's kit ink3d (Apache License
+2.0, same copyright as this file) and villa's infer_full3d_tifxyz and paris4_3d_gambiarra code (MIT, Copyright (c)
+Vesuvius Challenge), fetched at pinned commits when the job runs.
 
 The client's letter pins use the Scroll Text Reader (kit/letterread.py, Apache License 2.0) with the letters-v2-ccby
 weights (CC BY 4.0; credits in docs/letter-reader.md of ChaseHendrick/Scrolls).

@@ -1,5 +1,5 @@
 {
- "note": "Public crops of released segments that are not prize-eligible. Ink Lens reads them anonymously from the open-data bucket when someone runs one; nothing is bundled. Crops are (y0, y1, x0, x1) on the segment's 9 um surface volume, the 640 px windows of densest labeled ink used in docs/results.json. A window chosen with the labels gives a development number, not a blind test.",
+ "note": "Public crops of released segments that are not prize-eligible. Ink Lens reads them anonymously from the open-data bucket when someone runs one; nothing is bundled. Crops are (y0, y1, x0, x1) on the segment's 9 um surface volume, the 640 px windows of densest labeled ink used in docs/results.json. A window chosen with the labels gives a development number, not a blind test. scan24: the same segment on its finer scan (about 2.4 um), where every model of the comparison runs: its crop is on the 9.6 um grid (the labels' level 2, the 2.4 um render pooled 4x), centred where the 9 um crop is, by the two canvases' proportions; ct is the scan the 3D models read.",
  "bucket": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com",
  "samples": [
   {
@@ -11,9 +11,37 @@
    "labels": "ink-labels/2.403um-volume-20260319124803/20260918",
    "tifxyz": "mesh/20260220213127-on-20250821151531-9.366um.tifxyz",
    "um_per_px": 9.366,
-   "surface_shape": [4220, 4760],
-   "crop": [2624, 3264, 2688, 3328],
-   "role": "development"
+   "surface_shape": [
+    4220,
+    4760
+   ],
+   "crop": [
+    2624,
+    3264,
+    2688,
+    3328
+   ],
+   "role": "development",
+   "scan24": {
+    "surface_volume": "surface-volumes/2.403um-0.22m-77keV-volume-20260319124803.zarr",
+    "um_per_px": 2.403,
+    "level0_shape": [
+     16460,
+     18560
+    ],
+    "grid_shape": [
+     4115,
+     4640
+    ],
+    "crop": [
+     2551,
+     3191,
+     2612,
+     3252
+    ],
+    "tifxyz": "mesh/20260220213127-on-20260319124803-2.403um.tifxyz",
+    "ct": "PHerc0841/volumes/20260319124803-2.403um-0.2m-77keV-masked.zarr"
+   }
   },
   {
    "id": "0841-ag896",
@@ -23,9 +51,37 @@
    "surface_volume": "surface-volumes/9.366um-1.2m-113keV-volume-20250821151531.zarr",
    "labels": "ink-labels/2.403um-volume-20260319124803/20260918",
    "um_per_px": 9.366,
-   "surface_shape": [4640, 4720],
-   "crop": [2496, 3136, 1600, 2240],
-   "role": "development"
+   "surface_shape": [
+    4640,
+    4720
+   ],
+   "crop": [
+    2496,
+    3136,
+    1600,
+    2240
+   ],
+   "role": "development",
+   "scan24": {
+    "surface_volume": "surface-volumes/2.403um-0.22m-77keV-volume-20260319124803.zarr",
+    "um_per_px": 2.403,
+    "level0_shape": [
+     18080,
+     18400
+    ],
+    "grid_shape": [
+     4520,
+     4600
+    ],
+    "crop": [
+     2423,
+     3063,
+     1551,
+     2191
+    ],
+    "tifxyz": "mesh/20260220214732-on-20260319124803-2.403um.tifxyz",
+    "ct": "PHerc0841/volumes/20260319124803-2.403um-0.2m-77keV-masked.zarr"
+   }
   },
   {
    "id": "0841-ag405",
@@ -35,9 +91,37 @@
    "surface_volume": "surface-volumes/9.366um-1.2m-113keV-volume-20250821151531.zarr",
    "labels": "ink-labels/2.403um-volume-20260319124803/20260918",
    "um_per_px": 9.366,
-   "surface_shape": [3760, 4900],
-   "crop": [1024, 1664, 2496, 3136],
-   "role": "development"
+   "surface_shape": [
+    3760,
+    4900
+   ],
+   "crop": [
+    1024,
+    1664,
+    2496,
+    3136
+   ],
+   "role": "development",
+   "scan24": {
+    "surface_volume": "surface-volumes/2.403um-0.22m-77keV-volume-20260319124803.zarr",
+    "um_per_px": 2.403,
+    "level0_shape": [
+     14660,
+     19100
+    ],
+    "grid_shape": [
+     3665,
+     4775
+    ],
+    "crop": [
+     990,
+     1630,
+     2424,
+     3064
+    ],
+    "tifxyz": "mesh/20260221022814-on-20260319124803-2.403um.tifxyz",
+    "ct": "PHerc0841/volumes/20260319124803-2.403um-0.2m-77keV-masked.zarr"
+   }
   },
   {
    "id": "0139-w035",
@@ -47,9 +131,37 @@
    "surface_volume": "surface-volumes/9.362um-1.2m-113keV-volume-20250728140407.zarr",
    "labels": "ink-labels/2.399um-volume-20260102150214/20260918",
    "um_per_px": 9.362,
-   "surface_shape": [5820, 5240],
-   "crop": [1920, 2560, 2304, 2944],
-   "role": "training"
+   "surface_shape": [
+    5820,
+    5240
+   ],
+   "crop": [
+    1920,
+    2560,
+    2304,
+    2944
+   ],
+   "role": "training",
+   "scan24": {
+    "surface_volume": "surface-volumes/2.399um-0.22m-78keV-volume-20260102150214.zarr",
+    "um_per_px": 2.399,
+    "level0_shape": [
+     22640,
+     20400
+    ],
+    "grid_shape": [
+     5660,
+     5100
+    ],
+    "crop": [
+     1858,
+     2498,
+     2234,
+     2874
+    ],
+    "tifxyz": "mesh/20260317000000-on-20260102150214-2.399um.tifxyz",
+    "ct": "PHerc0139/volumes/20260102150214-2.399um-0.2m-78keV-masked.zarr"
+   }
   }
  ]
 }
