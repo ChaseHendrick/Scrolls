@@ -1,0 +1,31 @@
+{
+ "schema": "space-connect/1",
+ "space": "SharpMeow/snapped-labels",
+ "title": "Snapped Labels",
+ "checked": "2026-10-27",
+ "intro": "The snapped meshes, their records and the CT they sit on read straight from these URLs, logged out. Every segment is a tifxyz folder, so VC3D, villa and anything that reads tifxyz opens it as it is.",
+ "sources": [
+  {"id": "data", "title": "Snapped labels: every segment, with index.json and checksums", "kind": "hf-dataset",
+   "url": "https://huggingface.co/datasets/SharpMeow/vesuvius-snapped-labels",
+   "repo": "SharpMeow/vesuvius-snapped-labels", "file": "index.json",
+   "license": "CC BY-NC 4.0 (derived from Vesuvius Challenge open data)",
+   "note": "One folder per segment, SCROLL/SEGMENT/: snapped.tifxyz, abstain.tif, confidence.tif, reason.tif, source.tif (finesnap), release_mask.tif and release.json (source URLs, sha256 of every file, summary). index.json lists every segment; viewer/ holds the page's cross sections."},
+  {"id": "mesh", "title": "One snapped mesh (tifxyz): PHerc0841 w00", "kind": "tifxyz",
+   "url": "https://huggingface.co/datasets/SharpMeow/vesuvius-snapped-labels/resolve/main/PHerc0841/20260220213127-w00/snapped.tifxyz",
+   "license": "CC BY-NC 4.0 (derived from Vesuvius Challenge open data)",
+   "note": "Same grid and voxel frame as the published mesh it came from (release.json names it), so the two line up vertex for vertex; -1 where there is no vertex or it was held back."},
+  {"id": "ct", "title": "The CT that mesh is in, PHerc0841 9.366 um", "kind": "ome-zarr",
+   "url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0841/volumes/20250821151531-9.366um-1.2m-113keV-masked.zarr",
+   "zarr_format": 2, "example": {"level": "2", "start": [3600, 600, 500]},
+   "license": "CC BY-NC 4.0 (Vesuvius Challenge open data)",
+   "note": "Read live from the open-data bucket, never copied here. Mesh coordinates are level-0 voxels of this scan.",
+   "browse": "https://scrollprize.org/data_browser/PHerc0841"},
+  {"id": "page", "title": "This page's own files", "kind": "page-api",
+   "url": "https://sharpmeow-snapped-labels.static.hf.space/",
+   "links": [{"label": "The dataset card", "url": "https://huggingface.co/datasets/SharpMeow/vesuvius-snapped-labels"},
+             {"label": "A segment's cross sections for the viewer (float32 rows, see the .json beside it)", "url": "https://huggingface.co/datasets/SharpMeow/vesuvius-snapped-labels/resolve/main/viewer/PHerc0841/20260220213127-w00.json"},
+             {"label": "Page source", "url": "https://github.com/ChaseHendrick/Scrolls/tree/main/spaces/snapped-labels"}],
+   "license": "Page code Apache 2.0; data as above",
+   "note": "In the browser console, window.snappedLabels.segments() lists the index and window.snappedLabels.open(SEGMENT, Z) opens a segment at a plane; ?seg=SEGMENT&z=Z links to a view."}
+ ]
+}

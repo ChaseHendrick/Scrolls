@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Snapped Labels</title>
+<meta name="description" content="Published Vesuvius Challenge surface labels moved onto the papyrus surface, shown on live X-ray CT.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <div class="brand">
+    <h1>Snapped Labels</h1>
+    <p class="sub">Published surface labels of four Herculaneum scrolls, moved along their normals onto the papyrus surface in the CT. Orange is the published label, blue is where it lands.</p>
+  </div>
+  <nav class="tabs" role="tablist">
+    <button data-tab="view" role="tab" aria-selected="true">Viewer</button>
+    <button data-tab="all" role="tab">All segments</button>
+    <button data-tab="how" role="tab">How it works</button>
+    <button data-tab="connect" role="tab">Connect your tool</button>
+  </nav>
+</header>
+
+<section class="stats" aria-label="Measured accuracy">
+  <div class="stat"><b>91%</b><span>of vertices within 1 voxel of the recto face in a 1.129 µm scan, on 60 fresh PHerc0139 test sites. Published labels: 24%.</span></div>
+  <div class="stat"><b>71%</b><span>within 1 voxel on 60 fresh PHerc0814 test sites with the single-scan snap. Published labels: 24%.</span></div>
+  <div class="stat"><b>+0.61 voxels</b><span>closer to the surface: a 3D surface model trained on snapped labels against the same model trained on published ones, scored on a scroll neither saw.</span></div>
+  <div class="stat"><b id="st-count">108</b><span>segments on PHerc0139, PHerc0814, PHerc0841 and PHerc0172, as tifxyz meshes you can drop into VC3D or villa.</span></div>
+</section>
+
+<main>
+<section data-pane="view" class="viewer">
+  <aside class="side">
+    <label class="lbl" for="f-scroll">Scroll</label>
+    <select id="f-scroll"></select>
+    <label class="lbl" for="f-find">Segment</label>
+    <input id="f-find" type="search" placeholder="filter, e.g. w025" autocomplete="off">
+    <ul id="seg-list" class="seglist" aria-label="Segments"></ul>
+  </aside>
+  <div class="stage">
+    <div class="bar">
+      <span id="v-title" class="vt">Loading…</span>
+      <span class="sp"></span>
+      <label class="tog"><input type="checkbox" id="l-pub" checked><i class="dot pub"></i>Published</label>
+      <label class="tog"><input type="checkbox" id="l-snap" checked><i class="dot snap"></i>Snapped</label>
+      <label class="tog"><input type="checkbox" id="l-move" checked><i class="dot move"></i>Moves</label>
+    </div>
+    <div class="canvaswrap">
+      <canvas id="cv" width="720" height="720" aria-label="CT slice with the published and snapped labels"></canvas>
+      <div id="cv-msg" class="cvmsg" hidden></div>
+    </div>
+    <div class="ctl">
+      <button id="b-prev" title="Previous stretch of the label (left arrow)">◀</button>
+      <button id="b-next" title="Next stretch of the label (right arrow)">▶</button>
+      <label class="zl">z <input id="z-range" type="range" min="0" max="0" value="0"> <output id="z-out">0</output></label>
+      <label class="zl">Window <select id="win"><option value="96">96 voxels</option><option value="192" selected>192 voxels</option><option value="384">384 voxels</option></select></label>
+    </div>
+    <p class="hint">Click the image to centre it. The lines are where each mesh crosses this z plane: orange for the published label, blue for the snapped one, with grey strokes joining matching points. Where the snap left a vertex in place, the two lines coincide.</p>
+    <div id="seg-card" class="card"></div>
+  </div>
+</section>
+
+<section data-pane="all" hidden>
+  <div class="tablewrap"><table id="tbl"><thead><tr>
+    <th>Scroll</th><th>Segment</th><th>Method</th><th class="n">Vertices</th><th class="n">Snapped</th><th class="n">Median move</th><th class="n">Held back</th>
+  </tr></thead><tbody></tbody></table></div>
+</section>
+
+<section data-pane="how" hidden class="prose">
+  <figure class="fig"><img src="https://huggingface.co/datasets/SharpMeow/vesuvius-snapped-labels/resolve/main/snapped-0139.gif" width="600" height="600" alt="PHerc0139 segment w054 on CT at z 8048: the published label, then the snapped label, then both with the moves, at four stops along the label" loading="lazy"><figcaption>PHerc0139 w054, z 8048: published (orange), snapped (blue), both.</figcaption></figure>
+  <h2>What a snap does</h2>
+  <p>A surface label is a mesh (tifxyz: three float grids, x, y and z in scan voxels) that follows one wrap of papyrus. Traced labels sit near the sheet but rarely on it: on fresh test sites only about a quarter of published label vertices were within one voxel of the sheet's recto face. A snap moves each vertex along its mesh normal onto the face of the bright band nearest it, on the side toward the scroll's centre line.</p>
+  <h2>Two methods</h2>
+  <ul>
+    <li><b>finesnap</b> (PHerc0139, PHerc0814, PHerc0841): the label's own 9.4 µm scan is registered, vertex by vertex, to a 2.4 µm scan of the same scroll, and the face is found there. Where that fails, the label scan's own face is used (<code>source.tif</code> says which).</li>
+    <li><b>labelsnap</b> (PHerc0172): the face is found in the label's own 7.9 µm scan.</li>
+  </ul>
+  <h2>How it was measured</h2>
+  <figure class="fig"><img src="https://huggingface.co/datasets/SharpMeow/vesuvius-snapped-labels/resolve/main/accuracy.png" width="1920" height="576" alt="Bar chart: vertices within 1 voxel of the recto face. PHerc0139: published 23.7%, labelsnap 79.4%, finesnap 91.2%. PHerc0814: published 24.2%, labelsnap 71.0%." loading="lazy"></figure>
+  <p>Truth is the recto face seen in an independent 1.129 µm scan, at test sites drawn after the method was fixed and never used before. PHerc0139, 60 sites: within 1 voxel 23.7% for the published labels, 79.4% for labelsnap, 91.2% for finesnap. PHerc0814, 60 sites: 24.2% for published labels, 71.0% for labelsnap. A 3D surface model trained on snapped PHerc0139 labels placed the surface 0.61 voxels closer on PHerc0814 than the same model trained on published labels (95% interval 0.39 to 0.84; all 9 seed pairings).</p>
+  <h2>What is in each segment folder</h2>
+  <ul>
+    <li><code>snapped.tifxyz/</code>: the moved mesh, same grid as the source; <code>-1</code> where there is no vertex or it was held back.</li>
+    <li><code>abstain.tif</code>: 0 snapped, 1 left at its published position, 255 no vertex.</li>
+    <li><code>confidence.tif</code> (0 to 1), <code>reason.tif</code> (why a vertex abstained), <code>source.tif</code> (finesnap: 1 fine scan, 2 label scan).</li>
+    <li><code>release_mask.tif</code>: 0 released, 1 held back for evaluation, 255 not in the source mesh. <code>release.json</code>: source URLs, checksums and the summary.</li>
+  </ul>
+  <h2>Limits</h2>
+  <p>A snap moves along the normal only; it does not fix a label that follows the wrong wrap. Where two sheets touch, the face it finds can belong to the neighbour. Small regions are held back for evaluation and five segments of PHerc0139 and one of PHerc0841 are not included. The meshes are geometry: they say nothing about ink or text.</p>
+  <p class="credit">Scans and source meshes: Vesuvius Challenge open data, CC BY-NC 4.0; the snapped meshes are shared under the same terms. Page code Apache 2.0. Made by Chase Hendrick.</p>
+</section>
+
+<section data-pane="connect" hidden>
+<!-- space-connect:start -->
+<section class="scc" id="connect" aria-label="Connect your tool"><style>.scc{--a:var(--scc-accent,#4ea8de);color:inherit;font:inherit;line-height:1.5;max-width:60rem}
+.scc h2{font-size:1.15em;margin:.2em 0 .3em}.scc h3{font-size:1em;margin:0 0 .2em}
+.scc p{margin:.3em 0}.scc a{color:var(--a)}
+.scc .scc-src{border:1px solid color-mix(in srgb,currentColor 18%,transparent);border-radius:10px;padding:.7em .9em;margin:.7em 0;background:color-mix(in srgb,currentColor 4%,transparent)}
+.scc .scc-meta{font-size:.85em;opacity:.8}
+.scc details{border-top:1px solid color-mix(in srgb,currentColor 12%,transparent);padding:.35em 0}
+.scc summary{cursor:pointer;font-weight:600;list-style-position:inside}
+.scc .scc-b{font-weight:400;font-size:.75em;padding:.05em .5em;border-radius:99px;margin-left:.5em;border:1px solid currentColor;opacity:.75;white-space:nowrap}
+.scc .scc-b.ok{color:#3fb37f}.scc .scc-b.src{color:var(--a)}.scc .scc-b.warn{color:#e0a030}
+.scc .scc-code{position:relative;margin:.4em 0 .2em}
+.scc pre{margin:0;padding:.7em .8em;border-radius:8px;overflow:auto;font-size:.82em;background:color-mix(in srgb,currentColor 9%,transparent);white-space:pre}
+.scc code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+.scc button.scc-copy{all:unset;box-sizing:border-box;position:absolute;top:.35em;right:.35em;font-size:.75em;line-height:1.4;padding:.1em .6em;border-radius:6px;border:1px solid color-mix(in srgb,currentColor 30%,transparent);background:color-mix(in srgb,currentColor 8%,transparent);color:inherit;cursor:pointer}
+.scc button.scc-copy:hover{border-color:var(--a)}
+.scc .scc-url{position:relative}.scc .scc-url pre{padding-right:4.5em;white-space:pre-wrap;word-break:break-all}
+.scc .scc-go{display:inline-block;margin:.3em 0;padding:.25em .8em;border-radius:6px;border:1px solid var(--a);text-decoration:none}
+.scc footer{font-size:.8em;opacity:.75;margin-top:.6em}</style>
+<h2>Connect your tool</h2>
+<p>The snapped meshes, their records and the CT they sit on read straight from these URLs, logged out. Every segment is a tifxyz folder, so VC3D, villa and anything that reads tifxyz opens it as it is.</p>
+<div class="scc-src" id="connect-data"><h3>Snapped labels: every segment, with index.json and checksums</h3>
+<p class="scc-meta">CC BY-NC 4.0 (derived from Vesuvius Challenge open data) · One folder per segment, SCROLL/SEGMENT/: snapped.tifxyz, abstain.tif, confidence.tif, reason.tif, source.tif (finesnap), release_mask.tif and release.json (source URLs, sha256 of every file, summary). index.json lists every segment; viewer/ holds the page&#x27;s cross sections.</p>
+<div class="scc-url"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>https://huggingface.co/datasets/SharpMeow/vesuvius-snapped-labels</code></pre></div>
+<details><summary>Python (huggingface_hub)<span class="scc-b ok">tested 2026-10-24</span></summary>
+<div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code># pip install huggingface_hub
+from huggingface_hub import hf_hub_download, snapshot_download
+
+path = hf_hub_download(&quot;SharpMeow/vesuvius-snapped-labels&quot;, &quot;index.json&quot;, repo_type=&quot;dataset&quot;)  # one file, cached
+folder = snapshot_download(&quot;SharpMeow/vesuvius-snapped-labels&quot;, repo_type=&quot;dataset&quot;)</code></pre></div></details>
+<details><summary>Command line (hf)<span class="scc-b ok">tested 2026-10-24</span></summary>
+<div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>pip install -U huggingface_hub
+hf download SharpMeow/vesuvius-snapped-labels index.json --repo-type dataset --local-dir vesuvius-snapped-labels</code></pre></div></details>
+<details><summary>curl<span class="scc-b ok">tested 2026-10-24</span></summary>
+<div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>curl -L -O https://huggingface.co/datasets/SharpMeow/vesuvius-snapped-labels/resolve/main/index.json</code></pre></div></details>
+</div>
+<div class="scc-src" id="connect-mesh"><h3>One snapped mesh (tifxyz): PHerc0841 w00</h3>
+<p class="scc-meta">CC BY-NC 4.0 (derived from Vesuvius Challenge open data) · Same grid and voxel frame as the published mesh it came from (release.json names it), so the two line up vertex for vertex; -1 where there is no vertex or it was held back.</p>
+<div class="scc-url"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>https://huggingface.co/datasets/SharpMeow/vesuvius-snapped-labels/resolve/main/PHerc0841/20260220213127-w00/snapped.tifxyz</code></pre></div>
+<details><summary>Python (numpy, tifffile)<span class="scc-b ok">tested 2026-10-24</span></summary>
+<div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code># pip install numpy tifffile
+import io, json, urllib.request
+import numpy as np, tifffile
+
+T = &quot;https://huggingface.co/datasets/SharpMeow/vesuvius-snapped-labels/resolve/main/PHerc0841/20260220213127-w00/snapped.tifxyz&quot;
+meta = json.load(urllib.request.urlopen(T + &quot;/meta.json&quot;))  # scale, bbox, format
+get = lambda c: tifffile.imread(io.BytesIO(urllib.request.urlopen(f&quot;{T}/{c}.tif&quot;).read()))
+xyz = np.stack([get(c) for c in &quot;xyz&quot;], -1)  # xyz[i, j] = (x, y, z) in scan voxels; -1 = no surface</code></pre></div></details>
+</div>
+<div class="scc-src" id="connect-ct"><h3>The CT that mesh is in, PHerc0841 9.366 um</h3>
+<p class="scc-meta">CC BY-NC 4.0 (Vesuvius Challenge open data) · Read live from the open-data bucket, never copied here. Mesh coordinates are level-0 voxels of this scan. · <a href="https://scrollprize.org/data_browser/PHerc0841" target="_blank" rel="noopener">browse</a></p>
+<div class="scc-url"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0841/volumes/20250821151531-9.366um-1.2m-113keV-masked.zarr</code></pre></div>
+<details><summary>Python (zarr)<span class="scc-b ok">tested 2026-10-24</span></summary>
+<div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code># pip install &quot;zarr&gt;=3&quot; fsspec aiohttp
+import zarr
+
+root = zarr.open_group(&quot;https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0841/volumes/20250821151531-9.366um-1.2m-113keV-masked.zarr&quot;, mode=&quot;r&quot;)  # OME-Zarr, zarr v2
+a = root[&quot;2&quot;]  # level 0 is full resolution; level L is 2**L times coarser
+print(a.shape, a.dtype, a.chunks)
+block = a[3600:3664, 600:664, 500:564]  # (z, y, x); reads only the chunks it touches</code></pre></div></details>
+<details><summary>villa&#x27;s vesuvius package<span class="scc-b ok">tested 2026-10-24</span></summary>
+<div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code># pip install &quot;vesuvius[volume-only]&quot;
+from vesuvius import Volume
+
+v = Volume(type=&quot;zarr&quot;, path=&quot;https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0841/volumes/20250821151531-9.366um-1.2m-113keV-masked.zarr/2&quot;)  # one pyramid level
+block = v[3600:3664, 600:664, 500:564]</code></pre></div></details>
+<details><summary>VC3D<span class="scc-b src">from villa&#x27;s source</span></summary>
+<div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>In VC3D (villa&#x27;s volume-cartographer), open or create a project, then
+File &gt; Attach Remote Zarr... and paste:
+
+https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0841/volumes/20250821151531-9.366um-1.2m-113keV-masked.zarr
+
+It accepts http, https and s3 OME-Zarr roots.</code></pre></div></details>
+<details><summary>neuroglancer<span class="scc-b ok">tested 2026-10-24</span></summary>
+<a class="scc-go" href="https://neuroglancer-demo.appspot.com/#!%7B%22layers%22%3A%5B%7B%22type%22%3A%22image%22%2C%22source%22%3A%22zarr%3A%2F%2Fhttps%3A%2F%2Fvesuvius-challenge-open-data.s3.us-east-1.amazonaws.com%2FPHerc0841%2Fvolumes%2F20250821151531-9.366um-1.2m-113keV-masked.zarr%2F%22%2C%22name%22%3A%22The%20CT%20that%20mesh%20is%20in%2C%20PHerc0841%209.366%20um%22%7D%5D%2C%22layout%22%3A%224panel%22%7D" target="_blank" rel="noopener">Open in neuroglancer</a>
+<div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>https://neuroglancer-demo.appspot.com/#!%7B%22layers%22%3A%5B%7B%22type%22%3A%22image%22%2C%22source%22%3A%22zarr%3A%2F%2Fhttps%3A%2F%2Fvesuvius-challenge-open-data.s3.us-east-1.amazonaws.com%2FPHerc0841%2Fvolumes%2F20250821151531-9.366um-1.2m-113keV-masked.zarr%2F%22%2C%22name%22%3A%22The%20CT%20that%20mesh%20is%20in%2C%20PHerc0841%209.366%20um%22%7D%5D%2C%22layout%22%3A%224panel%22%7D</code></pre></div></details>
+<details><summary>curl<span class="scc-b ok">tested 2026-10-24</span></summary>
+<div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>curl -s https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0841/volumes/20250821151531-9.366um-1.2m-113keV-masked.zarr/.zattrs            # OME multiscales metadata
+curl -s https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0841/volumes/20250821151531-9.366um-1.2m-113keV-masked.zarr/2/.zarray     # one level: shape, chunks, dtype, codec</code></pre></div></details>
+</div>
+<div class="scc-src" id="connect-page"><h3>This page&#x27;s own files</h3>
+<p class="scc-meta">Page code Apache 2.0; data as above · In the browser console, window.snappedLabels.segments() lists the index and window.snappedLabels.open(SEGMENT, Z) opens a segment at a plane; ?seg=SEGMENT&amp;z=Z links to a view.</p>
+<div class="scc-url"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>https://sharpmeow-snapped-labels.static.hf.space/</code></pre></div>
+<details><summary>Links and embed<span class="scc-b ok">tested 2026-10-24</span></summary>
+<div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>The dataset card: https://huggingface.co/datasets/SharpMeow/vesuvius-snapped-labels
+A segment&#x27;s cross sections for the viewer (float32 rows, see the .json beside it): https://huggingface.co/datasets/SharpMeow/vesuvius-snapped-labels/resolve/main/viewer/PHerc0841/20260220213127-w00.json
+Page source: https://github.com/ChaseHendrick/Scrolls/tree/main/spaces/snapped-labels</code></pre></div></details>
+</div>
+<footer>Machine-readable: <a href="https://huggingface.co/spaces/SharpMeow/snapped-labels/blob/main/connect.json" target="_blank" rel="noopener">connect.json</a> and <a href="https://huggingface.co/spaces/SharpMeow/snapped-labels/blob/main/CONNECT.md" target="_blank" rel="noopener">CONNECT.md</a>. Checked 2026-10-27. "Tested" means the snippet ran against this public data on that date. Scan data keeps its own license (the Vesuvius Challenge open data is CC BY-NC 4.0).</footer></section>
+<!-- space-connect:end -->
+</section>
+</main>
+<script src="app.js"></script>
+</body>
+</html>
