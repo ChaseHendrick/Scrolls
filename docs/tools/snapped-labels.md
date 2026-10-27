@@ -24,7 +24,7 @@ A Hugging Face dataset of the published surface labels of PHerc0139, PHerc0814, 
 
 A surface label is a tifxyz mesh that follows one wrap of papyrus in a scan. Published labels sit near the sheet but rarely on it: on fresh test sites, only about a quarter of their vertices were within one voxel of the recto face. Models trained on such labels learn that offset.
 
-The dataset holds every published label of four scrolls after a snap: each vertex moved along its normal onto the face of the bright papyrus band, on the side toward the scroll's centre line. On PHerc0139, PHerc0814 and PHerc0841 the face is found in a 2.4 µm scan of the same scroll registered vertex by vertex to the label's scan (finesnap); on PHerc0172 in the label's own 7.9 µm scan (labelsnap). A vertex whose face is unclear keeps its published position. Each mesh keeps the grid and voxel frame of its source, so it lines up with it vertex for vertex.
+The dataset holds every published label of four scrolls after a snap: each vertex moved along its normal onto the face of the bright papyrus band, on the side toward the scroll's centre line. On PHerc0139, PHerc0814 and PHerc0841 the face is found in a 2.4 µm scan of the same scroll registered vertex by vertex to the label's scan (finesnap); on PHerc0172 in the label's own 7.9 µm scan (labelsnap). Where a vertex's own face is unclear, nothing is measured at that vertex (`abstain.tif` 1): it takes the offset filled in from measured neighbours up to two grid cells away, and keeps its published position only when no measured neighbour is that close. Most such vertices move this way (about 97 % on PHerc0172), so the snapped share counts measured vertices only; drop `abstain.tif` 1 to keep only vertices whose own face was found. Each mesh keeps the grid and voxel frame of its source, so it lines up with it vertex for vertex.
 
 The Space draws a segment's published and snapped lines on the CT plane you pick, and lists every segment.
 
@@ -94,9 +94,9 @@ None to use it. The dataset was made from the published meshes and scans of the 
 | File | Type | Meaning |
 | --- | --- | --- |
 | `SCROLL/SEGMENT/snapped.tifxyz/{x,y,z}.tif` | float32 grids | Moved vertices, level-0 voxels of the label scan; `-1` none or held back |
-| `abstain.tif` | uint8 grid | 0 snapped, 1 left in place, 255 no vertex |
+| `abstain.tif` | uint8 grid | 0 snapped (face measured at the vertex), 1 not measured (moved by its measured neighbours' offsets, or at its published position when none is near), 255 no vertex |
 | `confidence.tif` | float32 grid | 0 to 1 |
-| `reason.tif` | uint8 grid | Why a vertex was left in place |
+| `reason.tif` | uint8 grid | Why no face was measured at a vertex |
 | `source.tif` | uint8 grid | finesnap only: 1 placed in the 2.4 µm scan, 2 in the label scan |
 | `release_mask.tif` | uint8 grid | 0 released, 1 held back for evaluation, 255 not in the source |
 | `release.json` | JSON | Source and scan URLs, sha256 of source and outputs, summary (`vertices_released`, `snapped`, `move_voxels`, `placed_by`) |

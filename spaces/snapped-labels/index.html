@@ -55,7 +55,7 @@
       <label class="zl">z <input id="z-range" type="range" min="0" max="0" value="0"> <output id="z-out">0</output></label>
       <label class="zl">Window <select id="win"><option value="96">96 voxels</option><option value="192" selected>192 voxels</option><option value="384">384 voxels</option></select></label>
     </div>
-    <p class="hint">Click the image to centre it. The lines are where each mesh crosses this z plane: orange for the published label, blue for the snapped one, with grey strokes joining matching points. Where the snap left a vertex in place, the two lines coincide.</p>
+    <p class="hint">Click the image to centre it. The lines are where each mesh crosses this z plane: orange for the published label, blue for the snapped one, with grey strokes joining matching points. Where no face was measured at a vertex, it moves with its measured neighbours, and <code>abstain.tif</code> marks it.</p>
     <div id="seg-card" class="card"></div>
   </div>
 </section>
@@ -81,8 +81,8 @@
   <h2>What is in each segment folder</h2>
   <ul>
     <li><code>snapped.tifxyz/</code>: the moved mesh, same grid as the source; <code>-1</code> where there is no vertex or it was held back.</li>
-    <li><code>abstain.tif</code>: 0 snapped, 1 left at its published position, 255 no vertex.</li>
-    <li><code>confidence.tif</code> (0 to 1), <code>reason.tif</code> (why a vertex abstained), <code>source.tif</code> (finesnap: 1 fine scan, 2 label scan).</li>
+    <li><code>abstain.tif</code>: 0 snapped (face measured at the vertex), 1 not measured (moved by its measured neighbours' offsets, or at its published position when none is near), 255 no vertex.</li>
+    <li><code>confidence.tif</code> (0 to 1), <code>reason.tif</code> (why no face was measured), <code>source.tif</code> (finesnap: 1 fine scan, 2 label scan).</li>
     <li><code>release_mask.tif</code>: 0 released, 1 held back for evaluation, 255 not in the source mesh. <code>release.json</code>: source URLs, checksums and the summary.</li>
   </ul>
   <h2>Limits</h2>
