@@ -1,0 +1,23 @@
+AFV Fibers
+Copyright 2026 Chase Hendrick and Scrolls contributors
+
+The AFV Fibers code (app.py, fibers.py and guide/index.html) is licensed under the Apache License, Version 2.0. See
+LICENSE.
+
+AFV Fibers copies no third-party code and runs no model. The fibre files it reads were made with:
+
+- Qual's AFV V2 fibre model, https://huggingface.co/Qualzz20/afv_fiber_9um_v2 (checkpoint sha256
+  b8519a4ce4044c93ed98af0c278628fdcdfdd8808275b3c8becd7211f38b7967): Apache License 2.0, by Qual (Qualzz).
+- Qual's AVF_SPLINE_GENERATOR, https://github.com/Qualzz/AVF_SPLINE_GENERATOR at commit
+  3c8b73628ca56cb28042b9b2e79439b2e1c693d2: Apache License 2.0, by Qual (Qualzz). Its .afv format is the VC3D fiber
+  collection, version 1.
+
+Scan data: AFV Fibers reads CT scans from the Vesuvius Challenge open data, licensed CC BY-NC 4.0
+(https://creativecommons.org/licenses/by-nc/4.0/). Giorgio Angelotti, Stephen Parsons, Sean Johnson, Elian Rafael
+Dal Prà, Johannes Rudolph, Paul Tafforeau, Alessandro Mirone, Paul Henderson, Hendrik Schilling, Forrest McDonald,
+David Josey, Youssef Nader, C. Seth Parker, W. Brent Seales. Vesuvius Challenge: CT Scans of Herculaneum Papyri.
+Vesuvius Challenge. https://scrollprize.org/data
+
+The six fibre datasets (SharpMeow/<scan>-afv-fibers) and every picture the page shows of them are model output
+computed from that data, so they are derived data under CC BY-NC 4.0 as well. Sets in the Catalog tab belong to their
+makers and are linked, not copied.
