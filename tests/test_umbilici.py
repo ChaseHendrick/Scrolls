@@ -163,6 +163,21 @@ class BuildLines(unittest.TestCase):
         self.assertTrue(t["scrolls"][0]["lines"][0]["untested"])
         self.assertEqual([l["untested"] for l in t["scrolls"][1]["lines"]], [False, False])
 
+    def test_a_compressed_pyramid_is_recorded(self):
+        # center lines v2.6 adds PHerc0172, whose 7.91 um scan is stored with Blosc; the table names the codec so the
+        # page knows it cannot range-read one plane of a chunk there
+        def blosc(url):
+            d = fake_get_json(url)
+            return dict(d, compressor={"id": "blosc", "cname": "zstd"}) if url.endswith(".zarray") else d
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            fake_dataset(root)
+            out = root / "lines.json"
+            with mock.patch.object(build_lines, "get_json", blosc), mock.patch("builtins.print"):
+                build_lines.main(root, out)
+            t = json.loads(out.read_text())
+        self.assertEqual({p["compressor"] for s in t["scrolls"] for p in s["pyramid"]}, {"blosc"})
+
 
 @unittest.skipIf(np is None, "needs numpy")
 class Lasagna(unittest.TestCase):
@@ -235,6 +250,17 @@ class Page(unittest.TestCase):
         for name in ("index.html", "README.md", "NOTICE"):
             self.assertNotIn("center finder", self.text(name), name)
         self.assertEqual(build_lines.SOURCES["finder"]["label"], "Chase Hendrick's Center Finder")
+
+    def test_a_compressed_scan_gets_no_ct_stream(self):
+        # the page reads one axial plane of an uncompressed chunk per request; a scan with a compressor keeps its lines,
+        # streams nothing and says why (1.10.0)
+        app = self.text("app.js")
+        self.assertIn("const streamable = (s) => !s.pyramid.some((p) => p.compressor);", app)
+        self.assertIn("if (streamable(s)) loadVolume(s, scanGroup);", app)
+        self.assertIn("} else if (!streamable(s)) {", app)
+        self.assertIn("Blosc().decode(raw)", app)  # the guide's Python snippet decodes a whole chunk there
+        # the Data dialog's scan rows have no source; reading one must not throw (the Scans tab was empty in 1.9.0)
+        self.assertIn("class=\"${r.source?.startsWith('finder') ? 'cf' : ''}", app)
 
     def test_card_links_both_datasets(self):
         readme = self.text("README.md")

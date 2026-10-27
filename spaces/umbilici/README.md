@@ -7,7 +7,7 @@ sdk: static
 app_file: index.html
 pinned: false
 license: apache-2.0
-short_description: Center lines of 33 Herculaneum scans, in live X-ray CT
+short_description: Center lines of 35 Herculaneum scans, in live X-ray CT
 tags:
   - vesuvius-challenge
   - herculaneum
@@ -24,10 +24,12 @@ datasets:
 A carbonized Herculaneum scroll is a sheet of papyrus wound around a center. Its center line, the umbilicus,
 is where tracing tools such as VC3D and villa's lasagna start. This page draws every public center line we know
 of for the 22 scans on the [Vesuvius Challenge prize page](https://scrollprize.org/prizes) (the 21 First Letters
-volumes and PHerc1447, read 23 October 2026) and for 11 other public scans that are not on the prize page (since
-1.8.0), over X-ray CT that your browser streams from the open data. Since 1.9.0 it also draws the twelve
-coverage-polished Center Finder lines of dataset release v2.4 as the newest version of each line, with the
-original kept and drawn faded as superseded (release v2.5's superseded_by).
+volumes and PHerc1447, read 23 October 2026) and for 13 other public scans that are not on the prize page (11
+since 1.8.0, PHerc1667 and PHerc0172 since 1.10.0), over X-ray CT that your browser streams from the open data.
+Since 1.9.0 it also draws the coverage-polished Center Finder lines (twelve from dataset release v2.4, three more
+on 2.4 µm scans from v2.6) as the newest version of each line, with the original kept and drawn faded as
+superseded (the dataset's superseded_by). Since 1.10.0 the lines come from center lines v2.6.1: 57 lines on 35
+scans.
 
 - **Array**: every scan's lines side by side, heights to scale in millimetres: the prize scans in the front two rows
   (people's lines, then the Center Finder's), the other public scans in the back row. Each maker has its own color
@@ -43,7 +45,7 @@ original kept and drawn faded as superseded (release v2.5's superseded_by).
   with the 3D view ("turn with view"), and can be hidden and brought back from the bottom right.
 - **Lasagna**: PHerc0175A with villa's lasagna field: its sheet channel (cos) at nine heights, its surface
   normals as short needles coloured by orientation, and the Center Finder's line through them.
-- **Data**: every number on the page as sortable tables (52 lines, 33 scans), with `lines.csv`, `scans.csv`,
+- **Data**: every number on the page as sortable tables (57 lines, 35 scans), with `lines.csv`, `scans.csv`,
   `points.csv` and `umbilici.json` downloads.
 - **Guide**: five tabs for every level of reader: Start here, VC3D and villa, For researchers (every statistic
   defined), Data details (frames, pyramids, encodings) and Credits.
@@ -60,27 +62,31 @@ that reopens the exact view; and the scan's points as CSV or JSON.
 | Abd Elilah, manual curves ([umbilicus-cross-validation](https://github.com/TAUIL-Abd-Elilah/umbilicus-cross-validation)) | 6 | CC BY 4.0 |
 | Iyan Dopico (PHerc1218, as shipped in Drobkov's repository) | 1 | MIT |
 | Vesuvius Challenge open data (`representations/umbilicus`) | 7 (4 not on the prize page) | CC BY-NC 4.0 |
-| Chase Hendrick's Center Finder (model output) | 16 (7 not on the prize page) | CC BY-NC 4.0 |
-| Chase Hendrick's Center Finder, polished (model output) | 12 (3 not on the prize page) | CC BY-NC 4.0 |
+| Chase Hendrick's Center Finder (model output) | 18 (9 not on the prize page) | CC BY-NC 4.0 |
+| Chase Hendrick's Center Finder, polished (model output) | 15 (6 not on the prize page) | CC BY-NC 4.0 |
 
 Every file, with its hash, upstream link and note, is in
 [SharpMeow/vesuvius-center-lines](https://huggingface.co/datasets/SharpMeow/vesuvius-center-lines). Abd Elilah's
 PHerc1203 curve is shown faded: its author withdrew it from recommended use (repository README, 16 Aug 2026).
 
-The 16 Center Finder lines are model output, made for the scans that had no person's line: nine 1.2 m prize
+The 18 Center Finder lines are model output, made for the scans that had no person's line: nine 1.2 m prize
 scans, then (dataset release v2.3, 24 Oct 2026) PHerc0343, PHerc0814 and PHerc0841 at 1.2 m and PHerc1299,
-PHercMAN5, PHercMANB and PHercParis3 at 2.4 µm. No person has checked their ends on CT. An automatic CT end check
+PHercMAN5, PHercMANB and PHercParis3 at 2.4 µm, then (v2.6, 25 Oct 2026) PHerc1667 at 2.4 µm and PHerc0172 at
+7.91 µm. No person has checked their ends on CT. An automatic CT end check
 compares each end with the scroll center the CT shows there, estimated from the scan alone, with a 4 mm bar. On the
 nine prize lines (v2.2, 23 Oct 2026) 14 of the 18 ends pass and 4 are flagged (PHerc0175B high, PHerc0306B low,
 PHerc0490B low, PHerc0846A high); five passing ends are marked CT recap: their last 10 mm was replaced by a
 straight fit to the CT, so the pass says the CT supports that end. On the seven v2.3 lines all 14 ends pass, 2 after
 a CT recap (PHerc0343 low, PHercMANB high); the check was tuned only on 1.2 m scans, so its grades on the four 2.4 µm
-scans are marked untested and no end there is called usable. The page shows the grade per line and per end on its
-card. Model output: no end has been checked on CT by a person. Each line's card says which ends are usable.
+scans are marked untested and no end there is called usable. On the two v2.6 lines, PHerc1667's ends both pass
+(untested, a 2.4 µm scan) and PHerc0172's are both flagged, so treat its ends with care. The page shows the grade
+per line and per end on its card. Model output: no end has been checked on CT by a person. Each line's card says which ends are usable.
 
-The 12 polished lines (dataset release v2.4, 24 Oct 2026) are the Center Finder's lines on 1.2 m scans moved by
-Scrolls `kit axispolish` (rule 1) toward where villa's predicted sheet winds most. On all ten scans of a frozen
-test they sat deeper in villa's traced sheet than the line before the polish (winding coverage on villa's model
+The 15 polished lines are the Center Finder's lines moved by
+Scrolls `kit axispolish` (rule 1) toward where villa's predicted sheet winds most: twelve on 1.2 m scans (dataset
+release v2.4, 24 Oct 2026) and three on 2.4 µm scans, PHerc1299, PHercMAN5 and PHercMANB (v2.6, 25 Oct 2026), where
+the polish ran on level 2 and is untested. On all ten scans of a frozen
+test the 1.2 m polished lines sat deeper in villa's traced sheet than the line before the polish (winding coverage on villa's model
 output, not distance to the true axis; PHerc0343 and PHerc0846A were not in it), and Scrolls kit takes them first.
 They are jumpier than the originals and their ends were not re-checked, so the scan's grade stays the original
 line's. Each card marks the newest version NEWEST and the older one SUPERSEDED; the older one is drawn faded.
@@ -93,7 +99,7 @@ villa's source (`main`, read 23 Oct 2026):
 - VC3D ([`volume-cartographer/core/src/Umbilicus.cpp`](https://github.com/ScrollPrize/villa/blob/main/volume-cartographer/core/src/Umbilicus.cpp))
   reads a bare array of points or an object with `points` or `control_points`, each point with x, y and z, and an
   optional `metadata` block with `voxelsize_um`, `volume` and the grid `volume_width`, `volume_height`,
-  `volume_slices` (all three or none). 33 of the 40 files carry that stamp, matching their scan's grid; Abd
+  `volume_slices` (all three or none). 50 of the 57 files carry that stamp, matching their scan's grid; Abd
   Elilah's six and Iyan Dopico's are bare points. VC3D interpolates linearly between points and holds the end
   points' x and y beyond them.
 - spiral-fitting ([`spiral-fitting/umbilicus.py`](https://github.com/ScrollPrize/villa/blob/main/spiral-fitting/umbilicus.py))
@@ -111,7 +117,9 @@ it near the top or bottom of a scan.
 CT is not stored on this Space. Each visitor's browser reads coarse levels of the OME-Zarr volumes straight from
 the Vesuvius Challenge open-data bucket with HTTP range requests: one axial plane of each 128-voxel chunk at a
 time, about 1,000 small reads for a whole-scan render and 25 to 100 for a slice. The radiograph adds up CT along
-each ray, like a film X-ray. Scans: Vesuvius Challenge open data, CC BY-NC 4.0.
+each ray, like a film X-ray. One scan is the exception: PHerc0172's 7.91 µm scan is stored Blosc-compressed, so a
+chunk cannot be read one plane at a time, and the page draws its line without CT (its card says so, and links it
+in neuroglancer, which reads compressed chunks). Scans: Vesuvius Challenge open data, CC BY-NC 4.0.
 
 ## Lasagna field
 

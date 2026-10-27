@@ -4,7 +4,7 @@ Every center line, CT scan and lasagna field on this page reads straight from th
 
 Checked 2026-10-24. Generated from `connect.json` by `kit spaceconnect` in [ChaseHendrick/Scrolls](https://github.com/ChaseHendrick/Scrolls).
 
-## Center lines (all 29, every scan)
+## Center lines (every line, every scan)
 
 `https://huggingface.co/datasets/SharpMeow/vesuvius-center-lines`
 
