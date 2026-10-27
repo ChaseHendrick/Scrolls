@@ -35,6 +35,35 @@
    "license": "CC BY-NC 4.0 (Vesuvius Challenge open data)"
   },
   {
+   "id": "layers24",
+   "title": "The same segment's 2.4 um surface volume (what every model reads in Compare models)",
+   "kind": "ome-zarr",
+   "url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0841/segments/20260220213127-w00/surface-volumes/2.403um-0.22m-77keV-volume-20260319124803.zarr",
+   "zarr_format": 2,
+   "example": {
+    "level": "0",
+    "start": [
+     0,
+     11200,
+     11600
+    ]
+   },
+   "tools": [
+    "zarr",
+    "vesuvius",
+    "curl"
+   ],
+   "license": "CC BY-NC 4.0 (Vesuvius Challenge open data)",
+   "browse": "https://scrollprize.org/data_browser/PHerc0841"
+  },
+  {
+   "id": "segment24",
+   "title": "Its 2.4 um surface (tifxyz), the mesh the 3D models are read onto",
+   "kind": "tifxyz",
+   "url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0841/segments/20260220213127-w00/mesh/20260220213127-on-20260319124803-2.403um.tifxyz",
+   "license": "CC BY-NC 4.0 (Vesuvius Challenge open data)"
+  },
+  {
    "id": "api",
    "title": "Call Ink Lens from code or an agent",
    "kind": "gradio-api",
@@ -55,9 +84,30 @@
     {
      "api": "/list_samples",
      "args": {}
+    },
+    {
+     "api": "/compare_sample",
+     "args": {
+      "sample_id": "0841-w00",
+      "models": "ink_9um-s42,reader-v3,hecate-9.6",
+      "size": 384,
+      "scan": "2.4",
+      "centres": "0",
+      "steps": "1"
+     }
+    },
+    {
+     "api": "/list_models",
+     "args": {}
+    },
+    {
+     "api": "/gallery",
+     "args": {
+      "sample_id": "0841-w00"
+     }
     }
    ],
-   "license": "Code Apache 2.0; d9v2 MIT; scans CC BY-NC 4.0",
+   "license": "Code Apache 2.0; models MIT (each credited in list_models); scans CC BY-NC 4.0",
    "note": "Checked live on 24 Oct 2026: /list_samples and /lens_sample answered (gradio_client, the 0841-w00 sample). Model output, not a reading."
   }
  ]

@@ -1,6 +1,6 @@
-# ink-lens: control-checked ink maps of your own region, written back into VC3D
+# ink-lens: every ink model side by side with controls, and control-checked ink maps of your own region for VC3D
 
-Runs an openly licensed 9 um ink model on one region of a VC3D segment in both depth orders over three depth windows, keeps only ink above the region's own reverse-depth control, and writes the overlay and letter-candidate pins as VC3D's own files.
+Compares eleven open ink models, 2.5D and 3D, on the same pixels and labels, each with its own control, and maps one region of a VC3D segment with a 9 um model, keeping only ink above its own reverse-depth control, written back as VC3D's own files.
 
 | Field | Value |
 | --- | --- |
@@ -8,16 +8,16 @@ Runs an openly licensed 9 um ink model on one region of a VC3D segment in both d
 | Status | Experimental |
 | Kind | app, agent tool, script |
 | Area | Ink maps and models |
-| Run | `python3 spaces/ink-lens/inklens.py run` (a region of a segment), `python3 spaces/ink-lens/inklens.py demo SAMPLE` (a public sample end to end), `python3 spaces/ink-lens/inklens.py estimate H W`, `python3 spaces/ink-lens/inklens.py samples`, `python3 spaces/ink-lens/app.py` (the Space page, API and MCP), `python3 spaces/ink-lens/engine.py estimate H W`, `python3 spaces/ink-lens/tools/check_gate.py OUT.json` (the preregistered check), `python3 spaces/ink-lens/tools/deploy.py OWNER/NAME` |
-| Code | `spaces/ink-lens/inklens.py` (the client), `spaces/ink-lens/engine.py` (model, windows, both orders), `spaces/ink-lens/gate.py` (the control-set threshold), `spaces/ink-lens/vc3dout.py` (VC3D's files), `spaces/ink-lens/volio.py` (reading regions), `spaces/ink-lens/bridge.py` (VC3D agent bridge), `spaces/ink-lens/app.py` (the Space), `spaces/ink-lens/tools/deploy.py`, `spaces/ink-lens/tools/check_gate.py`, `spaces/ink-lens/samples.json`, `spaces/ink-lens/vc3d-plugin.json` (draft action list), `plugins/ink-lens.json` (the Plugins menu manifest, [vc3d-plugins](vc3d-plugins.md)), `spaces/ink-lens/README.md` (the Space card) |
-| Tests | `tests/test_inklens.py`, 43 tests (5 need torch, tifffile or `VILLA_SRC` and skip without them) |
+| Run | `python3 spaces/ink-lens/inklens.py run` (a region of a segment), `python3 spaces/ink-lens/inklens.py demo SAMPLE` (a public sample end to end), `python3 spaces/ink-lens/inklens.py estimate H W`, `python3 spaces/ink-lens/inklens.py samples`, `python3 spaces/ink-lens/app.py` (the Space page, API and MCP), `python3 spaces/ink-lens/engine.py estimate H W`, `python3 spaces/ink-lens/tools/check_gate.py OUT.json` (the preregistered check), `python3 spaces/ink-lens/tools/deploy.py OWNER/NAME`, `python3 spaces/ink-lens/zoo.py list` (every model), `python3 spaces/ink-lens/tools/gallery_job.py flat`, `ct3d` and `assemble` (the precomputed comparison, as Hugging Face Jobs) |
+| Code | `spaces/ink-lens/inklens.py` (the client), `spaces/ink-lens/engine.py` (model, windows, both orders), `spaces/ink-lens/gate.py` (the control-set threshold), `spaces/ink-lens/vc3dout.py` (VC3D's files), `spaces/ink-lens/volio.py` (reading regions), `spaces/ink-lens/bridge.py` (VC3D agent bridge), `spaces/ink-lens/app.py` (the Space), `spaces/ink-lens/tools/deploy.py`, `spaces/ink-lens/tools/check_gate.py`, `spaces/ink-lens/samples.json`, `spaces/ink-lens/vc3d-plugin.json` (draft action list), `plugins/ink-lens.json` (the Plugins menu manifest, [vc3d-plugins](vc3d-plugins.md)), `spaces/ink-lens/README.md` (the Space card), `spaces/ink-lens/zoo.py` (the models, pins and training exposure), `spaces/ink-lens/runners.py` (running each family), `spaces/ink-lens/compare.py` (the comparison), `spaces/ink-lens/tools/gallery_job.py` |
+| Tests | `tests/test_inklens.py`, 43 tests (5 need torch, tifffile or `VILLA_SRC` and skip without them); `tests/test_inkcompare.py`, 22 tests (4 need ink-sdk and skip without it) |
 | Needs | Python 3.10 or newer, numpy. Space mode: gradio_client and huggingface_hub, and the user's own Hugging Face token. Local mode and the Space: torch 2.13.0 and the pins in `spaces/ink-lens/requirements.txt`; villa's `vesuvius/src` at `8aa507c12` and the checkpoint are downloaded once (or `VILLA_SRC`, `INKLENS_D9V2`, `INKLENS_INK_9UM`). Pins: tifffile, and this repository's `kit/` (the Scroll Text Reader). Rendering a region: `vc_render_tifxyz` from a VC3D build. Label scoring: zarr |
 | Runs on | ZeroGPU (Space mode): the 640 px 0841-w00 sample with three windows (486 patches) in 1.2 to 1.3 s of model time on the Space's RTX PRO 6000 MIG slice, 10 GPU seconds requested (measured live 2026-10-24); a 1024 px region (1,350 patches) is estimated at 6 to 10 s. CPU, 4 cores of a Claude cloud container: 0.14 to 0.30 s per patch, a 640 px crop with three windows (486 patches) in 112 to 148 s (measured 2026-10-20). CUDA or Apple MPS in local mode: not measured |
 | Network | `vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` (samples, labels and tifxyz meshes), `github.com` and `codeload.github.com` (villa at a pinned commit; d9v2 and the letter weights from release assets), `huggingface.co` (`ink_9um`; the Space in Space mode). Space mode sends the region (an `.npz`) to the Space; local mode sends nothing |
 | Writes | Into the segment folder: `inklens/RUN.png`, `inklens/mosaic.png`, `inklens/RUN.pins.json`, `inklens/RUN.json`, `inklens/RUN.letters.json`, and `ink-detections.json` (merged, existing records kept). Downloads under `$INKLENS_CACHE` (default `TMPDIR/ink-lens`, about 0.6 GB for both readers and villa). The Space writes result `.npz` files under `TMPDIR/ink-lens-out` and keeps no upload. `demo --vc3d-out DIR` writes a copy of the sample's tifxyz mesh into DIR |
 | Go-ahead | Needed to deploy the Space (`tools/deploy.py`, a new Space under rule 8) and to spend Chase's ZeroGPU quota. Not needed for local mode or the tests |
 | Released | Code on `main` since 2026-10-20 ([#138](https://github.com/ChaseHendrick/Scrolls/pull/138)). The Space [SharpMeow/ink-lens](https://huggingface.co/spaces/SharpMeow/ink-lens) is live on ZeroGPU since 2026-10-24 (Chase's yes in the project thread); local mode works too |
-| License | Apache 2.0 for the code ([`spaces/ink-lens/LICENSE`](../../spaces/ink-lens/LICENSE), [`NOTICE`](../../spaces/ink-lens/NOTICE)); d9v2 and `ink_9um` MIT; the scans CC BY-NC 4.0 |
+| License | Apache 2.0 for the code ([`spaces/ink-lens/LICENSE`](../../spaces/ink-lens/LICENSE), [`NOTICE`](../../spaces/ink-lens/NOTICE)); every model MIT (credited in `zoo.py`); ink-sdk MIT; the scans CC BY-NC 4.0 |
 | Checked | 2026-10-24 against commit `7e51e4f` |
 
 ## What it does
@@ -184,6 +184,45 @@ inklens.py run --from-vc3d [--bridge NAME] --volume OME_ZARR [--size 1024] ...
 | `deploy.py SPACE` | required | SPACE is the Space as OWNER/NAME: check the login, list differences, ask y/N, upload, ask for `zero-a10g` |
 | `--private` | off | Create the Space private |
 
+### Model comparison: `zoo.py`, `compare.py`, `tools/gallery_job.py`
+
+`zoo.py` lists every model with its family (`villa9`, `hecate`, `canonical`, `ct3d`), scale, depth, depth orders,
+pinned weights (revision, SHA-256, size), licence, the control it is judged against, and its training exposure on
+each public scroll (`trained`, `likely`, `selected`, `held_out`, `unknown`) with a source URL.
+`compare.run(volume, scan, models, labels=...)` runs the chosen models on one region and returns the record, every
+map on the 9.6 um grid and Hecate's 3D volumes; the Space's `compare_sample` and `compare_region` call it.
+
+```text
+zoo.py list [--json]          zoo.py show MODEL
+gallery_job.py flat --out DIR [--samples ID ...] [--models NAME ...] [--centres C ...] [--steps S ...]
+                   [--device cuda] [--draws N] [--no-orient]
+gallery_job.py ct3d --out DIR --ap ROOT [--samples ID ...] [--models NAME ...] [--device cuda]
+gallery_job.py assemble --flat DIR [--ct3d DIR] --out GALLERY [--draws N]
+```
+
+| Option | Default | Meaning |
+| --- | --- | --- |
+| `--json` | off | `zoo.py list`: every model as JSON instead of one line each |
+| `model` | required | `zoo.py show`: one model in full, with its exposure and sources |
+| `--out` | required | `flat`: maps, records, labels and orientation reports; `ct3d`: each model's projected map, control and record; `assemble`: the Space's gallery folder (`index.json`, one record and mosaic per sample, `maps/`) |
+| `--samples` | every sample with a 2.4 um scan | `flat`, `ct3d`: the samples to run |
+| `--models` | `flat`: every model but the scan-space 3D ones; `ct3d`: both of those | The models to run |
+| `--centres` | `-4 0 4` | `flat`: window centres in 9.6 um layers from the middle |
+| `--steps` | `1 2` | `flat`: layer steps |
+| `--device` | `flat`: CUDA if present; `ct3d`: `cuda` | Torch device |
+| `--draws` | 300 | `flat`, `assemble`: bootstrap draws for the centre window's interval |
+| `--no-orient` | off | `flat`: skip ink-sdk's label-free orientation check |
+| `--ap` | required | `ct3d`: AutoPipeline's folder (holding `kit/ink3d.py`) in a public Scrolls checkout |
+| `--flat` | required | `assemble`: the `flat` output |
+| `--ct3d` | none | `assemble`: the `ct3d` output |
+
+The fair canvas: every sample is read from its about 2.4 um surface volume and mesh. The 9 um models and Hecate 9.6
+read it pooled 4x (ink-sdk's scale rule, `zoo.scale_plan`); Hecate 2.4 and canonical 2 um read it natively and their
+maps are mean-pooled 4x; every map lands on the labels' level 2. The scan-space 3D models run in `ct3d` through
+AutoPipeline's `kit ink3d`, with its canvas cut to the crop (`crop_canvas`): the model's volume is read onto the
+mesh within 15 um of the sheet, and the control is the sheet moved two pitches out and in. `ct3d` runs in villa's
+Python (`KIT_INK_PYTHON`, default the running interpreter): a Job image with villa's ink code installed.
+
 ### Deploying the Space (Chase only, after a yes)
 
 A new Space needs Chase's yes (rule 8). A free account hosts two ZeroGPU Spaces and SharpMeow has `autopipeline-ink`
@@ -211,6 +250,9 @@ In a cloud session with `HF_TOKEN` set, the same commands work; `deploy.py` stil
 | `VILLA_SRC` | unset | A local villa `vesuvius/src` instead of the pinned download |
 | `INKLENS_D9V2`, `INKLENS_INK_9UM` | unset | A local copy of a checkpoint (its SHA-256 is still checked); read as `INKLENS_` plus the reader name in capitals |
 | `SPACES_ZERO_GPU` | set by Hugging Face | The Space attaches the GPU through `spaces.GPU` when it is true |
+| `KIT_INK_PYTHON` | the running Python | `gallery_job.py ct3d`: the Python that runs villa's 3D engines (kit ink3d) |
+| `INKLENS_GALLERY` | unset | `tools/deploy.py`: the folder `gallery_job.py assemble` wrote, published as the Space's `gallery/` |
+| `INKLENS_<MODEL>` | unset | `runners.fetch`: a local copy of a comparison model's checkpoint (its SHA-256 is still checked), the zoo name in capitals with `-` and `.` as `_` |
 
 ## Python API
 
@@ -360,6 +402,48 @@ In a cloud session with `HF_TOKEN` set, the same commands work; `deploy.py` stil
 | `box rows Y..Y2, columns X..X2 is outside the (H, W) volume` | `--box` reaches past a `.npy`, `.npz` or `.tif` surface volume | Give a box inside the volume |
 | `not a PNG` | `inklens/mosaic.png` in the segment folder was replaced by a file that is not a PNG | Delete it; Ink Lens writes a new one |
 | `cannot read URL: ERROR` | A sample, label or mesh file could not be fetched from the open-data bucket after three tries (network down, or a proxy refused) | Check the connection and retry; a missing file (HTTP 404) does not raise this, it is reported where the file is used |
+| `choose at least one model (list_models names them)` (`choose at least one model`) | No model was chosen | Pick models; `list_models` names them |
+| `unknown models [...]; list_models names them` | A name is not in the zoo | Use a name from `list_models` or `zoo.py list` |
+| `the scan-space 3D models run only in the precomputed gallery (gallery endpoint)` | Only `ct3d` models were chosen for a live comparison | Use the `gallery` endpoint, or add other models |
+| `give one to five values` | Too many or no window centres or steps | One to five whole numbers |
+| `'TEXT': give whole numbers separated by spaces` | Centres or steps are not whole numbers | Give whole numbers |
+| `scan is 2.4 (the about 2.4 um scan) or native (about 9.4 um)` | Unknown scan | `2.4` or `native` |
+| `a region is uint8, layers x rows x columns` | The uploaded volume is not a 3D uint8 array | Convert with `volio.to_uint8`, layers first |
+| `a region is 128 to 512 px a side on the 9.6 um grid (512 to 2048 px of this scan)` | The compared region is too small or too large | Resize it; a 2.4 um region is 4 times the grid size |
+| `the gallery has not been published yet` | The Space has no `gallery/index.json` | Use Compare models, or wait for the gallery |
+| `no gallery for ID` | The sample is not in the gallery | `list_models` lists the gallery's samples |
+| `PATH holds no gallery index.json` | `INKLENS_GALLERY` names a folder `assemble` did not write | Point it at `assemble --out` |
+| `NAME reads T um (within W); a S um source neither matches nor pools to it by ink-sdk's scale rule, and Ink Lens does not stretch` | The model cannot read this scan at its scale | Use the 2.4 um scan, or a 9 um model on the 9.4 um scan |
+| `model 'NAME' already exists` | `zoo.register` was given a name in use | Pick another name |
+| `unknown model 'NAME'; known: NAMES` | The zoo has no such model | Use a listed name |
+| `NAME: missing FIELDS` | A registered model lacks required fields | Add them (see `zoo.check`) |
+| `NAME: family 'F' is not one of (...)` | Unknown family | `villa9`, `hecate`, `canonical` or `ct3d` |
+| `NAME: orders must be forward and/or reverse` | Bad depth orders | `forward`, `reverse` or both |
+| `NAME: outputs must come from (...)` | Bad outputs | `2d`, `3d-render`, `3d-scan` |
+| `NAME: a ct3d model names its engine` | A scan-space model without an engine | Add `engine` |
+| `NAME: every weight file needs a 64-hex SHA-256 pin` | A weight file is not pinned | Pin it |
+| `NAME: exposure for SCROLL must be (one of (...), why, source)` | A malformed exposure entry | Give status, reason and source |
+| `NAME reads the scan itself (ct3d): it runs as a Hugging Face Job, see tools/gallery_job.py` | A scan-space model was loaded for a live run | Use `gallery_job.py ct3d` |
+| `NAME ROLE: PATH is N bytes, the pin is M; refusing it` | A downloaded file has the wrong size | Delete it from the cache; check the source |
+| `NAME ROLE: PATH has SHA-256 DIGEST, the pin is DIGEST; refusing it` | A downloaded file has the wrong SHA-256 | Delete it from the cache; check the source |
+| `INKLENS_NAME=FOLDER has no FILE` | The local folder for a rebuilt model lacks a file | Put both files there, or unset the variable |
+| `NAME is a FAMILY model, not villa9` | A non-villa9 model reached the villa runner | Use `runners.load` |
+| `NAME reads D layers; the zoo says D2` | The checkpoint's depth differs from the zoo | Fix the zoo entry |
+| `NAME has no ink-sdk profile` | The model is not one of ink-sdk's profiles | Use a villa9 runner or add a profile |
+| `NAME: ink-sdk's profile pins DIGEST at REV, the zoo pins DIGEST at REV` | The zoo and ink-sdk pin different weights | Align the pins (the tests compare them) |
+| `a surface volume is uint8 (layers, rows, columns)` | Wrong array reached a runner or `compare.run` | Convert with `volio.to_uint8`, layers first |
+| `NAME reads P px patches; the region is H x W` | The region is smaller than the model's patch (Reader V3: 384 px) | Use a larger region |
+| `NAME is not run through ink-sdk here` | A non-Hecate, non-canonical model reached the ink-sdk runner | Use `runners.load` |
+| `NAME runs only (...)` | A depth order the model does not run was asked for | Ask for its orders (canonical: forward) |
+| `window KEY: D layers inside 0..L needed, got [...]` | A window does not fit the volume | Fewer or nearer windows |
+| `window KEY: NAME reads D layers, got N` | A window has the wrong depth | Use `runners.windows_for` |
+| `NAME reads the scan itself; its maps come from the precomputed gallery` | `compare.plan` was asked for a scan-space model | Use the gallery |
+| `scan 'X': use 2.4 or native` | Unknown scan in `compare.plan` | `2.4` or `native` |
+| `sample ID has no 2.4 um scan` | The sample lacks a `scan24` block | Add it to `samples.json`, or use `native` |
+| `box [Y0, Y1, X0, X1] is outside the H x W grid` | The box leaves the 9.6 um grid | Pick a box inside it |
+| `unknown or 2.4-less samples among [...]` | `gallery_job.py --samples` names a sample without a 2.4 um scan | Use samples with `scan24` |
+| `ID: expected one tifxyz under DIR, found [...]` | The mesh download did not hold one tifxyz | Check the sample's `scan24.tifxyz` |
+| `the mesh canvas (H, W) is not the 2.4 um scan's (H, W)` | The mesh and the surface volume differ in canvas | Check the sample's `scan24` entries |
 
 ## How it works
 
@@ -410,6 +494,10 @@ z windows also works as a simple ensemble", read 2026-10-20).
 - **Not a pass:** A map with no status, a Space result whose status the client did not recompute, letters with
   `letters.status` other than `strong` or `weak`, and any number from the samples presented as a blind test.
 - **Go-ahead:** Deploying the Space, and calling it with Chase's token.
+- **Compare models:** `gradio_client` `predict("0841-w00", "ink_9um-s42,reader-v3,hecate-9.6", 384, "2.4", "0",
+  "1", api_name="/compare_sample")`; parse `models.NAME.cells["c+0_s1"].score` (`auc.auc`, `control.auc`, `gap`,
+  `bootstrap.ci95`), `.liveness.forward.verdict` and `.exposure.status`. Rank only `ALIVE` rows whose exposure is
+  `held_out` on that scroll; every other row is a pipeline check.
 - **Never:** Call a kept map or a pin a reading; publish a map, status or pin of a target or prize-eligible scroll in
   this repository; overwrite `ink-detections.json` by hand while VC3D has the segment open.
 
@@ -426,6 +514,7 @@ the live Space, and the agent bridge against a running VC3D.
 
 ## History
 
+- 2026-10-27: model comparison: `zoo.py` (eleven models, 2.5D and 3D, with pins and training exposure), `runners.py`, `compare.py` (fair 2.4 um canvas, controls, ink-sdk's liveness gate, ensemble, stability, mosaics, block-bootstrap intervals, run record), the Compare models and Gallery tabs, `compare_sample`, `compare_region`, `list_models` and `gallery` endpoints, and `tools/gallery_job.py`; branched from `main` at `152da8a`.
 - 2026-10-24: Connect your tool accordion, branched from `main` at `2ce4d50`.
 - 2026-10-21: rows for the positional arguments of `estimate`, `engine.py estimate` and `deploy.py`, and every refusal written whole, including `not a PNG`, `cannot read URL: ERROR` and the `demo --size` refusal (`bbecb37`).
 - 2026-10-24: the Space deployed as `SharpMeow/ink-lens` (ZeroGPU, public) from `7e51e4f` plus the fix below. The first start failed: the loading thread moved the readers to `cuda` outside a `spaces.GPU` call, which ZeroGPU refuses; `app.py` now keeps them on the CPU there and `run()` moves them inside the call (test `test_app_keeps_readers_off_cuda_at_startup_on_zerogpu`). Live demo on `0841-w00` (development data): gate `ink`, AUC 0.9147 as stored, 0.5954 reversed.

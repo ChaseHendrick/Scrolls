@@ -51,8 +51,42 @@ meta = json.load(urllib.request.urlopen(T + &quot;/meta.json&quot;))  # scale, b
 get = lambda c: tifffile.imread(io.BytesIO(urllib.request.urlopen(f&quot;{T}/{c}.tif&quot;).read()))
 xyz = np.stack([get(c) for c in &quot;xyz&quot;], -1)  # xyz[i, j] = (x, y, z) in scan voxels; -1 = no surface</code></pre></div></details>
 </div>
+<div class="scc-src" id="connect-layers24"><h3>The same segment&#x27;s 2.4 um surface volume (what every model reads in Compare models)</h3>
+<p class="scc-meta">CC BY-NC 4.0 (Vesuvius Challenge open data) · <a href="https://scrollprize.org/data_browser/PHerc0841" target="_blank" rel="noopener">browse</a></p>
+<div class="scc-url"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0841/segments/20260220213127-w00/surface-volumes/2.403um-0.22m-77keV-volume-20260319124803.zarr</code></pre></div>
+<details><summary>Python (zarr)<span class="scc-b ok">tested 2026-10-24</span></summary>
+<div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code># pip install &quot;zarr&gt;=3&quot; fsspec aiohttp
+import zarr
+
+root = zarr.open_group(&quot;https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0841/segments/20260220213127-w00/surface-volumes/2.403um-0.22m-77keV-volume-20260319124803.zarr&quot;, mode=&quot;r&quot;)  # OME-Zarr, zarr v2
+a = root[&quot;0&quot;]  # level 0 is full resolution; level L is 2**L times coarser
+print(a.shape, a.dtype, a.chunks)
+block = a[0:64, 11200:11264, 11600:11664]  # (z, y, x); reads only the chunks it touches</code></pre></div></details>
+<details><summary>villa&#x27;s vesuvius package<span class="scc-b ok">tested 2026-10-24</span></summary>
+<div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code># pip install &quot;vesuvius[volume-only]&quot;
+from vesuvius import Volume
+
+v = Volume(type=&quot;zarr&quot;, path=&quot;https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0841/segments/20260220213127-w00/surface-volumes/2.403um-0.22m-77keV-volume-20260319124803.zarr/0&quot;)  # one pyramid level
+block = v[0:64, 11200:11264, 11600:11664]</code></pre></div></details>
+<details><summary>curl<span class="scc-b ok">tested 2026-10-24</span></summary>
+<div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>curl -s https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0841/segments/20260220213127-w00/surface-volumes/2.403um-0.22m-77keV-volume-20260319124803.zarr/.zattrs            # OME multiscales metadata
+curl -s https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0841/segments/20260220213127-w00/surface-volumes/2.403um-0.22m-77keV-volume-20260319124803.zarr/0/.zarray     # one level: shape, chunks, dtype, codec</code></pre></div></details>
+</div>
+<div class="scc-src" id="connect-segment24"><h3>Its 2.4 um surface (tifxyz), the mesh the 3D models are read onto</h3>
+<p class="scc-meta">CC BY-NC 4.0 (Vesuvius Challenge open data)</p>
+<div class="scc-url"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0841/segments/20260220213127-w00/mesh/20260220213127-on-20260319124803-2.403um.tifxyz</code></pre></div>
+<details><summary>Python (numpy, tifffile)<span class="scc-b ok">tested 2026-10-24</span></summary>
+<div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code># pip install numpy tifffile
+import io, json, urllib.request
+import numpy as np, tifffile
+
+T = &quot;https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0841/segments/20260220213127-w00/mesh/20260220213127-on-20260319124803-2.403um.tifxyz&quot;
+meta = json.load(urllib.request.urlopen(T + &quot;/meta.json&quot;))  # scale, bbox, format
+get = lambda c: tifffile.imread(io.BytesIO(urllib.request.urlopen(f&quot;{T}/{c}.tif&quot;).read()))
+xyz = np.stack([get(c) for c in &quot;xyz&quot;], -1)  # xyz[i, j] = (x, y, z) in scan voxels; -1 = no surface</code></pre></div></details>
+</div>
 <div class="scc-src" id="connect-api"><h3>Call Ink Lens from code or an agent</h3>
-<p class="scc-meta">Code Apache 2.0; d9v2 MIT; scans CC BY-NC 4.0 · Checked live on 24 Oct 2026: /list_samples and /lens_sample answered (gradio_client, the 0841-w00 sample). Model output, not a reading.</p>
+<p class="scc-meta">Code Apache 2.0; models MIT (each credited in list_models); scans CC BY-NC 4.0 · Checked live on 24 Oct 2026: /list_samples and /lens_sample answered (gradio_client, the 0841-w00 sample). Model output, not a reading.</p>
 <div class="scc-url"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>https://huggingface.co/spaces/SharpMeow/ink-lens</code></pre></div>
 <details><summary>Python /lens_sample<span class="scc-b ok">tested 2026-10-24</span></summary>
 <div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code># pip install gradio_client
@@ -66,6 +100,24 @@ from gradio_client import Client
 
 client = Client(&quot;SharpMeow/ink-lens&quot;)
 result = client.predict(api_name=&quot;/list_samples&quot;)</code></pre></div></details>
+<details><summary>Python /compare_sample<span class="scc-b ok">tested 2026-10-24</span></summary>
+<div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code># pip install gradio_client
+from gradio_client import Client
+
+client = Client(&quot;SharpMeow/ink-lens&quot;)
+result = client.predict(sample_id=&quot;0841-w00&quot;, models=&quot;ink_9um-s42,reader-v3,hecate-9.6&quot;, size=384, scan=&quot;2.4&quot;, centres=&quot;0&quot;, steps=&quot;1&quot;, api_name=&quot;/compare_sample&quot;)</code></pre></div></details>
+<details><summary>Python /list_models<span class="scc-b ok">tested 2026-10-24</span></summary>
+<div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code># pip install gradio_client
+from gradio_client import Client
+
+client = Client(&quot;SharpMeow/ink-lens&quot;)
+result = client.predict(api_name=&quot;/list_models&quot;)</code></pre></div></details>
+<details><summary>Python /gallery<span class="scc-b ok">tested 2026-10-24</span></summary>
+<div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code># pip install gradio_client
+from gradio_client import Client
+
+client = Client(&quot;SharpMeow/ink-lens&quot;)
+result = client.predict(sample_id=&quot;0841-w00&quot;, api_name=&quot;/gallery&quot;)</code></pre></div></details>
 <details><summary>curl /lens_sample<span class="scc-b ok">tested 2026-10-24</span></summary>
 <div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>URL=https://sharpmeow-ink-lens.hf.space
 EVENT=$(curl -s -X POST $URL/gradio_api/call/lens_sample -H &#x27;Content-Type: application/json&#x27; \

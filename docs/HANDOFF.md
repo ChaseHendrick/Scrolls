@@ -2,6 +2,12 @@
 
 **This file is the one handoff for this repository.** Every agent (Claude, Codex, Grok, ChatGPT or any other) reads it first and updates it before stopping: change the open-items table when you start or finish something, link longer notes from their row, and merge the handoff change into `main` at once rather than leaving it on a work branch. Private work has its own single handoff in Scrolls-private's `docs/HANDOFF.md`; nothing private goes here. Read [AGENTS.md](../AGENTS.md), [the workflow](WORKFLOW.md) and the current Git/PR state before continuing. Use plain sentences and preserve historical evidence bytes and hashes. Older dated sections are in [HANDOFF-archive.md](HANDOFF-archive.md), newest first; when this file grows long, move its oldest dated sections there, unchanged (`tests/test_repo.py` fails past 40 KB).
 
+## Continuation, 27 October 2026
+
+| Item | State | Next step |
+| --- | --- | --- |
+| Ink Lens compares every ink model, 3D included (27 Oct) | Branch `claude/project-thread-4kxhh8`: `spaces/ink-lens/zoo.py` (11 open models: ink_9um seeds 42 and 43, Reader v2, Reader V3, dense_native, d9v2, Hecate 2.4 and 9.6, canonical 2 um, the Paris 4 3D gambiarra model, DINO-guided 3D; pins, licence, control and training exposure per public scroll with sources), `runners.py`, `compare.py` (fair 2.4 um canvas scored on the labels' 9.6 um grid, reverse-depth or moved-sheet controls, ink-sdk's liveness gate, z-score ensemble, stability, mosaics, block-bootstrap intervals, run record), Compare models and Gallery tabs with `compare_sample`, `compare_region`, `list_models`, `gallery`, and `tools/gallery_job.py` (whole crops and the scan-space 3D models through AutoPipeline's `kit ink3d`, as HF Jobs). 22 tests in `tests/test_inkcompare.py`; CPU run with real weights on PHerc0841 and PHerc0139 crops; ink-sdk's orientation check says layer 0 is the outer face on both samples ([page](tools/ink-lens.md#model-comparison-zoopy-comparepy-toolsgallery_jobpy)) | Run the gallery Jobs, merge the PR, redeploy the Space from merged `main` with the gallery (`INKLENS_GALLERY`), recheck live |
+
 ## Continuation, 26 October 2026
 
 | Item | State | Next step |
