@@ -87,7 +87,7 @@ This release uses a self-contained package branch so it can be installed without
 
 ## History
 
-- 2026-10-17: Version 0.1.0 packages the frozen numerical filter with a local-file adapter, synthetic tests and scalar-score evidence; publication commit `4953f17851aa9b2ffd3c26c86e85ecdabd659ca6`.
+- 2026-10-17: Version 0.1.0 packages the frozen numerical filter with a local-file adapter, synthetic tests and scalar-score evidence; publication commit `4953f17851aa9b2ffd3c26c86e85ecdabd659ca6`, tagged `inkfilter-v0.1.0` with a [GitHub release](https://github.com/ChaseHendrick/Scrolls/releases/tag/inkfilter-v0.1.0).
 
 ## Related
 

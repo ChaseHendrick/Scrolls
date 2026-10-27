@@ -19,7 +19,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent.parent
 TOOL = HERE.parent.parent / "scripts" / "fibercheck"
 PAGE = ["app.py", "fibercat.py", "README.md", "requirements.txt", "NOTICE", "LICENSE", "connect.html",
-        "guide/index.html"]
+        "connect.json", "CONNECT.md", "guide/index.html"]
 MAX_PICTURE = 4_000_000             # docs/media/README.md: every picture at most 4 MB
 WEIGHTS_SHA256 = "e43c25b322816f9f821a154a472eb51e0af86baa194ca5d65094083e8c4b35d7"
 

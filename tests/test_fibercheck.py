@@ -1,3 +1,4 @@
+import importlib.util
 import json
 import sys
 import tempfile
@@ -95,6 +96,7 @@ class FibercheckTest(unittest.TestCase):
         ps[3]["evidence"] = 0.85
         self.assertEqual(FC.jump_hints(ps, 28), [{"r": 0, "c": 28}])
 
+    @unittest.skipUnless(importlib.util.find_spec("scipy"), "fiber_direction needs scipy")
     def test_fiber_direction(self):
         stripes = np.tile(np.sin(np.arange(64) / 2.0)[:, None], (1, 64))   # each row constant: horizontal strands
         d, coh = FC.fiber_direction(stripes)
