@@ -19,6 +19,7 @@ existing Space's app (OWNER/NAME of that Space) uploads these files over it. Nee
 import argparse
 import hashlib
 import json
+import os
 import shutil
 import sys
 import tempfile
@@ -29,7 +30,8 @@ SPACE = HERE.parent
 ROOT = SPACE.parents[1]
 HARDWARE = "zero-a10g"
 SPACE_FILES = ("README.md", "app.py", "engine.py", "gate.py", "inklens.py", "vc3dout.py", "volio.py", "bridge.py",
-               "samples.json", "requirements.txt", "LICENSE", "NOTICE", "connect.json", "connect.html", "CONNECT.md")
+               "zoo.py", "runners.py", "compare.py", "samples.json", "requirements.txt", "LICENSE", "NOTICE",
+               "connect.json", "connect.html", "CONNECT.md")
 KIT_MODULES = ("__init__", "auc", "fetch", "layers", "verify")
 
 
@@ -41,10 +43,18 @@ def sha256_file(path):
     return h.hexdigest()
 
 
-def space_files():
-    """{path in the Space: source file}."""
+def space_files(gallery=None):
+    """{path in the Space: source file}. gallery (or INKLENS_GALLERY): the folder tools/gallery_job.py assemble wrote,
+    published as the Space's gallery/ (maps are model output on public data; they never go into git)."""
     files = {n: SPACE / n for n in SPACE_FILES}
     files.update({f"kit/{m}.py": ROOT / "kit" / f"{m}.py" for m in KIT_MODULES})
+    gallery = gallery or os.environ.get("INKLENS_GALLERY")
+    if gallery:
+        g = Path(gallery)
+        if not (g / "index.json").is_file():
+            raise SystemExit(f"{g} holds no gallery index.json")
+        files.update({f"gallery/{p.relative_to(g).as_posix()}": p for p in sorted(g.rglob("*"))
+                      if p.is_file() and p.suffix in (".json", ".png")})
     missing = [k for k, v in files.items() if not v.is_file()]
     if missing:
         raise SystemExit(f"missing Space files: {missing}")
