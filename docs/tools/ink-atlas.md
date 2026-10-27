@@ -16,7 +16,7 @@ A Space and an MCP server over the public First Letters ink atlas: seven public 
 | Network | `huggingface.co` (the dataset's files, read on demand and cached by huggingface_hub). Links on the page point at `raw.githubusercontent.com` (meshes) and `vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` (CT); the page does not read them |
 | Writes | Nothing of the caller's. The server writes pictures to `ink-atlas-out/` in its temp folder and keeps the dataset's files in the Hugging Face cache |
 | Go-ahead | Not needed to use. Making the Space public, and every later new Space or card change, needs Chase's yes (the go-ahead rule, hard rule 8); redeploys of the approved Space from merged `main` fall under the standing yes |
-| Released | Dataset public on Hugging Face since 2026-10-27; Space created private on 2026-10-27, public once Chase says yes; README "Released tools" entry `ink-atlas` |
+| Released | Dataset and Space public on Hugging Face since 2026-10-27 (Chase's yes to each); README "Released tools" entry `ink-atlas` |
 | License | Page code Apache 2.0 ([`spaces/ink-atlas/LICENSE`](../../spaces/ink-atlas/LICENSE), [`NOTICE`](../../spaces/ink-atlas/NOTICE)); the dataset CC BY-NC 4.0, derived from the Vesuvius Challenge open data and ketchupbyheinz's meshes; every model MIT |
 | Checked | 2026-10-27 against commit `ff82a63` |
 
@@ -54,7 +54,7 @@ print(grid, list(numbers["layers"])[:3])
 PY
 ```
 
-Run on 2026-10-27 against the Space (private then, so with `token=`), it printed:
+Run on 2026-10-27 against the Space (private then, so with `token=`; public now, so no token is needed), it printed:
 
 ```text
 4 kbh-PHerc0483A_3155_3610_11128
@@ -216,7 +216,8 @@ Free: a CPU Space with no GPU. Times are in Runs on. The server's memory is domi
 
 ## History
 
-- 2026-10-27: first version: page, API, MCP server, Connect panel (this PR).
+- 2026-10-27: colour: ember maps by default, a colour per model in Compare and the tables, coloured header and cards (`ef7e9ba`).
+- 2026-10-27: first version: page, API, MCP server, Connect panel (`5d25489`).
 
 ## Related
 

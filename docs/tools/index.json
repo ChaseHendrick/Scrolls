@@ -4755,7 +4755,7 @@
     "Network": "`huggingface.co` (the dataset's files, read on demand and cached by huggingface_hub). Links on the page point at `raw.githubusercontent.com` (meshes) and `vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` (CT); the page does not read them",
     "Writes": "Nothing of the caller's. The server writes pictures to `ink-atlas-out/` in its temp folder and keeps the dataset's files in the Hugging Face cache",
     "Go-ahead": "Not needed to use. Making the Space public, and every later new Space or card change, needs Chase's yes (the go-ahead rule, hard rule 8); redeploys of the approved Space from merged `main` fall under the standing yes",
-    "Released": "Dataset public on Hugging Face since 2026-10-27; Space created private on 2026-10-27, public once Chase says yes; README \"Released tools\" entry `ink-atlas`",
+    "Released": "Dataset and Space public on Hugging Face since 2026-10-27 (Chase's yes to each); README \"Released tools\" entry `ink-atlas`",
     "License": "Page code Apache 2.0 ([`spaces/ink-atlas/LICENSE`](../../spaces/ink-atlas/LICENSE), [`NOTICE`](../../spaces/ink-atlas/NOTICE)); the dataset CC BY-NC 4.0, derived from the Vesuvius Challenge open data and ketchupbyheinz's meshes; every model MIT",
     "Checked": "2026-10-27 against commit `ff82a63`"
    },
@@ -4842,13 +4842,13 @@
     {
      "name": "History",
      "start_line": 217,
-     "end_line": 220,
+     "end_line": 221,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 221,
-     "end_line": 226,
+     "start_line": 222,
+     "end_line": 227,
      "applicable": true
     }
    ]
