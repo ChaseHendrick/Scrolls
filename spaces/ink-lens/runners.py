@@ -313,8 +313,10 @@ class SDKModel:
             return self._model
         return factory
 
-    def run(self, volume, windows, orders=("forward", "reverse"), pixel_um=None, output_3d=False, workdir=None):
-        """{(window key, order): map} and, with output_3d, {(window key, order): uint8 volume} for Hecate."""
+    def run(self, volume, windows, orders=("forward", "reverse"), pixel_um=None, output_3d=False, workdir=None,
+            device=None):
+        """{(window key, order): map} and, with output_3d, {(window key, order): uint8 volume} for Hecate. device
+        overrides the one given at load (a Space loads on the CPU, then runs inside its GPU call)."""
         import numpy as np
         from ink_sdk.contracts import RunContext
         allowed = tuple(o for o in orders if o in self.spec["orders"])
@@ -328,7 +330,7 @@ class SDKModel:
                 raise RunError(f"window {key}: {self.name} reads {self.spec['depth']} layers, got {len(idx)}")
             direction = "both" if len(allowed) == 2 else allowed[0]
             profile = sdk_profile(self.name, direction)
-            ctx = RunContext(device=self.device, models_dir=self.cache / "models", output_3d=bool(output_3d),
+            ctx = RunContext(device=str(device) if device else self.device, models_dir=self.cache / "models", output_3d=bool(output_3d),
                              workdir=Path(workdir) if workdir else None, amp=self.amp)
             raw = self.adapter.run(_prepared(sub, um, profile), profile, ctx)
             for order in allowed:

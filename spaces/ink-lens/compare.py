@@ -322,16 +322,17 @@ def run(volume, scan, models, labels=None, centres=CENTRES, steps=STEPS, loaded=
                 got = r.run(v, wins, orders=orders, device=device)
                 row["patches"] = getattr(r, "last_patches", None)
             elif spec["family"] == "hecate":
-                got = r.run(v, wins, orders=orders, pixel_um=p["source_um"] * p["pool"], output_3d=output_3d)
+                got = r.run(v, wins, orders=orders, pixel_um=p["source_um"] * p["pool"], output_3d=output_3d,
+                            device=device)
                 if output_3d:
                     got, v3 = got
                     for (k, _), arr in v3.items():
                         if k == "c+0_s1":       # the centre window's volume only (a 2.4 um one is 420 MB)
                             vols[(name, k)] = arr
             else:     # canonical: forward only; the control is the same layers reversed by Ink Lens
-                got = r.run(v, wins, orders=("forward",), pixel_um=p["source_um"] * p["pool"])
+                got = r.run(v, wins, orders=("forward",), pixel_um=p["source_um"] * p["pool"], device=device)
                 rev = r.run(v, {k: idx[::-1] for k, idx in wins.items()}, orders=("forward",),
-                            pixel_um=p["source_um"] * p["pool"])
+                            pixel_um=p["source_um"] * p["pool"], device=device)
                 got.update({(k, "reverse"): m for (k, _), m in rev.items()})
             row["seconds"] = round(time.perf_counter() - t1, 3)
             row["runner"] = getattr(r, "info", {})

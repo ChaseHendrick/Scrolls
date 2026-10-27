@@ -161,6 +161,7 @@ class StandInRender(StandInVilla9):
     """A 2.4 um reader (Hecate 2.4 or canonical): same rule, full resolution; with output_3d a volume too."""
 
     def run(self, volume, windows, orders=("forward", "reverse"), pixel_um=None, output_3d=False, device=None):
+        self.devices = getattr(self, "devices", []) + [device]
         maps = StandInVilla9.run(self, volume, windows, orders)
         if output_3d:
             vols = {(k, "both"): (volume[idx] // 2).astype(np.uint8) for k, idx in windows.items()}
@@ -207,6 +208,13 @@ class Run(unittest.TestCase):
         self.assertEqual(res["models"]["hecate-2.4"]["scale"]["map_pool"], 4)
         self.assertEqual(res["models"]["ink_9um-s42"]["scale"]["pool"], 4)
         self.assertEqual(len(res["models"]["hecate-2.4"]["depth_profile"]["c+0_s1"]["ink"]), 64)
+
+    def test_render_models_run_on_the_device_of_the_call(self):
+        # The live Space failed this way on 27 Oct 2026: Hecate and canonical, loaded on the CPU, stayed there
+        # inside the GPU call and ran past its ZeroGPU duration
+        self.run_compare(["hecate-2.4", "canonical-2um"], device="cuda")
+        for n in ("hecate-2.4", "canonical-2um"):
+            self.assertEqual(set(self.loaded[n].devices), {"cuda"}, n)
 
     def test_ensemble_stability_and_record(self):
         res, maps, _ = self.run_compare(["ink_9um-s42", "reader-v2", "hecate-2.4"])
