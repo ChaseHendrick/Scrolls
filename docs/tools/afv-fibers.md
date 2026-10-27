@@ -184,7 +184,7 @@ Users rent nothing: downloads and the Space are free.
 
 ## History
 
-- 2026-10-27: six datasets and the Space 1.0.0 public, with the catalog and Connect your tool panel.
+- 2026-10-27: six datasets and the Space 1.0.0 public, with the catalog and Connect your tool panel ([#248](https://github.com/ChaseHendrick/Scrolls/pull/248)).
 
 ## Related
 
