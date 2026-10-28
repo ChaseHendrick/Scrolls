@@ -1,0 +1,247 @@
+{
+ "title": "Contact barrier against villa's tracer on held-out PHerc0139 windings",
+ "subtitle": "Same seeds, same box, two repeats; one sector, z 5248 to 5760, 9.362 um scan; frozen rule, 22 Oct 2026. Model output.",
+ "arms": [
+  {
+   "id": "barrier",
+   "cls": "s0",
+   "name": "AutoPipeline trace, contact barrier",
+   "legend": "AutoPipeline trace + contact barrier"
+  },
+  {
+   "id": "villa",
+   "cls": "s1",
+   "name": "villa vc_grow_seg_from_seed",
+   "legend": "villa vc_grow_seg_from_seed (stock)"
+  },
+  {
+   "id": "uncut",
+   "cls": "s2",
+   "name": "AutoPipeline trace, no barrier",
+   "legend": "AutoPipeline trace, no barrier (beside)"
+  }
+ ],
+ "windings": [
+  "w049",
+  "w051",
+  "w055",
+  "w057",
+  "w058"
+ ],
+ "repeats": [
+  "rep1",
+  "rep2"
+ ],
+ "values": {
+  "rep1": {
+   "barrier": {
+    "w049": {
+     "own": 0.236,
+     "wrong": 0.034
+    },
+    "w051": {
+     "own": 0.324,
+     "wrong": 0.0
+    },
+    "w055": {
+     "own": 0.4,
+     "wrong": 0.0
+    },
+    "w057": {
+     "own": 0.429,
+     "wrong": 0.004
+    },
+    "w058": {
+     "own": 0.348,
+     "wrong": 0.023
+    }
+   },
+   "villa": {
+    "w049": {
+     "own": 0.224,
+     "wrong": 0.095
+    },
+    "w051": {
+     "own": 0.332,
+     "wrong": 0.483
+    },
+    "w055": {
+     "own": 0.42,
+     "wrong": 0.567
+    },
+    "w057": {
+     "own": 0.427,
+     "wrong": 0.837
+    },
+    "w058": {
+     "own": 0.386,
+     "wrong": 2.001
+    }
+   },
+   "uncut": {
+    "w049": {
+     "own": 0.272,
+     "wrong": 0.037
+    },
+    "w051": {
+     "own": 0.329,
+     "wrong": 0.075
+    },
+    "w055": {
+     "own": 0.415,
+     "wrong": 2.545
+    },
+    "w057": {
+     "own": 0.433,
+     "wrong": 1.806
+    },
+    "w058": {
+     "own": 0.369,
+     "wrong": 7.865
+    }
+   }
+  },
+  "rep2": {
+   "barrier": {
+    "w049": {
+     "own": 0.0,
+     "wrong": 0.034
+    },
+    "w051": {
+     "own": 0.392,
+     "wrong": 0.0
+    },
+    "w055": {
+     "own": 0.412,
+     "wrong": 0.0
+    },
+    "w057": {
+     "own": 0.39,
+     "wrong": 0.005
+    },
+    "w058": {
+     "own": 0.399,
+     "wrong": 0.024
+    }
+   },
+   "villa": {
+    "w049": {
+     "own": 0.113,
+     "wrong": 5.429
+    },
+    "w051": {
+     "own": 0.331,
+     "wrong": 0.08
+    },
+    "w055": {
+     "own": 0.426,
+     "wrong": 4.213
+    },
+    "w057": {
+     "own": 0.416,
+     "wrong": 3.507
+    },
+    "w058": {
+     "own": 0.391,
+     "wrong": 1.153
+    }
+   },
+   "uncut": {
+    "w049": {
+     "own": 0.329,
+     "wrong": 1.997
+    },
+    "w051": {
+     "own": 0.414,
+     "wrong": 0.772
+    },
+    "w055": {
+     "own": 0.419,
+     "wrong": 3.602
+    },
+    "w057": {
+     "own": 0.394,
+     "wrong": 5.225
+    },
+    "w058": {
+     "own": 0.4,
+     "wrong": 1.004
+    }
+   }
+  }
+ },
+ "passing": {
+  "rep1": {
+   "barrier": [
+    "w051",
+    "w055"
+   ],
+   "villa": [],
+   "uncut": []
+  },
+  "rep2": {
+   "barrier": [
+    "w051",
+    "w055"
+   ],
+   "villa": [],
+   "uncut": []
+  }
+ },
+ "totals": {
+  "rep1": {
+   "barrier": {
+    "C": 0.724,
+    "covered_cm2": 1.737,
+    "wrong_cm2": 0.061,
+    "P": 0.9661
+   },
+   "villa": {
+    "C": 0,
+    "covered_cm2": 1.789,
+    "wrong_cm2": 3.983,
+    "P": 0.3099
+   },
+   "uncut": {
+    "C": 0,
+    "covered_cm2": 1.818,
+    "wrong_cm2": 12.328,
+    "P": 0.1285
+   }
+  },
+  "rep2": {
+   "barrier": {
+    "C": 0.804,
+    "covered_cm2": 1.593,
+    "wrong_cm2": 0.063,
+    "P": 0.962
+   },
+   "villa": {
+    "C": 0,
+    "covered_cm2": 1.677,
+    "wrong_cm2": 14.382,
+    "P": 0.1044
+   },
+   "uncut": {
+    "C": 0,
+    "covered_cm2": 1.956,
+    "wrong_cm2": 12.6,
+    "P": 0.1344
+   }
+  }
+ },
+ "verdict": "AHEAD",
+ "D": {
+  "rep1": 0.724,
+  "rep2": 0.804
+ },
+ "M": 0.18,
+ "source_sha256": "bc40eda16932831155803cb4b1d507df3df61cbaadf42776fbb26b7e8fb447b5",
+ "source_note": "Numbers copied from the test's readout.json (sha256 above), kept in the private repository with the preregistration it was frozen under.",
+ "desc": "Two bar charts over five seeded PHerc0139 windings (w049, w051, w055, w057, w058). Left: area each arm covered on its own winding, about 0.1 to 0.43 cm2 for every arm; the contact barrier arm passed both gates on w051 and w055 in both repeats. Right: area put on other windings, where lower is better: villa's tracer 0.08 to 5.43 cm2 per winding, the AutoPipeline trace without the barrier 0.04 to 7.87 cm2, with the barrier 0.00 to 0.03 cm2.",
+ "alt": "Two grouped bar charts. Left, area on the seeded winding: all three arms cover similar area, 0.1 to 0.43 cm2 per winding; the contact barrier arm is marked pass on w051 and w055. Right, area on other windings (lower is better): orange and green bars reach up to 5.4 and 7.9 cm2, the blue contact barrier bars stay at 0.00 to 0.03 cm2.",
+ "caption": "Held-out comparison on PHerc0139 (report windings w049 to w058, z 5248 to 5760), frozen rule, two repeats, 22 October 2026. The contact barrier arm passed 2 of 5 windings in both repeats and villa's stock tracer 0 of 5. Model output: traced geometry scored against the published windings, no ink.",
+ "claim_label": "Model output: gated surface scores of traces on PHerc0139 against its published windings; one sector, five windings, two repeats",
+ "credit": "Scores from a frozen held-out test run on 22 October 2026; the windings are the published PHerc0139 meshes of the Vesuvius Challenge open data, CC BY-NC 4.0 (no scan pixels in the chart)",
+ "foot": "Barrier rule digest 3165f76a (the same in AutoPipeline 0.1.9). villa at e0bbb8b in the same harness, no seed anchor, no repair."
+}

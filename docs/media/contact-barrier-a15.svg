@@ -1,0 +1,150 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 520" width="960" height="520" role="img" aria-labelledby="t d">
+<title id="t">Contact barrier against villa's tracer on held-out PHerc0139 windings</title>
+<desc id="d">Two bar charts over five seeded PHerc0139 windings (w049, w051, w055, w057, w058). Left: area each arm covered on its own winding, about 0.1 to 0.43 cm2 for every arm; the contact barrier arm passed both gates on w051 and w055 in both repeats. Right: area put on other windings, where lower is better: villa's tracer 0.08 to 5.43 cm2 per winding, the AutoPipeline trace without the barrier 0.04 to 7.87 cm2, with the barrier 0.00 to 0.03 cm2.</desc>
+<style>svg{font-family:system-ui,-apple-system,'Segoe UI',sans-serif}.bg{fill:#fcfcfb}.t1{fill:#0b0b0b}.t2{fill:#52514e}.grid{stroke:#e4e3df}.axis{stroke:#9c9a94}.s0{fill:#2a78d6}.s1{fill:#eb6834}.s2{fill:#1baf7a}.dot{fill:#0b0b0b;stroke:#fcfcfb;stroke-width:2}@media (prefers-color-scheme:dark){.bg{fill:#1a1a19}.t1{fill:#f0efec}.t2{fill:#c3c2b7}.grid{stroke:#383835}.axis{stroke:#6b6a64}.s0{fill:#3987e5}.s1{fill:#d95926}.s2{fill:#199e70}.dot{fill:#f0efec;stroke:#1a1a19}}</style>
+<rect class="bg" width="960" height="520" rx="8"/>
+<text class="t1" x="24" y="34" font-size="18" font-weight="600">Contact barrier against villa's tracer on held-out PHerc0139 windings</text>
+<text class="t2" x="24" y="56" font-size="13">Same seeds, same box, two repeats; one sector, z 5248 to 5760, 9.362 um scan; frozen rule, 22 Oct 2026. Model output.</text>
+<rect class="s0" x="24" y="72" width="12" height="12" rx="2"/>
+<text class="t2" x="41" y="83" font-size="12">AutoPipeline trace + contact barrier</text>
+<rect class="s1" x="287" y="72" width="12" height="12" rx="2"/>
+<text class="t2" x="304" y="83" font-size="12">villa vc_grow_seg_from_seed (stock)</text>
+<rect class="s2" x="544" y="72" width="12" height="12" rx="2"/>
+<text class="t2" x="561" y="83" font-size="12">AutoPipeline trace, no barrier (beside)</text>
+<text class="t1" x="24" y="128" font-size="15" font-weight="600">On its own winding: area covered</text>
+<text class="t2" x="24" y="144" font-size="12">cm2; 'pass' = both gates passed in both repeats</text>
+<line class="axis" x1="60" x2="444" y1="440.0" y2="440.0"/>
+<text class="t2" x="54" y="444.0" font-size="11" text-anchor="end">0</text>
+<line class="grid" x1="60" x2="444" y1="384.0" y2="384.0"/>
+<text class="t2" x="54" y="388.0" font-size="11" text-anchor="end">0.1</text>
+<line class="grid" x1="60" x2="444" y1="328.0" y2="328.0"/>
+<text class="t2" x="54" y="332.0" font-size="11" text-anchor="end">0.2</text>
+<line class="grid" x1="60" x2="444" y1="272.0" y2="272.0"/>
+<text class="t2" x="54" y="276.0" font-size="11" text-anchor="end">0.3</text>
+<line class="grid" x1="60" x2="444" y1="216.0" y2="216.0"/>
+<text class="t2" x="54" y="220.0" font-size="11" text-anchor="end">0.4</text>
+<line class="grid" x1="60" x2="444" y1="160.0" y2="160.0"/>
+<text class="t2" x="54" y="164.0" font-size="11" text-anchor="end">0.5</text>
+<path class="s0" d="M69.0 440.0v-62.1a4.0 4.0 0 0 1 4.0 -4.0h9.7a4.0 4.0 0 0 1 4.0 4.0v62.1z"><title>AutoPipeline trace, contact barrier, w049: rep1 0.236, rep2 0.000 cm2</title></path>
+<circle class="dot" cx="77.9" cy="307.8" r="3"><title>AutoPipeline trace, contact barrier, w049: rep1 0.236, rep2 0.000 cm2</title></circle>
+<circle class="dot" cx="77.9" cy="440.0" r="3"><title>AutoPipeline trace, contact barrier, w049: rep1 0.236, rep2 0.000 cm2</title></circle>
+<path class="s1" d="M88.7 440.0v-90.4a4.0 4.0 0 0 1 4.0 -4.0h9.7a4.0 4.0 0 0 1 4.0 4.0v90.4z"><title>villa vc_grow_seg_from_seed, w049: rep1 0.224, rep2 0.113 cm2</title></path>
+<circle class="dot" cx="97.6" cy="314.6" r="3"><title>villa vc_grow_seg_from_seed, w049: rep1 0.224, rep2 0.113 cm2</title></circle>
+<circle class="dot" cx="97.6" cy="376.7" r="3"><title>villa vc_grow_seg_from_seed, w049: rep1 0.224, rep2 0.113 cm2</title></circle>
+<path class="s2" d="M108.5 440.0v-164.3a4.0 4.0 0 0 1 4.0 -4.0h9.7a4.0 4.0 0 0 1 4.0 4.0v164.3z"><title>AutoPipeline trace, no barrier, w049: rep1 0.272, rep2 0.329 cm2</title></path>
+<circle class="dot" cx="117.3" cy="287.7" r="3"><title>AutoPipeline trace, no barrier, w049: rep1 0.272, rep2 0.329 cm2</title></circle>
+<circle class="dot" cx="117.3" cy="255.8" r="3"><title>AutoPipeline trace, no barrier, w049: rep1 0.272, rep2 0.329 cm2</title></circle>
+<text class="t1" x="97.6" y="458" font-size="12" text-anchor="middle">w049</text>
+<path class="s0" d="M144.2 440.0v-196.5a4.0 4.0 0 0 1 4.0 -4.0h9.7a4.0 4.0 0 0 1 4.0 4.0v196.5z"><title>AutoPipeline trace, contact barrier, w051: rep1 0.324, rep2 0.392 cm2</title></path>
+<circle class="dot" cx="153.1" cy="258.6" r="3"><title>AutoPipeline trace, contact barrier, w051: rep1 0.324, rep2 0.392 cm2</title></circle>
+<circle class="dot" cx="153.1" cy="220.5" r="3"><title>AutoPipeline trace, contact barrier, w051: rep1 0.324, rep2 0.392 cm2</title></circle>
+<text class="t1" x="153.1" y="210.5" font-size="11" font-weight="600" text-anchor="middle">pass</text>
+<path class="s1" d="M163.9 440.0v-181.6a4.0 4.0 0 0 1 4.0 -4.0h9.7a4.0 4.0 0 0 1 4.0 4.0v181.6z"><title>villa vc_grow_seg_from_seed, w051: rep1 0.332, rep2 0.331 cm2</title></path>
+<circle class="dot" cx="172.8" cy="254.1" r="3"><title>villa vc_grow_seg_from_seed, w051: rep1 0.332, rep2 0.331 cm2</title></circle>
+<circle class="dot" cx="172.8" cy="254.6" r="3"><title>villa vc_grow_seg_from_seed, w051: rep1 0.332, rep2 0.331 cm2</title></circle>
+<path class="s2" d="M183.7 440.0v-204.0a4.0 4.0 0 0 1 4.0 -4.0h9.7a4.0 4.0 0 0 1 4.0 4.0v204.0z"><title>AutoPipeline trace, no barrier, w051: rep1 0.329, rep2 0.414 cm2</title></path>
+<circle class="dot" cx="192.5" cy="255.8" r="3"><title>AutoPipeline trace, no barrier, w051: rep1 0.329, rep2 0.414 cm2</title></circle>
+<circle class="dot" cx="192.5" cy="208.2" r="3"><title>AutoPipeline trace, no barrier, w051: rep1 0.329, rep2 0.414 cm2</title></circle>
+<text class="t1" x="172.8" y="458" font-size="12" text-anchor="middle">w051</text>
+<path class="s0" d="M219.4 440.0v-223.4a4.0 4.0 0 0 1 4.0 -4.0h9.7a4.0 4.0 0 0 1 4.0 4.0v223.4z"><title>AutoPipeline trace, contact barrier, w055: rep1 0.400, rep2 0.412 cm2</title></path>
+<circle class="dot" cx="228.3" cy="216.0" r="3"><title>AutoPipeline trace, contact barrier, w055: rep1 0.400, rep2 0.412 cm2</title></circle>
+<circle class="dot" cx="228.3" cy="209.3" r="3"><title>AutoPipeline trace, contact barrier, w055: rep1 0.400, rep2 0.412 cm2</title></circle>
+<text class="t1" x="228.3" y="199.3" font-size="11" font-weight="600" text-anchor="middle">pass</text>
+<path class="s1" d="M239.1 440.0v-232.9a4.0 4.0 0 0 1 4.0 -4.0h9.7a4.0 4.0 0 0 1 4.0 4.0v232.9z"><title>villa vc_grow_seg_from_seed, w055: rep1 0.420, rep2 0.426 cm2</title></path>
+<circle class="dot" cx="248.0" cy="204.8" r="3"><title>villa vc_grow_seg_from_seed, w055: rep1 0.420, rep2 0.426 cm2</title></circle>
+<circle class="dot" cx="248.0" cy="201.4" r="3"><title>villa vc_grow_seg_from_seed, w055: rep1 0.420, rep2 0.426 cm2</title></circle>
+<path class="s2" d="M258.9 440.0v-229.5a4.0 4.0 0 0 1 4.0 -4.0h9.7a4.0 4.0 0 0 1 4.0 4.0v229.5z"><title>AutoPipeline trace, no barrier, w055: rep1 0.415, rep2 0.419 cm2</title></path>
+<circle class="dot" cx="267.7" cy="207.6" r="3"><title>AutoPipeline trace, no barrier, w055: rep1 0.415, rep2 0.419 cm2</title></circle>
+<circle class="dot" cx="267.7" cy="205.4" r="3"><title>AutoPipeline trace, no barrier, w055: rep1 0.415, rep2 0.419 cm2</title></circle>
+<text class="t1" x="248.0" y="458" font-size="12" text-anchor="middle">w055</text>
+<path class="s0" d="M294.6 440.0v-225.3a4.0 4.0 0 0 1 4.0 -4.0h9.7a4.0 4.0 0 0 1 4.0 4.0v225.3z"><title>AutoPipeline trace, contact barrier, w057: rep1 0.429, rep2 0.390 cm2</title></path>
+<circle class="dot" cx="303.5" cy="199.8" r="3"><title>AutoPipeline trace, contact barrier, w057: rep1 0.429, rep2 0.390 cm2</title></circle>
+<circle class="dot" cx="303.5" cy="221.6" r="3"><title>AutoPipeline trace, contact barrier, w057: rep1 0.429, rep2 0.390 cm2</title></circle>
+<path class="s1" d="M314.3 440.0v-232.0a4.0 4.0 0 0 1 4.0 -4.0h9.7a4.0 4.0 0 0 1 4.0 4.0v232.0z"><title>villa vc_grow_seg_from_seed, w057: rep1 0.427, rep2 0.416 cm2</title></path>
+<circle class="dot" cx="323.2" cy="200.9" r="3"><title>villa vc_grow_seg_from_seed, w057: rep1 0.427, rep2 0.416 cm2</title></circle>
+<circle class="dot" cx="323.2" cy="207.0" r="3"><title>villa vc_grow_seg_from_seed, w057: rep1 0.427, rep2 0.416 cm2</title></circle>
+<path class="s2" d="M334.1 440.0v-227.6a4.0 4.0 0 0 1 4.0 -4.0h9.7a4.0 4.0 0 0 1 4.0 4.0v227.6z"><title>AutoPipeline trace, no barrier, w057: rep1 0.433, rep2 0.394 cm2</title></path>
+<circle class="dot" cx="342.9" cy="197.5" r="3"><title>AutoPipeline trace, no barrier, w057: rep1 0.433, rep2 0.394 cm2</title></circle>
+<circle class="dot" cx="342.9" cy="219.4" r="3"><title>AutoPipeline trace, no barrier, w057: rep1 0.433, rep2 0.394 cm2</title></circle>
+<text class="t1" x="323.2" y="458" font-size="12" text-anchor="middle">w057</text>
+<path class="s0" d="M369.8 440.0v-205.2a4.0 4.0 0 0 1 4.0 -4.0h9.7a4.0 4.0 0 0 1 4.0 4.0v205.2z"><title>AutoPipeline trace, contact barrier, w058: rep1 0.348, rep2 0.399 cm2</title></path>
+<circle class="dot" cx="378.7" cy="245.1" r="3"><title>AutoPipeline trace, contact barrier, w058: rep1 0.348, rep2 0.399 cm2</title></circle>
+<circle class="dot" cx="378.7" cy="216.6" r="3"><title>AutoPipeline trace, contact barrier, w058: rep1 0.348, rep2 0.399 cm2</title></circle>
+<path class="s1" d="M389.5 440.0v-213.6a4.0 4.0 0 0 1 4.0 -4.0h9.7a4.0 4.0 0 0 1 4.0 4.0v213.6z"><title>villa vc_grow_seg_from_seed, w058: rep1 0.386, rep2 0.391 cm2</title></path>
+<circle class="dot" cx="398.4" cy="223.8" r="3"><title>villa vc_grow_seg_from_seed, w058: rep1 0.386, rep2 0.391 cm2</title></circle>
+<circle class="dot" cx="398.4" cy="221.0" r="3"><title>villa vc_grow_seg_from_seed, w058: rep1 0.386, rep2 0.391 cm2</title></circle>
+<path class="s2" d="M409.3 440.0v-211.3a4.0 4.0 0 0 1 4.0 -4.0h9.7a4.0 4.0 0 0 1 4.0 4.0v211.3z"><title>AutoPipeline trace, no barrier, w058: rep1 0.369, rep2 0.400 cm2</title></path>
+<circle class="dot" cx="418.1" cy="233.4" r="3"><title>AutoPipeline trace, no barrier, w058: rep1 0.369, rep2 0.400 cm2</title></circle>
+<circle class="dot" cx="418.1" cy="216.0" r="3"><title>AutoPipeline trace, no barrier, w058: rep1 0.369, rep2 0.400 cm2</title></circle>
+<text class="t1" x="398.4" y="458" font-size="12" text-anchor="middle">w058</text>
+<text class="t2" x="256.0" y="476" font-size="11" text-anchor="middle">seeded winding (bar: mean of two repeats; dots: each repeat)</text>
+<text class="t1" x="504" y="128" font-size="15" font-weight="600">On other windings: wrong area (lower is better)</text>
+<text class="t2" x="504" y="144" font-size="12">cm2; numbers under the blue bars are its mean wrong area</text>
+<line class="axis" x1="540" x2="924" y1="440.0" y2="440.0"/>
+<text class="t2" x="534" y="444.0" font-size="11" text-anchor="end">0</text>
+<line class="grid" x1="540" x2="924" y1="370.0" y2="370.0"/>
+<text class="t2" x="534" y="374.0" font-size="11" text-anchor="end">2</text>
+<line class="grid" x1="540" x2="924" y1="300.0" y2="300.0"/>
+<text class="t2" x="534" y="304.0" font-size="11" text-anchor="end">4</text>
+<line class="grid" x1="540" x2="924" y1="230.0" y2="230.0"/>
+<text class="t2" x="534" y="234.0" font-size="11" text-anchor="end">6</text>
+<line class="grid" x1="540" x2="924" y1="160.0" y2="160.0"/>
+<text class="t2" x="534" y="164.0" font-size="11" text-anchor="end">8</text>
+<path class="s0" d="M549.0 440.0v-0.0a1.1900000000000002 1.1900000000000002 0 0 1 1.1900000000000002 -1.1900000000000002h15.4a1.1900000000000002 1.1900000000000002 0 0 1 1.1900000000000002 1.1900000000000002v0.0z"><title>AutoPipeline trace, contact barrier, w049: rep1 0.034, rep2 0.034 cm2</title></path>
+<circle class="dot" cx="557.9" cy="438.8" r="3"><title>AutoPipeline trace, contact barrier, w049: rep1 0.034, rep2 0.034 cm2</title></circle>
+<circle class="dot" cx="557.9" cy="438.8" r="3"><title>AutoPipeline trace, contact barrier, w049: rep1 0.034, rep2 0.034 cm2</title></circle>
+<text class="t2" x="557.9" y="432.0" font-size="10" text-anchor="middle">0.03</text>
+<path class="s1" d="M568.7 440.0v-92.7a4.0 4.0 0 0 1 4.0 -4.0h9.7a4.0 4.0 0 0 1 4.0 4.0v92.7z"><title>villa vc_grow_seg_from_seed, w049: rep1 0.095, rep2 5.429 cm2</title></path>
+<circle class="dot" cx="577.6" cy="436.7" r="3"><title>villa vc_grow_seg_from_seed, w049: rep1 0.095, rep2 5.429 cm2</title></circle>
+<circle class="dot" cx="577.6" cy="250.0" r="3"><title>villa vc_grow_seg_from_seed, w049: rep1 0.095, rep2 5.429 cm2</title></circle>
+<path class="s2" d="M588.5 440.0v-31.6a4.0 4.0 0 0 1 4.0 -4.0h9.7a4.0 4.0 0 0 1 4.0 4.0v31.6z"><title>AutoPipeline trace, no barrier, w049: rep1 0.037, rep2 1.997 cm2</title></path>
+<circle class="dot" cx="597.3" cy="438.7" r="3"><title>AutoPipeline trace, no barrier, w049: rep1 0.037, rep2 1.997 cm2</title></circle>
+<circle class="dot" cx="597.3" cy="370.1" r="3"><title>AutoPipeline trace, no barrier, w049: rep1 0.037, rep2 1.997 cm2</title></circle>
+<text class="t1" x="577.6" y="458" font-size="12" text-anchor="middle">w049</text>
+<rect class="s0" x="624.2" y="438.5" width="17.7" height="1.5"><title>AutoPipeline trace, contact barrier, w051: rep1 0.000, rep2 0.000 cm2</title></rect>
+<circle class="dot" cx="633.1" cy="440.0" r="3"><title>AutoPipeline trace, contact barrier, w051: rep1 0.000, rep2 0.000 cm2</title></circle>
+<circle class="dot" cx="633.1" cy="440.0" r="3"><title>AutoPipeline trace, contact barrier, w051: rep1 0.000, rep2 0.000 cm2</title></circle>
+<text class="t2" x="633.1" y="432.0" font-size="10" text-anchor="middle">0.00</text>
+<path class="s1" d="M643.9 440.0v-5.9a4.0 4.0 0 0 1 4.0 -4.0h9.7a4.0 4.0 0 0 1 4.0 4.0v5.9z"><title>villa vc_grow_seg_from_seed, w051: rep1 0.483, rep2 0.080 cm2</title></path>
+<circle class="dot" cx="652.8" cy="423.1" r="3"><title>villa vc_grow_seg_from_seed, w051: rep1 0.483, rep2 0.080 cm2</title></circle>
+<circle class="dot" cx="652.8" cy="437.2" r="3"><title>villa vc_grow_seg_from_seed, w051: rep1 0.483, rep2 0.080 cm2</title></circle>
+<path class="s2" d="M663.7 440.0v-10.8a4.0 4.0 0 0 1 4.0 -4.0h9.7a4.0 4.0 0 0 1 4.0 4.0v10.8z"><title>AutoPipeline trace, no barrier, w051: rep1 0.075, rep2 0.772 cm2</title></path>
+<circle class="dot" cx="672.5" cy="437.4" r="3"><title>AutoPipeline trace, no barrier, w051: rep1 0.075, rep2 0.772 cm2</title></circle>
+<circle class="dot" cx="672.5" cy="413.0" r="3"><title>AutoPipeline trace, no barrier, w051: rep1 0.075, rep2 0.772 cm2</title></circle>
+<text class="t1" x="652.8" y="458" font-size="12" text-anchor="middle">w051</text>
+<rect class="s0" x="699.4" y="438.5" width="17.7" height="1.5"><title>AutoPipeline trace, contact barrier, w055: rep1 0.000, rep2 0.000 cm2</title></rect>
+<circle class="dot" cx="708.3" cy="440.0" r="3"><title>AutoPipeline trace, contact barrier, w055: rep1 0.000, rep2 0.000 cm2</title></circle>
+<circle class="dot" cx="708.3" cy="440.0" r="3"><title>AutoPipeline trace, contact barrier, w055: rep1 0.000, rep2 0.000 cm2</title></circle>
+<text class="t2" x="708.3" y="432.0" font-size="10" text-anchor="middle">0.00</text>
+<path class="s1" d="M719.1 440.0v-79.7a4.0 4.0 0 0 1 4.0 -4.0h9.7a4.0 4.0 0 0 1 4.0 4.0v79.7z"><title>villa vc_grow_seg_from_seed, w055: rep1 0.567, rep2 4.213 cm2</title></path>
+<circle class="dot" cx="728.0" cy="420.2" r="3"><title>villa vc_grow_seg_from_seed, w055: rep1 0.567, rep2 4.213 cm2</title></circle>
+<circle class="dot" cx="728.0" cy="292.5" r="3"><title>villa vc_grow_seg_from_seed, w055: rep1 0.567, rep2 4.213 cm2</title></circle>
+<path class="s2" d="M738.9 440.0v-103.6a4.0 4.0 0 0 1 4.0 -4.0h9.7a4.0 4.0 0 0 1 4.0 4.0v103.6z"><title>AutoPipeline trace, no barrier, w055: rep1 2.545, rep2 3.602 cm2</title></path>
+<circle class="dot" cx="747.7" cy="350.9" r="3"><title>AutoPipeline trace, no barrier, w055: rep1 2.545, rep2 3.602 cm2</title></circle>
+<circle class="dot" cx="747.7" cy="313.9" r="3"><title>AutoPipeline trace, no barrier, w055: rep1 2.545, rep2 3.602 cm2</title></circle>
+<text class="t1" x="728.0" y="458" font-size="12" text-anchor="middle">w055</text>
+<rect class="s0" x="774.6" y="438.5" width="17.7" height="1.5"><title>AutoPipeline trace, contact barrier, w057: rep1 0.004, rep2 0.005 cm2</title></rect>
+<circle class="dot" cx="783.5" cy="439.9" r="3"><title>AutoPipeline trace, contact barrier, w057: rep1 0.004, rep2 0.005 cm2</title></circle>
+<circle class="dot" cx="783.5" cy="439.8" r="3"><title>AutoPipeline trace, contact barrier, w057: rep1 0.004, rep2 0.005 cm2</title></circle>
+<text class="t2" x="783.5" y="432.0" font-size="10" text-anchor="middle">0.00</text>
+<path class="s1" d="M794.3 440.0v-72.0a4.0 4.0 0 0 1 4.0 -4.0h9.7a4.0 4.0 0 0 1 4.0 4.0v72.0z"><title>villa vc_grow_seg_from_seed, w057: rep1 0.837, rep2 3.507 cm2</title></path>
+<circle class="dot" cx="803.2" cy="410.7" r="3"><title>villa vc_grow_seg_from_seed, w057: rep1 0.837, rep2 3.507 cm2</title></circle>
+<circle class="dot" cx="803.2" cy="317.3" r="3"><title>villa vc_grow_seg_from_seed, w057: rep1 0.837, rep2 3.507 cm2</title></circle>
+<path class="s2" d="M814.1 440.0v-119.0a4.0 4.0 0 0 1 4.0 -4.0h9.7a4.0 4.0 0 0 1 4.0 4.0v119.0z"><title>AutoPipeline trace, no barrier, w057: rep1 1.806, rep2 5.225 cm2</title></path>
+<circle class="dot" cx="822.9" cy="376.8" r="3"><title>AutoPipeline trace, no barrier, w057: rep1 1.806, rep2 5.225 cm2</title></circle>
+<circle class="dot" cx="822.9" cy="257.1" r="3"><title>AutoPipeline trace, no barrier, w057: rep1 1.806, rep2 5.225 cm2</title></circle>
+<text class="t1" x="803.2" y="458" font-size="12" text-anchor="middle">w057</text>
+<path class="s0" d="M849.8 440.0v-0.0a0.8225 0.8225 0 0 1 0.8225 -0.8225h16.1a0.8225 0.8225 0 0 1 0.8225 0.8225v0.0z"><title>AutoPipeline trace, contact barrier, w058: rep1 0.023, rep2 0.024 cm2</title></path>
+<circle class="dot" cx="858.7" cy="439.2" r="3"><title>AutoPipeline trace, contact barrier, w058: rep1 0.023, rep2 0.024 cm2</title></circle>
+<circle class="dot" cx="858.7" cy="439.2" r="3"><title>AutoPipeline trace, contact barrier, w058: rep1 0.023, rep2 0.024 cm2</title></circle>
+<text class="t2" x="858.7" y="432.0" font-size="10" text-anchor="middle">0.02</text>
+<path class="s1" d="M869.5 440.0v-51.2a4.0 4.0 0 0 1 4.0 -4.0h9.7a4.0 4.0 0 0 1 4.0 4.0v51.2z"><title>villa vc_grow_seg_from_seed, w058: rep1 2.001, rep2 1.153 cm2</title></path>
+<circle class="dot" cx="878.4" cy="370.0" r="3"><title>villa vc_grow_seg_from_seed, w058: rep1 2.001, rep2 1.153 cm2</title></circle>
+<circle class="dot" cx="878.4" cy="399.6" r="3"><title>villa vc_grow_seg_from_seed, w058: rep1 2.001, rep2 1.153 cm2</title></circle>
+<path class="s2" d="M889.3 440.0v-151.2a4.0 4.0 0 0 1 4.0 -4.0h9.7a4.0 4.0 0 0 1 4.0 4.0v151.2z"><title>AutoPipeline trace, no barrier, w058: rep1 7.865, rep2 1.004 cm2</title></path>
+<circle class="dot" cx="898.1" cy="164.7" r="3"><title>AutoPipeline trace, no barrier, w058: rep1 7.865, rep2 1.004 cm2</title></circle>
+<circle class="dot" cx="898.1" cy="404.9" r="3"><title>AutoPipeline trace, no barrier, w058: rep1 7.865, rep2 1.004 cm2</title></circle>
+<text class="t1" x="878.4" y="458" font-size="12" text-anchor="middle">w058</text>
+<text class="t2" x="736.0" y="476" font-size="11" text-anchor="middle">seeded winding (bar: mean of two repeats; dots: each repeat)</text>
+<text class="t2" x="24" y="506" font-size="11">Barrier rule digest 3165f76a (the same in AutoPipeline 0.1.9). villa at e0bbb8b in the same harness, no seed anchor, no repair.</text>
+</svg>

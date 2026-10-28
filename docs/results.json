@@ -11828,5 +11828,106 @@
     "verdict": "PASS"
    }
   }
+ ],
+ "contact_barrier_checks": [
+  {
+   "date": "2026-10-22",
+   "tool": "kit switchfix barrier (AutoPipeline qa.repair method barrier)",
+   "source": "docs/tools/contact-barrier.md",
+   "claim": "Model output: AutoPipeline's trace with the contact barrier against villa's vc_grow_seg_from_seed on PHerc0139 (scan 20250728140407, 9.362 um), seeded on published hand-traced report windings that AutoPipeline's trace settings and the barrier were never developed or tested on (the barrier's parent rule, kit.sheetgap 24da24815958, read scores of report windings in another band, z 4352 to 4864, and the records cannot rule out that some of these were among them, so they are held out in this band but not completely unseen), one sector z 5248 to 5760, y 2688 to 3712, x 4352 to 5376, two repeats, rule frozen before any sector, seed, trace or score existed; geometry only, never a reading",
+   "verdict": "AHEAD",
+   "rule": "gated correct area C (windings passing both gates with at least 0.10 cm2 covered) higher than villa's by more than M = 0.10 cm2 plus both arms' change between repeats, in both repeats, at precision no worse than villa's less 0.02",
+   "windings": [
+    "w049",
+    "w051",
+    "w055",
+    "w057",
+    "w058"
+   ],
+   "barrier_digest": "3165f76adf4c1a964acfe67f6d0df892b199e15d4ab7dfa21e2c6aa566ac657c",
+   "villa": "e0bbb8b",
+   "D": {
+    "rep1": 0.724,
+    "rep2": 0.804
+   },
+   "M": 0.18,
+   "barrier": {
+    "rep1": {
+     "passing": 2,
+     "C": 0.724,
+     "covered_cm2": 1.737,
+     "wrong_cm2": 0.061,
+     "P": 0.9661
+    },
+    "rep2": {
+     "passing": 2,
+     "C": 0.804,
+     "covered_cm2": 1.593,
+     "wrong_cm2": 0.063,
+     "P": 0.962
+    }
+   },
+   "villa_arm": {
+    "rep1": {
+     "passing": 0,
+     "C": 0,
+     "covered_cm2": 1.789,
+     "wrong_cm2": 3.983,
+     "P": 0.3099
+    },
+    "rep2": {
+     "passing": 0,
+     "C": 0,
+     "covered_cm2": 1.677,
+     "wrong_cm2": 14.382,
+     "P": 0.1044
+    }
+   },
+   "uncut_beside": {
+    "rep1": {
+     "passing": 0,
+     "covered_cm2": 1.818,
+     "wrong_cm2": 12.328,
+     "P": 0.1285
+    },
+    "rep2": {
+     "passing": 0,
+     "covered_cm2": 1.956,
+     "wrong_cm2": 12.6,
+     "P": 0.1344
+    }
+   },
+   "per_winding": "docs/media/contact-barrier-a15-data.json",
+   "units": "covered_cm2, C and P: higher is better; wrong_cm2 (area on other windings): lower is better",
+   "controls": "sector controls passed for all five windings (round trip 0.991 to 0.998; a copy of each winding moved half a winding, 9.5 voxels, either way kept 0, and a 1 voxel move kept 0.999 or more, so the scorer could fail); AutoPipeline surfaces held the seed anchor and villa's did not; two repeats; a barrier refusal would count against AutoPipeline (none happened)",
+   "limits": "one sector of one scroll, five windings, two repeats, one community tracer in AutoPipeline's harness; three of five windings still failed the switch gate with the barrier"
+  },
+  {
+   "date": "2026-10-22",
+   "tool": "AutoPipeline triage repair (before the barrier)",
+   "source": "docs/tools/contact-barrier.md",
+   "claim": "Model output: on another PHerc0139 sector (z 4352 to 4864, tune windings w032, w037, w038, w040), AutoPipeline with its earlier triage repair against the same villa tracer",
+   "verdict": "BEHIND",
+   "C": {
+    "autopipeline": {
+     "rep1": 1.718,
+     "rep2": 1.707
+    },
+    "villa": {
+     "rep1": 1.846,
+     "rep2": 1.845
+    }
+   },
+   "margin": 0.112,
+   "note": "both arms at precision 0.999 to 1.0; a different repair and development windings, reported so the barrier's result is not read as a general win"
+  },
+  {
+   "date": "2026-10-28",
+   "tool": "kit switchfix barrier (AutoPipeline qa.repair method barrier)",
+   "source": "docs/tools/contact-barrier.md",
+   "claim": "Second-scroll test on PHerc0500P2 (13 catalog wrap meshes, automatic surface meshes and not hand traces, on the 9.362 um scan with its published m7 prediction), preregistered before any trace",
+   "verdict": "VOID",
+   "why": "gate G1: four neighboring wrap pairs (w003-w004, w009-w010, w010-w011, w012-w013) were 2 voxels apart on 0.95, 0.957, 0.72 and 0.854 of samples against 0.98, leaving 4 seeded wraps of the 6 the rule needs; no trace, control or readout ran; the VOID is about the reference meshes, not any tracer; the region is spent for this test"
+  }
  ]
 }

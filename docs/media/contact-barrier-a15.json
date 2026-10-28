@@ -1,0 +1,36 @@
+{
+  "schema": "scrolls-media/1",
+  "name": "contact-barrier-a15",
+  "label": "Chart",
+  "claim_label": "Model output: gated surface scores of traces on PHerc0139 against its published windings; one sector, five windings, two repeats",
+  "alt": "Two grouped bar charts. Left, area on the seeded winding: all three arms cover similar area, 0.1 to 0.43 cm2 per winding; the contact barrier arm is marked pass on w051 and w055. Right, area on other windings (lower is better): orange and green bars reach up to 5.4 and 7.9 cm2, the blue contact barrier bars stay at 0.00 to 0.03 cm2.",
+  "caption": "Held-out comparison on PHerc0139 (report windings w049 to w058, z 5248 to 5760), frozen rule, two repeats, 22 October 2026. The contact barrier arm passed 2 of 5 windings in both repeats and villa's stock tracer 0 of 5. Model output: traced geometry scored against the published windings, no ink.",
+  "license": "Apache-2.0",
+  "release_id": null,
+  "data": {
+    "source": "docs/media/contact-barrier-a15-data.json",
+    "source_sha256": "6fda45b005533c81488106a5f85fc27416584254d80dbb007a55017d9c7e2cec",
+    "credit": "Scores from a frozen held-out test run on 22 October 2026; the windings are the published PHerc0139 meshes of the Vesuvius Challenge open data, CC BY-NC 4.0 (no scan pixels in the chart)"
+  },
+  "outputs": [
+    {
+      "file": "contact-barrier-a15.svg",
+      "bytes": 19680,
+      "sha256": "9bc7aa586f2fcd26416e8a5143cccfc03f420b7acf03af841a496fa96f5b4b95",
+      "width": 960,
+      "height": 520,
+      "kind": "svg"
+    }
+  ],
+  "made": "2026-10-28",
+  "command": "python scripts/media/barrier_chart.py docs/media/contact-barrier-a15-data.json docs/media/contact-barrier-a15.svg",
+  "tool": {
+    "scripts": [
+      "scripts/media/common.py",
+      "scripts/media/barrier_chart.py"
+    ],
+    "scripts_sha256": "50629e44400c2e58be7ee7fa0f5b4207598d68cba6784d59adfccb82b65ef024",
+    "base_commit": "286f72636827dd6522f9353bba99f0b6cf83e046"
+  },
+  "colors": "categorical slots 1 to 3 of the palette of greek-restoration-by-gap-length.svg; dark mode through prefers-color-scheme"
+}
