@@ -29,8 +29,21 @@ function vxValid(d) {
   const bad = [];
   if (!d || d.schema !== VX_SCHEMA) bad.push(`schema is not ${VX_SCHEMA}`);
   if (!d || !Array.isArray(d.scrolls) || !d.scrolls.length) bad.push('no scrolls');
+  // every count drawn into the page must be an integer and every share a number in 0..1, so a file from ?vx=URL
+  // cannot carry markup into the cards
+  const cnt = (x) => Number.isInteger(x) && x >= 0;
+  const frac = (x) => x == null || (typeof x === 'number' && x >= 0 && x <= 1);
+  const slotOK = (w) => !w || (cnt(w.k) && cnt(w.n) && w.k <= w.n && frac(w.share) && frac(w.lower) && frac(w.upper) && w.basis in VX_BASIS);
   for (const s of (d && d.scrolls) || []) {
     if (!(s.claim in VX_CLAIMS)) bad.push(`${s.scroll}: claim ${s.claim}`);
+    for (const st of s.strata || []) {
+      if (!cnt(st.n_selected) || !cnt(st.n_scorable)) bad.push(`${s.scroll} ${st.id} counts`);
+      const c = st.coverage;
+      if (c && !(cnt(c.k) && cnt(c.n) && c.k <= c.n && frac(c.share) && frac(c.lower) && frac(c.upper) && frac(c.bar))) bad.push(`${s.scroll} ${st.id} coverage`);
+      if (st.single_truth && !slotOK(st.single_truth.within_1)) bad.push(`${s.scroll} ${st.id} single_truth`);
+      for (const t of VX_TOLS) if (!slotOK(st.within && st.within[t])) bad.push(`${s.scroll} ${st.id} within ${t} slot`);
+      if (st.median_abs != null && typeof st.median_abs !== 'number') bad.push(`${s.scroll} ${st.id} median`);
+    }
     for (const st of s.strata || []) for (const t of VX_TOLS) {
       const w = st.within && st.within[t];
       if (w && !(w.n >= w.k && w.k >= 0 && w.share >= 0 && w.share <= 1)) bad.push(`${s.scroll} ${st.id} within ${t}`);
@@ -54,9 +67,9 @@ function tolBars(st, rule) {
     const whisk = lo != null ? `<i class="vx-whisk" style="left:${100 * lo}%;width:${100 * ((hi != null ? hi : w.share) - lo)}%"></i>` : '';
     const line = t === '1' ? `<i class="vx-barline" style="left:${100 * bar}%" title="the bar, ${p1(bar)}"></i>` : '';
     return `<div class="vx-tolrow" role="listitem"><span class="vx-toll">${label}</span>
-      <span class="vx-track" title="${w.k} of ${w.n} sites (${VX_BASIS[w.basis] || w.basis})${lo != null ? `; one-sided 95% interval ${p1(lo)} to ${p1(hi)}` : ''}">
+      <span class="vx-track" title="${esc(w.k)} of ${esc(w.n)} sites (${VX_BASIS[w.basis] || w.basis})${lo != null ? `; one-sided 95% interval ${p1(lo)} to ${p1(hi)}` : ''}">
         <i class="vx-fill" style="width:${100 * w.share}%"></i>${whisk}${line}</span>
-      <span class="vx-tolv"><b>${p1(w.share)}</b> <small>${w.k} of ${w.n}, ${VX_BASIS[w.basis] || w.basis}</small></span></div>`;
+      <span class="vx-tolv"><b>${p1(w.share)}</b> <small>${esc(w.k)} of ${esc(w.n)}, ${VX_BASIS[w.basis] || w.basis}</small></span></div>`;
   }).join('')}</div>`;
 }
 
@@ -66,9 +79,9 @@ function coverageBar(st) {
   if (!c) return '';
   const whisk = c.lower != null ? `<i class="vx-whisk" style="left:${100 * c.lower}%;width:${100 * ((c.upper != null ? c.upper : c.share) - c.lower)}%"></i>` : '';
   return `<div class="vx-tol vx-cov" role="list"><div class="vx-tolrow" role="listitem"><span class="vx-toll">covered</span>
-      <span class="vx-track" title="${c.k} of ${c.n} drawn sites; one-sided 95% interval ${p1(c.lower)} to ${p1(c.upper)}; bar ${p1(c.bar)}">
+      <span class="vx-track" title="${esc(c.k)} of ${esc(c.n)} drawn sites; one-sided 95% interval ${p1(c.lower)} to ${p1(c.upper)}; bar ${p1(c.bar)}">
         <i class="vx-fill cov" style="width:${100 * c.share}%"></i>${whisk}<i class="vx-barline" style="left:${100 * c.bar}%" title="the coverage bar, ${p1(c.bar)}"></i></span>
-      <span class="vx-tolv"><b>${p1(c.share)}</b> <small>${c.k} of ${c.n} drawn sites</small></span></div></div>
+      <span class="vx-tolv"><b>${p1(c.share)}</b> <small>${esc(c.k)} of ${esc(c.n)} drawn sites</small></span></div></div>
     <p class="hint">Covered: ${esc(c.what)}. ${esc(c.verdict)} (lower bound ${p1(c.lower)}, bar ${p1(c.bar)}). The shares below count covered sites only; a site that is not covered is neither a hit nor a miss.</p>`;
 }
 
@@ -76,7 +89,7 @@ function singleTruth(st, s) {
   const o = st.single_truth;
   if (!o) return '';
   const w = o.within_1;
-  return `<details class="vx-single"><summary>Against the ${esc(s.truth ? s.truth.voxel_um : '')} µm scan alone: <span aria-hidden="true">${VX_ICON[o.verdict] || ''}</span> ${esc(o.verdict)}${w ? `, ${p1(w.share)} within 1 voxel (${w.k} of ${w.n}, ${VX_BASIS[w.basis] || w.basis}; lower bound ${p1(w.lower)})` : ''}</summary>
+  return `<details class="vx-single"><summary>Against the ${esc(s.truth ? s.truth.voxel_um : '')} µm scan alone: <span aria-hidden="true">${VX_ICON[o.verdict] || ''}</span> ${esc(o.verdict)}${w ? `, ${p1(w.share)} within 1 voxel (${esc(w.k)} of ${esc(w.n)}, ${VX_BASIS[w.basis] || w.basis}; lower bound ${p1(w.lower)})` : ''}</summary>
     <p class="hint">${esc(o.why)}${o.instrument_limited ? ' (limited by the instrument)' : ''}.</p>
     <h4>Controls against the one scan</h4>${controls({ controls: o.controls })}</details>`;
 }
@@ -145,11 +158,11 @@ function numbers(s) {
   for (const st of s.strata || []) {
     if (st.coverage) {
       const c = st.coverage;
-      rows.push(`<tr><td>${esc(st.id)}</td><td>${esc(c.verdict)}</td><td>covered</td><td class="n">${c.k}</td><td class="n">${c.n}</td><td class="n">${p1(c.share)}</td><td class="n">${p1(c.lower)}</td><td class="n">${p1(c.upper)}</td><td>drawn sites</td></tr>`);
+      rows.push(`<tr><td>${esc(st.id)}</td><td>${esc(c.verdict)}</td><td>covered</td><td class="n">${esc(c.k)}</td><td class="n">${esc(c.n)}</td><td class="n">${p1(c.share)}</td><td class="n">${p1(c.lower)}</td><td class="n">${p1(c.upper)}</td><td>drawn sites</td></tr>`);
     }
     if (st.single_truth && st.single_truth.within_1) {
       const w = st.single_truth.within_1;
-      rows.push(`<tr><td>${esc(st.id)}, one scan</td><td>${esc(st.single_truth.verdict)}</td><td>1</td><td class="n">${w.k}</td><td class="n">${w.n}</td><td class="n">${p1(w.share)}</td><td class="n">${w.lower != null ? p1(w.lower) : ''}</td><td class="n">${w.upper != null ? p1(w.upper) : ''}</td><td>${esc(w.basis)}</td></tr>`);
+      rows.push(`<tr><td>${esc(st.id)}, one scan</td><td>${esc(st.single_truth.verdict)}</td><td>1</td><td class="n">${esc(w.k)}</td><td class="n">${esc(w.n)}</td><td class="n">${p1(w.share)}</td><td class="n">${w.lower != null ? p1(w.lower) : ''}</td><td class="n">${w.upper != null ? p1(w.upper) : ''}</td><td>${esc(w.basis)}</td></tr>`);
     }
     for (const t of VX_TOLS) {
       const w = st.within[t];
@@ -177,7 +190,7 @@ function strataBody(s, rule) {
   const one = prim && prim.within['1'];
   const pubc = prim && (prim.controls || []).find((c) => /^published/.test(c.name));
   const cov = prim && prim.coverage;
-  const head2 = one ? `${cov ? `<p class="vx-headline">The two scans agree on the face at <b>${p1(cov.share)}</b> of drawn sites (${cov.k} of ${cov.n}). On those, <b>${p1(one.share)}</b> of snapped vertices lie within 1 voxel (${esc(prim.id)}, <span aria-hidden="true">${VX_ICON[prim.verdict] || ''}</span> ${esc(prim.verdict)}). One-sided 95% lower bounds ${p1(cov.lower)} (bar ${p1(cov.bar)}) and ${p1(one.lower)} (bar ${p1(rule.bar)}).</p>` : `<p class="vx-headline"><b>${p1(one.share)}</b> within 1 voxel (${esc(prim.id)}, <span aria-hidden="true">${VX_ICON[prim.verdict] || ''}</span> ${esc(prim.verdict)}). One-sided 95% lower bound ${p1(one.lower)} (bar ${p1(rule.bar)}).</p>`}
+  const head2 = one ? `${cov ? `<p class="vx-headline">The two scans agree on the face at <b>${p1(cov.share)}</b> of drawn sites (${esc(cov.k)} of ${esc(cov.n)}). On those, <b>${p1(one.share)}</b> of snapped vertices lie within 1 voxel (${esc(prim.id)}, <span aria-hidden="true">${VX_ICON[prim.verdict] || ''}</span> ${esc(prim.verdict)}). One-sided 95% lower bounds ${p1(cov.lower)} (bar ${p1(cov.bar)}) and ${p1(one.lower)} (bar ${p1(rule.bar)}).</p>` : `<p class="vx-headline"><b>${p1(one.share)}</b> within 1 voxel (${esc(prim.id)}, <span aria-hidden="true">${VX_ICON[prim.verdict] || ''}</span> ${esc(prim.verdict)}). One-sided 95% lower bound ${p1(one.lower)} (bar ${p1(rule.bar)}).</p>`}
     ${s.scope ? `<p class="vx-scope">${esc(s.scope)}</p>` : ''}
     <p class="hint">${pubc ? `${esc(pubc.name.replace(/^published label/, 'Published label'))}: ${p1(pubc.observed)}.` : ''}${s.void && s.void.length ? ` The test is void: ${esc(s.void.join('; '))}.` : ''}</p>` : '';
   const pubOn = !!VX.pick[`${s.scroll}:pub`];
@@ -186,7 +199,7 @@ function strataBody(s, rule) {
     <div class="vx-chips" role="group" aria-label="Strata">${strata.map((x) => chip(x, x.id === cur.id, s.scroll)).join('')}</div>
     <div class="vx-grid">
       <div><h4>${esc(cur.id)}: share within each tolerance</h4>${coverageBar(cur)}${tolBars(cur, rule)}
-        <p class="hint">${esc(cur.verdict)}: ${esc(cur.why)}${cur.instrument_limited ? ' (limited by the instrument)' : ''}. ${cur.n_selected} sites selected${cur.coverage ? `, ${cur.coverage.k} covered` : `, ${cur.n_scorable} scorable`}. Whiskers: one-sided 95% interval. Dashed line: the bar.</p></div>
+        <p class="hint">${esc(cur.verdict)}: ${esc(cur.why)}${cur.instrument_limited ? ' (limited by the instrument)' : ''}. ${esc(cur.n_selected)} sites selected${cur.coverage ? `, ${esc(cur.coverage.k)} covered` : `, ${esc(cur.n_scorable)} scorable`}. Whiskers: one-sided 95% interval. Dashed line: the bar.</p></div>
       <div><h4>${esc(cur.id)}: signed residual, voxels <label class="tog vx-pubtog"><input type="checkbox" data-pub="${esc(s.scroll)}"${pubOn ? ' checked' : ''}><i class="dot pub"></i>published label</label></h4>
         ${hist(cur, pubOn)}
         <p class="hint">${esc(cur.residual_hist && cur.residual_hist.sign ? cur.residual_hist.sign : '')}. Shaded: within 1 voxel.${cur.median_abs != null ? ` Median distance ${cur.median_abs.toFixed(2)} voxels.` : ''}</p></div>

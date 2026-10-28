@@ -330,6 +330,42 @@ class Space(unittest.TestCase):
             r = subprocess.run([node, "--check", str(SPACE / name)], capture_output=True, text=True)
             self.assertEqual(r.returncode, 0, r.stderr)
 
+    def test_the_page_validator_refuses_markup_in_counts(self):
+        """A summary loaded with ?vx=URL is someone else's file: vxValid in vx.js must refuse any count that is not an
+        integer (and any share outside 0 to 1) before a card draws it into the page."""
+        node = shutil.which("node")
+        if not node:
+            self.skipTest("no node")
+        script = r"""
+const fs = require('fs');
+const src = fs.readFileSync(process.argv[1], 'utf8');
+global.window = { snappedLabels: {} };
+const head = src.split('// ---------------------------------------------------------------- small charts')[0];
+eval(head.replace("'use strict';", '') + '; global.vxValid = vxValid;');
+const d = JSON.parse(fs.readFileSync(process.argv[2], 'utf8'));
+const out = { real: vxValid(d).length };
+const bad = '<img src=x onerror=alert(1)>';
+const st = (x) => x.scrolls[0].strata[0];
+const cases = {
+  coverage: (x) => { st(x).coverage.n = bad; },
+  single: (x) => { st(x).single_truth.within_1.k = bad; },
+  selected: (x) => { st(x).n_selected = bad; },
+  slot: (x) => { st(x).within['1'].n = bad; },
+  share: (x) => { st(x).coverage.lower = bad; },
+};
+for (const [k, f] of Object.entries(cases)) { const x = JSON.parse(JSON.stringify(d)); f(x); out[k] = vxValid(x).length; }
+console.log(JSON.stringify(out));
+"""
+        path = SPACE / "vx" / "summary.json"   # the shipped two-scan summary
+        if not path.exists() or "coverage" not in path.read_text(encoding="utf-8"):
+            self.skipTest("no two-scan summary shipped")
+        r = subprocess.run([node, "-e", script, str(SPACE / "vx.js"), str(path)], capture_output=True, text=True)
+        self.assertEqual(r.returncode, 0, r.stderr)
+        out = json.loads(r.stdout)
+        self.assertEqual(out.pop("real"), 0)
+        for k, n in out.items():
+            self.assertGreater(n, 0, k)
+
 
 class Media(unittest.TestCase):
     @classmethod

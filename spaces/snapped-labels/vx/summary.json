@@ -336,7 +336,7 @@
      "single_truth": {
       "verdict": "NOT SHOWN",
       "instrument_limited": true,
-      "why": "289 of 370 drawn sites within 1 voxel of the 1.129 µm face, counting each unscorable site as a miss; lower bound 74.3% under the 90% bar (a PASS needed 343); the 2.399 µm scan's own face reaches a lower bound of only 70.0% at the same sites, so one scan alone limits this test",
+      "why": "289 of 370 drawn sites within 1 voxel of the 1.129 µm face, counting each unscorable site as a miss; lower bound 74.3% under the 90% bar (a PASS needed at least 343, with every veto leg); the 2.399 µm scan's own face reaches a lower bound of only 70.0% at the same sites, so one scan alone limits this test",
       "within_1": {
        "basis": "itt",
        "k": 289,
