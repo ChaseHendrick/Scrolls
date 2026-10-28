@@ -1,7 +1,7 @@
 {
  "schema": "snapped-labels/voxel-exact@1",
  "fixture": false,
- "generated": "2026-10-28T06:55:00Z",
+ "generated": "2026-10-28T07:10:00Z",
  "dataset": {
   "repo": "SharpMeow/vesuvius-snapped-labels",
   "release": "1.0.1",
@@ -71,14 +71,7 @@
      "n_selected": 200,
      "n_scorable": 170,
      "within": {
-      "0.5": {
-       "basis": "scorable",
-       "k": 128,
-       "n": 170,
-       "share": 0.752941,
-       "lower": null,
-       "upper": null
-      },
+      "0.5": null,
       "1": {
        "basis": "itt",
        "k": 152,
@@ -306,14 +299,7 @@
      "n_selected": 80,
      "n_scorable": 31,
      "within": {
-      "0.5": {
-       "basis": "scorable",
-       "k": 13,
-       "n": 31,
-       "share": 0.419355,
-       "lower": null,
-       "upper": null
-      },
+      "0.5": null,
       "1": {
        "basis": "itt",
        "k": 18,
@@ -541,14 +527,7 @@
      "n_selected": 200,
      "n_scorable": 40,
      "within": {
-      "0.5": {
-       "basis": "scorable",
-       "k": 1,
-       "n": 40,
-       "share": 0.025,
-       "lower": null,
-       "upper": null
-      },
+      "0.5": null,
       "1": {
        "basis": "itt",
        "k": 2,
@@ -776,14 +755,7 @@
      "n_selected": 200,
      "n_scorable": 2,
      "within": {
-      "0.5": {
-       "basis": "scorable",
-       "k": 0,
-       "n": 2,
-       "share": 0.0,
-       "lower": null,
-       "upper": null
-      },
+      "0.5": null,
       "1": {
        "basis": "itt",
        "k": 0,
