@@ -57,6 +57,7 @@ Updated 18 October 2026.
 | Scrolls Starter: local setup check, synthetic practice and reader command builder | [`tools/starter.md`](tools/starter.md) | [`start-here.md`](start-here.md) |
 | What villa does and what `kit/` adds | [`engine.md`](engine.md) | [`MAP.md`](MAP.md), the repository map |
 | The scroll pipeline in plain words | [`pipeline.md`](pipeline.md) | |
+| October 2026 coupled pipeline entry: one page with the steps, one command each, pictures and the evidence table (DRAFT until its parts' tests land) | [`pipeline-october-2026.md`](pipeline-october-2026.md) | [`tools/contact-barrier.md`](tools/contact-barrier.md), [`tools/autopipeline.md`](tools/autopipeline.md) |
 | AutoPipeline reference: commands, settings, environment, stages, cost logging, agent rules (the released package, 0.1.5, lives on branch `submission/progress-2026-10-fix5`) | [`autopipeline/README.md`](autopipeline/README.md) | [`autopipeline/AGENTS.md`](autopipeline/AGENTS.md) |
 | Release media: heroes, cards, GIFs and clips, with provenance, dimensions, labels and reuse | [`assets/README.md`](assets/README.md) | [`media/README.md`](media/README.md) (the public media rule), [`tools/media.md`](tools/media.md), root README and AutoPipeline reference |
 | Apple Silicon Mac: commands, timings | [`mac.md`](mac.md) | |

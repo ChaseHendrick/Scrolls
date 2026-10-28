@@ -2,7 +2,8 @@
  "schema": "claimcheck/1",
  "readme": "README.md",
  "documents": [
-  "docs/FINDINGS.md"
+  "docs/FINDINGS.md",
+  "docs/pipeline-october-2026.md"
  ],
  "blocks": {
   "a-threshold-taken-from-a-training-segment-misses": {
@@ -79,6 +80,13 @@
     "docs/tools/umbilicus.md": "005ddbc3d549ec37c4362fa2069c93174cffa593e8a7349be7cd905ef6a270b6"
    }
   },
+  "claim-label-rule-and-control-data-record-with": {
+   "line": 90,
+   "sources": {
+    "docs/tools/contact-barrier.md": "8c602dbe80215b800273feaa00d5ea5cb81ee12d6f70864eaf24417bb66d69b1"
+   },
+   "doc": "docs/pipeline-october-2026.md"
+  },
   "cross-trace-agreement-suggests-a-label-free-triage": {
    "line": 297,
    "sources": {
@@ -106,6 +114,16 @@
    "line": 309,
    "sources": {
     "docs/logs/2026-10-07-production-scaling.md": "bbd9350716d177616ee8b3e86788a27cb91df8688b9abbd8bd68ccfc48a1f73b"
+   }
+  },
+  "in-the-autopipeline-0-1-9-package-folder": {
+   "line": 52,
+   "sources": {
+    "docs/tools/contact-barrier.md": "8c602dbe80215b800273feaa00d5ea5cb81ee12d6f70864eaf24417bb66d69b1"
+   },
+   "doc": "docs/pipeline-october-2026.md",
+   "reasons": {
+    "0.1": "context: the version AutoPipeline 0.1.9"
    }
   },
   "ink-map-agreement-decreases-with-sampled-point-distance": {
@@ -228,6 +246,16 @@
    "reasons": {
     "640": "setting: the crop is a 640 px window (the glossary's Crop)",
     "0.03": "derived: 0.821 minus 0.793 is 0.028, rounded"
+   }
+  },
+  "step-stage-what-it-reads-what-it-writes": {
+   "line": 27,
+   "sources": {
+    "docs/tools/contact-barrier.md": "8c602dbe80215b800273feaa00d5ea5cb81ee12d6f70864eaf24417bb66d69b1"
+   },
+   "doc": "docs/pipeline-october-2026.md",
+   "reasons": {
+    "0.1": "context: the version AutoPipeline 0.1.9"
    }
   },
   "strokenet-s-two-density-score-which-needs-no": {
