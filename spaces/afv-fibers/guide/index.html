@@ -38,7 +38,9 @@ header.hero { position:relative; overflow:hidden; border-bottom:1px solid var(--
 h1 { font:650 40px/1.1 Fraunces, Georgia, serif; margin:0 0 10px; }
 h2 { font:650 26px/1.2 Fraunces, Georgia, serif; margin:44px 0 12px; }
 p { margin:0 0 12px; color:#d8dee9; }
-a { color:var(--h); }
+a { color:var(--h); overflow-wrap:anywhere; }
+/* long names (AVF_SPLINE_GENERATOR) break rather than widen the page on a narrow phone */
+body { overflow-wrap:break-word; }
 .lead { font-size:18px; max-width:860px; }
 .credit { display:flex; gap:14px; align-items:center; background:var(--card); border:1px solid var(--line);
   border-left:4px solid var(--v); border-radius:12px; padding:14px 16px; margin:18px 0 8px; }
@@ -48,7 +50,7 @@ a { color:var(--h); }
 .stat { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:14px 16px; }
 .stat b { display:block; font-size:28px; font-variant-numeric:tabular-nums; }
 .stat span { color:var(--sub); font-size:13px; }
-.grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:16px; }
+.grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(min(320px, 100%), 1fr)); gap:16px; }
 .scan { background:var(--card); border:1px solid var(--line); border-radius:14px; overflow:hidden; }
 .scan img { width:100%; aspect-ratio:1.45; object-fit:cover; display:block; background:#05070c; }
 .scan .body { padding:12px 14px 14px; }

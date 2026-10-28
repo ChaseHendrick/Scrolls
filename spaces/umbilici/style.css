@@ -198,7 +198,7 @@ body.modal .rail, body.modal .card { overflow: hidden; }
   .bl { bottom: calc(30vh + 8px); right: var(--gut); gap: 6px; }
   body.focus .bl { bottom: var(--gut); }
   .bl .ctl .dim { display: none; }
-  .card { --card-t: calc(var(--nav-b, calc(var(--gut) + 55px)) + 10px); max-height: 26vh; padding: 10px 12px; }
+  .card { --card-t: calc(var(--nav-b, calc(var(--gut) + 55px)) + 10px); max-height: var(--card-max, 26vh); padding: 10px 12px; }
   .card h2 { font-size: 26px; }
   .inset { bottom: calc(var(--gut) + 84px); width: min(210px, calc(100vw - 2 * var(--gut))); }
   #labels { display: none; }
@@ -309,6 +309,16 @@ body.nofilm .film::after, body.nofilm .scan-lines { display: none; }
   color: var(--ice); letter-spacing: .12em; text-transform: uppercase; }
 .i-show:hover { border-color: var(--ice); }
 @media (max-width: 860px) { .i-show { bottom: calc(var(--gut) + 84px); } }
+/* X-ray and Lasagna on a phone: the controls sit at the bottom, so the slice panel and its show button sit above them
+   rather than over the render menu (app.js measures --bl-h). On a short phone the panel narrows (its height is about
+   its width plus 145px) and the scan card shortens, so the panel also stays clear of the card, whose bottom is
+   --nav-b + 10px + --card-max */
+@media (max-width: 860px) {
+  body.focus .inset, body.focus .i-show { bottom: calc(var(--gut) + var(--bl-h, 106px) + 10px); }
+  body.focus .inset { width: max(150px, min(210px, calc(100vw - 2 * var(--gut)),
+    calc(100vh - var(--card-max, 26vh) - var(--nav-b, calc(var(--gut) + 107px)) - var(--gut) - var(--bl-h, 106px) - 173px))); }
+}
+@media (max-width: 860px) and (max-height: 700px) { body.focus { --card-max: 20vh; } }
 /* short screens (a phone on its side): the Data dialog's heading and buttons take less height, so its table, the one
    box that scrolls there, keeps room */
 @media (max-height: 520px) {

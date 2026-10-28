@@ -259,6 +259,80 @@ class OneScroll(unittest.TestCase):
                 b.close()
         self.assertEqual([(t["label"], t["depth"]) for t in tabs], [("A", 0), ("B", 0), ("A1", 1)])
 
+    @unittest.skipUnless(HAVE_PLAYWRIGHT, "needs playwright and a Chromium")
+    def test_tabs_folded_into_more_tabs_are_found_and_opened(self):
+        # Gradio's markup on a phone: the tabs that do not fit leave the tablist for a "More tabs" menu of plain
+        # buttons, which the role=tab walk alone never opened
+        from playwright.sync_api import sync_playwright
+        page = ("<html><body><div class=tabs><div class=tab-wrapper>"
+                "<div class='tab-container visually-hidden' aria-hidden=true><button>A</button><button>B</button>"
+                "<button>C</button></div>"
+                "<div role=tablist><button role=tab>A</button></div>"
+                "<span class=overflow-menu><button aria-label='More tabs'>...</button>"
+                "<div class='overflow-dropdown hide' style='display:none'>"
+                "<button onclick=\"document.title='B'\">B</button><button onclick=\"document.title='C'\">C</button>"
+                "</div></span></div></div>"
+                "<div role=tabpanel><span class=overflow-menu style='display:none'><button>...</button>"
+                "<div class=overflow-dropdown><button>hidden</button></div></span></div></body></html>")
+        with tempfile.TemporaryDirectory() as d, sync_playwright() as pw:
+            f = Path(d) / "page.html"
+            f.write_text(page)
+            b = pw.chromium.launch()
+            try:
+                pg = b.new_page()
+                pg.goto(f.as_uri())
+                more = pg.evaluate(sc.OVERFLOW_JS)
+                pg.evaluate(sc.OPEN_OVERFLOW_JS, more[1]["j"])
+                title = pg.title()
+            finally:
+                b.close()
+        self.assertEqual([(t["label"], t["depth"]) for t in more], [("B", 0), ("C", 0)])
+        self.assertEqual(title, "C")
+
+    @unittest.skipUnless(HAVE_PLAYWRIGHT, "needs playwright and a Chromium")
+    def test_wide_content_is_cut_off_unless_a_box_scrolls_sideways(self):
+        from playwright.sync_api import sync_playwright
+        row = "<tr>" + "".join(f"<td style='min-width:120px'>c{i}</td>" for i in range(5)) + "</tr>"
+        page = ("<html><body style='margin:0'>"
+                f"<table id=bare>{row}</table>"
+                f"<div style='overflow-x:auto'><table id=wrapped>{row}</table></div>"
+                f"<div style='position:relative;left:900px'><table id=offscreen>{row}</table></div>"
+                "<table id=fits><tr><td>a</td><td>b</td></tr></table></body></html>")
+        with tempfile.TemporaryDirectory() as d, sync_playwright() as pw:
+            f = Path(d) / "page.html"
+            f.write_text(page)
+            b = pw.chromium.launch()
+            try:
+                pg = b.new_page(viewport={"width": 390, "height": 844})
+                pg.goto(f.as_uri())
+                cut = sc.scan_cut(pg)
+            finally:
+                b.close()
+        # the bare table, and the page, which now pans sideways
+        self.assertEqual([x["box"] for x in cut], ["table#bare", "page"])
+        self.assertGreater(cut[0]["width"], cut[0]["room"])
+
+    @unittest.skipUnless(HAVE_PLAYWRIGHT, "needs playwright and a Chromium")
+    def test_a_long_link_that_does_not_wrap_pans_the_page(self):
+        from playwright.sync_api import sync_playwright
+        link = "<p style='margin:0 16px'>Weights <a href=#>" + "scrollprize/dinovol_8um_ps192_102126" * 2 + "</a></p>"
+        got = {}
+        with tempfile.TemporaryDirectory() as d, sync_playwright() as pw:
+            b = pw.chromium.launch()
+            try:
+                for name, css in (("bare", ""), ("wraps", "a{overflow-wrap:anywhere}")):
+                    f = Path(d) / f"{name}.html"
+                    f.write_text(f"<html><head><style>{css}</style></head><body style='margin:0'>{link}</body></html>")
+                    pg = b.new_page(viewport={"width": 390, "height": 844})
+                    pg.goto(f.as_uri())
+                    got[name] = sc.scan_cut(pg)
+                    pg.close()
+            finally:
+                b.close()
+        self.assertEqual([x["box"] for x in got["bare"]], ["page"])
+        self.assertEqual(got["wraps"], [])
+
+
 class Spelling(unittest.TestCase):
     def test_british_words_are_found_in_prose_and_code(self):
         with tempfile.TemporaryDirectory() as d:

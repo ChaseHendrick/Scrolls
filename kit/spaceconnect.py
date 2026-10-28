@@ -19,8 +19,10 @@ turns it into two files that ship with the Space:
                                                     Pythons need zarr, fsspec, aiohttp, huggingface_hub, datasets,
                                                     pandas, numpy, tifffile and gradio_client, and vesuvius[volume-only]
   python -m kit spaceconnect new DIR --space OWNER/NAME   a starter connect.json
-  python -m kit spaceconnect scroll [NAME ...] [--direct]   open each Space in Chromium, click through its tabs and
-                                                    list every box that scrolls inside the page (network; needs
+  python -m kit spaceconnect scroll [NAME ...] [--direct]   open each Space in Chromium, click through its tabs
+                                                    (those a phone folds into "More tabs" too) and
+                                                    list every box that scrolls inside the page and anything a
+                                                    narrow screen cuts off at the right (network; needs
                                                     Python playwright and a Chromium)
   python -m kit spaceconnect spelling [PATH ...]    British spellings (fibre, colour, centre, labelled...) in the
                                                     Spaces' text; check runs it over spaces/ and docs/releases.json
@@ -493,6 +495,18 @@ TABS_JS = r"""() => [...document.querySelectorAll('[role=tab]')].map((t, i) => {
   for (let e = t.parentElement; e; e = e.parentElement) if (e.getAttribute('role') === 'tabpanel') depth++;
   return {i, label: t.textContent.trim(), depth, shown: r.width > 0 && r.height > 0 && t.offsetParent !== null};
 }).filter((t) => t.shown && t.label)"""
+# The tabs a narrow screen folds into Gradio's "More tabs" menu, which are buttons without role=tab:
+# [{j, label, depth}], j being the item's index among all such buttons, listed when the menu's own button shows.
+OVERFLOW_JS = r"""() => [...document.querySelectorAll('.overflow-dropdown button')].map((t, j) => {
+  const menu = t.closest('.overflow-menu');
+  const toggle = menu && menu.querySelector(':scope > button');
+  let depth = 0;
+  for (let e = t.parentElement; e; e = e.parentElement) if (e.getAttribute('role') === 'tabpanel') depth++;
+  return {j, label: t.textContent.trim(), depth, shown: !!toggle && toggle.offsetParent !== null};
+}).filter((t) => t.shown && t.label)"""
+OPEN_OVERFLOW_JS = "(j) => { document.querySelectorAll('.overflow-dropdown button')[j].click(); return true; }"
+# A plain DOM click, for when Playwright's click times out because a 3D page draws a few frames a second without a GPU.
+CLICK_TAB_JS = "(i) => { document.querySelectorAll('[role=tab]')[i].click(); return true; }"
 MAX_VIEWS = 30
 
 
@@ -510,6 +524,49 @@ def _frame_scan(frame, page_frame) -> tuple:
         except Exception:  # noqa: BLE001 - a frame that went away has no scroll bar
             return False, False
     return False, False
+
+
+# Finds what a narrow screen cuts off: a table, code block, picture or chart that starts on screen but runs past the
+# frame's right edge with nothing around it that scrolls sideways, and a page that pans sideways (a long word or link
+# that does not wrap). Sideways scrolling inside a box is allowed; a cut off column, or a page that pans, is not.
+CUT_JS = r"""() => {
+  const vw = document.documentElement.clientWidth;
+  const out = [];
+  for (const el of document.querySelectorAll('table, pre, img, svg, canvas, video')) {
+    if (el.closest('[aria-hidden=true], .visually-hidden') || el.offsetParent === null && el.tagName !== 'svg') continue;
+    if (el.tagName === 'svg' && el.parentElement && el.parentElement.closest('svg')) continue;
+    const r = el.getBoundingClientRect();
+    if (r.width < 40 || r.height < 12 || r.left >= vw - 2 || r.right <= vw + 2) continue;
+    let held = false;
+    for (let e = el.parentElement; e && e !== document.body; e = e.parentElement) {
+      const ox = getComputedStyle(e).overflowX;
+      if ((ox === 'auto' || ox === 'scroll') && e.clientWidth < e.scrollWidth) { held = true; break; }
+    }
+    if (!held) out.push({box: el.tagName.toLowerCase() + (el.id ? '#' + el.id : ''), width: Math.round(r.width),
+                         room: Math.round(vw - Math.max(0, r.left))});
+  }
+  const de = document.documentElement, ox = [de, document.body].map((e) => e ? getComputedStyle(e).overflowX : '');
+  if (de.scrollWidth > vw + 2 && !ox.includes('hidden') && !ox.includes('clip'))
+    out.push({box: 'page', width: de.scrollWidth, room: vw});
+  return out;
+}"""
+
+
+def scan_cut(page) -> list[dict]:
+    """Every table, code block, picture or chart a narrow screen cuts off, across the page's frames: [{frame, box,
+    width, room}] (room: the width left for it between its left edge and the frame's right edge)."""
+    out = []
+    for f in page.frames:
+        look, _ = _frame_scan(f, page.main_frame)
+        if not look:
+            continue
+        try:
+            found = f.evaluate(CUT_JS)
+        except Exception:  # noqa: BLE001 - a frame that navigated away mid-scan
+            continue
+        where = "top" if f == page.main_frame else ("srcdoc" if f.url.startswith("about:srcdoc") else "app")
+        out += [dict(frame=where, **x) for x in found]
+    return out
 
 
 def scan_page(page) -> list[dict]:
@@ -581,30 +638,42 @@ def scroll_check(names, direct=False, width=1440, height=900, wait=12.0, shots=N
 
             def look(label):
                 found = scan_page(page)
-                probs = verdict(found, one)
-                views.append({"view": label, "found": found, "problems": probs})
+                cut = scan_cut(page)
+                probs = verdict(found, one) + [f"cut off at the right: {x['frame']} {x['box']} {x['width']} px wide, "
+                                               f"{x['room']} px of room" for x in cut]
+                views.append({"view": label, "found": found, "cut": cut, "problems": probs})
                 if shots:
                     Path(shots).mkdir(parents=True, exist_ok=True)
                     page.screenshot(path=str(Path(shots) / f"{short}-{n[0]}.png"))
                 n[0] += 1
                 log(f"{'ok  ' if not probs else 'FAIL'} {name} [{label}]" + "".join(f"\n     {p}" for p in probs))
 
-            def shown():
+            def shown(js=TABS_JS):
                 try:
-                    return app.evaluate(TABS_JS)
+                    return app.evaluate(js)
                 except Exception:  # noqa: BLE001 - no tabs, or the frame went away
                     return []
 
             def visit(prefix, depth=0):
-                # the tabs of this level that show now; a tab group inside a tab shows once its parent tab is open
-                for label in [t["label"] for t in shown() if t["depth"] == depth]:
+                # the tabs of this level that show now, then those a narrow screen folds into "More tabs"; a tab
+                # group inside a tab shows once its parent tab is open
+                labels = [t["label"] for t in shown() if t["depth"] == depth]
+                labels += [t["label"] for t in shown(OVERFLOW_JS) if t["depth"] == depth and t["label"] not in labels]
+                for label in labels:
                     if n[0] >= MAX_VIEWS:
                         return
                     tab = next((t for t in shown() if t["depth"] == depth and t["label"] == label), None)
+                    more = next((t for t in shown(OVERFLOW_JS) if t["depth"] == depth and t["label"] == label), None)
                     try:
-                        if tab is None:
+                        if tab is not None:
+                            try:
+                                app.locator("[role=tab]").nth(tab["i"]).click(timeout=5000)
+                            except Exception:  # noqa: BLE001 - a WebGL page drawing slowly without a GPU
+                                app.evaluate(CLICK_TAB_JS, tab["i"])
+                        elif more is not None:
+                            app.evaluate(OPEN_OVERFLOW_JS, more["j"])
+                        else:
                             raise RuntimeError("not shown")
-                        app.locator("[role=tab]").nth(tab["i"]).click(timeout=5000)
                         page.wait_for_timeout(3500)
                     except Exception as e:  # noqa: BLE001
                         views.append({"view": prefix + label, "found": [], "problems": [f"tab did not open: {e}"[:160]]})
@@ -971,7 +1040,7 @@ def run(args) -> int:
         if args.json:
             print(json.dumps(res, indent=1))
         else:
-            print(f"{len(res)} Spaces, {sum(len(v) for v in res.values())} views, {bad} with a scroll problem")
+            print(f"{len(res)} Spaces, {sum(len(v) for v in res.values())} views, {bad} with a scroll or cut-off problem")
         return 1 if bad else 0
     if args.action == "run":
         res = run_snippets(args.python or sys.executable, args.vesuvius_python)
