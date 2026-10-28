@@ -8,7 +8,7 @@
 
 Unroll is a static web page, hosted as a Hugging Face Space, that rebuilds 37 traced windings of PHerc. 139 in 3D with three.js and lets a visitor unroll them in the browser. It runs on the client only; no install or account is needed.
 
-**Version:** 1.7.0 (24 October 2026), from the Space's `version.json`; what changed in each version is in the Space's [CHANGELOG.md](https://huggingface.co/spaces/SharpMeow/unroll/blob/main/CHANGELOG.md). The page shows its version in the About panel, and `window.unroll.version()` returns it.
+**Version:** 1.7.2 (28 October 2026), from the Space's `version.json`; what changed in each version is in the Space's [CHANGELOG.md](https://huggingface.co/spaces/SharpMeow/unroll/blob/main/CHANGELOG.md). The page shows its version in the About panel, and `window.unroll.version()` returns it.
 
 ## What it shows
 
