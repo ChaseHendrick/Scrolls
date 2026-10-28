@@ -100,6 +100,8 @@ html.guide .tablewrap { overflow: hidden; }
   .br { width: calc(100vw - 2 * var(--gut)); max-height: calc(100vh - 78px - 3 * var(--gut) - 225px); }
   .list { min-height: 56px; }
 }
+/* a phone: the view buttons take the top right, so the kicker keeps only the mesh count */
+@media (max-width: 560px) { .k-src { display: none; } }
 @media (max-width: 760px) and (max-height: 500px) {
   /* a phone on its side: the picker and the card side by side, as on a wide screen */
   .bl { top: auto; bottom: var(--gut); width: calc(50vw - 1.5 * var(--gut)); max-height: calc(100vh - 78px - 3 * var(--gut)); }

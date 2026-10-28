@@ -13,7 +13,7 @@
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 Inter,system-ui,sans-serif}
-a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+a{color:var(--accent);text-decoration:none;overflow-wrap:anywhere}a:hover{text-decoration:underline}
 h1,h2,h3{font-family:Fraunces,Georgia,serif;font-weight:650;letter-spacing:-.01em;line-height:1.15}
 h2{font-size:clamp(28px,3.4vw,38px);margin:0 0 10px}
 h3{font-size:20px;margin:0 0 6px}
@@ -63,7 +63,8 @@ figcaption b{color:var(--ink);font-weight:600}
 .card p{margin:0;color:var(--ink2);font-size:15px}
 .card .k{font-size:26px;margin-bottom:6px}
 .shot{width:100%;border-radius:14px;border:1px solid var(--line);box-shadow:var(--shadow);display:block}
-table{border-collapse:collapse;width:100%;font-size:15px;background:var(--card);border-radius:14px;overflow:hidden;box-shadow:var(--shadow)}
+.tablewrap{overflow-x:auto;border-radius:14px;box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:15px;background:var(--card)}
 th,td{text-align:left;padding:10px 14px;border-bottom:1px solid var(--line)}
 th{font-weight:600;color:var(--ink2);font-size:13px;text-transform:uppercase;letter-spacing:.05em}
 td.n{font-variant-numeric:tabular-nums;font-weight:600}
@@ -167,14 +168,14 @@ footer{padding:36px 0 48px;color:var(--ink3);font-size:14px;text-align:center}
 <section id="tested"><div class="wrap">
   <h2>How it was tested</h2>
   <p class="sub">The free judge is a small network trained on Claude's answers about renders of four public scrolls. Its test was written down before any test image existed, then run once on two scrolls it never saw.</p>
-  <table>
+  <div class="tablewrap"><table>
     <thead><tr><th>Pair the judge had to get right</th><th>PHerc0500P2</th><th>PHerc0343P</th><th>Pixel measure</th></tr></thead>
     <tbody>
       <tr><td>Sheet vs the gap beside it</td><td class="n">1.00</td><td class="n">1.00</td><td class="n">0.79, 0.76</td></tr>
       <tr><td>Sheet vs a 14-pixel tile shuffle, a size never trained on</td><td class="n">0.98</td><td class="n">0.92</td><td class="n">0.53, 0.57</td></tr>
       <tr><td>Sheet vs 3 voxels off</td><td class="n">0.87</td><td class="n">0.68</td><td class="n"></td></tr>
     </tbody>
-  </table>
+  </table></div>
   <p class="note">120 and 62 patches; the pixel measure is structure-tensor coherence. A first round failed (it preferred tile-shuffled renders, because it rewarded the edges a shuffle adds) and stays on record; the second added shuffles of other sizes to training. All of it is model output.</p>
 </div></section>
 

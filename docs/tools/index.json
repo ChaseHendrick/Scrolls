@@ -153,13 +153,13 @@
     {
      "name": "History",
      "start_line": 183,
-     "end_line": 187,
+     "end_line": 188,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 188,
-     "end_line": 191,
+     "start_line": 189,
+     "end_line": 192,
      "applicable": true
     }
    ]
@@ -1972,7 +1972,7 @@
     "Kind": "app, agent tool",
     "Area": "Ink maps and models",
     "Run": "[huggingface.co/spaces/SharpMeow/crackle-check](https://huggingface.co/spaces/SharpMeow/crackle-check) (the page); from code with gradio_client (`Client(\"SharpMeow/crackle-check\")`), the Gradio call API at `https://sharpmeow-crackle-check.hf.space/gradio_api/call/ENDPOINT`, or MCP at `https://sharpmeow-crackle-check.hf.space/gradio_api/mcp/sse`",
-    "Code": "Not in this repository: the Space's own files, [huggingface.co/spaces/SharpMeow/crackle-check/tree/main](https://huggingface.co/spaces/SharpMeow/crackle-check/tree/main) (the app, the two readers' inference, the control rule and the VC3D plugin), read at Space commit 2a7d5d50. This repository holds its Connect your tool panel, `spaces/connect/crackle-check/` ([spaceconnect](spaceconnect.md))",
+    "Code": "Not in this repository: the Space's own files, [huggingface.co/spaces/SharpMeow/crackle-check/tree/main](https://huggingface.co/spaces/SharpMeow/crackle-check/tree/main) (the app, the two readers' inference, the control rule and the VC3D plugin), read at Space commit faa2ae92. This repository holds its Connect your tool panel, `spaces/connect/crackle-check/` ([spaceconnect](spaceconnect.md))",
     "Tests": "None in this repository for the Space itself. `tests/test_spaceconnect.py` checks its Connect your tool panel; `python -m kit spaceconnect run` calls its endpoints live",
     "Needs": "A browser, or Python with `gradio_client`, or any HTTP client, or an MCP client. A new region runs on ZeroGPU: pass your own Hugging Face token (`Client(..., token=...)`) to spend your own quota. The examples need no GPU",
     "Runs on": "The Space, Gradio 6.28 on ZeroGPU. The PHerc0841 w00 example answered in 0.44 s from the call API (saved maps, measured 2026-10-27, cloud container); a `/check_segment` call that read a region from the open data and ran a reader took 141 s end to end (`kit spaceconnect run`, 2026-10-24)",
@@ -2066,13 +2066,13 @@
     {
      "name": "History",
      "start_line": 147,
-     "end_line": 151,
+     "end_line": 152,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 152,
-     "end_line": 156,
+     "start_line": 153,
+     "end_line": 157,
      "applicable": true
     }
    ]
@@ -2361,13 +2361,13 @@
     {
      "name": "History",
      "start_line": 148,
-     "end_line": 154,
+     "end_line": 155,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 155,
-     "end_line": 157,
+     "start_line": 156,
+     "end_line": 158,
      "applicable": true
     }
    ]
@@ -3288,13 +3288,13 @@
     {
      "name": "History",
      "start_line": 254,
-     "end_line": 259,
+     "end_line": 260,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 260,
-     "end_line": 264,
+     "start_line": 261,
+     "end_line": 265,
      "applicable": true
     }
    ]
@@ -5149,13 +5149,13 @@
     {
      "name": "History",
      "start_line": 217,
-     "end_line": 222,
+     "end_line": 223,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 223,
-     "end_line": 228,
+     "start_line": 224,
+     "end_line": 229,
      "applicable": true
     }
    ]
@@ -11462,13 +11462,13 @@
     {
      "name": "History",
      "start_line": 162,
-     "end_line": 169,
+     "end_line": 170,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 170,
-     "end_line": 174,
+     "start_line": 171,
+     "end_line": 175,
      "applicable": true
     }
    ]
@@ -12329,61 +12329,61 @@
     {
      "name": "Python API",
      "start_line": 149,
-     "end_line": 177,
+     "end_line": 179,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 178,
-     "end_line": 193,
+     "start_line": 180,
+     "end_line": 195,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 194,
-     "end_line": 203,
+     "start_line": 196,
+     "end_line": 205,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 204,
-     "end_line": 218,
-     "applicable": true
-    },
-    {
-     "name": "How it works",
-     "start_line": 219,
+     "start_line": 206,
      "end_line": 222,
      "applicable": true
     },
     {
-     "name": "Cost and time",
+     "name": "How it works",
      "start_line": 223,
      "end_line": 226,
      "applicable": true
     },
     {
-     "name": "For agents",
+     "name": "Cost and time",
      "start_line": 227,
-     "end_line": 236,
+     "end_line": 230,
      "applicable": true
     },
     {
-     "name": "Tests",
-     "start_line": 237,
+     "name": "For agents",
+     "start_line": 231,
      "end_line": 240,
      "applicable": true
     },
     {
-     "name": "History",
+     "name": "Tests",
      "start_line": 241,
-     "end_line": 246,
+     "end_line": 244,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 245,
+     "end_line": 251,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 247,
-     "end_line": 251,
+     "start_line": 252,
+     "end_line": 256,
      "applicable": true
     }
    ]
@@ -14071,7 +14071,7 @@
     "Network": "The visitor's browser: `vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` (CT chunks by HTTP range request; the bucket allows any origin and the Range header), `cdn.jsdelivr.net` (three.js), `fonts.googleapis.com` and `fonts.gstatic.com` (fonts), the Space itself. `build_lines.py`: the same bucket (each scan's `.zattrs` and the `.zarray` of all six levels). `build_lasagna.py`: none (reads a local copy)",
     "Writes": "The page: nothing on any server (the URL bar holds the view; downloads are made in the browser; two `localStorage` keys: `umbilici.seen` hides the first-visit hint, `umbilici.settings` keeps the viewer settings). `build_lines.py`: `OUT.json`. `build_lasagna.py`: `OUT_DIR/cos_Z.webp` and `ori_Z.webp` for nine heights, `needles.bin`, `meta.json`",
     "Go-ahead": "Needed to make the Space public: Chase's yes, given 2026-10-23. Later redeploys from merged `main` with public data fall under the standing yes (rule 8). Not needed to use the page or run the builds",
-    "Released": "Space [`SharpMeow/umbilici`](https://huggingface.co/spaces/SharpMeow/umbilici) 1.10.0 (Space commit `3def64b4`, deployed 2026-10-27 from `main` at `50020b3` with lines from dataset revision `51603382`, v2.6.1, under the standing yes for approved Spaces, rule 8); 1.9.0 was Space commit `97e602a7` (from `2b5c820`, lines from `1b866db0`, v2.5), 1.8.0 Space commit `01ea09fd`. Public since 2026-10-23 (Chase switched it public); README \"Released tools\" entry `umbilici`",
+    "Released": "Space [`SharpMeow/umbilici`](https://huggingface.co/spaces/SharpMeow/umbilici) 1.11.1 (Space commit `08497deb`, deployed 2026-10-28 from `30e0308` on the branch of [PR #254](https://github.com/ChaseHendrick/Scrolls/pull/254), under the standing yes for approved Spaces, rule 8); 1.11.0 was Space commit `ef8c85d3` (from `main` at `8250b23`); 1.10.0 was Space commit `3def64b4` (from `50020b3`, lines from dataset revision `51603382`, v2.6.1); 1.9.0 was Space commit `97e602a7` (from `2b5c820`, lines from `1b866db0`, v2.5), 1.8.0 Space commit `01ea09fd`. Public since 2026-10-23 (Chase switched it public); README \"Released tools\" entry `umbilici`",
     "License": "Apache 2.0 for the page and tools ([`spaces/umbilici/LICENSE`](../../spaces/umbilici/LICENSE), [`NOTICE`](../../spaces/umbilici/NOTICE)); each line keeps its own license (MIT, CC BY 4.0, CC BY-NC 4.0), the lasagna derivative and the scans are CC BY-NC 4.0",
     "Checked": "2026-10-27 against commit `45836d9`"
    },
@@ -14158,13 +14158,13 @@
     {
      "name": "History",
      "start_line": 185,
-     "end_line": 204,
+     "end_line": 205,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 205,
-     "end_line": 209,
+     "start_line": 206,
+     "end_line": 210,
      "applicable": true
     }
    ]
@@ -14324,7 +14324,7 @@
    "id": "unroll",
    "name": "unroll",
    "tagline": "view and virtually unroll Herculaneum scrolls in 3D in the browser, and score ink maps",
-   "summary": "Unroll 1.7.0 is a static web app, a Hugging Face Space, that rebuilds traced scroll windings in 3D with X-ray and ink layers, unrolls them, shows raw CT around any point, and scores your ink map against the published one (Ink Bench).",
+   "summary": "Unroll 1.7.1 is a static web app, a Hugging Face Space, that rebuilds traced scroll windings in 3D with X-ray and ink layers, unrolls them, shows raw CT around any point, and scores your ink map against the published one (Ink Bench).",
    "status": "Current",
    "kind": [
     "app"
@@ -14351,14 +14351,14 @@
     "Kind": "app",
     "Area": "Viewers and apps",
     "Run": "[huggingface.co/spaces/SharpMeow/unroll](https://huggingface.co/spaces/SharpMeow/unroll) (the Space page); [sharpmeow-unroll.static.hf.space](https://sharpmeow-unroll.static.hf.space/) (the app alone, installable); Ink Bench on the command line: `python inkbench.py compare PRED.png --segment WNNN -o BUNDLE.json`",
-    "Code": "Not in this repository: the Space's own git repository, [huggingface.co/spaces/SharpMeow/unroll/tree/main](https://huggingface.co/spaces/SharpMeow/unroll/tree/main) (page code in index.html, app.js, ui.js and the lib folder; build tools and [inkbench.py](https://huggingface.co/spaces/SharpMeow/unroll/blob/main/tools/inkbench.py) in the tools folder; one manifest per scroll in the scrolls folder), read at Space commit e31bb23",
+    "Code": "Not in this repository: the Space's own git repository, [huggingface.co/spaces/SharpMeow/unroll/tree/main](https://huggingface.co/spaces/SharpMeow/unroll/tree/main) (page code in index.html, app.js, ui.js and the lib folder; build tools and [inkbench.py](https://huggingface.co/spaces/SharpMeow/unroll/blob/main/tools/inkbench.py) in the tools folder; one manifest per scroll in the scrolls folder), read at Space commit 757768f6",
     "Tests": "None in this repository. The Space has its own in its [tests folder](https://huggingface.co/spaces/SharpMeow/unroll/tree/main/tests); not run for this page",
     "Needs": "A browser with WebGL; three.js 0.160, loaded from jsDelivr. The CT volume view needs float render targets for exact picking (it falls back to picking on the CPU). `inkbench.py`: Python 3 with numpy and Pillow",
     "Runs on": "The viewer runs in the visitor's browser, on any device; load and frame times are Not measured. Ink Bench's three Quick start commands, with the reference fetched over the network: 15.5 s wall together on a 4-core cloud container, Python 3.13 (measured 2026-10-16 for this page)",
     "Network": "The page and its data from `huggingface.co` and `sharpmeow-unroll.static.hf.space`; three.js from `cdn.jsdelivr.net`; the CT volume view streams OME-Zarr from the open-data bucket `s3://vesuvius-challenge-open-data`; Open your own fetches only a URL you give (the server must allow CORS). `inkbench.py` fetches `data/bench/` from the Space unless `--root` names a local checkout",
     "Writes": "In the browser only: settings in `localStorage` under `unroll.settings.v1`; the installed app's service-worker caches `unroll-shell-<tag>`, `unroll-data-<tag>` and `unroll-runtime-<tag>`; scrolls opened with Open your own in browser storage; downloads you ask for (a picture, an Ink Bench bundle). Nothing is uploaded. `inkbench.py` writes the bundle given by `-o` (else prints it) and, with `adapt`, a 16-bit PNG",
     "Go-ahead": "Not needed to view it or run Ink Bench. Changing the Space, or posting its pictures or scores, needs Chase's yes (the go-ahead rule, hard rule 8), and never with private work or target-scroll data",
-    "Released": "Hugging Face Space `SharpMeow/unroll`, version 1.7.0 of 2026-10-24 (the Space's `version.json`; Live sheet, [guide](../unroll-space.md)); in this README's \"Released tools\" since 2026-10-16 (`9896827`), pinned there with AutoPipeline. The Space's changelog starts at 0.9.0 (2026-10-15); 1.0.0 is the first release",
+    "Released": "Hugging Face Space `SharpMeow/unroll`, version 1.7.1 of 2026-10-27 (the Space's `version.json`; Live sheet, [guide](../unroll-space.md)); in this README's \"Released tools\" since 2026-10-16 (`9896827`), pinned there with AutoPipeline. The Space's changelog starts at 0.9.0 (2026-10-15); 1.0.0 is the first release",
     "License": "Code: Apache 2.0 ([LICENSE](https://huggingface.co/spaces/SharpMeow/unroll/blob/main/LICENSE), with `NOTICE`); the scan data and everything derived from it (`data/`, `og.jpg`): [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/); three.js keeps its MIT license",
     "Guide": "[`docs/unroll-space.md`](../unroll-space.md)",
     "Checked": "2026-10-16 against commit `7be3185`"
@@ -14446,13 +14446,13 @@
     {
      "name": "History",
      "start_line": 282,
-     "end_line": 291,
+     "end_line": 292,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 292,
-     "end_line": 298,
+     "start_line": 293,
+     "end_line": 299,
      "applicable": true
     }
    ]
