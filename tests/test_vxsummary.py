@@ -126,8 +126,12 @@ class Contract(unittest.TestCase):
         d["scrolls"][0]["truth"] = None
         self.assertFails(d, "names its truth scan")
         d = copy.deepcopy(self.doc)
-        d["scrolls"][0]["strata"][1]["primary"] = True
-        self.assertFails(d, "exactly one primary stratum")
+        for s in d["scrolls"][0]["strata"]:
+            s["primary"] = False
+        self.assertFails(d, "at least one primary stratum")
+        d = copy.deepcopy(self.doc)
+        d["scrolls"][1]["strata"] = copy.deepcopy(d["scrolls"][0]["strata"][1:2])
+        self.assertFails(d, "carries its certificate, not strata")
         d = copy.deepcopy(self.doc)
         d["scrolls"][0]["vertices"]["by_code"]["0"] += 1
         self.assertFails(d, "by_code adds to")
@@ -138,7 +142,23 @@ class Contract(unittest.TestCase):
         self.assertFails(d, "every stratum's verdict is VOID")
         for s in d["scrolls"][0]["strata"]:
             s["verdict"] = "VOID"
+        self.assertFails(d, "with none it is not shown")
+        d["scrolls"][0]["claim"] = "not_shown"
+        d["scrolls"][0]["why_not_shown"] = "the test was void"
         self.assertEqual(self.problems(d), [])
+
+    def test_a_measured_claim_needs_a_pass_and_not_shown_carries_none(self):
+        d = copy.deepcopy(self.doc)
+        for s in d["scrolls"][0]["strata"]:
+            if s["verdict"] == "PASS":
+                s["verdict"] = "NOT SHOWN"
+        self.assertFails(d, "with none it is not shown")
+        # the same scroll, not shown, keeps its numbers, intervals and controls: they make no claim
+        d["scrolls"][0]["claim"] = "not_shown"
+        d["scrolls"][0]["why_not_shown"] = "no stratum cleared the bar"
+        self.assertEqual(self.problems(d), [])
+        d["scrolls"][0]["strata"][0]["verdict"] = "PASS"
+        self.assertFails(d, "a PASS makes it measured")
 
     def test_public_text_rules(self):
         for text, needle in (("about 3 USD per scroll", "a cost"), ("$0.40", "a cost"),

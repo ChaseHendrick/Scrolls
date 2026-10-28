@@ -14,8 +14,9 @@ can show (always under a "Synthetic fixture" banner) while no real results exist
 Exit codes: 0 valid, 1 problems found (one per line on stderr), 2 the file could not be read.
 
 What a summary may hold (every key is allowlisted; an unknown key is a problem, so nothing private rides along):
-per scroll a claim level, "measured" (scored against a finer, independent scan), "certified" (a truth-free lower
-bound with its assumptions) or "not_shown" (with the reason); the vertex counts by abstain.tif code; per stratum
+per scroll a claim level, "measured" (scored against a finer, independent scan, with at least one stratum that
+passed), "certified" (a truth-free lower bound with its assumptions) or "not_shown" (with the reason; when a test ran
+and nothing passed, its strata still carry the numbers, which then make no claim); the vertex counts by abstain.tif code; per stratum
 (C0, C2, C1, C0L) the verdict, the share within 0.5, 1 and 2 label voxels with its interval, the signed residual
 histogram, the published label's histogram, and the negative controls. A check refuses costs, long dashes, the word
 "letter", a prize-eligible scroll (from the newest kit/data/prizes-*.json), unsafe showcase paths, counts that do not
@@ -329,10 +330,14 @@ def _scroll(sc, i, eligible, out):
         out.append(f"{where}.strata: a list")
         strata = []
     if claim == "measured":
-        if sum(1 for s in strata if isinstance(s, dict) and s.get("primary")) != 1:
-            out.append(f"{where}: a measured scroll has exactly one primary stratum")
-    if claim == "not_shown" and strata:
-        out.append(f"{where}: a scroll not shown carries no strata")
+        if not any(isinstance(s, dict) and s.get("primary") for s in strata):
+            out.append(f"{where}: a measured scroll has at least one primary stratum")
+        if not any(isinstance(s, dict) and s.get("verdict") == "PASS" for s in strata):
+            out.append(f"{where}: a measured scroll has a stratum that passed; with none it is not shown")
+    if claim == "not_shown" and any(isinstance(s, dict) and s.get("verdict") == "PASS" for s in strata):
+        out.append(f"{where}: a scroll not shown has no stratum that passed (a PASS makes it measured)")
+    if claim == "certified" and strata:
+        out.append(f"{where}: a certified scroll carries its certificate, not strata")
     ids = [s.get("id") for s in strata if isinstance(s, dict)]
     if len(ids) != len(set(ids)):
         out.append(f"{where}.strata: a stratum appears twice")

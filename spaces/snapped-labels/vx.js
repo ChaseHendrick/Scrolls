@@ -133,31 +133,16 @@ function stratumOrder(strata) {
   return strata.slice().sort((a, b) => (rank[a.id] ?? 9) - (rank[b.id] ?? 9));
 }
 
-function scrollCard(s) {
-  const rule = VX.doc.rule || {};
-  const badge = { measured: 'Model output, measured against an independent finer scan', certified: 'Model output, truth-free certificate', not_shown: esc(s.why_not_shown) }[s.claim];
-  const head = `<header class="vx-head"><div><h3>${esc(s.scroll)}</h3><small>label scan ${esc(s.label_scan.voxel_um)} µm voxels${s.truth ? `, truth from a ${esc(s.truth.voxel_um)} µm scan` : ''}</small></div>
-    <span class="vx-badge c-${s.claim}"><b>${VX_CLAIMS[s.claim]}</b> ${badge}</span></header>`;
-  if (s.claim === 'not_shown') {
-    return `<article class="vx-card c-${s.claim}" data-scroll="${esc(s.scroll)}">${head}<p>Not shown: ${esc(s.why_not_shown)}.</p>${meter(s)}${numbers(s)}</article>`;
-  }
-  if (s.claim === 'certified') {
-    const c = s.certificate;
-    return `<article class="vx-card c-${s.claim}" data-scroll="${esc(s.scroll)}">${head}
-      <p class="vx-headline">One-sided ${p1(c.level)} lower bound <b>${p1(c.lower)}</b> within 1 voxel (bar ${p1(rule.bar)}).</p>
-      <p class="hint">No truth scan; lower bound from the certificate, over ${fmt(c.n)} vertices. It rests on these assumptions:</p>
-      <ul class="vx-assume">${c.assumptions.map((a) => `<li>${esc(a)}</li>`).join('')}</ul>
-      ${meter(s)}${numbers(s)}</article>`;
-  }
+function strataBody(s, rule) {
   const strata = stratumOrder(s.strata || []);
   const prim = strata.find((x) => x.primary) || strata[0];
   const cur = strata.find((x) => x.id === VX.pick[s.scroll]) || prim;
   const one = prim && prim.within['1'];
   const pubc = prim && (prim.controls || []).find((c) => /^published/.test(c.name));
-  const head2 = one ? `<p class="vx-headline"><b>${p1(one.share)}</b> within 1 voxel (${esc(prim.id)}). One-sided 95% lower bound ${p1(one.lower)} (bar ${p1(rule.bar)}).</p>
-    <p class="hint">${pubc ? `Published labels: ${p1(pubc.observed)}.` : ''}${s.void && s.void.length ? ` The test is void: ${esc(s.void.join('; '))}.` : ''}</p>` : '';
+  const head2 = one ? `<p class="vx-headline"><b>${p1(one.share)}</b> within 1 voxel (${esc(prim.id)}, <span aria-hidden="true">${VX_ICON[prim.verdict] || ''}</span> ${esc(prim.verdict)}). One-sided 95% lower bound ${p1(one.lower)} (bar ${p1(rule.bar)}).</p>
+    <p class="hint">${pubc ? `${esc(pubc.name.replace(/^published label/, 'Published label'))}: ${p1(pubc.observed)}.` : ''}${s.void && s.void.length ? ` The test is void: ${esc(s.void.join('; '))}.` : ''}</p>` : '';
   const pubOn = !!VX.pick[`${s.scroll}:pub`];
-  return `<article class="vx-card c-${s.claim}" data-scroll="${esc(s.scroll)}">${head}${head2}
+  return `${head2}
     ${meter(s)}
     <div class="vx-chips" role="group" aria-label="Strata">${strata.map((x) => chip(x, x.id === cur.id, s.scroll)).join('')}</div>
     <div class="vx-grid">
@@ -169,7 +154,27 @@ function scrollCard(s) {
     </div>
     <h4>Controls (each must be able to fail)</h4>${controls(cur)}
     <p class="hint vx-not">What this does not show: labels that follow the wrong wrap, sheets that touch with no gap, and any scroll, segment or region not scored here.</p>
-    ${numbers(s)}</article>`;
+    ${numbers(s)}`;
+}
+
+function scrollCard(s) {
+  const rule = VX.doc.rule || {};
+  const badge = { measured: 'Model output, measured against an independent finer scan', certified: 'Model output, truth-free certificate', not_shown: (s.strata || []).length ? 'tested; no claim' : 'no claim' }[s.claim];
+  const head = `<header class="vx-head"><div><h3>${esc(s.scroll)}</h3><small>label scan ${esc(s.label_scan.voxel_um)} µm voxels${s.truth ? `, truth from a ${esc(s.truth.voxel_um)} µm scan` : ''}</small></div>
+    <span class="vx-badge c-${s.claim}"><b>${VX_CLAIMS[s.claim]}</b> ${badge}</span></header>`;
+  if (s.claim === 'not_shown') {
+    const tested = (s.strata || []).length > 0;
+    return `<article class="vx-card c-${s.claim}" data-scroll="${esc(s.scroll)}">${head}<p>Not shown: ${esc(s.why_not_shown)}.${tested ? ' The numbers below are what the test measured (model output); they make no claim.' : ''}</p>${tested ? strataBody(s, rule) : `${meter(s)}${numbers(s)}`}</article>`;
+  }
+  if (s.claim === 'certified') {
+    const c = s.certificate;
+    return `<article class="vx-card c-${s.claim}" data-scroll="${esc(s.scroll)}">${head}
+      <p class="vx-headline">One-sided ${p1(c.level)} lower bound <b>${p1(c.lower)}</b> within 1 voxel (bar ${p1(rule.bar)}).</p>
+      <p class="hint">No truth scan; lower bound from the certificate, over ${fmt(c.n)} vertices. It rests on these assumptions:</p>
+      <ul class="vx-assume">${c.assumptions.map((a) => `<li>${esc(a)}</li>`).join('')}</ul>
+      ${meter(s)}${numbers(s)}</article>`;
+  }
+  return `<article class="vx-card c-${s.claim}" data-scroll="${esc(s.scroll)}">${head}${strataBody(s, rule)}</article>`;
 }
 
 function renderCards() {

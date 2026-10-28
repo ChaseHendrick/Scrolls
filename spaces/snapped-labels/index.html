@@ -136,7 +136,7 @@
   <p id="vx-error" class="vx-error" hidden></p>
   <div class="vx-intro">
     <h2>Is each snapped vertex within one voxel of the papyrus face?</h2>
-    <p>Per scroll, one of three claim levels. <b>Measured</b>: scored against the face seen in an independent, finer scan of the same scroll. <b>Certified</b>: no finer scan, so a lower bound from a truth-free certificate whose assumptions are listed. <b>Not shown</b>: neither holds, and the card says why. Every number here is model output: the snapped meshes come from a band finder, and the truth face is itself found by a rule.</p>
+    <p>Per scroll, one of three claim levels. <b>Measured</b>: scored against the face seen in an independent, finer scan of the same scroll, and at least one class cleared the bar. <b>Certified</b>: no finer scan, so a lower bound from a truth-free certificate whose assumptions are listed. <b>Not shown</b>: neither holds, and the card says why; where a test ran, the card still shows what it measured, which makes no claim. Every number here is model output: the snapped meshes come from a band finder, and the truth face is itself found by a rule.</p>
   </div>
   <section class="stats vx-tiles" id="vx-tiles" aria-label="Scrolls by claim level"></section>
   <div id="vx-cards" class="vx-cards"></div>
@@ -222,7 +222,7 @@
     <h2>The three claim levels</h2>
     <p><b>Measured.</b> A finer scan of the same scroll exists. At test sites drawn after the rule was fixed, the face is found in it, registered into the label scan, and each snapped vertex's distance to it is measured along the normal. The share within 1 voxel and its one-sided 95% lower bound are reported; the claim holds when the bound clears the bar. The rule was fixed before any test site was looked at; its preregistration digest is <code id="vx-prereg"></code>.</p>
     <p><b>Certified.</b> No finer scan. A certificate computed from the label scan alone gives a lower bound on the share within 1 voxel, valid only under the assumptions the card lists. It was fixed before any test site was looked at too, under the same preregistration.</p>
-    <p><b>Not shown.</b> Neither a measurement nor a certificate holds for that scroll, or a control failed. The card says why. Nothing on it is a claim.</p>
+    <p><b>Not shown.</b> Neither a measurement nor a certificate holds for that scroll, or a control failed. The card says why. Where a test ran, the card still shows its shares, intervals and controls, so you can see how far it is from the bar; nothing on it is a claim.</p>
     <h2>Limits</h2>
     <ul>
       <li>A snap moves along the normal only. It cannot fix a label that follows the wrong wrap, and where two sheets touch the face it finds can belong to the neighbor.</li>
