@@ -11834,7 +11834,7 @@
    "date": "2026-10-22",
    "tool": "kit switchfix barrier (AutoPipeline qa.repair method barrier)",
    "source": "docs/tools/contact-barrier.md",
-   "claim": "Model output: AutoPipeline's trace with the contact barrier against villa's vc_grow_seg_from_seed on PHerc0139 (scan 20250728140407, 9.362 um), seeded on published hand-traced windings no part of AutoPipeline was developed on, one sector z 5248 to 5760, y 2688 to 3712, x 4352 to 5376, two repeats, rule frozen before any sector, seed, trace or score existed; geometry only, never a reading",
+   "claim": "Model output: AutoPipeline's trace with the contact barrier against villa's vc_grow_seg_from_seed on PHerc0139 (scan 20250728140407, 9.362 um), seeded on published hand-traced report windings that AutoPipeline's trace settings and the barrier were never developed or tested on (the barrier's parent rule, kit.sheetgap 24da24815958, read scores of report windings in another band, z 4352 to 4864, and the records cannot rule out that some of these were among them, so they are held out in this band but not completely unseen), one sector z 5248 to 5760, y 2688 to 3712, x 4352 to 5376, two repeats, rule frozen before any sector, seed, trace or score existed; geometry only, never a reading",
    "verdict": "AHEAD",
    "rule": "gated correct area C (windings passing both gates with at least 0.10 cm2 covered) higher than villa's by more than M = 0.10 cm2 plus both arms' change between repeats, in both repeats, at precision no worse than villa's less 0.02",
    "windings": [
@@ -11922,7 +11922,7 @@
   {
    "date": "2026-10-28",
    "tool": "kit switchfix barrier (AutoPipeline qa.repair method barrier)",
-   "claim": "Second-scroll test on PHerc0500P2 (13 catalog wrap meshes, automatic surface meshes and not confirmed hand traces, on the 9.362 um scan with its published m7 prediction), preregistered before any trace",
+   "claim": "Second-scroll test on PHerc0500P2 (13 catalog wrap meshes, automatic surface meshes and not hand traces, on the 9.362 um scan with its published m7 prediction), preregistered before any trace",
    "verdict": "VOID",
    "why": "gate G1: four neighboring wrap pairs (w003-w004, w009-w010, w010-w011, w012-w013) were 2 voxels apart on 0.95, 0.957, 0.72 and 0.854 of samples against 0.98, leaving 4 seeded wraps of the 6 the rule needs; no trace, control or readout ran; the VOID is about the reference meshes, not any tracer; the region is spent for this test"
   }

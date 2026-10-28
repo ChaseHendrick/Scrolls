@@ -30,7 +30,7 @@
       "scripts/media/barrier_chart.py"
     ],
     "scripts_sha256": "6dbf8d5190c06c2be83d433d07fad5074a7fa3a71653ea225dc103c66f142e78",
-    "base_commit": "328ec32007f17642fdd976ff0401d079bcbf34cb"
+    "base_commit": "e89a1d91d452e115b1efc66509a2842fb5ab822d"
   },
   "colors": "categorical slots 1 to 3 of the palette of greek-restoration-by-gap-length.svg; dark mode through prefers-color-scheme"
 }
