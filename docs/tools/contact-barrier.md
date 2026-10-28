@@ -104,7 +104,7 @@ AutoPipeline is released as a package on its own branch per version and never on
 
 ## History
 
-- 2026-10-28: this page, the synthetic demo media and the held-out chart (draft PR [#257](https://github.com/ChaseHendrick/Scrolls/pull/257)).
+- 2026-10-28: this page, the synthetic demo media and the held-out chart (`fef02a8`).
 - 2026-10-25: released inside AutoPipeline 0.1.9 (`2144cdf`).
 - 2026-10-22: preregistered held-out comparison on PHerc0139: AHEAD of villa's tracer in both repeats (`2144cdf` carries the same rule).
 
