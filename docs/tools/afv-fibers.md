@@ -78,6 +78,10 @@ Claim label: Model output (the fibers); Measurement (the agreement numbers above
 
 `hf download SharpMeow/SCAN-afv-fibers --repo-type dataset --local-dir DIR [--include PATTERN]`, where SCAN is the scan id in lower case. `--include "tiles/*"` and the like fetch only part of it.
 
+### Stream a box
+
+`python -m kit fibers stream --scan SCAN --box Z0 Z1 Y0 Y1 X0 X1 [--family H|V] [--min-len MM] [--out BOX.afv]` reads only the Parquet stream shards (`stream/`) that a box needs, by HTTP range requests, and returns the same fibers and `.afv` bytes as filtering the whole-scan file. The `datasets` library streams every fiber as rows: `load_dataset("SharpMeow/SCAN-afv-fibers", data_files="stream/**/*.parquet", streaming=True, split="train")`. Commands, checks and measured bytes: [fibers](fibers.md).
+
 ### Open in VC3D
 
 ```bash
@@ -127,6 +131,7 @@ Nothing: the fibers are ready made, from each scan's masked CT volume in the ope
 | `SCAN_afv_v2.afv` | every traced fiber of the scan |
 | `SCAN_afv_v2_1mm.afv` | the fibers 1 mm and longer |
 | `tiles/*.afv`, `tiles/index.json` | the same fibers, one file per 1024-voxel cell of the model's grid, each holding every fiber that touches the cell whole; the index gives each cell's box in level-0 voxels and its fiber count |
+| `stream/`, `stream/index.json` | the same fibers as Parquet shards on a spatial grid, every fiber in exactly one shard, for streaming a box ([fibers](fibers.md)); added 28 Oct 2026 |
 | `previews/` | the card's pictures and GIFs, and `index.json` with the views they show |
 | `stats.json` | counts, lengths by family and percentiles, file sizes |
 | `villa-check.jsonl` | villa's reader run over every file, one JSON line each |
@@ -182,11 +187,13 @@ Free to use: downloads and the Space cost nothing. Making the fibers ran on Hugg
 
 ## History
 
+- 2026-10-28: stream shards (`stream/`) on all six datasets and `python -m kit fibers stream` to read one box without the whole file ([fibers](fibers.md)); the existing files and the Space are unchanged.
 - 2026-10-28: phone fixes ([PR #254](https://github.com/ChaseHendrick/Scrolls/pull/254)), found by `python -m kit spaceconnect scroll --width 390` and the live checks after the 27 October deploy: the Catalog table scrolls sideways in its own box instead of losing its Format and Get it columns at the right, the guide's scan cards fit the guide's frame (they were 318 px in 270 px), and long names and links wrap. Deployed as Space commit `bbfa9088`.
 - 2026-10-27: one page scroll bar and American English ([PR #253](https://github.com/ChaseHendrick/Scrolls/pull/253)): a fading hero with the key numbers and buttons above the fold, the guide's frame fitted to its content so only the page scrolls, the public API `/fibers_box` with output key `fibers` (was `/fibres_box`, `fibres`), and a speed chart in place of the speed and cost chart.
 - 2026-10-27: six datasets and the Space 1.0.0 public, with the catalog and Connect your tool panel ([#248](https://github.com/ChaseHendrick/Scrolls/pull/248)).
 
 ## Related
 
+- [fibers](fibers.md): stream the fibers in one box from these datasets.
 - [fibercheck](fibercheck.md): checks fiber agreement against other fiber sets.
 - [lasagna-fields](lasagna-fields.md): villa's lasagna field for ten whole scans, published the same way.

@@ -114,7 +114,7 @@
       "line": "Command-line tools, benchmarks and script folders that run from a clone of this repository.",
       "area": "Releases and repository",
       "page": "docs/tools/cli.md",
-      "released": "2026-10-27",
+      "released": "2026-10-28",
       "summary": "Command-line tools, benchmarks and script folders that run from a clone of this repository. Each line gives the tool's release date, its weights where it has them, one command to start with, its tool page and its evidence; each page lists the tool's own needs. Their outputs are model output or geometry measurements for a person to check, not readings.",
       "commands": [
         "git clone --depth 1 https://github.com/ChaseHendrick/Scrolls.git",
@@ -507,6 +507,16 @@
           "summary": "Exports surface-volume layers as images and creates a shuffled-depth control.",
           "command": "python -m kit layers --help",
           "page": "docs/tools/layers.md"
+        },
+        {
+          "id": "fibers",
+          "name": "AFV fiber streaming",
+          "area": "Data and downloads",
+          "released": "2026-10-28",
+          "summary": "Streams the AFV fibers in one box of a scan without the whole download: the same fibers and .afv bytes as filtering the full file.",
+          "command": "python -m kit fibers stream --scan PHerc1667 --box 5632 6656 5632 6656 5632 6656 --out box.afv",
+          "page": "docs/tools/fibers.md",
+          "evidence": "[parity on every box, controls](docs/tools/fibers.md#checks-and-controls)"
         },
         {
           "id": "meshaudit",

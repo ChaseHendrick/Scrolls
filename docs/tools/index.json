@@ -99,67 +99,67 @@
     {
      "name": "Commands and options",
      "start_line": 75,
-     "end_line": 107,
+     "end_line": 111,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 108,
-     "end_line": 118,
-     "applicable": true
-    },
-    {
-     "name": "Inputs",
-     "start_line": 119,
+     "start_line": 112,
      "end_line": 122,
      "applicable": true
     },
     {
-     "name": "Outputs",
+     "name": "Inputs",
      "start_line": 123,
-     "end_line": 141,
+     "end_line": 126,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 127,
+     "end_line": 146,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 142,
-     "end_line": 150,
+     "start_line": 147,
+     "end_line": 155,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 151,
-     "end_line": 157,
+     "start_line": 156,
+     "end_line": 162,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 158,
-     "end_line": 168,
+     "start_line": 163,
+     "end_line": 173,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 169,
-     "end_line": 178,
+     "start_line": 174,
+     "end_line": 183,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 179,
-     "end_line": 182,
+     "start_line": 184,
+     "end_line": 187,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 183,
-     "end_line": 188,
+     "start_line": 188,
+     "end_line": 194,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 189,
-     "end_line": 192,
+     "start_line": 195,
+     "end_line": 199,
      "applicable": true
     }
    ]
@@ -1413,67 +1413,67 @@
     {
      "name": "Commands and options",
      "start_line": 85,
-     "end_line": 202,
+     "end_line": 203,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 203,
-     "end_line": 231,
+     "start_line": 204,
+     "end_line": 232,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 232,
-     "end_line": 235,
+     "start_line": 233,
+     "end_line": 236,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 236,
-     "end_line": 246,
+     "start_line": 237,
+     "end_line": 247,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 247,
-     "end_line": 260,
+     "start_line": 248,
+     "end_line": 261,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 261,
-     "end_line": 270,
+     "start_line": 262,
+     "end_line": 271,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 271,
-     "end_line": 274,
+     "start_line": 272,
+     "end_line": 275,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 275,
-     "end_line": 284,
+     "start_line": 276,
+     "end_line": 285,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 285,
-     "end_line": 292,
+     "start_line": 286,
+     "end_line": 293,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 293,
-     "end_line": 304,
+     "start_line": 294,
+     "end_line": 305,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 305,
-     "end_line": 311,
+     "start_line": 306,
+     "end_line": 312,
      "applicable": true
     }
    ]
@@ -3423,6 +3423,162 @@
      "name": "Related",
      "start_line": 261,
      "end_line": 265,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "fibers",
+   "name": "fibers",
+   "tagline": "read the AFV fibers in one box of a scan without downloading the whole scan",
+   "summary": "Stream the papyrus fibers in any box of a scan from the public AFV Fibers datasets on Hugging Face, reading only the Parquet shards that box needs, with exactly the same fibers and `.afv` bytes as filtering the full download.",
+   "status": "Current",
+   "kind": [
+    "kit command"
+   ],
+   "area": "Data and downloads",
+   "commands": [
+    "python -m kit fibers scans",
+    "python -m kit fibers stream",
+    "python -m kit fibers filter",
+    "python -m kit fibers parity",
+    "python -m kit fibers build"
+   ],
+   "imports": [],
+   "code": [
+    {
+     "path": "kit/fiberstream.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/cli.py",
+     "symbols": [
+      "cmd_fibers"
+     ]
+    },
+    {
+     "path": "scripts/fiberstream/stream_job.py",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_fiberstream.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed to read. Publishing shards to a dataset follows rule 8"
+   },
+   "checked": {
+    "date": "2026-10-28",
+    "commit": "bd27a0d"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`fibers`",
+    "Status": "Current",
+    "Kind": "kit command",
+    "Area": "Data and downloads",
+    "Run": "`python -m kit fibers scans`, `python -m kit fibers stream`, `python -m kit fibers filter`, `python -m kit fibers parity`, `python -m kit fibers build`",
+    "Code": "`kit/fiberstream.py`, `kit/cli.py` (`cmd_fibers`), `scripts/fiberstream/stream_job.py` (the Hugging Face Job that built and checked the published shards)",
+    "Tests": "`tests/test_fiberstream.py`",
+    "Needs": "Python 3.10 or newer, numpy, and pyarrow 14 or newer for `stream` and `build` (`pip install \"numpy\" \"pyarrow\"`); nothing for `scans`. VC3D and villa's `import_afv.py` to open a written `.afv` in VC3D",
+    "Runs on": "Any machine. A small or medium box takes 0.1 to 4 s over the network, a 1024-grid-voxel box 0.5 to 16 s (measured 28 Oct 2026 from Hugging Face CPU Jobs, Cost and time)",
+    "Network": "`huggingface.co` and the file servers it redirects to (HTTP range requests for `stream` and `parity`); none for `filter`, `build`, or `--source DIR`",
+    "Writes": "Nothing unless asked: `--out BOX.afv`, `--json FIBERS.json`; `parity --out` also writes `BOX.afv.reference.afv`; `build` writes `stream/` under its output folder",
+    "Go-ahead": "Not needed to read. Publishing shards to a dataset follows rule 8",
+    "Released": "Public `main`; stream shards for the six datasets `SharpMeow/SCAN-afv-fibers`, built and checked 28 Oct 2026",
+    "Checked": "2026-10-28 against commit `bd27a0d`"
+   },
+   "page": "docs/tools/fibers.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 22,
+     "end_line": 31,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 32,
+     "end_line": 44,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 45,
+     "end_line": 72,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 73,
+     "end_line": 95,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 96,
+     "end_line": 220,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 221,
+     "end_line": 244,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 245,
+     "end_line": 250,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 251,
+     "end_line": 281,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 282,
+     "end_line": 312,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 313,
+     "end_line": 320,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 321,
+     "end_line": 343,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 344,
+     "end_line": 353,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 354,
+     "end_line": 357,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 358,
+     "end_line": 361,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 362,
+     "end_line": 365,
      "applicable": true
     }
    ]
