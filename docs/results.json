@@ -11922,9 +11922,9 @@
   {
    "date": "2026-10-28",
    "tool": "kit switchfix barrier (AutoPipeline qa.repair method barrier)",
-   "claim": "Second-scroll test on PHerc0500P2 (13 hand-traced wraps on the 9.362 um scan with its published m7 prediction), preregistered before any trace",
+   "claim": "Second-scroll test on PHerc0500P2 (13 catalog wrap meshes, automatic surface meshes and not confirmed hand traces, on the 9.362 um scan with its published m7 prediction), preregistered before any trace",
    "verdict": "VOID",
-   "why": "gate G1: four neighboring wrap pairs (w003-w004, w009-w010, w010-w011, w012-w013) were 2 voxels apart on 0.95, 0.957, 0.72 and 0.854 of samples against 0.98, leaving 4 seeded wraps of the 6 the rule needs; no trace, control or readout ran; the region is spent for this test"
+   "why": "gate G1: four neighboring wrap pairs (w003-w004, w009-w010, w010-w011, w012-w013) were 2 voxels apart on 0.95, 0.957, 0.72 and 0.854 of samples against 0.98, leaving 4 seeded wraps of the 6 the rule needs; no trace, control or readout ran; the VOID is about the reference meshes, not any tracer; the region is spent for this test"
   }
  ]
 }
