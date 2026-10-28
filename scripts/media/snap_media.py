@@ -265,8 +265,6 @@ def real_meta(view, segment, z):
 
 
 def real(segment, z, out_dir, data=DATA, win=192, size=720, center=None, name=None):
-    import numpy as np
-    from PIL import Image, ImageDraw
     scroll, seg = segment.split("/", 1)
     view = json.loads(_get(f"{data}/viewer/{scroll}/{seg}.json"))
     meta = real_meta(view, segment, z)
@@ -278,6 +276,8 @@ def real(segment, z, out_dir, data=DATA, win=192, size=720, center=None, name=No
     gif, s_pub, s_snap = (out_dir / f"{name}.gif", out_dir / f"{name}-published.png", out_dir / f"{name}-snapped.png")
     for p in (gif, s_pub, s_snap):
         common.write_guard(meta["label"], p, meta)   # Model output: refused under docs/assets/
+    import numpy as np   # after the refusals, so they hold without numpy and Pillow
+    from PIL import Image, ImageDraw
     out_dir.mkdir(parents=True, exist_ok=True)
     rows = np.frombuffer(_get(f"{data}/viewer/{scroll}/{seg}.bin"), np.float32).reshape(-1, 8)
     plane = min(view["planes"], key=lambda p: abs(p["z"] - z))
