@@ -155,7 +155,7 @@ inklens.py run --from-vc3d [--bridge NAME] --volume OME_ZARR [--size 1024] ...
 
 | Option | Default | Meaning |
 | --- | --- | --- |
-| `SAMPLE` | required | A sample id from `samples` (`0841-w00`, `0841-ag896`, `0841-ag405`, `0139-w035`) |
+| `SAMPLE` | required | A sample id from `samples` (`0841-w00`, `0841-ag896`, `0841-ag405`; `0139-w035` was removed on 28 Oct 2026, when that segment was held back for evaluation) |
 | `--size` | the 640 px crop | A smaller square at the crop's center |
 | `--at` | none | `ROW COL`: the square's top-left corner on the segment instead |
 | `--vc3d-out` | none | Download the sample's tifxyz mesh here and write VC3D's files into it |

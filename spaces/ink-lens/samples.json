@@ -122,46 +122,6 @@
     "tifxyz": "mesh/20260221022814-on-20260319124803-2.403um.tifxyz",
     "ct": "PHerc0841/volumes/20260319124803-2.403um-0.2m-77keV-masked.zarr"
    }
-  },
-  {
-   "id": "0139-w035",
-   "title": "PHerc0139 w035 (training segment: a pipeline check, not a test)",
-   "scroll": "PHerc0139",
-   "segment": "20260317000000-w035_2026031718",
-   "surface_volume": "surface-volumes/9.362um-1.2m-113keV-volume-20250728140407.zarr",
-   "labels": "ink-labels/2.399um-volume-20260102150214/20260918",
-   "um_per_px": 9.362,
-   "surface_shape": [
-    5820,
-    5240
-   ],
-   "crop": [
-    1920,
-    2560,
-    2304,
-    2944
-   ],
-   "role": "training",
-   "scan24": {
-    "surface_volume": "surface-volumes/2.399um-0.22m-78keV-volume-20260102150214.zarr",
-    "um_per_px": 2.399,
-    "level0_shape": [
-     22640,
-     20400
-    ],
-    "grid_shape": [
-     5660,
-     5100
-    ],
-    "crop": [
-     1858,
-     2498,
-     2234,
-     2874
-    ],
-    "tifxyz": "mesh/20260317000000-on-20260102150214-2.399um.tifxyz",
-    "ct": "PHerc0139/volumes/20260102150214-2.399um-0.2m-78keV-masked.zarr"
-   }
   }
  ]
 }
