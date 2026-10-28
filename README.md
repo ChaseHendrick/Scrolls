@@ -138,10 +138,11 @@ Command-line tools, benchmarks and script folders that run from a clone of this 
 </details>
 
 <details>
-<summary><b>Data and downloads</b> (7)</summary>
+<summary><b>Data and downloads</b> (8)</summary>
 
 | Tool | What it does |
 | --- | --- |
+| [AFV fiber streaming](docs/tools/fibers.md) | Streams the AFV fibers in one box of a scan without the whole download: the same fibers and .afv bytes as filtering the full file. |
 | [False-404 test relay](docs/tools/false404-relay.md) | Replays selected false missing-file responses through a local relay so cache handling can be tested. |
 | [Fast public label downloads](docs/tools/hfpull.md) | Downloads a folder of the organizers' public Hugging Face datasets bucket fast, fetching each distinct file once. |
 | [Find, center line, cite and villa helpers](docs/tools/find.md) | Lists everything public for one scroll, fetches its best center line, prints credit lines, and checks villa PR timing and text. |

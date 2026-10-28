@@ -1,4 +1,4 @@
-"""Command line: python -m kit {start,help,prizes,submitcheck,live,style,stages,doctor,plan,cost,find,labels,centerline,cite,fetch,s3relay,vc3dcache,prclock,prtext,verify,rowscore,auc,hpscore,overlap,collate,stackcheck,tifxyz,sheetview,atlas,coverage,uvgate,windconsistency,axispolish,windlabel-box,hopbench,meshaudit,ensemble,fibertensor,sheetcheck,gate,layers,shuffle,provenance,compute,run,surfacefix,phantom,view,strokenet,letterread,letterlines,letterdemo,greeklm,releases,spaceconnect,leaderboard,routines,stale,integrity,volumeview,segzoo,scroll2ink,vxsummary}.
+"""Command line: python -m kit {start,help,prizes,submitcheck,live,style,stages,doctor,plan,cost,find,labels,centerline,cite,fetch,s3relay,vc3dcache,prclock,prtext,verify,rowscore,auc,hpscore,overlap,collate,stackcheck,tifxyz,sheetview,atlas,coverage,uvgate,windconsistency,axispolish,windlabel-box,hopbench,meshaudit,ensemble,fibertensor,sheetcheck,gate,layers,shuffle,provenance,compute,run,surfacefix,phantom,view,strokenet,letterread,letterlines,letterdemo,greeklm,releases,spaceconnect,leaderboard,routines,stale,integrity,volumeview,segzoo,fibers,scroll2ink,vxsummary}.
 
 An installed package (pyproject.toml) has the same commands as console scripts: scrolls-workbench (every command;
 gate, releases and leaderboard read the repository's docs/ and README.md, so they need a clone), and scrolls-letterread,
@@ -928,6 +928,11 @@ def cmd_sheetcheck(args):
     return sheetcheck.cmd_sheetcheck(args)
 
 
+def cmd_fibers(args):
+    from . import fiberstream
+    return fiberstream.run(args)
+
+
 def cmd_segzoo(args):
     from . import segzoo   # standard library; the torch code is in scripts/segzoo/
     return segzoo.cmd_segzoo(args)
@@ -1023,7 +1028,7 @@ def cmd_strokenet(args):
 GROUPS = (
     ("Start and set up", ("start", "doctor", "prizes", "submitcheck", "plan", "cost", "help", "live", "style")),
     ("Find and fetch public data", ("find", "labels", "centerline", "cite", "fetch", "s3relay", "vc3dcache",
-                                    "volumeview", "segzoo")),
+                                    "volumeview", "segzoo", "fibers")),
     ("Segments and geometry", ("scroll2ink", "stages", "tifxyz", "sheetview", "atlas", "coverage", "stackcheck",
                                "uvgate", "windconsistency", "axispolish",
                                "windlabel-box", "hopbench", "overlap", "meshaudit", "surfacefix", "layers")),
@@ -1556,6 +1561,12 @@ def build_parser(prog="python -m kit", sub_progs=None):
     from . import segzoo as _segzoo
     _segzoo.build_parser(p)
     p.set_defaults(func=cmd_segzoo)
+
+    p = sub.add_parser("fibers", help="AFV papyrus fibers in a box, streamed from Hugging Face without the full "
+                                      "download, or filtered from a downloaded .afv; parity check; stream shards")
+    from . import fiberstream as _fiberstream
+    _fiberstream.add_arguments(p)
+    p.set_defaults(func=cmd_fibers)
 
     p = sub.add_parser("scroll2ink", help="one command from a public scan and a seed point to a grown, flattened, "
                                           "rendered surface and its ink map with the reverse control (Headless VC3D)")
