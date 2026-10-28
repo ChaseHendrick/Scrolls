@@ -34,7 +34,7 @@ maps = ["numpy", "tifffile", "imagecodecs", "zarr>=3; python_version >= '3.11'",
 # Papyrus fibers in a box from the AFV Fibers datasets (python -m kit fibers): numpy, and pyarrow for the Parquet
 # stream shards.
 fibers = ["numpy", "pyarrow"]
-all = ["numpy", "pillow", "tifffile", "imagecodecs", "zarr>=3; python_version >= '3.11'", "scipy", "pyarrow"]
+all = ["numpy", "pillow", "tifffile", "imagecodecs", "zarr>=3; python_version >= '3.11'", "scipy"]
 
 [project.scripts]
 scrolls-workbench = "kit.cli:workbench_main"     # every python -m kit command (gate and releases need a clone)
