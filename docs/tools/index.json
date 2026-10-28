@@ -1413,67 +1413,67 @@
     {
      "name": "Commands and options",
      "start_line": 85,
-     "end_line": 201,
+     "end_line": 202,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 202,
-     "end_line": 230,
+     "start_line": 203,
+     "end_line": 231,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 231,
-     "end_line": 234,
+     "start_line": 232,
+     "end_line": 235,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 235,
-     "end_line": 245,
+     "start_line": 236,
+     "end_line": 246,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 246,
-     "end_line": 259,
+     "start_line": 247,
+     "end_line": 260,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 260,
-     "end_line": 269,
+     "start_line": 261,
+     "end_line": 270,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 270,
-     "end_line": 273,
+     "start_line": 271,
+     "end_line": 274,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 274,
-     "end_line": 283,
+     "start_line": 275,
+     "end_line": 284,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 284,
-     "end_line": 291,
+     "start_line": 285,
+     "end_line": 292,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 292,
-     "end_line": 303,
+     "start_line": 293,
+     "end_line": 304,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 304,
-     "end_line": 310,
+     "start_line": 305,
+     "end_line": 311,
      "applicable": true
     }
    ]
@@ -7897,7 +7897,8 @@
     "python scripts/media/isometry_media.py",
     "python scripts/media/coverage_still.py",
     "python scripts/media/vc3d_agent_session.py",
-    "python scripts/media/hfrows_demo.py"
+    "python scripts/media/hfrows_demo.py",
+    "python scripts/media/snap_media.py"
    ],
    "imports": [],
    "code": [
@@ -7924,7 +7925,7 @@
     "Status": "Current",
     "Kind": "script folder",
     "Area": "Releases and repository",
-    "Run": "`python scripts/media/hero.py`, `python scripts/media/encode.py`, `python scripts/media/capture_web.py`, `python scripts/media/record_ap_monitor.py`, `python scripts/media/sweep.py`, `python scripts/media/tifxyz_stills.py`, `python scripts/media/isometry_media.py`, `python scripts/media/coverage_still.py`, `python scripts/media/vc3d_agent_session.py`, `python scripts/media/hfrows_demo.py`",
+    "Run": "`python scripts/media/hero.py`, `python scripts/media/encode.py`, `python scripts/media/capture_web.py`, `python scripts/media/record_ap_monitor.py`, `python scripts/media/sweep.py`, `python scripts/media/tifxyz_stills.py`, `python scripts/media/isometry_media.py`, `python scripts/media/coverage_still.py`, `python scripts/media/vc3d_agent_session.py`, `python scripts/media/hfrows_demo.py`, `python scripts/media/snap_media.py`",
     "Code": "`scripts/media/`",
     "Tests": "`tests/test_media.py`, `tests/test_repo.py` (`test_assets_are_listed_labeled_and_within_limits`)",
     "Needs": "Python 3.10 or newer. `hero.py` and `sweep.py`: numpy and Pillow, and the Inter font for social cards. `encode.py`: ffmpeg (libx264) and gifsicle. `capture_web.py`: the `playwright` package and a Chromium it can start (it never downloads one). `common.py` is standard library only",
@@ -7966,67 +7967,67 @@
     {
      "name": "Commands and options",
      "start_line": 85,
-     "end_line": 257,
+     "end_line": 273,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 258,
-     "end_line": 261,
+     "start_line": 274,
+     "end_line": 277,
      "applicable": false
     },
     {
      "name": "Inputs",
-     "start_line": 262,
-     "end_line": 268,
+     "start_line": 278,
+     "end_line": 284,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 269,
-     "end_line": 305,
+     "start_line": 285,
+     "end_line": 321,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 306,
-     "end_line": 359,
+     "start_line": 322,
+     "end_line": 378,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 360,
-     "end_line": 382,
+     "start_line": 379,
+     "end_line": 401,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 383,
-     "end_line": 398,
+     "start_line": 402,
+     "end_line": 417,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 399,
-     "end_line": 408,
+     "start_line": 418,
+     "end_line": 427,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 409,
-     "end_line": 412,
+     "start_line": 428,
+     "end_line": 431,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 413,
-     "end_line": 419,
+     "start_line": 432,
+     "end_line": 439,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 420,
-     "end_line": 425,
+     "start_line": 440,
+     "end_line": 445,
      "applicable": true
     }
    ]
@@ -11949,7 +11950,9 @@
    "commands": [
     "hf download SharpMeow/vesuvius-snapped-labels --repo-type dataset",
     "load_example.py",
-    "window.snappedLabels"
+    "window.snappedLabels",
+    "python -m kit vxsummary check",
+    "python -m kit vxsummary fixture"
    ],
    "imports": [],
    "code": [
@@ -11962,15 +11965,29 @@
      "symbols": []
     },
     {
+     "path": "spaces/snapped-labels/vx.js",
+     "symbols": []
+    },
+    {
      "path": "spaces/snapped-labels/style.css",
      "symbols": []
     },
     {
      "path": "spaces/snapped-labels/connect.json",
      "symbols": []
+    },
+    {
+     "path": "kit/vxsummary.py",
+     "symbols": []
+    },
+    {
+     "path": "spaces/snapped-labels/vx/fixture/",
+     "symbols": []
     }
    ],
-   "tests": [],
+   "tests": [
+    "tests/test_vxsummary.py"
+   ],
    "go_ahead": {
     "needed": false,
     "text": "Not needed to use. Releasing the dataset and the Space was Chase's yes (27 Oct 2026); the Space redeploys from merged `main` under the standing yes (rule 8)"
@@ -11985,9 +12002,9 @@
     "Status": "Current",
     "Kind": "data,app",
     "Area": "Surfaces and tracing",
-    "Run": "[huggingface.co/spaces/SharpMeow/snapped-labels](https://huggingface.co/spaces/SharpMeow/snapped-labels) (viewer); `hf download SharpMeow/vesuvius-snapped-labels --repo-type dataset`; the dataset's `load_example.py`; in the page, `window.snappedLabels`",
-    "Code": "`spaces/snapped-labels/index.html`, `spaces/snapped-labels/app.js`, `spaces/snapped-labels/style.css`, `spaces/snapped-labels/connect.json`",
-    "Tests": "None for the page here: `python -m kit spaceconnect check` (run by the tests) checks its Connect panel; the page was checked in headless Chromium on the release output before upload (see Checks and controls)",
+    "Run": "[huggingface.co/spaces/SharpMeow/snapped-labels](https://huggingface.co/spaces/SharpMeow/snapped-labels) (viewer); `hf download SharpMeow/vesuvius-snapped-labels --repo-type dataset`; the dataset's `load_example.py`; in the page, `window.snappedLabels`; `python -m kit vxsummary check`, `python -m kit vxsummary fixture` (the Voxel exact tab's data)",
+    "Code": "`spaces/snapped-labels/index.html`, `spaces/snapped-labels/app.js`, `spaces/snapped-labels/vx.js`, `spaces/snapped-labels/style.css`, `spaces/snapped-labels/connect.json`, `kit/vxsummary.py`, `spaces/snapped-labels/vx/fixture/`",
+    "Tests": "`tests/test_vxsummary.py` (the Voxel exact data contract, the tab's wiring and the snap media); `python -m kit spaceconnect check` (run by the tests) checks its Connect panel; the page was checked in headless Chromium (see Checks and controls)",
     "Needs": "A browser for the Space. For the data: Python 3.9+, `huggingface_hub`, `numpy`, `tifffile` and `imagecodecs`",
     "Runs on": "Any browser; a segment's cross sections are at most about 8 MB, and each CT view reads up to 16 uncompressed 128 voxel chunks",
     "Network": "`huggingface.co` (the dataset), `vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` (CT and the published meshes, read live)",
@@ -12002,91 +12019,91 @@
     {
      "name": "What it does",
      "start_line": 23,
-     "end_line": 32,
+     "end_line": 36,
      "applicable": true
     },
     {
      "name": "When to use it",
-     "start_line": 33,
-     "end_line": 44,
+     "start_line": 37,
+     "end_line": 48,
      "applicable": true
     },
     {
      "name": "Quick start",
-     "start_line": 45,
-     "end_line": 54,
+     "start_line": 49,
+     "end_line": 58,
      "applicable": true
     },
     {
      "name": "Checks and controls",
-     "start_line": 55,
-     "end_line": 62,
+     "start_line": 59,
+     "end_line": 67,
      "applicable": true
     },
     {
      "name": "Commands and options",
-     "start_line": 63,
-     "end_line": 79,
+     "start_line": 68,
+     "end_line": 116,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 80,
-     "end_line": 87,
+     "start_line": 117,
+     "end_line": 132,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 88,
-     "end_line": 91,
+     "start_line": 133,
+     "end_line": 136,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 92,
-     "end_line": 111,
+     "start_line": 137,
+     "end_line": 158,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 112,
-     "end_line": 119,
+     "start_line": 159,
+     "end_line": 171,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 120,
-     "end_line": 123,
+     "start_line": 172,
+     "end_line": 175,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 124,
-     "end_line": 127,
+     "start_line": 176,
+     "end_line": 179,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 128,
-     "end_line": 137,
+     "start_line": 180,
+     "end_line": 190,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 138,
-     "end_line": 141,
+     "start_line": 191,
+     "end_line": 194,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 142,
-     "end_line": 146,
+     "start_line": 195,
+     "end_line": 200,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 147,
-     "end_line": 151,
+     "start_line": 201,
+     "end_line": 205,
      "applicable": true
     }
    ]

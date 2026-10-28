@@ -10,7 +10,8 @@ const $ = (id) => document.getElementById(id);
 const fmt = (n) => (n == null ? 'n/a' : Number(n).toLocaleString('en-US'));
 const pct = (a, b) => (b ? `${(100 * a / b).toFixed(1)}%` : 'n/a');
 
-const S = { index: [], seg: null, view: null, rows: null, plane: 0, cx: 0, cy: 0, win: 192, order: [], at: 0, abort: null };
+const S = { index: [], seg: null, view: null, rows: null, plane: 0, cx: 0, cy: 0, win: 192, order: [], at: 0, abort: null,
+  tween: null };   // tween: null, or 0 (published) to 1 (snapped) while the snap animation plays
 
 async function getJSON(url) { const r = await fetch(url, { credentials: 'omit' }); if (!r.ok) throw new Error(`${r.status} ${url}`); return r.json(); }
 
@@ -126,6 +127,7 @@ async function draw() {
   const X = (x) => (x - x0 + 0.5) * k, Y = (y) => (y - y0 + 0.5) * k;
   const css = getComputedStyle(document.documentElement);
   const lw = Math.max(1.5, Math.min(3, k * 0.4));
+  if (S.tween != null) { tweenLine(r, m, X, Y, lw, css); scaleBar(W, k); return; }
   if ($('l-move').checked) {
     // gray strokes from the published line to the snapped one, at each piece's midpoint
     cx2d.strokeStyle = css.getPropertyValue('--move').trim() || 'rgba(200,200,200,.6)';
@@ -144,11 +146,77 @@ async function draw() {
   };
   if ($('l-pub').checked) line(0, css.getPropertyValue('--pub').trim() || '#f08a24');
   if ($('l-snap').checked) line(4, css.getPropertyValue('--snap').trim() || '#2f7bf6');
+  scaleBar(W, k);
+  const keep = {};
+  for (const k of ['data', 'vx', 'tab']) if (params.get(k)) keep[k] = params.get(k);
+  history.replaceState(null, '', `?${new URLSearchParams({ ...keep, seg: S.seg.segment, z: String(z) })}`);
+}
+
+function scaleBar(W, k) {
   // scale bar: 10 voxels
   const um = S.view.voxel_um || null;
   cx2d.fillStyle = '#fff'; cx2d.fillRect(16, W - 22, 10 * k, 4);
   cx2d.font = '13px system-ui, sans-serif'; cx2d.fillText(um ? `10 voxels (${Math.round(10 * um)} µm)` : '10 voxels', 16, W - 30);
-  history.replaceState(null, '', `?${new URLSearchParams({ ...(params.get('data') ? { data: params.get('data') } : {}), seg: S.seg.segment, z: String(z) })}`);
+}
+
+// ---------------------------------------------------------------- snap animation
+
+// Each line piece moves in a straight line from its published position to its snapped one, its color going from the
+// published orange to the snapped blue. Filled and left-in-place vertices are drawn at the published position in both
+// (the legend's rule), so they do not move. One loop: hold 1.2 s on the published line, 2.4 s to the snapped line,
+// hold 1.6 s, 2.4 s back. With prefers-reduced-motion it never plays by itself: each click steps published, halfway,
+// snapped.
+const TW = { hold0: 1200, move: 2400, hold1: 1600 };
+const anim = { on: false, t0: 0, raf: 0, step: -1 };
+const mix = (a, b, t) => { const h = (s) => { const m = s.trim().replace('#', ''); return [0, 2, 4].map((i) => parseInt(m.slice(i, i + 2), 16)); }; const A = h(a), B = h(b); return `rgb(${A.map((v, i) => Math.round(v + (B[i] - v) * t)).join(',')})`; };
+
+function tweenLine(r, m, X, Y, lw, css) {
+  const t = S.tween, pub = css.getPropertyValue('--pub').trim() || '#f08a24', snap = css.getPropertyValue('--snap').trim() || '#2f7bf6';
+  // the published line stays, faint, so the motion reads against it
+  cx2d.globalAlpha = 0.35; cx2d.strokeStyle = pub; cx2d.lineWidth = lw; cx2d.lineCap = 'round'; cx2d.beginPath();
+  for (let i = 0; i < m; i++) { const a = R * i; cx2d.moveTo(X(r[a]), Y(r[a + 1])); cx2d.lineTo(X(r[a + 2]), Y(r[a + 3])); }
+  cx2d.stroke(); cx2d.globalAlpha = 1;
+  cx2d.strokeStyle = mix(pub, snap, t); cx2d.lineWidth = lw; cx2d.beginPath();
+  for (let i = 0; i < m; i++) {
+    const a = R * i, L = (p, q) => p + (q - p) * t;
+    cx2d.moveTo(X(L(r[a], r[a + 4])), Y(L(r[a + 1], r[a + 5]))); cx2d.lineTo(X(L(r[a + 2], r[a + 6])), Y(L(r[a + 3], r[a + 7])));
+  }
+  cx2d.stroke();
+  const W = cv.width, word = t <= 0.001 ? 'Published label' : t >= 0.999 ? 'Snapped label' : 'Snapping along the normal';
+  cx2d.font = '600 15px system-ui, sans-serif'; cx2d.fillStyle = 'rgba(0,0,0,.55)'; cx2d.fillRect(12, 12, cx2d.measureText(word).width + 20, 28);
+  cx2d.fillStyle = '#fff'; cx2d.fillText(word, 22, 31);
+  void W;
+}
+
+function tweenAt(ms) {
+  const cyc = 2 * TW.move + TW.hold0 + TW.hold1, u = ms % cyc;
+  if (u < TW.hold0) return 0;
+  if (u < TW.hold0 + TW.move) return (u - TW.hold0) / TW.move;
+  if (u < TW.hold0 + TW.move + TW.hold1) return 1;
+  return 1 - (u - TW.hold0 - TW.move - TW.hold1) / TW.move;
+}
+
+const reduced = () => window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+function animate(on) {
+  if (reduced() && on !== false) {
+    // three still frames, one per click
+    anim.step = (anim.step + 1) % 4;
+    S.tween = anim.step === 3 ? null : [0, 0.5, 1][anim.step];
+    $('b-anim').textContent = anim.step === 3 ? 'Step the snap' : ['Published (1 of 3)', 'Halfway (2 of 3)', 'Snapped (3 of 3)'][anim.step];
+    $('b-anim').setAttribute('aria-pressed', String(S.tween != null));
+    draw();
+    return S.tween != null;
+  }
+  anim.on = on == null ? !anim.on : !!on;
+  cancelAnimationFrame(anim.raf);
+  $('b-anim').setAttribute('aria-pressed', String(anim.on));
+  $('b-anim').textContent = anim.on ? 'Stop' : 'Animate snap';
+  if (!anim.on) { S.tween = null; draw(); return false; }
+  anim.t0 = performance.now();
+  const tick = (now) => { if (!anim.on) return; S.tween = tweenAt(now - anim.t0); draw(); anim.raf = requestAnimationFrame(tick); };
+  anim.raf = requestAnimationFrame(tick);
+  return true;
 }
 
 function msg(t) { const e = $('cv-msg'); e.textContent = t; e.hidden = !t; }
@@ -223,15 +291,18 @@ function listSegs() {
 
 function table() {
   const tb = document.querySelector('#tbl tbody'); tb.innerHTML = '';
+  $('th-claim').hidden = !(window.vxClaim && window.vxClaim('') != null);
   for (const s of S.index) {
     const tr = document.createElement('tr');
-    tr.innerHTML = `<td>${s.scroll}</td><td>${s.segment}</td><td>${s.method}</td><td class="n">${fmt(s.vertices_released)}</td><td class="n">${pct(s.snapped, s.vertices_released)}</td><td class="n">${s.move_voxels && s.move_voxels.median != null ? s.move_voxels.median.toFixed(2) : 'n/a'}</td><td class="n">${fmt(s.vertices_held_back)}</td>`;
+    const claim = window.vxClaim ? window.vxClaim(s.scroll) : null;
+    tr.innerHTML = `<td>${s.scroll}</td><td>${s.segment}</td><td>${s.method}</td><td class="n">${fmt(s.vertices_released)}</td><td class="n">${pct(s.snapped, s.vertices_released)}</td><td class="n">${s.move_voxels && s.move_voxels.median != null ? s.move_voxels.median.toFixed(2) : 'n/a'}</td><td class="n">${fmt(s.vertices_held_back)}</td>${claim ? `<td>${claim}</td>` : ''}`;
     tr.onclick = () => { tab('view'); showStage(); openSeg(s).catch((e) => msg(e.message)); };
     tb.appendChild(tr);
   }
 }
 
 function tab(name) {
+  if (name !== 'view' && anim.on) animate(false);
   document.querySelectorAll('.tabs button').forEach((b) => b.setAttribute('aria-selected', String(b.dataset.tab === name)));
   document.querySelectorAll('[data-pane]').forEach((p) => { p.hidden = p.dataset.pane !== name; });
 }
@@ -244,6 +315,7 @@ $('f-find').oninput = listSegs;
 ['l-pub', 'l-snap', 'l-move'].forEach((id) => { $(id).onchange = () => draw(); });
 $('z-range').oninput = () => { S.plane = Number($('z-range').value); ringOrder(); const r = planeRows(); if (r.length) { let best = Infinity, bi = 0; for (let i = 0; i < r.length / R; i++) { const d = (r[R * i] - S.cx) ** 2 + (r[R * i + 1] - S.cy) ** 2; if (d < best) { best = d; bi = i; } } S.at = Math.max(0, S.order.indexOf(bi)); } draw(); };
 $('win').onchange = () => { S.win = Number($('win').value); draw(); };
+$('b-anim').onclick = () => animate();
 $('b-next').onclick = () => { centerOn(S.at + Math.max(1, Math.round(S.order.length / 24))); draw(); };
 $('b-prev').onclick = () => { centerOn(S.at - Math.max(1, Math.round(S.order.length / 24))); draw(); };
 document.addEventListener('keydown', (e) => {
@@ -263,6 +335,7 @@ window.snappedLabels = {
   segments: () => S.index.slice(),
   open: (segment, z) => { const s = S.index.find((x) => x.segment === segment); if (!s) throw new Error(`no segment ${segment}`); return openSeg(s, z); },
   view: () => (S.view ? { ...S.view, plane: S.view.planes[S.plane], center: [S.cx, S.cy] } : null),
+  animate: (on) => animate(on),
 };
 
 (async function init() {

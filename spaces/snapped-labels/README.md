@@ -26,8 +26,12 @@ On fresh test sites, 91% of snapped PHerc0139 vertices sit within one voxel of t
 1.129 µm scan, against 24% for the published labels.
 
 - **Viewer**: pick a segment and a z plane; orange is the published label, blue the snapped one, gray strokes join
-  matching points. Arrow keys step along the label and through z; `?seg=SEGMENT&z=Z` links to a view.
+  matching points; Animate snap moves each vertex from its published position to its snapped one, slowly. Arrow keys
+  step along the label and through z; `?seg=SEGMENT&z=Z` links to a view.
 - **All segments**: every segment with its share snapped, median move and held-back count.
+- **Voxel exact** (shown once results are published): per scroll, Measured, Certified or Not shown, with the share
+  within 0.5, 1 and 2 voxels, the abstain strata, residual histograms and the controls. `?vx=fixture` previews it on
+  made-up data under a banner.
 - **How it works**: the two methods, how they were measured, the files in each segment folder, and the limits.
 - **Connect your tool**: tested snippets for the dataset, a mesh and the CT.
 
