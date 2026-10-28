@@ -182,6 +182,7 @@ Free to use: downloads and the Space cost nothing. Making the fibers ran on Hugg
 
 ## History
 
+- 2026-10-28: phone fixes ([PR #254](https://github.com/ChaseHendrick/Scrolls/pull/254)), found by `python -m kit spaceconnect scroll --width 390` and the live checks after the 27 October deploy: the Catalog table scrolls sideways in its own box instead of losing its Format and Get it columns at the right, the guide's scan cards fit the guide's frame (they were 318 px in 270 px), and long names and links wrap. Deployed as Space commit `bbfa9088`.
 - 2026-10-27: one page scroll bar and American English ([PR #253](https://github.com/ChaseHendrick/Scrolls/pull/253)): a fading hero with the key numbers and buttons above the fold, the guide's frame fitted to its content so only the page scrolls, the public API `/fibers_box` with output key `fibers` (was `/fibres_box`, `fibres`), and a speed chart in place of the speed and cost chart.
 - 2026-10-27: six datasets and the Space 1.0.0 public, with the catalog and Connect your tool panel ([#248](https://github.com/ChaseHendrick/Scrolls/pull/248)).
 

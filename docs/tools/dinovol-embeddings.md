@@ -151,6 +151,7 @@ None in this repository. The read-back check above ran on 2026-10-24 before and 
 - 2026-10-24: color volume (`-rgb.ome.zarr`) public beside the embeddings, opened in neuroglancer from the Space; Download section with tested commands and sizes ([PR #211](https://github.com/ChaseHendrick/Scrolls/pull/211)).
 - 2026-10-24: guide Space `SharpMeow/dinovol-embeddings` with a click-to-search demo; bucket README gains a plain-words intro and links it ([PR #206](https://github.com/ChaseHendrick/Scrolls/pull/206)).
 - 2026-10-27: one page scroll bar (user decision, 27 October 2026): code blocks grow to their full height instead of scrolling inside the page at 380 px (300 px in the Download cards), keeping only a sideways scroll for long lines, and the head carries the one-scroll fragment from `python -m kit spaceconnect render` ([PR #253](https://github.com/ChaseHendrick/Scrolls/pull/253)).
+- 2026-10-28: phone fix ([PR #254](https://github.com/ChaseHendrick/Scrolls/pull/254)), found by `python -m kit spaceconnect scroll --width 390` and the live checks after the 27 October deploy: links wrap, so the model link in How it was made no longer makes the page pan sideways by 9 px at 390 px. Deployed as Space commit `26a40791`.
 
 ## Related
 
