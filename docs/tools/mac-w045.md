@@ -244,7 +244,7 @@ It runs locally on the Mac and rents nothing. Full-segment v8in on a CPU is a GP
 python -m unittest tests.test_repo -v
 ```
 
-`test_shell_scripts_parse` checks that the script exists and parses with `bash -n`; `test_mac_scripts_are_bash_32` checks that it uses no syntax macOS bash 3.2 lacks. Nothing in the test suite runs the script; `SMOKE=1 EXPECT_GPU=cpu` is the manual end-to-end test, recorded once on 2026-10-07 on a Linux container (w045, rows 4000 to 4256, columns 2700 to 2956: AUC 0.7631, 0.6688 and 0.5857 forward, 0.3674, 0.2478 and 0.2791 reversed, a test of the script, not a result; [community scan log](../logs/2026-10-07-community-scan.md)). The tools it calls have their own tests.
+`test_shell_scripts_parse` checks that the script exists and parses with `bash -n`; `test_mac_scripts_are_bash_32` checks that it uses no syntax macOS bash 3.2 lacks. Nothing in the test suite runs the script; `SMOKE=1 EXPECT_GPU=cpu` is the manual end-to-end test, recorded once on 2026-10-07 on a Linux container (w045, rows 4000 to 4256, columns 2700 to 2956: AUC 0.7631, 0.6688 and 0.5857 forward, 0.3674, 0.2478 and 0.2791 reversed, a test of the script, not a result; [community scan log](../logs/2026-10-07-community-scan.md)). Rerun 2026-10-28 on villa `main` `860f52cbf`, with `ink_9um` forced onto the CPU and both logs saying `Using CPU device` (Linux x86_64, torch 2.15.0+cpu): exit 0 and the same six AUCs. The tools it calls have their own tests.
 
 ## History
 
