@@ -83,8 +83,82 @@ class Contract(unittest.TestCase):
         self.assertFails(d, "0 <= k <= n")
         d = copy.deepcopy(self.doc)
         self.c0(d)["within"]["2"]["n"] = 60
-        self.c0(d)["within"]["2"]["share"] = round(58 / 60, 6)
-        self.assertFails(d, "its basis scorable has 58 sites")
+        self.c0(d)["within"]["2"]["share"] = round(59 / 60, 6)
+        self.assertFails(d, "its basis scorable has 59 sites")
+
+    def two_scan(self):
+        """The fixture's SYNTH-A turned into a two-scan test: C0 covered on 40 of 60 drawn sites, 39 of them exact."""
+        d = copy.deepcopy(self.doc)
+        sc = d["scrolls"][0]
+        sc["scope"] = "exact on the covered share of drawn code 0 sites only (synthetic)"
+        sc["second_truth"] = {"kind": "finer_scan", "volume_id": "synthetic-second-scan", "voxel_um": 2.4}
+        c0 = sc["strata"][0]
+        c0["coverage"] = {"k": 40, "n": 60, "share": round(40 / 60, 6), "lower": 0.556, "upper": 0.764, "bar": 0.4,
+                          "verdict": "COVERED", "what": "both scans name the face and agree within 1 voxel"}
+        c0["within"]["1"] = {"basis": "covered", "k": 39, "n": 40, "share": 0.975, "lower": 0.9, "upper": 0.999}
+        c0["single_truth"] = {"verdict": "NOT SHOWN", "instrument_limited": True, "why": "under the bar",
+                              "within_1": {"basis": "itt", "k": 50, "n": 60, "share": round(50 / 60, 6),
+                                           "lower": 0.735, "upper": 0.905},
+                              "controls": copy.deepcopy(c0["controls"])}
+        sc["earlier"] = [{"prereg": {"sha256": "a" * 64, "frozen": "2026-10-27T00:00:00Z"},
+                          "scope": "an earlier synthetic box", "summary": "every class NOT SHOWN"}]
+        return d
+
+    def test_a_two_scan_test_carries_its_coverage_scope_and_second_scan(self):
+        d = self.two_scan()
+        self.assertEqual(self.problems(d), [])
+        c0 = lambda x: x["scrolls"][0]["strata"][0]   # noqa: E731
+        x = copy.deepcopy(d)
+        x["scrolls"][0]["scope"] = None
+        self.assertFails(x, "states in scope what exact means")
+        x = copy.deepcopy(d)
+        x["scrolls"][0]["second_truth"] = None
+        self.assertFails(x, "second_truth")
+        x = copy.deepcopy(d)
+        c0(x)["within"]["1"]["n"] = 41
+        self.assertFails(x, "but 40 sites are covered")
+        x = copy.deepcopy(d)
+        del c0(x)["coverage"]
+        self.assertFails(x, "basis covered needs the stratum's coverage")
+        x = copy.deepcopy(d)
+        c0(x)["coverage"]["n"] = 59
+        self.assertFails(x, "but the stratum drew 60 sites")
+        x = copy.deepcopy(d)
+        c0(x)["coverage"]["lower"] = 0.35
+        self.assertFails(x, "COVERED needs the lower bound")
+        x = copy.deepcopy(d)
+        c0(x)["coverage"]["verdict"] = "NOT COVERED"
+        self.assertFails(x, "NOT COVERED, but the lower bound")
+        c0(x)["coverage"]["lower"] = 0.35
+        self.assertFails(x, "a PASS needs the coverage verdict COVERED")
+        x = copy.deepcopy(d)
+        c0(x)["coverage"]["what"] = ""
+        self.assertFails(x, "what covered means")
+        x = copy.deepcopy(d)
+        c0(x)["single_truth"]["within_1"]["n"] = 59
+        self.assertFails(x, "single_truth.within_1: n is 59")
+        x = copy.deepcopy(d)
+        c0(x)["single_truth"]["within_1"]["basis"] = "covered"
+        self.assertFails(x, "one scan has no coverage")
+        x = copy.deepcopy(d)
+        c0(x)["single_truth"]["controls"][0]["holds"] = False
+        self.assertFails(x, "but holds says False")
+        x = copy.deepcopy(d)
+        x["scrolls"][0]["earlier"][0]["prereg"]["sha256"] = "abc"
+        self.assertFails(x, "earlier[0].prereg")
+        x = copy.deepcopy(d)
+        x["scrolls"][0]["earlier"][0]["summary"] = "cost 2 USD"
+        self.assertFails(x, "a cost")
+        x = copy.deepcopy(self.doc)
+        x["scrolls"][0]["second_truth"] = {"kind": "finer_scan", "volume_id": "x", "voxel_um": 2.4}
+        self.assertFails(x, "only a two-scan test names a second scan")
+
+    def test_a_pass_needs_its_bound_at_the_bar(self):
+        d = copy.deepcopy(self.doc)
+        self.c0(d)["within"]["1"]["lower"] = 0.85
+        self.assertFails(d, "a PASS needs a lower bound within 1 voxel at or above the bar 0.9")
+        d["scrolls"][0]["strata"][0]["verdict"] = "NOT SHOWN"
+        self.assertFalse(any("a PASS needs a lower bound" in p for p in self.problems(d)))
 
     def test_a_tolerance_not_measured_is_null_never_missing(self):
         d = copy.deepcopy(self.doc)
