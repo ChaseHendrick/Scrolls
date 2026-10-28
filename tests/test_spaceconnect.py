@@ -1,5 +1,6 @@
 """Tests for kit/spaceconnect.py: the Connect your tool panel every Space carries."""
 
+import functools
 import html
 import importlib.util
 import json
@@ -144,6 +145,30 @@ class Render(unittest.TestCase):
 
 
 HAVE_PLAYWRIGHT = importlib.util.find_spec("playwright") is not None
+_CHROMIUM = []
+
+
+def needs_chromium(test):
+    """Skip unless playwright can start its Chromium. The Python package is often
+    installed without the browser build it expects, and that is a missing
+    dependency, not a failure of the code under test."""
+    @functools.wraps(test)
+    def run(self):
+        if not _CHROMIUM:
+            ok = False
+            if HAVE_PLAYWRIGHT:
+                try:
+                    from playwright.sync_api import sync_playwright
+                    with sync_playwright() as pw:
+                        pw.chromium.launch().close()
+                    ok = True
+                except Exception:
+                    ok = False
+            _CHROMIUM.append(ok)
+        if not _CHROMIUM[0]:
+            self.skipTest("needs playwright and its Chromium build")
+        return test(self)
+    return run
 
 
 class OneScroll(unittest.TestCase):
@@ -179,7 +204,7 @@ class OneScroll(unittest.TestCase):
         self.assertEqual(sc.verdict([panel], one_screen=True), [])     # a one-screen viewer keeps one list
         self.assertTrue(sc.verdict([panel, dict(panel, box="aside#card")], one_screen=True))
 
-    @unittest.skipUnless(HAVE_PLAYWRIGHT, "needs playwright and a Chromium")
+    @needs_chromium
     def test_fragment_fits_frames_to_their_content(self):
         from playwright.sync_api import sync_playwright
         guide = "<html><body style='margin:20px'>" + "".join(f"<p id=p{i}>line {i}</p>" for i in range(120)) + "</body></html>"
@@ -217,7 +242,7 @@ class OneScroll(unittest.TestCase):
                 b.close()
 
 
-    @unittest.skipUnless(HAVE_PLAYWRIGHT, "needs playwright and a Chromium")
+    @needs_chromium
     def test_scan_looks_inside_frames_sized_from_outside(self):
         from playwright.sync_api import sync_playwright
         inner = ("<html><body style='margin:0'><div id=box style='height:120px;overflow:auto'>"
@@ -240,7 +265,7 @@ class OneScroll(unittest.TestCase):
         self.assertNotIn(("srcdoc", "page"), boxes)                # the frame's own document has no scroll bar
         self.assertTrue(sc.verdict(found))
 
-    @unittest.skipUnless(HAVE_PLAYWRIGHT, "needs playwright and a Chromium")
+    @needs_chromium
     def test_tabs_are_listed_with_their_depth_and_only_when_shown(self):
         from playwright.sync_api import sync_playwright
         page = ("<html><body><div role=tablist><button role=tab>A</button><button role=tab>B</button></div>"
@@ -259,7 +284,7 @@ class OneScroll(unittest.TestCase):
                 b.close()
         self.assertEqual([(t["label"], t["depth"]) for t in tabs], [("A", 0), ("B", 0), ("A1", 1)])
 
-    @unittest.skipUnless(HAVE_PLAYWRIGHT, "needs playwright and a Chromium")
+    @needs_chromium
     def test_tabs_folded_into_more_tabs_are_found_and_opened(self):
         # Gradio's markup on a phone: the tabs that do not fit leave the tablist for a "More tabs" menu of plain
         # buttons, which the role=tab walk alone never opened
@@ -289,7 +314,7 @@ class OneScroll(unittest.TestCase):
         self.assertEqual([(t["label"], t["depth"]) for t in more], [("B", 0), ("C", 0)])
         self.assertEqual(title, "C")
 
-    @unittest.skipUnless(HAVE_PLAYWRIGHT, "needs playwright and a Chromium")
+    @needs_chromium
     def test_wide_content_is_cut_off_unless_a_box_scrolls_sideways(self):
         from playwright.sync_api import sync_playwright
         row = "<tr>" + "".join(f"<td style='min-width:120px'>c{i}</td>" for i in range(5)) + "</tr>"
@@ -312,7 +337,7 @@ class OneScroll(unittest.TestCase):
         self.assertEqual([x["box"] for x in cut], ["table#bare", "page"])
         self.assertGreater(cut[0]["width"], cut[0]["room"])
 
-    @unittest.skipUnless(HAVE_PLAYWRIGHT, "needs playwright and a Chromium")
+    @needs_chromium
     def test_a_long_link_that_does_not_wrap_pans_the_page(self):
         from playwright.sync_api import sync_playwright
         link = "<p style='margin:0 16px'>Weights <a href=#>" + "scrollprize/dinovol_8um_ps192_102126" * 2 + "</a></p>"
@@ -344,7 +369,7 @@ class OneScroll(unittest.TestCase):
         self.assertEqual(sc.space_urls("SharpMeow", "unroll", False, "static"),
                          ["https://huggingface.co/spaces/SharpMeow/unroll"])
 
-    @unittest.skipUnless(HAVE_PLAYWRIGHT, "needs playwright and a Chromium")
+    @needs_chromium
     def test_a_sideways_scroll_bar_makes_a_full_height_page_scroll(self):
         # the bar takes its height from the page, so a page exactly as tall as the window scrolls by the bar's height
         from playwright.sync_api import sync_playwright
