@@ -8,7 +8,7 @@
 | Status | Current |
 | Kind | script folder |
 | Area | Releases and repository |
-| Run | `python scripts/media/hero.py`, `python scripts/media/encode.py`, `python scripts/media/capture_web.py`, `python scripts/media/record_ap_monitor.py`, `python scripts/media/sweep.py`, `python scripts/media/tifxyz_stills.py`, `python scripts/media/isometry_media.py`, `python scripts/media/coverage_still.py`, `python scripts/media/vc3d_agent_session.py`, `python scripts/media/hfrows_demo.py` |
+| Run | `python scripts/media/hero.py`, `python scripts/media/encode.py`, `python scripts/media/capture_web.py`, `python scripts/media/record_ap_monitor.py`, `python scripts/media/sweep.py`, `python scripts/media/tifxyz_stills.py`, `python scripts/media/isometry_media.py`, `python scripts/media/coverage_still.py`, `python scripts/media/vc3d_agent_session.py`, `python scripts/media/hfrows_demo.py`, `python scripts/media/barrier_demo.py`, `python scripts/media/barrier_chart.py` |
 | Code | `scripts/media/` |
 | Tests | `tests/test_media.py`, `tests/test_repo.py` (`test_assets_are_listed_labeled_and_within_limits`) |
 | Needs | Python 3.10 or newer. `hero.py` and `sweep.py`: numpy and Pillow, and the Inter font for social cards. `encode.py`: ffmpeg (libx264) and gifsicle. `capture_web.py`: the `playwright` package and a Chromium it can start (it never downloads one). `common.py` is standard library only |
@@ -248,6 +248,25 @@ The GIF, MP4 and two stills on the [vc3d-agent](vc3d-agent.md) page: a captioned
 | `--publish SHOTS` | unset | Copy `vc3d-agent-render.png` and `vc3d-agent-app.png` from SHOTS into `--assets` with their sidecars, through `common.write_guard` and `common.size_guard` |
 | `--assets DIR` | required with `--publish` | The `docs/assets/` folder for the stills |
 
+### `python scripts/media/barrier_demo.py`
+
+The stills, slow GIF and MP4 on the [contact-barrier](contact-barrier.md) page: the released contact barrier (`kit switchfix barrier` of AutoPipeline 0.1.9) run on the two made-up cases of the package's own tests, a trace that hops onto a touching sheet and a control that stays on its sheet, drawn as cross-sections and from above. It imports the barrier from the AutoPipeline package folder, checks that it keeps and cuts as those tests require (no media otherwise), and writes `barrier-hop-still.png`, `barrier-control.png`, `barrier-topview.png`, `barrier-hop.gif` and `barrier-hop.mp4`, each Synthetic demo with a sidecar. Needs numpy, scipy, Pillow, ffmpeg and gifsicle.
+
+| Option | Default | Meaning |
+| --- | --- | --- |
+| `--package` | required | The AutoPipeline package folder that holds `kit/switchfix.py` (`submissions/progress-2026-10-fix9/autopipeline/` on branch `submission/progress-2026-10-fix9`) |
+| `--out-dir` | required | Where the stills, GIF, MP4 and sidecars go |
+| `--package-commit` | empty | The commit the package folder came from, recorded in each sidecar |
+
+### `python scripts/media/barrier_chart.py`
+
+The chart on the [contact-barrier](contact-barrier.md) page: two small multiples of the held-out comparison on PHerc0139 (area on the seeded winding, area on other windings, per winding and repeat), an SVG with no raster in it and a sidecar, from the numbers in `docs/media/contact-barrier-a15-data.json`. Standard library only.
+
+| Option | Default | Meaning |
+| --- | --- | --- |
+| `data` | required | The chart's numbers (JSON) |
+| `out` | required | The SVG to write; its sidecar `NAME.json` goes beside it |
+
 ### Environment variables
 
 | Variable | Default | Meaning |
@@ -308,6 +327,11 @@ The sidecar (`common.write_sidecar`, schema `scrolls-media/1`):
 | What you see | Why | What to do |
 | --- | --- | --- |
 | `usage: ...` then `error: ...` on stderr, exit code 2 | A missing or wrong argument | Check the command against Commands and options |
+| `PATH: no kit/switchfix.py; give the AutoPipeline package folder` | `barrier_demo.py --package` points somewhere else | Give the package folder of branch `submission/progress-2026-10-fix9` |
+| `the barrier did not behave as the package's tests say; no media written` | The barrier kept or cut differently from the package's tests on the made-up cases | Check the package version; do not publish pictures of a barrier that fails its own tests |
+| `PATH was over the public size limit and was removed` | `barrier_demo.py`'s GIF or MP4 came out over 1920 px or 4 MB under `docs/assets/` | Shorten the clip or lower its width |
+| `long dash in the chart text` | `barrier_chart.py`'s data holds U+2014 or U+2013 | Rewrite the text without long dashes |
+| `the chart embeds a raster picture` | The written SVG links or embeds a raster image | Draw it from shapes only |
 | `SCROLL is on a prize list (...): no picture` | `coverage_still.py` on a prize-list scroll (the public media rule) | Use a scan on no prize list |
 | `actions must be a JSON list of steps` | `--actions` holds an object or a string | Wrap the steps in a list |
 | `no such page:` | The local HTML file is not there | Fix the path, or give a URL |
@@ -415,6 +439,7 @@ Peak memory of a hero render was 1,687 MB (maximum resident set, the earlier len
 - 2026-10-18: added `hero.py`, `scene.py`, `scenes.py`, `encode.py`, `capture_web.py`, `sweep.py` and `common.py`, with heroes and clips for every released tool and the `image` field of `kit/releases.py` (branch `claude/release-media`, `4a970bd` is the base commit).
 - 2026-10-18: after review of `c33e159`, the guards check sources and clips, not only labels (`common.input_guard`, `--meta` required under `docs/assets/`, no raw frames there, panels always a Synthetic demo), and `tests/test_repo.py` allows only Concept illustration and Synthetic demo there and requires a sidecar for every file. The heroes were remade with the reference's warm key light, low cameras and diagonal subjects, fibrous papyrus, spiral cross-sections and cards with a solid text band; the Scroll Text Reader hero no longer draws letters, boxes or bars, and StrokeNet's hero is withdrawn until its rework. The AutoPipeline clip was recaptured at 12 fps from the first stage with a pointer (`cursor`, `point`, `tap`, `glide`, `scrollto`, wall-clock `frames`), the umbilicus sweep redrawn in the scanner's fixed frame, and `encode.py` gained `--dither` and `--made-with`.
 - 2026-10-18: the public media rule ([`docs/media/README.md`](../media/README.md), set on Chase's delegation) replaced "only Concept illustrations and Synthetic demos": `common.write_guard` now also allows a Real data render of a public scan that is not prize-eligible and shows no held-out labels (`real_data_problems`, `prize_scrolls`, `eligible_prizes`), `common.size_guard` and `encode.py` hold every file there to 1920 px and 4 MB, `common.public_problems` checks every committed sidecar, `common.media_size` reads MP4 sizes too, the credit became "Vesuvius Challenge open data, CC BY-NC 4.0", `data.labels` is required and `data.segment` optional, and `hero.py` checks the rule before importing Pillow. The audit found every existing file conforming.
+- 2026-10-28: added `barrier_demo.py` and `barrier_chart.py` for the contact barrier's page (branch `claude/switch-barrier-entry`, draft PR).
 - 2026-10-24: added `vc3d_agent_session.py`: a captioned replay of recorded Headless VC3D for agents sessions on PHerc0139 w035, and its two stills (`docs/assets/vc3d-agent/`, [#201](https://github.com/ChaseHendrick/Scrolls/pull/201)).
 
 ## Related

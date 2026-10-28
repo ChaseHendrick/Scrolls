@@ -1778,6 +1778,134 @@
    ]
   },
   {
+   "id": "contact-barrier",
+   "name": "contact-barrier",
+   "tagline": "cut a traced surface back to its seed's sheet where it ran onto a touching sheet",
+   "summary": "The contact barrier (`kit switchfix barrier`, AutoPipeline's `qa.repair` method `barrier`) cuts a traced tifxyz back to the part its seed's sheet reaches, drawing a barrier where a touching sheet shows on both sides of the trace.",
+   "status": "Branch only",
+   "kind": [
+    "kit command",
+    "package"
+   ],
+   "area": "Surfaces and tracing",
+   "commands": [
+    "scrolls-kit switchfix barrier",
+    "autopipeline plan SAMPLE",
+    "\"qa\": {\"repair\": {\"method\": \"barrier\"}}"
+   ],
+   "imports": [],
+   "code": [
+    {
+     "path": "submissions/progress-2026-10-fix9/autopipeline/kit/switchfix.py",
+     "symbols": [
+      "barrier",
+      "barrier_keep",
+      "BARRIER"
+     ]
+    },
+    {
+     "path": "submissions/progress-2026-10-fix9/autopipeline/kit/sheetgap.py",
+     "symbols": [
+      "contact_barrier"
+     ]
+    },
+    {
+     "path": "submissions/progress-2026-10-fix9/autopipeline/kit/autopipe.py",
+     "symbols": [
+      "repair_one"
+     ]
+    }
+   ],
+   "tests": [
+    "submissions/progress-2026-10-fix9/autopipeline/tests/test_switchfix.py",
+    "scripts/media/barrier_demo.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed"
+   },
+   "checked": {
+    "date": "2026-10-28",
+    "commit": "2144cdf"
+   },
+   "license": "Apache License 2.0, as AutoPipeline ([LICENSE on the branch](https://github.com/ChaseHendrick/Scrolls/blob/2144cdfcac4ecfc33150f7e81317e5ab33f248d6/submissions/progress-2026-10-fix9/autopipeline/LICENSE))",
+   "fields": {
+    "Id": "`contact-barrier`",
+    "Status": "Branch only",
+    "Kind": "kit command, package",
+    "Area": "Surfaces and tracing",
+    "Run": "`scrolls-kit switchfix barrier` (in the AutoPipeline package folder), `autopipeline plan SAMPLE` with `\"qa\": {\"repair\": {\"method\": \"barrier\"}}` (the default)",
+    "Code": "`submissions/progress-2026-10-fix9/autopipeline/kit/switchfix.py` (`barrier`, `barrier_keep`, `BARRIER`), `submissions/progress-2026-10-fix9/autopipeline/kit/sheetgap.py` (`contact_barrier`), `submissions/progress-2026-10-fix9/autopipeline/kit/autopipe.py` (`repair_one`) on the branch",
+    "Tests": "`submissions/progress-2026-10-fix9/autopipeline/tests/test_switchfix.py` on the branch; the barrier's own cases (a hop is cut, a control that stays is kept whole, without the barrier the hop is joined) are drawn by `scripts/media/barrier_demo.py` here, which refuses to write pictures if they fail",
+    "Needs": "Python 3.10 or newer, numpy and scipy; a surface prediction as OME-Zarr (the open-data m7 prediction for the scans that have one)",
+    "Runs on": "Any CPU. Not measured as its own step; inside the held-out comparison below it ran on a shared 4-core cloud container as part of each trace's chain",
+    "Network": "The surface prediction's chunks, from the open-data bucket or the URL given, cached on disk",
+    "Writes": "OUT: a copy of the tifxyz with every vertex outside the kept part set to (-1, -1, -1), and a JSON record in OUT's `meta.json` and at `--record`",
+    "Go-ahead": "Not needed",
+    "Released": "Inside AutoPipeline 0.1.9, public branch `submission/progress-2026-10-fix9` (2026-10-25); the default `qa.repair` method of AutoPipeline since 2026-10-22",
+    "Branch": "`submission/progress-2026-10-fix9` at `2144cdfcac4ecfc33150f7e81317e5ab33f248d6`",
+    "License": "Apache License 2.0, as AutoPipeline ([LICENSE on the branch](https://github.com/ChaseHendrick/Scrolls/blob/2144cdfcac4ecfc33150f7e81317e5ab33f248d6/submissions/progress-2026-10-fix9/autopipeline/LICENSE))",
+    "Checked": "2026-10-28 against commit `2144cdf`"
+   },
+   "page": "docs/tools/contact-barrier.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 24,
+     "end_line": 39,
+     "applicable": true
+    },
+    {
+     "name": "Held-out comparison against villa's tracer",
+     "start_line": 40,
+     "end_line": 54,
+     "applicable": true
+    },
+    {
+     "name": "Where the code is",
+     "start_line": 55,
+     "end_line": 65,
+     "applicable": true
+    },
+    {
+     "name": "How to run it",
+     "start_line": 66,
+     "end_line": 90,
+     "applicable": true
+    },
+    {
+     "name": "Inputs and outputs",
+     "start_line": 91,
+     "end_line": 94,
+     "applicable": true
+    },
+    {
+     "name": "Why it is not on the default branch",
+     "start_line": 95,
+     "end_line": 98,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 99,
+     "end_line": 104,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 105,
+     "end_line": 110,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 111,
+     "end_line": 116,
+     "applicable": true
+    }
+   ]
+  },
+  {
    "id": "coverage",
    "name": "coverage",
    "tagline": "see which wraps and heights of a scroll the published segments trace, and where the gaps are",
@@ -7897,7 +8025,9 @@
     "python scripts/media/isometry_media.py",
     "python scripts/media/coverage_still.py",
     "python scripts/media/vc3d_agent_session.py",
-    "python scripts/media/hfrows_demo.py"
+    "python scripts/media/hfrows_demo.py",
+    "python scripts/media/barrier_demo.py",
+    "python scripts/media/barrier_chart.py"
    ],
    "imports": [],
    "code": [
@@ -7924,7 +8054,7 @@
     "Status": "Current",
     "Kind": "script folder",
     "Area": "Releases and repository",
-    "Run": "`python scripts/media/hero.py`, `python scripts/media/encode.py`, `python scripts/media/capture_web.py`, `python scripts/media/record_ap_monitor.py`, `python scripts/media/sweep.py`, `python scripts/media/tifxyz_stills.py`, `python scripts/media/isometry_media.py`, `python scripts/media/coverage_still.py`, `python scripts/media/vc3d_agent_session.py`, `python scripts/media/hfrows_demo.py`",
+    "Run": "`python scripts/media/hero.py`, `python scripts/media/encode.py`, `python scripts/media/capture_web.py`, `python scripts/media/record_ap_monitor.py`, `python scripts/media/sweep.py`, `python scripts/media/tifxyz_stills.py`, `python scripts/media/isometry_media.py`, `python scripts/media/coverage_still.py`, `python scripts/media/vc3d_agent_session.py`, `python scripts/media/hfrows_demo.py`, `python scripts/media/barrier_demo.py`, `python scripts/media/barrier_chart.py`",
     "Code": "`scripts/media/`",
     "Tests": "`tests/test_media.py`, `tests/test_repo.py` (`test_assets_are_listed_labeled_and_within_limits`)",
     "Needs": "Python 3.10 or newer. `hero.py` and `sweep.py`: numpy and Pillow, and the Inter font for social cards. `encode.py`: ffmpeg (libx264) and gifsicle. `capture_web.py`: the `playwright` package and a Chromium it can start (it never downloads one). `common.py` is standard library only",
@@ -7966,67 +8096,67 @@
     {
      "name": "Commands and options",
      "start_line": 85,
-     "end_line": 257,
+     "end_line": 276,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 258,
-     "end_line": 261,
+     "start_line": 277,
+     "end_line": 280,
      "applicable": false
     },
     {
      "name": "Inputs",
-     "start_line": 262,
-     "end_line": 268,
+     "start_line": 281,
+     "end_line": 287,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 269,
-     "end_line": 305,
+     "start_line": 288,
+     "end_line": 324,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 306,
-     "end_line": 359,
+     "start_line": 325,
+     "end_line": 383,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 360,
-     "end_line": 382,
+     "start_line": 384,
+     "end_line": 406,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 383,
-     "end_line": 398,
+     "start_line": 407,
+     "end_line": 422,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 399,
-     "end_line": 408,
+     "start_line": 423,
+     "end_line": 432,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 409,
-     "end_line": 412,
+     "start_line": 433,
+     "end_line": 436,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 413,
-     "end_line": 419,
+     "start_line": 437,
+     "end_line": 444,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 420,
-     "end_line": 425,
+     "start_line": 445,
+     "end_line": 450,
      "applicable": true
     }
    ]
