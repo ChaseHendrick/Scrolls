@@ -950,7 +950,7 @@ def _add_selection(p):
                    help="the box in level-0 voxels, lows inclusive and highs exclusive")
     p.add_argument("--family", choices=("H", "V"), help="only horizontal (H) or vertical (V) fibers")
     p.add_argument("--min-len", type=float, metavar="MM", help="only fibers at least this long, in mm")
-    p.add_argument("--out", type=Path, metavar="BOX.afv", help="write the fibers as an .afv that VC3D's importer opens")
+    p.add_argument("--out", type=Path, metavar="BOX.afv", help="write the fibers as an .afv with the source file's schema and metadata, for villa's importer")
     p.add_argument("--json", type=Path, metavar="FIBERS.json", help="write the fibers as JSON: id, family, length, points")
 
 

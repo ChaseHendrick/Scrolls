@@ -57,7 +57,7 @@ It printed (28 Oct 2026, from a cloud container, abridged):
 
 8.4 MB read of the scan's 1.5 GB file; the digest and the written `box.afv` (sha256 `a0f40c73...`) equal those from filtering the full download.
 
-The box is Z0 Z1 Y0 Y1 X0 X1 in level-0 voxels of the scan (lows inclusive, highs exclusive). It worked when `fibers` is above zero for a box inside the papyrus and `box.afv` opens in villa's importer. Add `--family H` or `V`, or `--min-len 1` for the 1 mm set.
+The box is Z0 Z1 Y0 Y1 X0 X1 in level-0 voxels of the scan (lows inclusive, highs exclusive). It worked when `fibers` is above zero for a box inside the papyrus. `box.afv` copies the source file's schema, pragmas and metadata for villa's importer; nobody has opened a streamed box in VC3D yet. Add `--family H` or `V`, or `--min-len 1` for the 1 mm set.
 
 Every fiber of a scan as rows, with the `datasets` library (streaming, no download):
 
@@ -76,10 +76,11 @@ Each published scan's shards were built and checked in one Hugging Face CPU Job 
 
 - **Parity.** Every box, and the family and 1 mm filters on two medium boxes: the streamed fibers and the written `.afv` bytes equal the full file's. The whole scan: an order-free digest over every fiber equals the full file's.
 - **Published 1 mm file.** `--min-len 1` over the shards gives the published `SCAN_afv_v2_1mm.afv` curves, per medium box and over the whole file.
-- **Controls that can fail.** The control box returns no fiber both ways. Leaving out one row group the medium box reads breaks parity (the check caught it on every scan). In the tests, a duplicated fiber changes the order-free digest, and a box across shard edges neither drops nor repeats a fiber.
+- **Controls that can fail.** Leaving out one row group the medium box reads breaks parity (the check caught it on every scan). The published 1 mm file is an outside reference the shards must reproduce. In the tests, a duplicated fiber changes the order-free digest, and a box across shard edges neither drops nor repeats a fiber.
+- **Sanity check.** The control box outside the scan returns no fiber both ways; it can hardly fail, so it is not counted as a control.
 - **Hosted copy.** After upload, every box was streamed again over HTTP from the dataset and compared with the full file's digests; every hosted shard's size and sha256 match the index.
 
-Results of the six Jobs (28 Oct 2026; Boxes counts the 15 small, medium and large boxes, the edge box and the control box):
+Results of the six Jobs (28 Oct 2026; Boxes counts the 15 small, medium and large boxes, the edge box and the control box). Some boxes hold no fibers: 12 of the 96 boxes and 3 of the 36 filter checks (PHerc0009B alone has 4 empty boxes and 3 empty filters), so the 84 boxes with fibers carry the parity result:
 
 | Scan | Fibers | Shards (files, GB) | Boxes equal (local, hosted) | Filters equal | Control box | Dropped row group caught | Whole scan digest | 1 mm set equal |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -119,7 +120,7 @@ usage: python -m kit fibers stream [-h] --box Z0 Z1 Y0 Y1 X0 X1
 | `--box Z0 Z1 Y0 Y1 X0 X1` | required | the box in level-0 voxels, lows inclusive and highs exclusive |
 | `--family FAMILY` | none | only horizontal (H) or vertical (V) fibers |
 | `--min-len MM` | none | only fibers at least this long, in mm |
-| `--out BOX.afv` | none | write the fibers as an .afv that VC3D's importer opens |
+| `--out BOX.afv` | none | write the fibers as an .afv with the source file's schema and metadata, for villa's importer |
 | `--json FIBERS.json` | none | write the fibers as JSON: id, family, length, points |
 | `--scan SCAN` | none | a scan with a public dataset (python -m kit fibers scans) |
 | `--repo REPO` | none | any dataset with stream shards, OWNER/NAME (instead of --scan) |
@@ -144,7 +145,7 @@ The same box from a downloaded `.afv`: the reference a stream must equal.
 | `--box Z0 Z1 Y0 Y1 X0 X1` | required | the box in level-0 voxels, lows inclusive and highs exclusive |
 | `--family FAMILY` | none | only horizontal (H) or vertical (V) fibers |
 | `--min-len MM` | none | only fibers at least this long, in mm |
-| `--out BOX.afv` | none | write the fibers as an .afv that VC3D's importer opens |
+| `--out BOX.afv` | none | write the fibers as an .afv with the source file's schema and metadata, for villa's importer |
 | `--json FIBERS.json` | none | write the fibers as JSON: id, family, length, points |
 
 ### `python -m kit fibers parity`
@@ -167,7 +168,7 @@ Streams the box and filters the downloaded file; prints both digests and `"verdi
 | `--box Z0 Z1 Y0 Y1 X0 X1` | required | the box in level-0 voxels, lows inclusive and highs exclusive |
 | `--family FAMILY` | none | only horizontal (H) or vertical (V) fibers |
 | `--min-len MM` | none | only fibers at least this long, in mm |
-| `--out BOX.afv` | none | write the fibers as an .afv that VC3D's importer opens |
+| `--out BOX.afv` | none | write the fibers as an .afv with the source file's schema and metadata, for villa's importer |
 | `--json FIBERS.json` | none | write the fibers as JSON: id, family, length, points |
 | `--scan SCAN` | none | a scan with a public dataset (python -m kit fibers scans) |
 | `--repo REPO` | none | any dataset with stream shards, OWNER/NAME (instead of --scan) |
@@ -323,10 +324,10 @@ Free to use: reading costs nothing. Measured from Hugging Face CPU Jobs on 28 Oc
 
 | Box (level-0 voxels for level-0 scans; 4 times that for PHerc0332 and PHerc1667) | Boxes | Bytes read, median (range) | Seconds, range | The per-cell tiles the box needs, median |
 | --- | --- | --- | --- | --- |
-| small, 32 grid voxels | 30 | 5.2 MB (0.1 to 13.4) | 0.05 to 3.9 | 89 MB |
-| medium, 256 | 30 | 11.7 MB (0.1 to 32.2) | 0.1 to 2.7 | 89 MB |
-| large, 1024 | 30 | 78 MB (0.8 to 159) | 0.5 to 16 | 89 MB |
-| 128 across 8 shard files | 6 | 5.4 MB (1.7 to 19.1) | 0.9 to 3.1 | 494 MB |
+| small, 32 grid voxels | 30 | 5.1 MB (0.1 to 13.4) | 0.05 to 3.9 | 88.7 MB |
+| medium, 256 | 30 | 10.3 MB (0.1 to 32.2) | 0.1 to 2.7 | 88.7 MB |
+| large, 1024 | 30 | 77.4 MB (0.8 to 159) | 0.5 to 16 | 88.7 MB |
+| 128 across 8 shard files | 6 | 4.4 MB (1.7 to 19.1) | 0.9 to 3.1 | 494 MB |
 | control, outside the scan | 6 | the index only (0.1 to 0.3 MB) | under 0.1 | none |
 
 | Scan | Whole-scan `.afv` | Whole scan as shards | Shard files |
