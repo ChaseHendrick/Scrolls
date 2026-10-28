@@ -11,7 +11,7 @@
 | Run | `bash scripts/mac-w045.sh` |
 | Code | `scripts/mac-w045.sh` |
 | Tests | `tests/test_repo.py` (only that the script parses with `bash -n` and uses no bash 4 syntax) |
-| Needs | An Apple Silicon Mac (macOS, arm64) with git and uv (`brew install uv`); about 6 GB free in `WORK` (script header). The script builds the rest: villa (`main` and PR #1865), a Python 3.14 environment with villa's `models` extra (minus `volume-cartographer`, `cucim`, `nnunetv2`, `batchgeneratorsv2`) plus tifffile, imagecodecs, scipy, opencv-python-headless, safetensors and huggingface_hub; the segment's surface volume and labels; the `ink_9um` seed 42 and 43 checkpoints; v8in or v8in-1447 at a pinned revision. It also runs `scripts/v8in_run.py` ([v8in-run](v8in-run.md)) and the kit commands `fetch`, `layers`, `verify`, `auc`, `rowscore` and `provenance` |
+| Needs | An Apple Silicon Mac (macOS, arm64) with git and uv (`brew install uv`); about 6 GB free in `WORK` (script header). The script builds the rest: villa (`main` at a pinned commit), a Python 3.14 environment with villa's `models` extra (minus `volume-cartographer`, `cucim`, `nnunetv2`, `batchgeneratorsv2`) plus tifffile, imagecodecs, scipy, opencv-python-headless, safetensors and huggingface_hub; the segment's surface volume and labels; the `ink_9um` seed 42 and 43 checkpoints; v8in or v8in-1447 at a pinned revision. It also runs `scripts/v8in_run.py` ([v8in-run](v8in-run.md)) and the kit commands `fetch`, `layers`, `verify`, `auc`, `rowscore` and `provenance` |
 | Runs on | Apple Silicon Mac only (any machine with `EXPECT_GPU=cpu`, to test the script). `QUICK=1` is meant to finish in under an hour once w045's device check exists (script header; the recorded steps are under Cost and time); a full run spends up to `V8IN_HOURS` (default 4) on v8in plus about 11 min per `ink_9um` seed ([mac.md](../mac.md#watching-a-run), [community scan log](../logs/2026-10-07-community-scan.md), 2026-10-07) |
 | Network | `github.com` (villa); `vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` (surface volume and labels, through `kit fetch`); `huggingface.co` (`scrollprize/ink_9um`, and `YoussefMoNader/ink-8um-v8in` or `YoussefMoNader/ink-8um-v8in-pherc1447-loo-w062`); the Python package index and uv's Python downloads. Nothing is uploaded |
 | Writes | Under `WORK` (default `~/scrolls-work`): shared `villa/`, `venv/`, `models-reqs.txt`, `checkpoints/`, `data/`, `logs/`, and the lock folder `.gpu-job.lock/` while it runs; per run, `WORK/NAME/maps/`, `WORK/NAME/layers/`, `WORK/NAME/crop_layers/` and `WORK/NAME/results/` (see Outputs). `NAME` is the segment, with `-smoke` added under `SMOKE=1` |
@@ -24,7 +24,7 @@
 
 A device check (such as [mac-verify](mac-verify.md)) shows that the Mac GPU gives the CPU's map, not that a model finds ink. This script asks the second question on segments with published ink labels: does each model's map rank labeled ink pixels above labeled background, and does the map made with the surface volume's layers in reverse order (the control) fail to do so?
 
-It runs two released models on the Mac GPU (MPS, through PyTorch's Metal backend). `ink_9um` is the team's 9 um ink model (seeds 42 and 43, step 75,000), run through villa's `vesuvius.ink_detection` inference with [villa PR #1865](https://github.com/ScrollPrize/villa/pull/1865), in both depth directions. v8in is Youssef Nader's ResNet3D-50 ink model (`YoussefMoNader/ink-8um-v8in`); `MODEL=v8in-1447` picks its PHerc1447 fine-tune instead. v8in runs through `scripts/v8in_run.py` on layer TIFFs that `kit layers` exports. Before the long v8in pass the script runs v8in on a 640 px crop on the CPU and on MPS and stops unless [`verify`](verify.md) passes with the reverse map as the control. It then scores every map with [`auc`](auc.md) (forward against reverse) and [`rowscore`](rowscore.md), prints a summary to paste, and writes a [provenance](provenance.md) record and digest.
+It runs two released models on the Mac GPU (MPS, through PyTorch's Metal backend). `ink_9um` is the team's 9 um ink model (seeds 42 and 43, step 75,000), run through villa's `vesuvius.ink_detection` inference at a pinned commit of villa `main` (`VILLA_REV`, by default `860f52cbf`, the merge of [villa PR #1865](https://github.com/ScrollPrize/villa/pull/1865), which lets villa pick MPS by itself), in both depth directions. v8in is Youssef Nader's ResNet3D-50 ink model (`YoussefMoNader/ink-8um-v8in`); `MODEL=v8in-1447` picks its PHerc1447 fine-tune instead. v8in runs through `scripts/v8in_run.py` on layer TIFFs that `kit layers` exports. Before the long v8in pass the script runs v8in on a 640 px crop on the CPU and on MPS and stops unless [`verify`](verify.md) passes with the reverse map as the control. It then scores every map with [`auc`](auc.md) (forward against reverse) and [`rowscore`](rowscore.md), prints a summary to paste, and writes a [provenance](provenance.md) record and digest.
 
 The segments differ in what they can show. PHerc0139 w045 is not in v8in's training set (its patch pack lists w033, w035, w041 and w044), but it is not held out from `ink_9um`, which trained on its 2.4 um render, so for `ink_9um` it is a cross-scan check on a training surface ([log](../logs/2026-10-08-w045-not-held-out.md)). PHerc0841 (`SEGMENT=0841-w00`, `0841-ag896` or `0841-ag405`) is in the training data of none of `ink_9um`, v8in, d9v2 and Reader v2, but possibly in Hecate's, so it is the fairer test. `QUICK=1` scores every model on the same 640 px crop of densest labeled ink, less a 64 px edge, which is what [mac-phase0](mac-phase0.md) queues and [gate](gate.md) ranks.
 
@@ -81,7 +81,7 @@ It worked when the exit code is 0, the summary's `v8in cpu vs mps (crop):` line 
 - **Reverse-depth control for every score.** Every map has a reverse-direction twin, and `kit auc --control` and `kit rowscore --reverse` score both. A model that reads ink should score well above 0.5 forward and near or below 0.5 reversed; a forward score close to the reversed one means it reads brightness, not ink. The reversed maps on w045 sat well below 0.5 (0.33 to 0.43 above), so compare each score's distance from 0.5, not only the difference ([community scan log](../logs/2026-10-07-community-scan.md)). Gate A asks for forward minus reverse of at least 0.10 on every crop ([gate](gate.md)).
 - **Device check for v8in (step 5).** v8in on a crop at stride 64, CPU against MPS, with the MPS reverse map as the control, through `kit verify`. On MPS the script stops before the long pass unless the verdict is `pass`. Recorded on the M1 Pro: `pass`, max |diff| 1, Pearson 0.99999998 (`device_checks` in [`results.json`](../results.json)). Other segments and v8in-1447 reuse w045's pass (same code); `DEVICE_CHECK=1` reruns it.
 - **fp16 check.** With `V8IN_FP16=1` the first run compares fp16 with fp32 on the GPU on a crop, the fp16 reverse map as the control, and stops if they differ; fp32 must first have passed against the CPU on w045. If fp16 is slower per tile than fp32, the remaining passes run fp32.
-- **No silent CPU fallback.** The script unsets `PYTORCH_ENABLE_MPS_FALLBACK`, and on MPS it requires `Using MPS device` in each `ink_9um` log.
+- **No silent CPU fallback.** The script unsets `PYTORCH_ENABLE_MPS_FALLBACK`, and each `ink_9um` log must name the expected device: `Using MPS device` on MPS, `Using CPU device` with `EXPECT_GPU=cpu`.
 - **Cross-device consistency.** On w045 the MPS `ink_9um` crop scores equaled the CPU reference to four decimals on both seeds ([community scan log](../logs/2026-10-07-community-scan.md)).
 - **Training overlap.** A high `ink_9um` score on w045 is on a surface it trained on (at 2.4 um); it cannot show that `ink_9um` beats v8in on unseen papyrus ([log](../logs/2026-10-08-w045-not-held-out.md)). Use PHerc0841 for that.
 
@@ -102,7 +102,8 @@ The script takes no arguments and has no `--help`: anything after the script nam
 | `MODEL` | `v8in` | `v8in` (`YoussefMoNader/ink-8um-v8in` at `d89166b41a3f5fad7749b3d7c0fdd1bd3695d844`) or `v8in-1447` (`YoussefMoNader/ink-8um-v8in-pherc1447-loo-w062` at `2bf9f421862cda0ed41dcae6e8274c12e295d03a`) |
 | `QUICK` | `0` | `1`: `ink_9um` reads only the 640 px crop, v8in runs on the crop at full density, and every AUC is on the crop less a 64 px edge (`--inner 64`); no row scores (the crop is too small) |
 | `SMOKE` | `0` | `1`: everything on a 256 px window inside the crop, v8in at stride 64, device check always run, outputs under `WORK/SEGMENT-smoke`. A test of the script, not a result |
-| `EXPECT_GPU` | `mps` | `mps` requires `Darwin/arm64` and checks MPS use. Any other value (use `cpu`) runs v8in on the CPU, skips the MPS log checks, and lets a failed device check continue |
+| `EXPECT_GPU` | `mps` | `mps` requires `Darwin/arm64` and checks MPS use. `cpu` forces villa's `ink_9um` runs onto the CPU (villa would pick MPS by itself on a Mac) and checks their logs say so, runs v8in on the CPU, and lets a failed device check continue. Any other value stops with exit code 2 |
+| `VILLA_REV` | `860f52cbfccb6a878032de12467d5e2f3d995560` | The villa commit to run, which must be on villa `main`; `VILLA_REV=origin/main` runs the newest `main`. The default is the merge of PR #1865, whose ink inference code matches the PR's final head |
 | `FRESH` | `0` | `1`: redo every pass; otherwise finished passes are reused (see How it works) |
 | `DEVICE_CHECK` | `0` | `1`: run the v8in CPU against MPS check on this segment instead of reusing w045's pass |
 | `V8IN_FP16` | `0` | `1`: v8in in half precision on MPS (`--fp16`), checked once against fp32 and dropped when slower. Ignored on the CPU |
@@ -137,7 +138,7 @@ Step headers `== 1/7 ...` to `== 7/7 scores`, progress lines (`torch VERSION mps
 ```
 kit mac-w045 summary for SEGMENT (paste this)
 chip: CHIP | os: OS | torch: TORCH | smoke: 0 | quick: 1
-villa PR #1865 PR_SHA on mps | MODEL REV on mps, stride S (reverse R), batch B, fp16 F, region REGION
+villa main VILLA_SHA on mps | MODEL REV on mps, stride S (reverse R), batch B, fp16 F, region REGION
 sha256 seed42 HASH | seed43 HASH | v8in HASH
 times (s): ink_9um s42 T, s43 T (both directions) | v8in T + T
 v8in cpu vs mps (crop): VERDICT | max|diff| D | pearson P
@@ -169,8 +170,8 @@ Logs: `WORK/logs/NAME_INK_s42.log`, `NAME_INK_s43.log`, and `NAME_PASS.log` for 
 | Exit code | Meaning |
 | --- | --- |
 | `0` | Finished and printed the summary. It does not judge the scores: read them |
-| `1` | A model run failed, an `ink_9um` seed did not log `Using MPS device`, the device or fp16 check failed, or another command failed under `set -e` |
-| `2` | Bad `MODEL` or `SEGMENT`; not an Apple Silicon Mac (without `EXPECT_GPU=cpu`); git or uv missing; `V8IN_FP16=1` before fp32 has passed on w045; or a kit command (`fetch`, `layers`, `auc`, `rowscore`) that exited 2 for bad input |
+| `1` | A model run failed, an `ink_9um` seed's log did not name the expected device, the device or fp16 check failed, or another command failed under `set -e` |
+| `2` | Bad `MODEL`, `SEGMENT` or `EXPECT_GPU`; `VILLA_REV` not a commit on villa `main`; not an Apple Silicon Mac (without `EXPECT_GPU=cpu`); git or uv missing; `V8IN_FP16=1` before fp32 has passed on w045; or a kit command (`fetch`, `layers`, `auc`, `rowscore`) that exited 2 for bad input |
 | `3` | Another run holds the GPU lock `WORK/.gpu-job.lock` |
 
 ## Failure modes
@@ -186,7 +187,9 @@ Logs: `WORK/logs/NAME_INK_s42.log`, `NAME_INK_s43.log`, and `NAME_PASS.log` for 
 | `Taking over a stale lock left by pid PID.` | The lock's process is gone | Nothing; the run continues |
 | `ink_9um seed SEED: PATH has sha256 GOT, expected WANT; move it aside and rerun`, exit code 1 | The `ink_9um` checkpoint at `WORK/checkpoints/ink_9um/hybrid_3d2d-seedSEED/step-075000.pth` is not the file of the pinned revision (a partial download, or another file at that path); the script refuses it before villa unpickles it | Move the file aside and rerun; the script downloads it again at the pinned revision |
 | `ink_9um seed SEED failed, see LOG` then the log's last 20 lines, exit code 1 | villa's inference failed | Read the log |
-| `seed SEED did not run on MPS; see LOG`, exit code 1 | The PR #1865 run did not log `Using MPS device` | Check `mps available: True` in the output and PR #1865's current code |
+| `seed SEED ran on DEVICE, expected EXPECT_GPU; see LOG`, exit code 1 | The `ink_9um` log names another device, or none (`an unnamed device`): an MPS run that fell back to the CPU, or a villa whose `get_accelerator()` no longer prints `Using ... device` | Check `mps available: True` in the output and villa's `get_accelerator()` at `VILLA_REV` |
+| `EXPECT_GPU must be mps or cpu`, exit code 2 | `EXPECT_GPU` has another value | Leave it unset on a Mac; `EXPECT_GPU=cpu` only to test the script |
+| `villa main has no commit VILLA_REV`, exit code 2 | `VILLA_REV` is not a commit, or not one on villa `main` | Unset it for the pinned commit, or give `origin/main` or a commit of `main` |
 | `v8in NAME failed, see WORK/logs/SEGMENT_NAME.log` then the log's last 20 lines, exit code 1 (SEGMENT ends in `-smoke` with `SMOKE=1`) | `scripts/v8in_run.py` failed (out of memory, an MPS op, missing layers) | Read the log; lower `V8IN_BATCH`; see [v8in-run](v8in-run.md#failure-modes) |
 | `v8in on MPS does not match the CPU; stopping before the full run`, exit code 1 (with ` (fp16 on: try again without V8IN_FP16)` before the semicolon when `V8IN_FP16` is set) | The device check verdict was not `pass` on MPS | Read `results/v8in_device.json`; do not trust MPS maps; rerun without fp16 |
 | `Run once without V8IN_FP16 first: fp16 is checked against fp32, which must first match the CPU.`, exit code 2 | `V8IN_FP16=1` but `WORK/w045/results/v8in_device.json` has no `pass` | Run w045 once in fp32 first |
@@ -198,18 +201,18 @@ Logs: `WORK/logs/NAME_INK_s42.log`, `NAME_INK_s43.log`, and `NAME_PASS.log` for 
 
 ## How it works
 
-1. Unset `PYTORCH_ENABLE_MPS_FALLBACK`; read the settings; pick the model repository and revision (`MODEL`) and the segment paths, crop and shape (`SEGMENT`); refuse a machine that is not `Darwin/arm64` unless `EXPECT_GPU` is not `mps`; check git and uv.
+1. Unset `PYTORCH_ENABLE_MPS_FALLBACK`; read the settings; pick the model repository and revision (`MODEL`) and the segment paths, crop and shape (`SEGMENT`); refuse an `EXPECT_GPU` other than `mps` or `cpu`, and a machine that is not `Darwin/arm64` when it is `mps`; check git and uv.
 2. Take the GPU lock: `mkdir WORK/.gpu-job.lock` with the process id inside; exit 3 if a live process holds it, take it over if not; remove it on exit. Start `caffeinate -i -w PID` when available.
-3. **1/7:** clone or fetch villa (`main` and `pull/1865/head`), build `WORK/venv` (Python 3.14) and install villa's models stack and the extra packages; pick the v8in batch from memory.
+3. **1/7:** clone or fetch villa `main`, check out `VILLA_REV` detached (exit 2 unless it is a commit on `main`), build `WORK/venv` (Python 3.14) and install villa's models stack and the extra packages; pick the v8in batch from memory.
 4. **2/7:** `kit fetch` the surface volume and both label stores (`--workers 8`); download the `ink_9um` checkpoints if missing and the v8in snapshot; hash the three model files.
 5. Choose the input: under `SMOKE=1` a 256 px window inside the crop (rows `y0+160` to `y0+416`, columns `x0+140` to `x0+396`), under `QUICK=1` the 640 px crop, both copied into a small zarr; otherwise the whole volume. In a full run with `V8IN_REGION=labels`, v8in's region is the supervision mask's bounding box at level 2, scaled to the surface grid, plus 256 px.
-6. **3/7:** on PR #1865, run `ink_9um` seeds 42 and 43 with `--overlap 0.5 --blend-mode hann --batch-size 1 --no-compile --direction both`; require `Using MPS device` on MPS. A seed is reused when both maps and its log exist and (on MPS) the log shows MPS.
+6. **3/7:** run `ink_9um` seeds 42 and 43 with `--overlap 0.5 --blend-mode hann --batch-size 1 --no-compile --direction both`, letting villa pick the device on MPS, or forced onto the CPU with `EXPECT_GPU=cpu` (villa's own entry point run through `runpy` with `torch.backends.mps.is_available` returning False and `CUDA_VISIBLE_DEVICES` empty); require the log to name `EXPECT_GPU` (`Using MPS device` or `Using CPU device`). A seed is reused when both maps and its log exist and the log names `EXPECT_GPU`.
 7. **4/7:** `kit layers` exports the region (or the smoke input) to `layers/` and the crop to `crop_layers/`.
 8. **5/7:** the device check. Reuse w045's passing `v8in_device.json` for another segment or model unless `DEVICE_CHECK`, `FRESH` or `SMOKE` is set; with fp16, check fp16 against fp32 on the GPU; otherwise run v8in on the crop at stride 64 on the CPU, on the GPU and on the GPU reversed, then `kit verify CPU GPU --control GPU_REVERSE --json`, and stop on MPS unless it passes.
 9. **6/7:** under `QUICK=1`, v8in on the crop at stride 21 forward and `QUICK_REV_STRIDE` (42) reversed. Otherwise pick the stride: from the crop run's seconds per tile and the tile count of each stride over the coverage mask of the central 24 of 28 layers (`ink8um.inference.coverage_mask` and `tile_positions`, 64 px tiles), the finest of 21, 32, 42, 64 whose time fits half of `V8IN_HOURS` per direction; then run forward and reversed. A v8in pass is reused when its TIFF exists and its log's last line names the same device, fp16, direction and stride.
 10. **7/7:** `kit auc MAP --control REVERSE --labels LAB/inklabels.zarr --mask LAB/supervision.zarr --level 2 [--crop ... --surface-shape ...] [--inner 64] --json` for each seed and for v8in; `kit rowscore ... --voxel-um VOXEL --json` for `ink_9um` (both seeds) and v8in; write the summary; `kit provenance write` over the three models, the inputs and every output that exists.
 
-Constants in the script: `PR=1865`; the v8in revisions under `MODEL`; the crops, shapes and voxel sizes under Inputs; the region margin `pad = 256`; strides tried `(21, 32, 42, 64)`; device check stride 64; batch thresholds 16 and 32 GB.
+Constants in the script: the default `VILLA_REV`; the v8in revisions under `MODEL`; the crops, shapes and voxel sizes under Inputs; the region margin `pad = 256`; strides tried `(21, 32, 42, 64)`; device check stride 64; batch thresholds 16 and 32 GB.
 
 ## Cost and time
 
@@ -245,6 +248,7 @@ python -m unittest tests.test_repo -v
 
 ## History
 
+- 2026-10-28: villa `main` at a pinned commit (`VILLA_REV`, default `860f52cbf`, the merge of PR #1865) replaces `pull/1865/head`, now that #1812 and #1865 have merged; with `EXPECT_GPU=cpu` villa is forced onto the CPU (it would pick MPS on a Mac), and each `ink_9um` log must name `EXPECT_GPU`, which takes only `mps` or `cpu`.
 - 2026-10-21: Failure modes has the `ink_9um` checkpoint SHA-256 refusal, and the v8in failure shows its log path (`bbecb37`).
 - 2026-10-08: comments corrected: w045 is not held out from `ink_9um`, which trained on its 2.4 um render (`d841e06`).
 - 2026-10-07: Phase 0 support: `MODEL=v8in-1447`, per-model summary and provenance names (`bec6fb9`).
