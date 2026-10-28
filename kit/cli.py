@@ -1,4 +1,4 @@
-"""Command line: python -m kit {start,help,prizes,submitcheck,live,style,stages,doctor,plan,cost,find,labels,centerline,cite,fetch,s3relay,vc3dcache,prclock,prtext,verify,rowscore,auc,hpscore,overlap,collate,stackcheck,tifxyz,sheetview,atlas,coverage,uvgate,windconsistency,axispolish,windlabel-box,hopbench,meshaudit,ensemble,fibertensor,sheetcheck,gate,layers,shuffle,provenance,compute,run,surfacefix,phantom,view,strokenet,letterread,letterlines,letterdemo,greeklm,releases,spaceconnect,leaderboard,routines,stale,integrity,volumeview,segzoo,scroll2ink}.
+"""Command line: python -m kit {start,help,prizes,submitcheck,live,style,stages,doctor,plan,cost,find,labels,centerline,cite,fetch,s3relay,vc3dcache,prclock,prtext,verify,rowscore,auc,hpscore,overlap,collate,stackcheck,tifxyz,sheetview,atlas,coverage,uvgate,windconsistency,axispolish,windlabel-box,hopbench,meshaudit,ensemble,fibertensor,sheetcheck,gate,layers,shuffle,provenance,compute,run,surfacefix,phantom,view,strokenet,letterread,letterlines,letterdemo,greeklm,releases,spaceconnect,leaderboard,routines,stale,integrity,volumeview,segzoo,scroll2ink,vxsummary}.
 
 An installed package (pyproject.toml) has the same commands as console scripts: scrolls-workbench (every command;
 gate, releases and leaderboard read the repository's docs/ and README.md, so they need a clone), and scrolls-letterread,
@@ -13,7 +13,7 @@ import sys
 from pathlib import Path
 from datetime import date
 
-from . import autobatch, scancatalog, localcost, modalledger, hfrows, meshaudit, auc, compute, ensemble, fibertensor, gate, hpscore, doctor, fetch, layers, overlap, provenance, ledger, plan, prizes, rowscore, verify, surfacefix, phantom, viewer, releases, leaderboard, spaceconnect
+from . import autobatch, scancatalog, localcost, modalledger, hfrows, meshaudit, auc, compute, ensemble, fibertensor, gate, hpscore, doctor, fetch, layers, overlap, provenance, ledger, plan, prizes, rowscore, verify, surfacefix, phantom, viewer, releases, leaderboard, spaceconnect, vxsummary
 
 
 def cmd_prizes(args):
@@ -1033,7 +1033,7 @@ GROUPS = (
     ("Letters and text", ("letterread", "letterlines", "letterdemo", "greeklm")),
     ("Runs and records", ("run", "provenance", "compute", "routines")),
     ("villa pull requests and issues", ("prclock", "prtext")),
-    ("This repository", ("releases", "spaceconnect", "stale", "integrity")),
+    ("This repository", ("releases", "spaceconnect", "vxsummary", "stale", "integrity")),
 )
 
 
@@ -1715,6 +1715,10 @@ def build_parser(prog="python -m kit", sub_progs=None):
                        "every Space has a current one")
     spaceconnect.add_arguments(p)
     p.set_defaults(func=spaceconnect.run)
+    p = sub.add_parser("vxsummary", help="the Snapped Labels Space's voxel-exact summary: check it before it ships, or "
+                       "write the synthetic fixture")
+    vxsummary.add_arguments(p)
+    p.set_defaults(func=vxsummary.run)
     p = sub.add_parser("leaderboard", help="the ink reader leaderboard, docs/leaderboard.md, written from docs/results.json")
     leaderboard.add_arguments(p)
     p.set_defaults(func=leaderboard.run)

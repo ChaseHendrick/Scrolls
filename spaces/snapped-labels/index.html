@@ -70,6 +70,7 @@
 <!-- space-onescroll:end -->
 </head>
 <body>
+<div class="vx-fixture vx-banner" role="alert" hidden><b>Synthetic fixture.</b> Every number, scroll and line in the Voxel exact tab is made up, to test the page. No real results are shown.</div>
 <header class="top">
   <div class="brand">
     <h1>Snapped Labels</h1>
@@ -78,6 +79,7 @@
   <nav class="tabs" role="tablist">
     <button data-tab="view" role="tab" aria-selected="true">Viewer</button>
     <button data-tab="all" role="tab">All segments</button>
+    <button data-tab="exact" role="tab" id="vx-tabbtn" hidden>Voxel exact</button>
     <button data-tab="how" role="tab">How it works</button>
     <button data-tab="connect" role="tab">Connect your tool</button>
   </nav>
@@ -106,6 +108,7 @@
       <label class="tog"><input type="checkbox" id="l-pub" checked><i class="dot pub"></i>Published</label>
       <label class="tog"><input type="checkbox" id="l-snap" checked><i class="dot snap"></i>Snapped</label>
       <label class="tog"><input type="checkbox" id="l-move" checked><i class="dot move"></i>Moves</label>
+      <button id="b-anim" class="anim" type="button" aria-pressed="false" title="Move each vertex from its published position to its snapped one, slowly, on a loop">Animate snap</button>
     </div>
     <div class="canvaswrap">
       <canvas id="cv" width="720" height="720" aria-label="CT slice with the published and snapped labels"></canvas>
@@ -124,8 +127,120 @@
 
 <section data-pane="all" hidden>
   <div class="tablewrap"><table id="tbl"><thead><tr>
-    <th>Scroll</th><th>Segment</th><th>Method</th><th class="n">Vertices</th><th class="n">Snapped</th><th class="n">Median move</th><th class="n">Held back</th>
+    <th>Scroll</th><th>Segment</th><th>Method</th><th class="n">Vertices</th><th class="n">Snapped</th><th class="n">Median move</th><th class="n">Held back</th><th id="th-claim" hidden>Claim</th>
   </tr></thead><tbody></tbody></table></div>
+</section>
+
+<section data-pane="exact" hidden class="vx">
+  <div class="vx-fixture vx-banner inline" hidden><b>Synthetic fixture.</b> The scrolls SYNTH-A, SYNTH-B and SYNTH-C and every number below are made up, to test the page.</div>
+  <p id="vx-error" class="vx-error" hidden></p>
+  <div class="vx-intro">
+    <h2>Is each snapped vertex within one voxel of the papyrus face?</h2>
+    <p>Per scroll, one of three claim levels. <b>Measured</b>: scored against the face seen in an independent, finer scan of the same scroll. <b>Certified</b>: no finer scan, so a lower bound from a truth-free certificate whose assumptions are listed. <b>Not shown</b>: neither holds, and the card says why. Every number here is model output: the snapped meshes come from a band finder, and the truth face is itself found by a rule.</p>
+  </div>
+  <section class="stats vx-tiles" id="vx-tiles" aria-label="Scrolls by claim level"></section>
+  <div id="vx-cards" class="vx-cards"></div>
+
+  <section class="vx-showwrap" aria-labelledby="vx-show-h">
+    <h2 id="vx-show-h">Per-vertex residuals</h2>
+    <p id="vx-show-none" class="hint">No public residual view yet. Drawing the truth face at every vertex would publish where the face is, densely, and spend that region for every later test, so a region appears here only once it is named as spent.</p>
+    <div id="vx-show" hidden>
+      <div class="bar">
+        <select id="vx-show-pick" aria-label="Showcase segment"></select>
+        <span id="vx-show-title" class="vt"></span>
+        <span class="sp"></span>
+        <fieldset class="vx-modes"><legend class="lbl">Color</legend>
+          <label><input type="radio" name="vx-mode" value="signed" checked> signed residual</label>
+          <label><input type="radio" name="vx-mode" value="0.5"> within 0.5</label>
+          <label><input type="radio" name="vx-mode" value="1"> within 1</label>
+          <label><input type="radio" name="vx-mode" value="2"> within 2</label>
+        </fieldset>
+      </div>
+      <div class="vx-showgrid">
+        <div class="vx-heatwrap">
+          <canvas id="vx-heat" width="600" height="150" aria-label="Signed residual at each vertex of the label surface, rows by columns; click a cell to see it on the CT"></canvas>
+          <div id="vx-tip" class="vx-tip" hidden></div>
+          <div id="vx-heat-legend" class="legend vx-heatlegend"></div>
+          <p class="hint">Each cell is a vertex of the label surface (grid rows and columns). Blue: the snapped point lies inward of the truth face; orange: outward. Click a cell to center the CT on it. The outlined row is the z plane shown.</p>
+        </div>
+        <div>
+          <div class="bar">
+            <label class="tog"><input type="checkbox" id="vx-l-pub" checked><i class="dot pub"></i>Published</label>
+            <label class="tog"><input type="checkbox" id="vx-l-snap" checked><i class="dot snap"></i>Snapped</label>
+            <label class="tog"><input type="checkbox" id="vx-l-truth" checked><i class="dot truth"></i>Truth face</label>
+            <span class="sp"></span><span id="vx-z" class="hint"></span>
+            <select id="vx-win" aria-label="Window"><option value="96">96 voxels</option><option value="192" selected>192 voxels</option><option value="384">384 voxels</option></select>
+          </div>
+          <div class="canvaswrap"><canvas id="vx-cv" width="576" height="576" aria-label="CT slice with the published, snapped and truth lines"></canvas></div>
+          <p id="vx-truth-note" class="hint"></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="prose vx-how">
+    <h2>How it is measured</h2>
+    <figure class="fig">
+      <svg class="vx-diagram" viewBox="0 0 680 312" role="img" aria-labelledby="vx-d1t vx-d1d">
+        <title id="vx-d1t">A cross section through two wraps of papyrus</title>
+        <desc id="vx-d1d">The published label sits beside the sheet. The snap moves it along the mesh normal, toward the scroll's center line side, onto the sheet's recto face. The truth face, found in a finer scan, is drawn dashed, with a band of one label voxel on each side. The verso face, on the far side of the sheet, is a control.</desc>
+        <defs><marker id="vx-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="currentColor"/></marker></defs>
+        <path class="d-band" d="M262,20 C250,110 250,190 262,280 L318,280 C306,190 306,110 318,20 Z"/>
+        <path class="d-band" d="M622,20 C610,110 610,190 622,280 L672,280 C660,190 660,110 672,20 Z"/>
+        <rect class="d-tol" x="241" y="20" width="26" height="260" rx="3"/>
+        <path class="d-truth" d="M256,20 C244,110 244,190 256,280"/>
+        <path class="d-recto" d="M262,20 C250,110 250,190 262,280"/>
+        <path class="d-verso" d="M318,20 C306,110 306,190 318,280"/>
+        <line class="d-arrow" x1="72" y1="150" x2="22" y2="150" marker-end="url(#vx-ah)"/>
+        <text x="22" y="132" class="d-t">toward the scroll's</text><text x="22" y="176" class="d-t">center line</text>
+        <line class="d-normal" x1="196" y1="150" x2="245" y2="150" marker-end="url(#vx-ah)"/>
+        <circle class="d-pub" cx="190" cy="150" r="7"/>
+        <circle class="d-snap" cx="253" cy="150" r="7"/>
+        <text x="190" y="128" class="d-t" text-anchor="middle">published</text>
+        <text x="212" y="172" class="d-t muted" text-anchor="middle">normal</text>
+        <line class="d-lead" x1="250" y1="160" x2="200" y2="236"/>
+        <text x="200" y="252" class="d-t" text-anchor="middle">snapped, on the recto face</text>
+        <line class="d-lead" x1="248" y1="62" x2="352" y2="56"/>
+        <text x="358" y="52" class="d-t">truth face (dashed), from the finer scan</text>
+        <text x="358" y="70" class="d-t muted">shaded: ±1 label voxel around it</text>
+        <line class="d-lead" x1="312" y1="208" x2="352" y2="208"/>
+        <text x="358" y="212" class="d-t">verso face: a control</text>
+        <text x="642" y="306" class="d-t muted" text-anchor="middle">next wrap</text>
+        <text x="290" y="306" class="d-t muted" text-anchor="middle">one wrap of papyrus</text>
+        <text x="8" y="306" class="d-t muted">not to scale</text>
+      </svg>
+      <figcaption>One vertex, seen in cross section: published (orange), snapped along its normal onto the recto face (blue), and the truth face (dashed) with its one-voxel band. Not to scale; a label voxel is about 8 to 9 µm.</figcaption>
+    </figure>
+    <ol class="vx-flow" aria-label="How a test runs, in order">
+      <li><b>Release 1.0.1</b>, pinned by its revision, so the vertices scored are the ones you download.</li>
+      <li><b>Split by <code>abstain.tif</code></b>: C0 snapped, C2 filled, C1 left in place. Each is scored on its own.</li>
+      <li><b>Test sites</b> drawn after the rule was frozen, in regions never used before.</li>
+      <li><b>Truth face</b> found in the finer scan (1.129 µm for PHerc0139); a 2.4 µm scan, where one exists, is the positive control.</li>
+      <li><b>Negative controls</b>: the published label, offsets of 1.5 and 3 voxels planted on purpose, and the verso face. Each must fail the bar.</li>
+      <li><b>Verdict</b> per stratum: PASS, FAIL, NOT SHOWN or UNANSWERABLE; or VOID for the whole test when a control or the integrity check breaks.</li>
+    </ol>
+    <h2>The three claim levels</h2>
+    <p><b>Measured.</b> A finer scan of the same scroll exists. At test sites drawn after the rule was fixed, the face is found in it, registered into the label scan, and each snapped vertex's distance to it is measured along the normal. The share within 1 voxel and its one-sided 95% lower bound are reported; the claim holds when the bound clears the bar. The rule was fixed before any test site was looked at; its preregistration digest is <code id="vx-prereg"></code>.</p>
+    <p><b>Certified.</b> No finer scan. A certificate computed from the label scan alone gives a lower bound on the share within 1 voxel, valid only under the assumptions the card lists. It was fixed before any test site was looked at too, under the same preregistration.</p>
+    <p><b>Not shown.</b> Neither a measurement nor a certificate holds for that scroll, or a control failed. The card says why. Nothing on it is a claim.</p>
+    <h2>Limits</h2>
+    <ul>
+      <li>A snap moves along the normal only. It cannot fix a label that follows the wrong wrap, and where two sheets touch the face it finds can belong to the neighbor.</li>
+      <li>Only scored strata carry a claim, and a share is a share of test sites, not of every vertex.</li>
+      <li>The truth face is itself found by a rule on the finer scan, so it is model output too.</li>
+      <li>A certificate rests on its stated assumptions. The certificate code and the snapping code are not public.</li>
+      <li>Only the scrolls in the dataset appear here. The meshes are geometry: they say nothing about ink or text.</li>
+    </ul>
+    <h2>What each number is</h2>
+    <div class="vx-tw"><table class="vx-labels"><thead><tr><th>On this tab</th><th>Claim label</th></tr></thead><tbody>
+      <tr><td>Shares, bounds, histograms</td><td>Model output, measured</td></tr>
+      <tr><td>A certificate's bound</td><td>Model output, certified</td></tr>
+      <tr><td>Snapped and truth lines</td><td>Model output</td></tr>
+      <tr><td>Which scrolls are prize-eligible</td><td id="vx-elig">Sourced fact</td></tr>
+    </tbody></table></div>
+    <p class="hint">Source: <span id="vx-src"></span>.</p>
+    <p class="credit">Scans and source meshes: Vesuvius Challenge open data, CC BY-NC 4.0; the snapped meshes are shared under the same terms. Page code Apache 2.0. Made by Chase Hendrick.</p>
+  </section>
 </section>
 
 <section data-pane="how" hidden class="prose">
@@ -245,5 +360,6 @@ Page source: https://github.com/ChaseHendrick/Scrolls/tree/main/spaces/snapped-l
 </section>
 </main>
 <script src="app.js"></script>
+<script src="vx.js"></script>
 </body>
 </html>

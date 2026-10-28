@@ -58,6 +58,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **Connect your tool (panel)**: The section every one of Chase's Hugging Face Spaces carries (24 Oct 2026): the URLs of the data the page shows, with tested snippets for Python, villa's `vesuvius` package, VC3D, neuroglancer, curl, gradio_client and MCP. Written from each Space's `connect.json` by `python -m kit spaceconnect`; page [`docs/tools/spaceconnect.md`](docs/tools/spaceconnect.md).
 
+**claim level (Measured, Certified, Not shown)**: How strong a statement the Snapped Labels Space's Voxel exact tab makes for one scroll. Measured: snapped vertices scored against the face seen in an independent, finer scan of the same scroll. Certified: no finer scan, so a truth-free lower bound that holds under listed assumptions. Not shown: neither holds, with the reason. Every level is model output. See [snapped-labels](docs/tools/snapped-labels.md).
+
 **claims ledger (`docs/claims/sources.json`)**: The list, per block of the README's Novel findings, of the results units and files its numbers come from, each pinned to its sha256, and a reason (setting, count, derived, external or context) for any number no source holds. `python -m kit.claimcheck check` fails when a number has neither. See [`docs/tools/claimcheck.md`](docs/tools/claimcheck.md).
 
 **chunk**: One stored block of a zarr array. Readers fetch only the chunks they need.
