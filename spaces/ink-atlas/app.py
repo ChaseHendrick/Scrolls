@@ -494,6 +494,9 @@ CSS = """
 .ia-chead p { font-size:14px; }
 .ia-gallery .caption-label { font-size:11.5px !important; }
 .ia-gallery .grid-wrap { max-height:none !important; height:auto !important; overflow-y:visible !important; }
+/* Gradio gives each of the 6 gallery columns at least 100px, so a phone clipped the last columns; fewer there */
+@media (max-width: 760px) { .ia-gallery .grid-container { grid-template-columns:repeat(4, minmax(0, 1fr)) !important; } }
+@media (max-width: 480px) { .ia-gallery .grid-container { grid-template-columns:repeat(3, minmax(0, 1fr)) !important; } }
 .ia-two img.ia-gif { max-width:440px; }
 .ia-legend { flex-wrap:wrap; row-gap:4px; } .ia-legend span { white-space:nowrap; }
 .ia-legend .bar { width:140px; flex:none; }
