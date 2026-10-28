@@ -94,7 +94,7 @@ def render(data):
         lx += 26 + int(6.6 * len(arm["legend"]))
     panel(out, data, "own", 24, "On its own winding: area covered", 0.5, (0, 0.1, 0.2, 0.3, 0.4, 0.5),
           "cm2; 'pass' = both gates passed in both repeats")
-    panel(out, data, "wrong", 504, "On other windings: wrong area", 8.0, (0, 2, 4, 6, 8),
+    panel(out, data, "wrong", 504, "On other windings: wrong area (lower is better)", 8.0, (0, 2, 4, 6, 8),
           "cm2; numbers under the blue bars are its mean wrong area")
     out.append(f'<text class="t2" x="24" y="{H - 14}" font-size="11">{esc(data["foot"])}</text>')
     out.append("</svg>")

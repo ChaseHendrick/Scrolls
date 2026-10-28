@@ -45,6 +45,8 @@ On 22 October 2026 a preregistered test compared AutoPipeline's trace with the c
 
 ![Per-winding area on the seeded winding and on other windings for the three arms](../media/contact-barrier-a15.svg)
 
+Area on other windings is wrong-winding area: lower is better. Gated area and precision: higher is better.
+
 | Repeat | AutoPipeline with the barrier | villa's tracer | AutoPipeline without the barrier (beside) |
 | --- | --- | --- | --- |
 | rep1 | 2 of 5 windings passing, 0.724 cm² gated, 0.061 cm² on other windings, precision 0.966 | 0 of 5, 3.983 cm² on other windings, precision 0.310 | 0 of 5, 12.328 cm² on other windings, precision 0.129 |

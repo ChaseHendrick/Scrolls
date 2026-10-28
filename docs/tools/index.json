@@ -1858,49 +1858,49 @@
     {
      "name": "Held-out comparison against villa's tracer",
      "start_line": 42,
-     "end_line": 56,
+     "end_line": 58,
      "applicable": true
     },
     {
      "name": "Where the code is",
-     "start_line": 57,
-     "end_line": 67,
+     "start_line": 59,
+     "end_line": 69,
      "applicable": true
     },
     {
      "name": "How to run it",
-     "start_line": 68,
-     "end_line": 92,
+     "start_line": 70,
+     "end_line": 94,
      "applicable": true
     },
     {
      "name": "Inputs and outputs",
-     "start_line": 93,
-     "end_line": 96,
+     "start_line": 95,
+     "end_line": 98,
      "applicable": true
     },
     {
      "name": "Why it is not on the default branch",
-     "start_line": 97,
-     "end_line": 100,
+     "start_line": 99,
+     "end_line": 102,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 101,
-     "end_line": 106,
+     "start_line": 103,
+     "end_line": 108,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 107,
-     "end_line": 112,
+     "start_line": 109,
+     "end_line": 114,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 113,
-     "end_line": 118,
+     "start_line": 115,
+     "end_line": 120,
      "applicable": true
     }
    ]

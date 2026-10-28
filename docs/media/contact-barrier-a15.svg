@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 520" width="960" height="520" role="img" aria-labelledby="t d">
 <title id="t">Contact barrier against villa's tracer on held-out PHerc0139 windings</title>
-<desc id="d">Two bar charts over five seeded PHerc0139 windings (w049, w051, w055, w057, w058). Left: area each arm covered on its own winding, about 0.1 to 0.43 cm2 for every arm; the contact barrier arm passed both gates on w051 and w055 in both repeats. Right: area put on other windings: villa's tracer 0.08 to 5.43 cm2 per winding, the AutoPipeline trace without the barrier 0.04 to 7.87 cm2, with the barrier 0.00 to 0.03 cm2.</desc>
+<desc id="d">Two bar charts over five seeded PHerc0139 windings (w049, w051, w055, w057, w058). Left: area each arm covered on its own winding, about 0.1 to 0.43 cm2 for every arm; the contact barrier arm passed both gates on w051 and w055 in both repeats. Right: area put on other windings, where lower is better: villa's tracer 0.08 to 5.43 cm2 per winding, the AutoPipeline trace without the barrier 0.04 to 7.87 cm2, with the barrier 0.00 to 0.03 cm2.</desc>
 <style>svg{font-family:system-ui,-apple-system,'Segoe UI',sans-serif}.bg{fill:#fcfcfb}.t1{fill:#0b0b0b}.t2{fill:#52514e}.grid{stroke:#e4e3df}.axis{stroke:#9c9a94}.s0{fill:#2a78d6}.s1{fill:#eb6834}.s2{fill:#1baf7a}.dot{fill:#0b0b0b;stroke:#fcfcfb;stroke-width:2}@media (prefers-color-scheme:dark){.bg{fill:#1a1a19}.t1{fill:#f0efec}.t2{fill:#c3c2b7}.grid{stroke:#383835}.axis{stroke:#6b6a64}.s0{fill:#3987e5}.s1{fill:#d95926}.s2{fill:#199e70}.dot{fill:#f0efec;stroke:#1a1a19}}</style>
 <rect class="bg" width="960" height="520" rx="8"/>
 <text class="t1" x="24" y="34" font-size="18" font-weight="600">Contact barrier against villa's tracer on held-out PHerc0139 windings</text>
@@ -78,7 +78,7 @@
 <circle class="dot" cx="418.1" cy="216.0" r="3"><title>AutoPipeline trace, no barrier, w058: rep1 0.369, rep2 0.400 cm2</title></circle>
 <text class="t1" x="398.4" y="458" font-size="12" text-anchor="middle">w058</text>
 <text class="t2" x="256.0" y="476" font-size="11" text-anchor="middle">seeded winding (bar: mean of two repeats; dots: each repeat)</text>
-<text class="t1" x="504" y="128" font-size="15" font-weight="600">On other windings: wrong area</text>
+<text class="t1" x="504" y="128" font-size="15" font-weight="600">On other windings: wrong area (lower is better)</text>
 <text class="t2" x="504" y="144" font-size="12">cm2; numbers under the blue bars are its mean wrong area</text>
 <line class="axis" x1="540" x2="924" y1="440.0" y2="440.0"/>
 <text class="t2" x="534" y="444.0" font-size="11" text-anchor="end">0</text>
