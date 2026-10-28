@@ -1,0 +1,44 @@
+{
+  "schema": "scrolls-media/1",
+  "name": "barrier-hop-still",
+  "label": "Synthetic demo",
+  "alt": "Two cross-sections of a made-up pair of sheets. Top: a trace in amber runs straight from its seed through a place where the two sheets touch and ends on the neighboring sheet. Bottom: the same trace after the contact barrier, the seed's side in teal, the part past the contact in coral, and magenta marks where the barrier was drawn.",
+  "caption": "Synthetic demo: the contact barrier (kit switchfix barrier, AutoPipeline 0.1.9) on made-up sheets. A trace that ran through a contact onto the neighboring sheet is cut back to its seed's side. No scan data.",
+  "license": "Apache-2.0",
+  "release_id": null,
+  "data": null,
+  "sources": [],
+  "outputs": [
+    {
+      "file": "barrier-hop-still.png",
+      "bytes": 130073,
+      "sha256": "a75a31cbbbd2260eaf990c898920a16248afdc8e3daeb6c9b0c86bf472fbc1a2",
+      "width": 1600,
+      "height": 762,
+      "kind": "still",
+      "format": "png"
+    }
+  ],
+  "inputs": [],
+  "made": "2026-10-28",
+  "tool": {
+    "scripts": [
+      "barrier_demo.py",
+      "common.py"
+    ],
+    "scripts_sha256": "ff4e131fcdc32b6a526f0fcbc070a536df1e231ddb5451a296f8cbc45602049c",
+    "base_commit": "e1ce240c2c55375cadf40d2bb9cc4d2ca5eb0685"
+  },
+  "command": "python scripts/media/barrier_demo.py --package PKG --out-dir docs/assets/contact-barrier",
+  "barrier": {
+    "package_commit": "2144cdfcac4ecfc33150f7e81317e5ab33f248d6",
+    "hop_seed_side_kept": true,
+    "hop_far_side_cut": true,
+    "hop_joined_without_barrier": true,
+    "stay_kept_whole": true,
+    "hop_barrier_points": 10404,
+    "stay_barrier_points": 0,
+    "barrier_digest": "3165f76adf4c1a964acfe67f6d0df892b199e15d4ab7dfa21e2c6aa566ac657c",
+    "sheetgap_rule_digest": "24da24815958"
+  }
+}

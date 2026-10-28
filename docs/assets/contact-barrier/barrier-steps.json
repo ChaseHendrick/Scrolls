@@ -1,0 +1,47 @@
+{
+  "schema": "scrolls-media/1",
+  "name": "barrier-steps",
+  "label": "Synthetic demo",
+  "alt": "Eight slow steps on made-up sheets: a seed, the trace growing along its sheet, the contact where the two sheets look like one, the trace past it on the neighbor, the barrier drawn, the far part cut off, then a control trace through the same kind of contact kept whole.",
+  "caption": "Synthetic demo, step by step (1.8 s a step): the contact barrier cutting a sheet switch and keeping a control trace whole, on made-up sheets. No scan data.",
+  "license": "Apache-2.0",
+  "release_id": null,
+  "data": null,
+  "sources": [],
+  "outputs": [
+    {
+      "file": "barrier-steps.gif",
+      "bytes": 311395,
+      "sha256": "949ddcddf1dd7c5c8d2d874615fcaa3bb0885d672a806c4167df8d508ac109ac",
+      "width": 1280,
+      "height": 267,
+      "kind": "gif",
+      "format": "gif",
+      "frames": 8,
+      "seconds_per_frame": 1.8,
+      "seconds": 14.4
+    }
+  ],
+  "inputs": [],
+  "made": "2026-10-28",
+  "tool": {
+    "scripts": [
+      "barrier_demo.py",
+      "common.py"
+    ],
+    "scripts_sha256": "ff4e131fcdc32b6a526f0fcbc070a536df1e231ddb5451a296f8cbc45602049c",
+    "base_commit": "e1ce240c2c55375cadf40d2bb9cc4d2ca5eb0685"
+  },
+  "command": "python scripts/media/barrier_demo.py --package PKG --out-dir docs/assets/contact-barrier",
+  "barrier": {
+    "package_commit": "2144cdfcac4ecfc33150f7e81317e5ab33f248d6",
+    "hop_seed_side_kept": true,
+    "hop_far_side_cut": true,
+    "hop_joined_without_barrier": true,
+    "stay_kept_whole": true,
+    "hop_barrier_points": 10404,
+    "stay_barrier_points": 0,
+    "barrier_digest": "3165f76adf4c1a964acfe67f6d0df892b199e15d4ab7dfa21e2c6aa566ac657c",
+    "sheetgap_rule_digest": "24da24815958"
+  }
+}
