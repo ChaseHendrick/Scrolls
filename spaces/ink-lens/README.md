@@ -142,7 +142,7 @@ python3 inklens.py run ... --local                                              
 Then reopen the segment in VC3D: the map is in the Ink Detection panel as "Ink Lens d9v2 ink yY xX", and the pins are
 a point collection (with `--bridge` they are merged into the open ones; File > Load replaces them all).
 
-**On this page**: pick a public sample (PHerc0841 or PHerc0139, not prize-eligible) or upload a region as `.npz`.
+**On this page**: pick a public sample (PHerc0841, not prize-eligible) or upload a region as `.npz`.
 
 ## For agents and scripts
 
