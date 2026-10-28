@@ -183,7 +183,7 @@ function renderCards() {
   const pre = d.prereg || {};
   $('vx-prereg').textContent = `${pre.sha256 || 'n/a'}, frozen ${pre.frozen || 'n/a'}`;
   const pr = d.prizes_read || {};
-  $('vx-elig').innerHTML = d.fixture ? 'The fixture\'s scrolls are made up.' : `Sourced fact: none of these scrolls is on the prize lists at <a href="${esc(pr.url)}" target="_blank" rel="noopener">scrollprize.org/prizes</a> (read ${esc(pr.date)}).`;
+  $('vx-elig').innerHTML = d.fixture ? 'The fixture\'s scrolls are made up.' : `Sourced fact: none of these scrolls is on the prize lists at <a href="${esc(/^https:\/\//.test(String(pr.url)) ? pr.url : 'https://scrollprize.org/prizes')}" target="_blank" rel="noopener">scrollprize.org/prizes</a> (read ${esc(pr.date)}).`;
   $('vx-src').textContent = `${d.dataset.repo} ${d.dataset.release} at ${d.dataset.revision.slice(0, 12)}, summary ${d.generated}${d.fixture ? ', synthetic fixture' : ''}`;
 }
 
@@ -345,6 +345,8 @@ async function vxInit() {
   }
   VX.doc = d; VX.fixture = d.fixture === true;
   $('vx-tabbtn').hidden = false;
+  // a summary from ?vx=URL is someone else's file: say so, so a shared link cannot pass as this Space's results
+  if (params.get('vx') && params.get('vx') !== 'fixture') { $('vx-error').hidden = false; $('vx-error').textContent = `Loaded from ${VX.url} (the vx parameter), not this Space's own results.`; }
   document.querySelectorAll('.vx-fixture').forEach((b) => { b.hidden = !VX.fixture; });
   document.body.classList.toggle('vx-fx', VX.fixture);
   renderCards();
