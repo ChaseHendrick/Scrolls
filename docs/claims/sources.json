@@ -83,7 +83,7 @@
   "claim-label-rule-and-control-data-record-with": {
    "line": 90,
    "sources": {
-    "docs/tools/contact-barrier.md": "8c602dbe80215b800273feaa00d5ea5cb81ee12d6f70864eaf24417bb66d69b1"
+    "docs/tools/contact-barrier.md": "1f43905d98ded0773f571b3fea0789e858f15d799a8870499fcc81e07536c874"
    },
    "doc": "docs/pipeline-october-2026.md"
   },
@@ -119,7 +119,7 @@
   "in-the-autopipeline-0-1-9-package-folder": {
    "line": 52,
    "sources": {
-    "docs/tools/contact-barrier.md": "8c602dbe80215b800273feaa00d5ea5cb81ee12d6f70864eaf24417bb66d69b1"
+    "docs/tools/contact-barrier.md": "1f43905d98ded0773f571b3fea0789e858f15d799a8870499fcc81e07536c874"
    },
    "doc": "docs/pipeline-october-2026.md",
    "reasons": {
@@ -251,7 +251,7 @@
   "step-stage-what-it-reads-what-it-writes": {
    "line": 27,
    "sources": {
-    "docs/tools/contact-barrier.md": "8c602dbe80215b800273feaa00d5ea5cb81ee12d6f70864eaf24417bb66d69b1"
+    "docs/tools/contact-barrier.md": "1f43905d98ded0773f571b3fea0789e858f15d799a8870499fcc81e07536c874"
    },
    "doc": "docs/pipeline-october-2026.md",
    "reasons": {

@@ -1858,49 +1858,49 @@
     {
      "name": "Held-out comparison against villa's tracer",
      "start_line": 42,
-     "end_line": 58,
+     "end_line": 60,
      "applicable": true
     },
     {
      "name": "Where the code is",
-     "start_line": 59,
-     "end_line": 69,
+     "start_line": 61,
+     "end_line": 71,
      "applicable": true
     },
     {
      "name": "How to run it",
-     "start_line": 70,
-     "end_line": 94,
+     "start_line": 72,
+     "end_line": 96,
      "applicable": true
     },
     {
      "name": "Inputs and outputs",
-     "start_line": 95,
-     "end_line": 98,
+     "start_line": 97,
+     "end_line": 100,
      "applicable": true
     },
     {
      "name": "Why it is not on the default branch",
-     "start_line": 99,
-     "end_line": 102,
+     "start_line": 101,
+     "end_line": 104,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 103,
-     "end_line": 108,
+     "start_line": 105,
+     "end_line": 110,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 109,
-     "end_line": 114,
+     "start_line": 111,
+     "end_line": 117,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 115,
-     "end_line": 120,
+     "start_line": 118,
+     "end_line": 123,
      "applicable": true
     }
    ]
@@ -14471,7 +14471,7 @@
    "id": "unroll",
    "name": "unroll",
    "tagline": "view and virtually unroll Herculaneum scrolls in 3D in the browser, and score ink maps",
-   "summary": "Unroll 1.7.1 is a static web app, a Hugging Face Space, that rebuilds traced scroll windings in 3D with X-ray and ink layers, unrolls them, shows raw CT around any point, and scores your ink map against the published one (Ink Bench).",
+   "summary": "Unroll 1.7.2 is a static web app, a Hugging Face Space, that rebuilds traced scroll windings in 3D with X-ray and ink layers, unrolls them, shows raw CT around any point, and scores your ink map against the published one (Ink Bench).",
    "status": "Current",
    "kind": [
     "app"
@@ -14498,14 +14498,14 @@
     "Kind": "app",
     "Area": "Viewers and apps",
     "Run": "[huggingface.co/spaces/SharpMeow/unroll](https://huggingface.co/spaces/SharpMeow/unroll) (the Space page); [sharpmeow-unroll.static.hf.space](https://sharpmeow-unroll.static.hf.space/) (the app alone, installable); Ink Bench on the command line: `python inkbench.py compare PRED.png --segment WNNN -o BUNDLE.json`",
-    "Code": "Not in this repository: the Space's own git repository, [huggingface.co/spaces/SharpMeow/unroll/tree/main](https://huggingface.co/spaces/SharpMeow/unroll/tree/main) (page code in index.html, app.js, ui.js and the lib folder; build tools and [inkbench.py](https://huggingface.co/spaces/SharpMeow/unroll/blob/main/tools/inkbench.py) in the tools folder; one manifest per scroll in the scrolls folder), read at Space commit 757768f6",
+    "Code": "Not in this repository: the Space's own git repository, [huggingface.co/spaces/SharpMeow/unroll/tree/main](https://huggingface.co/spaces/SharpMeow/unroll/tree/main) (page code in index.html, app.js, ui.js and the lib folder; build tools and [inkbench.py](https://huggingface.co/spaces/SharpMeow/unroll/blob/main/tools/inkbench.py) in the tools folder; one manifest per scroll in the scrolls folder), read at Space commit 13a13964",
     "Tests": "None in this repository. The Space has its own in its [tests folder](https://huggingface.co/spaces/SharpMeow/unroll/tree/main/tests); not run for this page",
     "Needs": "A browser with WebGL; three.js 0.160, loaded from jsDelivr. The CT volume view needs float render targets for exact picking (it falls back to picking on the CPU). `inkbench.py`: Python 3 with numpy and Pillow",
     "Runs on": "The viewer runs in the visitor's browser, on any device; load and frame times are Not measured. Ink Bench's three Quick start commands, with the reference fetched over the network: 15.5 s wall together on a 4-core cloud container, Python 3.13 (measured 2026-10-16 for this page)",
     "Network": "The page and its data from `huggingface.co` and `sharpmeow-unroll.static.hf.space`; three.js from `cdn.jsdelivr.net`; the CT volume view streams OME-Zarr from the open-data bucket `s3://vesuvius-challenge-open-data`; Open your own fetches only a URL you give (the server must allow CORS). `inkbench.py` fetches `data/bench/` from the Space unless `--root` names a local checkout",
     "Writes": "In the browser only: settings in `localStorage` under `unroll.settings.v1`; the installed app's service-worker caches `unroll-shell-<tag>`, `unroll-data-<tag>` and `unroll-runtime-<tag>`; scrolls opened with Open your own in browser storage; downloads you ask for (a picture, an Ink Bench bundle). Nothing is uploaded. `inkbench.py` writes the bundle given by `-o` (else prints it) and, with `adapt`, a 16-bit PNG",
     "Go-ahead": "Not needed to view it or run Ink Bench. Changing the Space, or posting its pictures or scores, needs Chase's yes (the go-ahead rule, hard rule 8), and never with private work or target-scroll data",
-    "Released": "Hugging Face Space `SharpMeow/unroll`, version 1.7.1 of 2026-10-27 (the Space's `version.json`; Live sheet, [guide](../unroll-space.md)); in this README's \"Released tools\" since 2026-10-16 (`9896827`), pinned there with AutoPipeline. The Space's changelog starts at 0.9.0 (2026-10-15); 1.0.0 is the first release",
+    "Released": "Hugging Face Space `SharpMeow/unroll`, version 1.7.2 of 2026-10-28 (the Space's `version.json`; Live sheet, [guide](../unroll-space.md)); in this README's \"Released tools\" since 2026-10-16 (`9896827`), pinned there with AutoPipeline. The Space's changelog starts at 0.9.0 (2026-10-15); 1.0.0 is the first release",
     "License": "Code: Apache 2.0 ([LICENSE](https://huggingface.co/spaces/SharpMeow/unroll/blob/main/LICENSE), with `NOTICE`); the scan data and everything derived from it (`data/`, `og.jpg`): [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/); three.js keeps its MIT license",
     "Guide": "[`docs/unroll-space.md`](../unroll-space.md)",
     "Checked": "2026-10-16 against commit `7be3185`"
@@ -14593,13 +14593,13 @@
     {
      "name": "History",
      "start_line": 282,
-     "end_line": 292,
+     "end_line": 293,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 293,
-     "end_line": 299,
+     "start_line": 294,
+     "end_line": 300,
      "applicable": true
     }
    ]

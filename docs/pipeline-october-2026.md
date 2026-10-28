@@ -30,7 +30,7 @@ Each step has a stage name in AutoPipeline's stage registry (`python -m kit stag
 | Trace with the contact barrier | `trace`, `qa.repair` method `barrier` | the center line, the surface prediction | traced tifxyz surfaces, each cut back to its seed's sheet | released in AutoPipeline 0.1.9 |
 | Voxel-exact label | `labels`, choice `snapped` (baseline `mesh`) | each traced surface, the center line, the scan | the surface moved onto the recto face of its sheet, an abstain mask, an OME-Zarr surface label | *pending*: its test and its code release |
 | Fibers along the surface | `fibers` | the labeled surface, public AFV V2 fiber probabilities | fiber curves (`.afv`, opens in VC3D) in a box around the surface | *pending*: its test and its code release |
-| Glued sheet joins | `joins`, choice `kfh1` | the fibers, the labeled surface, the scan | a score at each fiber end on the surface, with a control point 3 cm back along the surface | *pending*: its code release; development numbers only |
+| Glued sheet joins | `joins` | the fibers, the labeled surface, the scan | a score at each fiber end on the surface, with a control point 3 cm back along the surface | *pending*: its test and its code release |
 | Ink | `ink`, default Reader V3 | the rendered surface | an ink map and its reversed-depth control map | released |
 
 ## Run it
