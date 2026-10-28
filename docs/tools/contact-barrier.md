@@ -43,6 +43,8 @@ What it does not do: it cannot see two sheets pressed so hard that the predictio
 
 On 22 October 2026 a preregistered test compared AutoPipeline's trace with the contact barrier against villa's standard tracer `vc_grow_seg_from_seed` (villa at `e0bbb8b`, the same harness, normal grids, box, generations and threads, with no seed anchor and no repair) on PHerc0139, a public scan that is on no prize list, on published hand-traced report windings that AutoPipeline's trace settings and the barrier were never developed or tested on (with one caveat below), in one sector (z 5248 to 5760, y 2688 to 3712, x 4352 to 5376 of the 9.362 µm scan `20250728140407`), from the same fixed seeds, two repeats. The rule (gated correct area at no worse precision, a margin that grows with run-to-run change, both repeats) was frozen before any sector, seed, trace or score existed. Model output; numbers in [`docs/media/contact-barrier-a15-data.json`](../media/contact-barrier-a15-data.json) and `contact_barrier_checks` in [results.json](../results.json).
 
+The scorer was checked on each of the five published windings before any trace was scored, and the check could fail: the winding itself kept 0.991 to 0.998 of its area, a copy moved half a winding (9.5 voxels) either way kept 0, and a copy moved 1 voxel kept 0.999 or more. All five passed, so none was left out.
+
 ![Per-winding area on the seeded winding and on other windings for the three arms](../media/contact-barrier-a15.svg)
 
 Area on other windings is wrong-winding area: lower is better. Gated area and precision: higher is better.

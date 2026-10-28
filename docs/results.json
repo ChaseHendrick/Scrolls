@@ -11899,7 +11899,7 @@
    },
    "per_winding": "docs/media/contact-barrier-a15-data.json",
    "units": "covered_cm2, C and P: higher is better; wrong_cm2 (area on other windings): lower is better",
-   "controls": "sector controls passed for all five windings (round trip 0.991 to 0.998); AutoPipeline surfaces held the seed anchor and villa's did not; two repeats; a barrier refusal would count against AutoPipeline (none happened)",
+   "controls": "sector controls passed for all five windings (round trip 0.991 to 0.998; a copy of each winding moved half a winding, 9.5 voxels, either way kept 0, and a 1 voxel move kept 0.999 or more, so the scorer could fail); AutoPipeline surfaces held the seed anchor and villa's did not; two repeats; a barrier refusal would count against AutoPipeline (none happened)",
    "limits": "one sector of one scroll, five windings, two repeats, one community tracer in AutoPipeline's harness; three of five windings still failed the switch gate with the barrier"
   },
   {
