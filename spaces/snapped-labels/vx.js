@@ -16,6 +16,7 @@ const VX_STRATUM_NAME = { C0: 'snapped (code 0)', C0L: 'snapped, placed in the l
 const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const p1 = (x) => (x == null || !Number.isFinite(x) ? 'n/a' : `${(100 * x).toFixed(1)}%`);
 const sgn = (x) => (x > 0 ? `+${x.toFixed(2)}` : x.toFixed(2));
+const VX_BASIS = { itt: 'every selected site', scorable: 'scorable sites', covered: 'covered sites' };
 
 function vxURL() {
   const q = params.get('vx');
@@ -28,12 +29,27 @@ function vxValid(d) {
   const bad = [];
   if (!d || d.schema !== VX_SCHEMA) bad.push(`schema is not ${VX_SCHEMA}`);
   if (!d || !Array.isArray(d.scrolls) || !d.scrolls.length) bad.push('no scrolls');
+  // every count drawn into the page must be an integer and every share a number in 0..1, so a file from ?vx=URL
+  // cannot carry markup into the cards
+  const cnt = (x) => Number.isInteger(x) && x >= 0;
+  const frac = (x) => x == null || (typeof x === 'number' && x >= 0 && x <= 1);
+  const slotOK = (w) => !w || (cnt(w.k) && cnt(w.n) && w.k <= w.n && frac(w.share) && frac(w.lower) && frac(w.upper) && w.basis in VX_BASIS);
   for (const s of (d && d.scrolls) || []) {
     if (!(s.claim in VX_CLAIMS)) bad.push(`${s.scroll}: claim ${s.claim}`);
+    for (const st of s.strata || []) {
+      if (!cnt(st.n_selected) || !cnt(st.n_scorable)) bad.push(`${s.scroll} ${st.id} counts`);
+      const c = st.coverage;
+      if (c && !(cnt(c.k) && cnt(c.n) && c.k <= c.n && frac(c.share) && frac(c.lower) && frac(c.upper) && frac(c.bar))) bad.push(`${s.scroll} ${st.id} coverage`);
+      if (st.single_truth && !slotOK(st.single_truth.within_1)) bad.push(`${s.scroll} ${st.id} single_truth`);
+      for (const t of VX_TOLS) if (!slotOK(st.within && st.within[t])) bad.push(`${s.scroll} ${st.id} within ${t} slot`);
+      if (st.median_abs != null && typeof st.median_abs !== 'number') bad.push(`${s.scroll} ${st.id} median`);
+    }
     for (const st of s.strata || []) for (const t of VX_TOLS) {
       const w = st.within && st.within[t];
       if (w && !(w.n >= w.k && w.k >= 0 && w.share >= 0 && w.share <= 1)) bad.push(`${s.scroll} ${st.id} within ${t}`);
+      if (w && w.basis === 'covered' && !(st.coverage && st.coverage.k === w.n)) bad.push(`${s.scroll} ${st.id} covered ${t}`);
     }
+    if ((s.strata || []).some((st) => st.coverage) && !s.scope) bad.push(`${s.scroll}: a two-scan test without its scope`);
   }
   if (d && typeof d.fixture !== 'boolean') bad.push('fixture flag missing');
   return bad;
@@ -51,10 +67,36 @@ function tolBars(st, rule) {
     const whisk = lo != null ? `<i class="vx-whisk" style="left:${100 * lo}%;width:${100 * ((hi != null ? hi : w.share) - lo)}%"></i>` : '';
     const line = t === '1' ? `<i class="vx-barline" style="left:${100 * bar}%" title="the bar, ${p1(bar)}"></i>` : '';
     return `<div class="vx-tolrow" role="listitem"><span class="vx-toll">${label}</span>
-      <span class="vx-track" title="${w.k} of ${w.n} sites (${w.basis === 'itt' ? 'every selected site' : 'scorable sites'})${lo != null ? `; one-sided 95% interval ${p1(lo)} to ${p1(hi)}` : ''}">
+      <span class="vx-track" title="${esc(w.k)} of ${esc(w.n)} sites (${VX_BASIS[w.basis] || w.basis})${lo != null ? `; one-sided 95% interval ${p1(lo)} to ${p1(hi)}` : ''}">
         <i class="vx-fill" style="width:${100 * w.share}%"></i>${whisk}${line}</span>
-      <span class="vx-tolv"><b>${p1(w.share)}</b> <small>${w.k} of ${w.n}${w.basis === 'itt' ? ', every selected site' : ', scorable sites'}</small></span></div>`;
+      <span class="vx-tolv"><b>${p1(w.share)}</b> <small>${esc(w.k)} of ${esc(w.n)}, ${VX_BASIS[w.basis] || w.basis}</small></span></div>`;
   }).join('')}</div>`;
+}
+
+// a two-scan test: the share of drawn sites the two scans cover, with its interval and bar
+function coverageBar(st) {
+  const c = st.coverage;
+  if (!c) return '';
+  const whisk = c.lower != null ? `<i class="vx-whisk" style="left:${100 * c.lower}%;width:${100 * ((c.upper != null ? c.upper : c.share) - c.lower)}%"></i>` : '';
+  return `<div class="vx-tol vx-cov" role="list"><div class="vx-tolrow" role="listitem"><span class="vx-toll">covered</span>
+      <span class="vx-track" title="${esc(c.k)} of ${esc(c.n)} drawn sites; one-sided 95% interval ${p1(c.lower)} to ${p1(c.upper)}; bar ${p1(c.bar)}">
+        <i class="vx-fill cov" style="width:${100 * c.share}%"></i>${whisk}<i class="vx-barline" style="left:${100 * c.bar}%" title="the coverage bar, ${p1(c.bar)}"></i></span>
+      <span class="vx-tolv"><b>${p1(c.share)}</b> <small>${esc(c.k)} of ${esc(c.n)} drawn sites</small></span></div></div>
+    <p class="hint">Covered: ${esc(c.what)}. ${esc(c.verdict)} (lower bound ${p1(c.lower)}, bar ${p1(c.bar)}). The shares below count covered sites only; a site that is not covered is neither a hit nor a miss.</p>`;
+}
+
+function singleTruth(st, s) {
+  const o = st.single_truth;
+  if (!o) return '';
+  const w = o.within_1;
+  return `<details class="vx-single"><summary>Against the ${esc(s.truth ? s.truth.voxel_um : '')} µm scan alone: <span aria-hidden="true">${VX_ICON[o.verdict] || ''}</span> ${esc(o.verdict)}${w ? `, ${p1(w.share)} within 1 voxel (${esc(w.k)} of ${esc(w.n)}, ${VX_BASIS[w.basis] || w.basis}; lower bound ${p1(w.lower)})` : ''}</summary>
+    <p class="hint">${esc(o.why)}${o.instrument_limited ? ' (limited by the instrument)' : ''}.</p>
+    <h4>Controls against the one scan</h4>${controls({ controls: o.controls })}</details>`;
+}
+
+function earlierTests(s) {
+  if (!s.earlier || !s.earlier.length) return '';
+  return `<details class="vx-earlier"><summary>Earlier frozen test${s.earlier.length > 1 ? 's' : ''} on this scroll (spent)</summary><ul>${s.earlier.map((e) => `<li><b>${esc(e.scope)}</b>: ${esc(e.summary)} <small>Preregistration ${esc(String(e.prereg.sha256).slice(0, 12))}, frozen ${esc(e.prereg.frozen)}.</small></li>`).join('')}</ul></details>`;
 }
 
 function hist(st, showPub) {
@@ -114,6 +156,14 @@ function controls(st) {
 function numbers(s) {
   const rows = [];
   for (const st of s.strata || []) {
+    if (st.coverage) {
+      const c = st.coverage;
+      rows.push(`<tr><td>${esc(st.id)}</td><td>${esc(c.verdict)}</td><td>covered</td><td class="n">${esc(c.k)}</td><td class="n">${esc(c.n)}</td><td class="n">${p1(c.share)}</td><td class="n">${p1(c.lower)}</td><td class="n">${p1(c.upper)}</td><td>drawn sites</td></tr>`);
+    }
+    if (st.single_truth && st.single_truth.within_1) {
+      const w = st.single_truth.within_1;
+      rows.push(`<tr><td>${esc(st.id)}, one scan</td><td>${esc(st.single_truth.verdict)}</td><td>1</td><td class="n">${esc(w.k)}</td><td class="n">${esc(w.n)}</td><td class="n">${p1(w.share)}</td><td class="n">${w.lower != null ? p1(w.lower) : ''}</td><td class="n">${w.upper != null ? p1(w.upper) : ''}</td><td>${esc(w.basis)}</td></tr>`);
+    }
     for (const t of VX_TOLS) {
       const w = st.within[t];
       rows.push(`<tr><td>${esc(st.id)}</td><td>${esc(st.verdict)}</td><td>${t}</td><td class="n">${w ? w.k : ''}</td><td class="n">${w ? w.n : ''}</td><td class="n">${w ? p1(w.share) : 'not measured'}</td><td class="n">${w && w.lower != null ? p1(w.lower) : ''}</td><td class="n">${w && w.upper != null ? p1(w.upper) : ''}</td><td>${w ? esc(w.basis) : ''}</td></tr>`);
@@ -121,7 +171,7 @@ function numbers(s) {
   }
   const v = s.vertices;
   return `<details class="vx-num"><summary>Show numbers</summary>
-    <p class="hint">Vertices released ${fmt(v.released)} (code 0: ${fmt(v.by_code['0'])}, code 2: ${fmt(v.by_code['2'])}, code 1: ${fmt(v.by_code['1'])}), held back ${fmt(v.held_back)}. Label scan ${esc(s.label_scan.voxel_um)} µm${s.truth ? `; truth ${esc(s.truth.voxel_um)} µm scan` : ''}${s.oracle ? `; positive control ${esc(s.oracle.voxel_um)} µm scan` : ''}.${s.void && s.void.length ? ` Void: ${esc(s.void.join('; '))}.` : ''}</p>
+    <p class="hint">Vertices released ${fmt(v.released)} (code 0: ${fmt(v.by_code['0'])}, code 2: ${fmt(v.by_code['2'])}, code 1: ${fmt(v.by_code['1'])}), held back ${fmt(v.held_back)}. Label scan ${esc(s.label_scan.voxel_um)} µm${s.truth ? `; truth ${esc(s.truth.voxel_um)} µm scan` : ''}${s.second_truth ? `; second truth ${esc(s.second_truth.voxel_um)} µm scan` : ''}${s.oracle ? `; positive control ${esc(s.oracle.voxel_um)} µm scan` : ''}.${s.void && s.void.length ? ` Void: ${esc(s.void.join('; '))}.` : ''}</p>
     ${rows.length ? `<div class="vx-tw"><table><thead><tr><th>Stratum</th><th>Verdict</th><th>Voxels</th><th class="n">k</th><th class="n">n</th><th class="n">Share</th><th class="n">Lower</th><th class="n">Upper</th><th>Basis</th></tr></thead><tbody>${rows.join('')}</tbody></table></div>` : ''}
     ${s.certificate ? `<p class="hint">Certificate: ${esc(s.certificate.method)}, lower bound ${p1(s.certificate.lower)} at ${p1(s.certificate.level)} over ${fmt(s.certificate.n)} vertices.</p>` : ''}</details>`;
 }
@@ -139,28 +189,33 @@ function strataBody(s, rule) {
   const cur = strata.find((x) => x.id === VX.pick[s.scroll]) || prim;
   const one = prim && prim.within['1'];
   const pubc = prim && (prim.controls || []).find((c) => /^published/.test(c.name));
-  const head2 = one ? `<p class="vx-headline"><b>${p1(one.share)}</b> within 1 voxel (${esc(prim.id)}, <span aria-hidden="true">${VX_ICON[prim.verdict] || ''}</span> ${esc(prim.verdict)}). One-sided 95% lower bound ${p1(one.lower)} (bar ${p1(rule.bar)}).</p>
+  const cov = prim && prim.coverage;
+  const head2 = one ? `${cov ? `<p class="vx-headline">The two scans agree on the face at <b>${p1(cov.share)}</b> of drawn sites (${esc(cov.k)} of ${esc(cov.n)}). On those, <b>${p1(one.share)}</b> of snapped vertices lie within 1 voxel (${esc(prim.id)}, <span aria-hidden="true">${VX_ICON[prim.verdict] || ''}</span> ${esc(prim.verdict)}). One-sided 95% lower bounds ${p1(cov.lower)} (bar ${p1(cov.bar)}) and ${p1(one.lower)} (bar ${p1(rule.bar)}).</p>` : `<p class="vx-headline"><b>${p1(one.share)}</b> within 1 voxel (${esc(prim.id)}, <span aria-hidden="true">${VX_ICON[prim.verdict] || ''}</span> ${esc(prim.verdict)}). One-sided 95% lower bound ${p1(one.lower)} (bar ${p1(rule.bar)}).</p>`}
+    ${s.scope ? `<p class="vx-scope">${esc(s.scope)}</p>` : ''}
     <p class="hint">${pubc ? `${esc(pubc.name.replace(/^published label/, 'Published label'))}: ${p1(pubc.observed)}.` : ''}${s.void && s.void.length ? ` The test is void: ${esc(s.void.join('; '))}.` : ''}</p>` : '';
   const pubOn = !!VX.pick[`${s.scroll}:pub`];
   return `${head2}
     ${meter(s)}
     <div class="vx-chips" role="group" aria-label="Strata">${strata.map((x) => chip(x, x.id === cur.id, s.scroll)).join('')}</div>
     <div class="vx-grid">
-      <div><h4>${esc(cur.id)}: share within each tolerance</h4>${tolBars(cur, rule)}
-        <p class="hint">${esc(cur.verdict)}: ${esc(cur.why)}${cur.instrument_limited ? ' (limited by the instrument)' : ''}. ${cur.n_selected} sites selected, ${cur.n_scorable} scorable. Whiskers: one-sided 95% interval. Dashed line: the bar.</p></div>
+      <div><h4>${esc(cur.id)}: share within each tolerance</h4>${coverageBar(cur)}${tolBars(cur, rule)}
+        <p class="hint">${esc(cur.verdict)}: ${esc(cur.why)}${cur.instrument_limited ? ' (limited by the instrument)' : ''}. ${esc(cur.n_selected)} sites selected${cur.coverage ? `, ${esc(cur.coverage.k)} covered` : `, ${esc(cur.n_scorable)} scorable`}. Whiskers: one-sided 95% interval. Dashed line: the bar.</p></div>
       <div><h4>${esc(cur.id)}: signed residual, voxels <label class="tog vx-pubtog"><input type="checkbox" data-pub="${esc(s.scroll)}"${pubOn ? ' checked' : ''}><i class="dot pub"></i>published label</label></h4>
         ${hist(cur, pubOn)}
         <p class="hint">${esc(cur.residual_hist && cur.residual_hist.sign ? cur.residual_hist.sign : '')}. Shaded: within 1 voxel.${cur.median_abs != null ? ` Median distance ${cur.median_abs.toFixed(2)} voxels.` : ''}</p></div>
     </div>
     <h4>Controls (each must be able to fail)</h4>${controls(cur)}
-    <p class="hint vx-not">What this does not show: labels that follow the wrong wrap, sheets that touch with no gap, and any scroll, segment or region not scored here.</p>
+    ${singleTruth(cur, s)}
+    <p class="hint vx-not">What this does not show: labels that follow the wrong wrap, sheets that touch with no gap, and any scroll, segment or region not scored here${cur.coverage ? ', and any site the two scans do not cover' : ''}.</p>
+    ${earlierTests(s)}
     ${numbers(s)}`;
 }
 
 function scrollCard(s) {
   const rule = VX.doc.rule || {};
-  const badge = { measured: 'Model output, measured against an independent finer scan', certified: 'Model output, truth-free certificate', not_shown: (s.strata || []).length ? 'tested; no claim' : 'no claim' }[s.claim];
-  const head = `<header class="vx-head"><div><h3>${esc(s.scroll)}</h3><small>label scan ${esc(s.label_scan.voxel_um)} µm voxels${s.truth ? `, truth from a ${esc(s.truth.voxel_um)} µm scan` : ''}</small></div>
+  const twoScan = (s.strata || []).some((x) => x.coverage);
+  const badge = { measured: twoScan ? 'Model output, measured where two finer scans agree' : 'Model output, measured against an independent finer scan', certified: 'Model output, truth-free certificate', not_shown: (s.strata || []).length ? 'tested; no claim' : 'no claim' }[s.claim];
+  const head = `<header class="vx-head"><div><h3>${esc(s.scroll)}</h3><small>label scan ${esc(s.label_scan.voxel_um)} µm voxels${s.truth ? `, truth from a ${esc(s.truth.voxel_um)} µm scan` : ''}${s.second_truth ? ` and a ${esc(s.second_truth.voxel_um)} µm scan` : ''}</small></div>
     <span class="vx-badge c-${s.claim}"><b>${VX_CLAIMS[s.claim]}</b> ${badge}</span></header>`;
   if (s.claim === 'not_shown') {
     const tested = (s.strata || []).length > 0;
