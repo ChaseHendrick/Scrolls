@@ -467,8 +467,9 @@ SCROLLERS_JS = r"""() => {
   const found = [];
   const de = document.scrollingElement || document.documentElement;
   const hs = getComputedStyle(document.documentElement).overflowY, bs = document.body ? getComputedStyle(document.body).overflowY : '';
-  if (de.scrollHeight > innerHeight + 2 && hs !== 'hidden' && !(bs === 'hidden' && hs === 'visible'))
-    found.push({box: 'page', shown: innerHeight, content: de.scrollHeight});
+  // clientHeight, not innerHeight: a sideways scroll bar takes its height from the page, which then scrolls a little
+  if (de.scrollHeight > de.clientHeight + 2 && hs !== 'hidden' && !(bs === 'hidden' && hs === 'visible'))
+    found.push({box: 'page', shown: de.clientHeight, content: de.scrollHeight});
   const walk = (root) => {
     for (const el of root.querySelectorAll('*')) {
       if (el.shadowRoot) walk(el.shadowRoot);
@@ -603,6 +604,17 @@ def verdict(found: list[dict], one_screen=False) -> list[str]:
     return probs
 
 
+def space_urls(owner: str, short: str, direct=False, sdk=None) -> list[str]:
+    """The addresses to try for a Space, in order: its huggingface.co page, or with direct its own host, which for a
+    static Space is OWNER-NAME.static.hf.space (OWNER-NAME.hf.space answers 404 there) and else OWNER-NAME.hf.space; a
+    Space of unknown sdk tries both."""
+    if not direct:
+        return [f"https://huggingface.co/spaces/{owner}/{short}"]
+    host = f"{owner.lower()}-{short.lower()}"
+    app, static = f"https://{host}.hf.space/", f"https://{host}.static.hf.space/"
+    return [static] if sdk == "static" else [app] if sdk else [app, static]
+
+
 def scroll_check(names, direct=False, width=1440, height=900, wait=12.0, shots=None, token=None, log=print) -> dict:
     """Open each Space (its huggingface.co page, or with direct its own host), click through every tab and report
     each view's scroll boxes and problems: {name: [{view, found, problems}]}. Needs Python playwright."""
@@ -623,12 +635,18 @@ def scroll_check(names, direct=False, width=1440, height=900, wait=12.0, shots=N
                 page.route(lambda u: urllib.parse.urlparse(u).netloc in mine,
                            lambda route: route.continue_(headers={**route.request.headers,
                                                                   "authorization": f"Bearer {token}"}))
-            url = f"https://{host}.hf.space/" if direct else f"https://huggingface.co/spaces/{owner}/{short}"
             views = res[name] = []
-            try:
-                page.goto(url, wait_until="load", timeout=120_000)
-            except Exception as e:  # noqa: BLE001 - reported as the view's problem
-                views.append({"view": "load", "found": [], "problems": [f"did not load: {e}"[:160]]})
+            failed = None
+            for url in space_urls(owner, short, direct, rows.get(short, {}).get("sdk")):
+                try:
+                    r = page.goto(url, wait_until="load", timeout=120_000)
+                    failed = f"did not load: HTTP {r.status} at {url}" if r is not None and r.status >= 400 else None
+                except Exception as e:  # noqa: BLE001 - reported as the view's problem
+                    failed = f"did not load: {e}"[:160]
+                if failed is None:
+                    break
+            if failed:
+                views.append({"view": "load", "found": [], "problems": [failed]})
                 ctx.close()
                 continue
             page.wait_for_timeout(wait * 1000)

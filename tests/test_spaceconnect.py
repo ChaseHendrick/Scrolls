@@ -333,6 +333,38 @@ class OneScroll(unittest.TestCase):
         self.assertEqual(got["wraps"], [])
 
 
+    def test_static_spaces_are_opened_on_their_static_host(self):
+        # OWNER-NAME.hf.space answers 404 for a static Space, and a 404 page has no scroll problem to find
+        self.assertEqual(sc.space_urls("SharpMeow", "unroll", True, "static"),
+                         ["https://sharpmeow-unroll.static.hf.space/"])
+        self.assertEqual(sc.space_urls("SharpMeow", "AFV-Fibers", True, "gradio"),
+                         ["https://sharpmeow-afv-fibers.hf.space/"])
+        self.assertEqual(sc.space_urls("SharpMeow", "letter-viewer", True),
+                         ["https://sharpmeow-letter-viewer.hf.space/", "https://sharpmeow-letter-viewer.static.hf.space/"])
+        self.assertEqual(sc.space_urls("SharpMeow", "unroll", False, "static"),
+                         ["https://huggingface.co/spaces/SharpMeow/unroll"])
+
+    @unittest.skipUnless(HAVE_PLAYWRIGHT, "needs playwright and a Chromium")
+    def test_a_sideways_scroll_bar_makes_a_full_height_page_scroll(self):
+        # the bar takes its height from the page, so a page exactly as tall as the window scrolls by the bar's height
+        from playwright.sync_api import sync_playwright
+        with tempfile.TemporaryDirectory() as d, sync_playwright() as pw:
+            b = pw.chromium.launch(ignore_default_args=["--hide-scrollbars"])
+            try:
+                got = {}
+                for name, width in (("wide", 1000), ("fits", 300)):
+                    f = Path(d) / f"{name}.html"
+                    f.write_text(f"<html><body style='margin:0'><div style='width:{width}px;height:844px'></div>"
+                                 "</body></html>")
+                    pg = b.new_page(viewport={"width": 390, "height": 844})
+                    pg.goto(f.as_uri())
+                    got[name] = [x["box"] for x in sc.scan_page(pg)]
+                    pg.close()
+            finally:
+                b.close()
+        self.assertEqual(got, {"wide": ["page"], "fits": []})
+
+
 class Spelling(unittest.TestCase):
     def test_british_words_are_found_in_prose_and_code(self):
         with tempfile.TemporaryDirectory() as d:
