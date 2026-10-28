@@ -250,7 +250,7 @@ The GIF, MP4 and two stills on the [vc3d-agent](vc3d-agent.md) page: a captioned
 
 ### `python scripts/media/barrier_demo.py`
 
-The stills, slow GIF and MP4 on the [contact-barrier](contact-barrier.md) page: the released contact barrier (`kit switchfix barrier` of AutoPipeline 0.1.9) run on the two made-up cases of the package's own tests, a trace that hops onto a touching sheet and a control that stays on its sheet, drawn as cross-sections and from above. It imports the barrier from the AutoPipeline package folder, checks that it keeps and cuts as those tests require (no media otherwise), and writes `barrier-hop-still.png`, `barrier-control.png`, `barrier-topview.png`, `barrier-hop.gif` and `barrier-hop.mp4`, each Synthetic demo with a sidecar. Needs numpy, scipy, Pillow, ffmpeg and gifsicle.
+The stills, slow GIF and MP4 on the [contact-barrier](contact-barrier.md) page: the released contact barrier (`kit switchfix barrier` of AutoPipeline 0.1.9) run on two made-up cases, a trace that hops onto a touching sheet and a control that stays on its sheet, drawn as cross-sections and from above. It imports the barrier from the AutoPipeline package folder, checks that it cuts the hop, keeps the seed's side, joins the hop with the barrier switched off and keeps the control whole (no media otherwise), and writes `barrier-hop-still.png`, `barrier-control.png`, `barrier-topview.png`, `barrier-hop.gif` and `barrier-hop.mp4`, each Synthetic demo with a sidecar. Needs numpy, scipy, Pillow, ffmpeg and gifsicle.
 
 | Option | Default | Meaning |
 | --- | --- | --- |
@@ -328,7 +328,7 @@ The sidecar (`common.write_sidecar`, schema `scrolls-media/1`):
 | --- | --- | --- |
 | `usage: ...` then `error: ...` on stderr, exit code 2 | A missing or wrong argument | Check the command against Commands and options |
 | `PATH: no kit/switchfix.py; give the AutoPipeline package folder` | `barrier_demo.py --package` points somewhere else | Give the package folder of branch `submission/progress-2026-10-fix9` |
-| `the barrier did not behave as the package's tests say; no media written` | The barrier kept or cut differently from the package's tests on the made-up cases | Check the package version; do not publish pictures of a barrier that fails its own tests |
+| `the barrier did not cut the hop and keep the control; no media written` | The barrier kept or cut differently on the made-up cases | Check the package version; do not publish pictures of a barrier that fails its own tests |
 | `PATH was over the public size limit and was removed` | `barrier_demo.py`'s GIF or MP4 came out over 1920 px or 4 MB under `docs/assets/` | Shorten the clip or lower its width |
 | `long dash in the chart text` | `barrier_chart.py`'s data holds U+2014 or U+2013 | Rewrite the text without long dashes |
 | `the chart embeds a raster picture` | The written SVG links or embeds a raster image | Draw it from shapes only |

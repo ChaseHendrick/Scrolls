@@ -1836,7 +1836,7 @@
     "Area": "Surfaces and tracing",
     "Run": "`scrolls-kit switchfix barrier` (in the AutoPipeline package folder), `autopipeline plan SAMPLE` with `\"qa\": {\"repair\": {\"method\": \"barrier\"}}` (the default)",
     "Code": "`submissions/progress-2026-10-fix9/autopipeline/kit/switchfix.py` (`barrier`, `barrier_keep`, `BARRIER`), `submissions/progress-2026-10-fix9/autopipeline/kit/sheetgap.py` (`contact_barrier`), `submissions/progress-2026-10-fix9/autopipeline/kit/autopipe.py` (`repair_one`) on the branch",
-    "Tests": "`submissions/progress-2026-10-fix9/autopipeline/tests/test_switchfix.py` on the branch; the barrier's own cases (a hop is cut, a control that stays is kept whole, without the barrier the hop is joined) are drawn by `scripts/media/barrier_demo.py` here, which refuses to write pictures if they fail",
+    "Tests": "`submissions/progress-2026-10-fix9/autopipeline/tests/test_switchfix.py` on the branch (`test_the_barrier_repairs_from_a_local_prediction`, the barrier inside AutoPipeline's repair step). The barrier's own cases (a hop is cut, a control that stays is kept whole, without the barrier the hop is joined) are not in the 0.1.9 package; `scripts/media/barrier_demo.py` here runs them on the released code and writes no picture if one fails",
     "Needs": "Python 3.10 or newer, numpy and scipy; a surface prediction as OME-Zarr (the open-data m7 prediction for the scans that have one)",
     "Runs on": "Any CPU. Not measured as its own step; inside the held-out comparison below it ran on a shared 4-core cloud container as part of each trace's chain",
     "Network": "The surface prediction's chunks, from the open-data bucket or the URL given, cached on disk",

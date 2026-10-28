@@ -2,8 +2,8 @@
 """Synthetic demo stills, a slow GIF and a short MP4 of the contact barrier (`kit switchfix barrier`, AutoPipeline's
 qa.repair since 0.1.9) cutting a trace that hopped onto a touching sheet, and leaving alone a trace that did not.
 
-Made-up data only: two sheets in a small volume, the same cases tests/test_switchfix_barrier.py of the AutoPipeline
-package uses (no scan, no model output). The barrier itself is the released code, imported from the AutoPipeline
+Made-up data only: two sheets in a small volume (no scan, no model output). The two cases are the ones the barrier
+was developed against: a hop that must be cut and a control that must be kept whole. The barrier itself is the released code, imported from the AutoPipeline
 package folder given with --package (branch submission/progress-2026-10-fix9, folder
 submissions/progress-2026-10-fix9/autopipeline/), so the picture shows what that code keeps and cuts.
 
@@ -65,12 +65,13 @@ def sheets(a_of_x, b_of_x):
     return v
 
 
-# The two cases of the package's tests (tests/test_switchfix_barrier.py, hop_volume and stay_volume), unchanged:
+# The two cases, a hop and a stay:
 # sheet B, 14 voxels above A, comes to 6 voxels above it from x 200, the prediction draws the two as one thin run from
 # x 236 to 264, then they part again. Hop: A drops 6 voxels below the trace (14 from x 300), so the straight trace
 # left the contact on B. Stay: B goes back up and A stays, so the trace is still on A. (Smooth bends instead of these
 # steps were tried on 28 Oct 2026 and the rule then saw no contact on both sides, so the steps are kept: the picture
-# shows exactly the case the tests check.) main() checks that the barrier keeps and cuts as those tests require.
+# shows exactly the case that is checked.) main() checks that the barrier cuts the hop, keeps its seed's side, joins
+# the hop when the barrier is switched off, and keeps the control whole; it writes nothing otherwise.
 def a_hop(x):
     return ZA if x < 264 else (ZA - 6 if x < 300 else ZA - 14)
 
@@ -116,7 +117,7 @@ def mesh(step=4):
 
 def run_barrier(sf, sheetgap, vol):
     """The released barrier on a synthetic case: keep (H, W) and info from sf.barrier_keep, the same without the
-    contact barrier (as the tests' joined control), and the dense barrier points' x and y, recomputed with the
+    contact barrier (the joined control), and the dense barrier points' x and y, recomputed with the
     function's own steps for the overlay."""
     import numpy as np
     xyz, valid = mesh()
@@ -427,7 +428,7 @@ def main(argv=None):
     print(json.dumps(checks, indent=1))
     if not (checks["hop_seed_side_kept"] and checks["hop_far_side_cut"] and checks["hop_joined_without_barrier"]
             and checks["stay_kept_whole"]):
-        sys.exit("the barrier did not behave as the package's tests say; no media written")
+        sys.exit("the barrier did not cut the hop and keep the control; no media written")
     cmd = "python scripts/media/barrier_demo.py --package PKG --out-dir " + str(a.out_dir)
     extra = {"barrier": {"package_commit": a.package_commit, **checks}}
     stills = {

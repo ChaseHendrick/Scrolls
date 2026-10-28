@@ -26,8 +26,8 @@
       "barrier_demo.py",
       "common.py"
     ],
-    "scripts_sha256": "9fc2c546723a8dddc71658252bd4d3ee501edf8abbcdd071a7f5bdc191c930a0",
-    "base_commit": "22035c3fb219656924f98e7d97f56b16a504b0b9"
+    "scripts_sha256": "5b29471ed1d7e2b951699b1e02f1f5060535ac70a5b8da49dcd7933118a19ac1",
+    "base_commit": "328ec32007f17642fdd976ff0401d079bcbf34cb"
   },
   "command": "python scripts/media/barrier_demo.py --package PKG --out-dir docs/assets/contact-barrier",
   "barrier": {

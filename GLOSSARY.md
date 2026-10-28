@@ -68,6 +68,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **coordinate frame**: The origin, axis directions and units used to describe a point. Coordinates from different scans or resolution levels must be converted into the same frame before they can be compared.
 
+**Contact barrier**: AutoPipeline's sheet-switch repair (`kit switchfix barrier`, `qa.repair` method `barrier`, in AutoPipeline 0.1.9): where a touching sheet shows on both sides of a traced surface, it draws a barrier and keeps only the part the seed reaches. It cuts, it never mends; page [`docs/tools/contact-barrier.md`](docs/tools/contact-barrier.md).
+
 **CORS (cross-origin resource sharing)**: The web server permission that lets a browser page read data from another site. A data URL can work when opened directly yet fail inside Unroll if its server does not allow that page to read it.
 
 **coverage polish (`kit axispolish`)**: An adjustment of an estimated center line toward nearby points with greater winding coverage on predicted sheets. It uses geometry from the normal grids, not ink. A polished line is still model output. See [axispolish](docs/tools/axispolish.md).
