@@ -250,7 +250,7 @@ The GIF, MP4 and two stills on the [vc3d-agent](vc3d-agent.md) page: a captioned
 
 ### `python scripts/media/barrier_demo.py`
 
-The stills, slow GIF and MP4 on the [contact-barrier](contact-barrier.md) page: the released contact barrier (`kit switchfix barrier` of AutoPipeline 0.1.9) run on two made-up cases, a trace that hops onto a touching sheet and a control that stays on its sheet, drawn as cross-sections and from above. It imports the barrier from the AutoPipeline package folder, checks that it cuts the hop, keeps the seed's side, joins the hop with the barrier switched off and keeps the control whole (no media otherwise), and writes `barrier-hop-still.png`, `barrier-control.png`, `barrier-topview.png`, `barrier-hop.gif` and `barrier-hop.mp4`, each Synthetic demo with a sidecar. Needs numpy, scipy, Pillow, ffmpeg and gifsicle.
+The stills, slow GIF and MP4 on the [contact-barrier](contact-barrier.md) page: the released contact barrier (`kit switchfix barrier` of AutoPipeline 0.1.9) run on two made-up cases, a trace that hops onto a touching sheet and a control that stays on its sheet, drawn as cross-sections and from above. It imports the barrier from the AutoPipeline package folder, checks that it cuts the hop, keeps the seed's side, joins the hop with the barrier switched off and keeps the control whole (no media otherwise), and writes `barrier-hop-still.png`, `barrier-control.png`, `barrier-topview.png`, `barrier-hop.gif` (smooth, about 21 s), `barrier-steps.gif` (8 steps of 1.8 s) and `barrier-hop.mp4`, each Synthetic demo with a sidecar. Needs numpy, scipy, Pillow, ffmpeg and gifsicle.
 
 | Option | Default | Meaning |
 | --- | --- | --- |

@@ -33,7 +33,7 @@ Synthetic demo: made-up sheets, the released barrier code. The control below pas
 
 ![The control: a trace passes the contact without switching and is kept whole](../assets/contact-barrier/barrier-control.png)
 
-![A slow animation of the hop being cut and the control being kept](../assets/contact-barrier/barrier-hop.gif)
+![Eight slow steps: the hop grows, is cut at the barrier, and the control is kept](../assets/contact-barrier/barrier-steps.gif)
 
 What it does not do: it cannot see two sheets pressed so hard that the prediction shows one band no thicker than a sheet with nothing on either side, and it does not regrow what it cuts. Its output is traced geometry, never a reading.
 

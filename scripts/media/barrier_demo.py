@@ -11,7 +11,8 @@ submissions/progress-2026-10-fix9/autopipeline/), so the picture shows what that
            bending away: a trace that keeps straight leaves the contact on B. That is a sheet switch.
   stay     the same contact, but afterwards B moves back up and A stays: the trace is still on its own sheet.
 
-Outputs (OUT_DIR): barrier-hop-still.png, barrier-control.png, barrier-topview.png, barrier-hop.gif, barrier-hop.mp4, each
+Outputs (OUT_DIR): barrier-hop-still.png, barrier-control.png, barrier-topview.png, barrier-hop.gif (smooth),
+barrier-steps.gif (8 steps, 1.8 s each), barrier-hop.mp4, each
 with a sidecar JSON (scripts/media/common.py). Needs numpy, scipy, Pillow, ffmpeg and gifsicle.
 
   python scripts/media/barrier_demo.py --package PKG --out-dir docs/assets/contact-barrier
@@ -394,6 +395,39 @@ def frames(R, out_dir):
     return out
 
 
+def steps(R):
+    """The step GIF's 8 key frames, each shown 1.8 s: seed, growing, at the contact, on the neighbor, barrier drawn,
+    far part cut, control grown, control kept."""
+    from PIL import ImageDraw
+    vol, (xyz, valid, keep, joined, info, pts) = R["hop"]
+    r = row_at(xyz)
+    n = xyz.shape[1]
+    xs = xyz[r, :, 0]
+    grown = colors_for(xyz, joined[r], "grown")
+    at = lambda xv: int((xs <= xv).sum())                                     # noqa: E731
+    seq = [panel(vol, xyz, grown, "1. A seed on sheet A", "The trace starts here and grows to the right.", "hop",
+                 upto=2, head=True),
+           panel(vol, xyz, grown, "2. The trace grows along sheet A", "Sheet B, its neighbor, runs above it.", "hop",
+                 upto=at(150), head=True),
+           panel(vol, xyz, grown, "3. At the contact the two sheets look like one",
+                 "The prediction draws A and B as one thin band here.", "hop", upto=at(256), head=True),
+           panel(vol, xyz, grown, "4. Past the contact it is on sheet B",
+                 "Sheet A bent away; the straight trace kept going on the neighbor. A sheet switch.", "hop",
+                 upto=n, head=True),
+           panel(vol, xyz, grown, "5. The contact barrier is drawn",
+                 "The neighbor shows on both sides of the trace there.", "hop", barrier_pts=pts),
+           panel(vol, xyz, colors_for(xyz, keep[r], "barrier"), "6. Only the seed's side is kept",
+                 "The part past the barrier is cut off (coral). Nothing is moved.", "hop", barrier_pts=pts)]
+    vol2, (xyz2, valid2, keep2, joined2, info2, pts2) = R["stay"]
+    seq += [panel(vol2, xyz2, colors_for(xyz2, joined2[r], "grown"), "7. Control: the same contact, no switch",
+                  "Afterwards the neighbor moves back up; the trace stays on sheet A.", "stay", upto=n, head=True),
+            panel(vol2, xyz2, colors_for(xyz2, keep2[r], "barrier"), "8. The barrier keeps all of it",
+                  "Touched from one side only: no barrier, nothing cut.", "stay")]
+    for im in seq:
+        ImageDraw.Draw(im).text((im.size[0] - 380, 14), "Synthetic demo, no scan data", font=font(16), fill=MUTED)
+    return seq
+
+
 def meta_for(name, alt, caption):
     return {"label": "Synthetic demo", "alt": alt, "caption": caption, "license": "Apache-2.0", "release_id": None,
             "data": None, "sources": []}
@@ -501,6 +535,29 @@ def main(argv=None):
                                              frames=len(fr), seconds=round(len(fr) / FPS, 1)))
             print(p, gw, gh, p.stat().st_size)
         common.write_sidecar(out / "barrier-hop.json", meta, outs, command=cmd, scripts=SCRIPTS, extra=extra)
+        # the step GIF: 8 key frames, 1.8 s each
+        sg = out / "barrier-steps.gif"
+        smeta = meta_for("barrier-steps", "Eight slow steps on made-up sheets: a seed, the trace growing along its "
+                         "sheet, the contact where the two sheets look like one, the trace past it on the neighbor, the "
+                         "barrier drawn, the far part cut off, then a control trace through the same kind of contact "
+                         "kept whole.",
+                         "Synthetic demo, step by step (1.8 s a step): the contact barrier cutting a sheet switch and "
+                         "keeping a control trace whole, on made-up sheets. No scan data.")
+        common.write_guard(smeta["label"], sg, smeta)
+        keys = [im.resize((min(w, 1280), int(im.size[1] * min(w, 1280) / im.size[0])), Image.LANCZOS)
+                for im in steps(R)]
+        pal = [k.convert("P", palette=Image.ADAPTIVE, colors=128) for k in keys]
+        pal[0].save(sg, save_all=True, append_images=pal[1:], duration=1800, loop=0, optimize=True)
+        subprocess.run(["gifsicle", "-O3", "-b", str(sg)], check=True)
+        common.size_guard(sg, min(w, 1280))
+        if not sg.exists():
+            sys.exit(f"{sg} was over the public size limit and was removed")
+        sw, sh = Image.open(sg).size
+        common.write_sidecar(out / "barrier-steps.json", smeta,
+                             [common.output_record(sg, sw, sh, kind="gif", format="gif", frames=len(keys),
+                                                   seconds_per_frame=1.8, seconds=round(1.8 * len(keys), 1))],
+                             command=cmd, scripts=SCRIPTS, extra=extra)
+        print(sg, sw, sh, sg.stat().st_size)
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
 
