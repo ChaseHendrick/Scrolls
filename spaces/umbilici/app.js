@@ -7,7 +7,7 @@ import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 
-const VERSION = '1.11.0';
+const VERSION = '1.11.1';
 const DATASET = 'https://huggingface.co/datasets/SharpMeow/vesuvius-center-lines';
 const LASAGNA_SCROLL = 'PHerc0175A';
 const ICE = new THREE.Color('#89f0ff');
@@ -647,18 +647,22 @@ document.addEventListener('change', (e) => { const c = e.target.closest('input[d
 // The header text and the view buttons wrap at different widths (on a phone the buttons take two rows), so the panels
 // under them are placed from what is measured here, not from fixed offsets: --nav-w (the buttons' width, which the
 // header's kicker keeps clear of on wide screens), --head-b (where the header text ends) and --nav-b (where the
-// buttons end; the scan card, the first-visit hint and the settings sit under it on phones). style.css has fallbacks.
+// buttons end; the scan card, the first-visit hint and the settings sit under it on phones), and --bl-h (the height
+// of the controls at bottom left, which the slice panel sits above in X-ray and Lasagna on phones). style.css has
+// fallbacks.
 const NAV = document.querySelector('nav.tr');
+const BL = document.querySelector('.hud.bl');
 function placeHud() {
   const css = document.documentElement.style;
   css.setProperty('--nav-w', `${Math.ceil(NAV.getBoundingClientRect().width)}px`);
   const head = Math.max(0, ...[...document.querySelectorAll('.tl .kicker, .tl h1')].map((e) => e.getBoundingClientRect().bottom));
   css.setProperty('--head-b', `${Math.ceil(head)}px`);
   css.setProperty('--nav-b', `${Math.ceil(NAV.getBoundingClientRect().bottom)}px`);
+  css.setProperty('--bl-h', `${Math.ceil(BL.getBoundingClientRect().height)}px`);
 }
 let hudQueued = false;
 const placeHudSoon = () => { if (!hudQueued) { hudQueued = true; requestAnimationFrame(() => { hudQueued = false; placeHud(); }); } };
-if (window.ResizeObserver) { const ro = new ResizeObserver(placeHudSoon); ro.observe(document.querySelector('.tl')); ro.observe(NAV); }
+if (window.ResizeObserver) { const ro = new ResizeObserver(placeHudSoon); ro.observe(document.querySelector('.tl')); ro.observe(NAV); ro.observe(BL); }
 addEventListener('resize', placeHudSoon);
 placeHud();
 function railRow(s) {

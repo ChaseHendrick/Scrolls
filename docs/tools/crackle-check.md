@@ -9,7 +9,7 @@ A public Gradio Space that runs an open ink model on a small stack of surface la
 | Kind | app, agent tool |
 | Area | Ink maps and models |
 | Run | [huggingface.co/spaces/SharpMeow/crackle-check](https://huggingface.co/spaces/SharpMeow/crackle-check) (the page); from code with gradio_client (`Client("SharpMeow/crackle-check")`), the Gradio call API at `https://sharpmeow-crackle-check.hf.space/gradio_api/call/ENDPOINT`, or MCP at `https://sharpmeow-crackle-check.hf.space/gradio_api/mcp/sse` |
-| Code | Not in this repository: the Space's own files, [huggingface.co/spaces/SharpMeow/crackle-check/tree/main](https://huggingface.co/spaces/SharpMeow/crackle-check/tree/main) (the app, the two readers' inference, the control rule and the VC3D plugin), read at Space commit 2a7d5d50. This repository holds its Connect your tool panel, `spaces/connect/crackle-check/` ([spaceconnect](spaceconnect.md)) |
+| Code | Not in this repository: the Space's own files, [huggingface.co/spaces/SharpMeow/crackle-check/tree/main](https://huggingface.co/spaces/SharpMeow/crackle-check/tree/main) (the app, the two readers' inference, the control rule and the VC3D plugin), read at Space commit faa2ae92. This repository holds its Connect your tool panel, `spaces/connect/crackle-check/` ([spaceconnect](spaceconnect.md)) |
 | Tests | None in this repository for the Space itself. `tests/test_spaceconnect.py` checks its Connect your tool panel; `python -m kit spaceconnect run` calls its endpoints live |
 | Needs | A browser, or Python with `gradio_client`, or any HTTP client, or an MCP client. A new region runs on ZeroGPU: pass your own Hugging Face token (`Client(..., token=...)`) to spend your own quota. The examples need no GPU |
 | Runs on | The Space, Gradio 6.28 on ZeroGPU. The PHerc0841 w00 example answered in 0.44 s from the call API (saved maps, measured 2026-10-27, cloud container); a `/check_segment` call that read a region from the open data and ran a reader took 141 s end to end (`kit spaceconnect run`, 2026-10-24) |
@@ -146,6 +146,7 @@ None in this repository for the Space's code. `python -m unittest tests.test_spa
 
 ## History
 
+- 2026-10-28: one page scroll bar and American English, Space commit `faa2ae92` (from Scrolls-private): the app's head carries `onescroll.html` from `spaces/connect/crackle-check/` ([PR #253](https://github.com/ChaseHendrick/Scrolls/pull/253)), and the copied Ink Lens files are those of `main` at `8250b23`.
 - 2026-10-27: release entry `crackle-check` and this page ([PR #250](https://github.com/ChaseHendrick/Scrolls/pull/250)), branched from `main` at `45836d9`, describing the public Space at Space commit 2a7d5d50 (version 0.4.0).
 - 2026-10-24: Connect your tool panel, `spaces/connect/crackle-check/` ([PR #170](https://github.com/ChaseHendrick/Scrolls/pull/170)).
 

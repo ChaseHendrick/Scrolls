@@ -94,8 +94,8 @@ def catalog_html():
                     f"<td>{e['by']}</td><td>{e['format']}</td><td>{links}</td></tr>")
     tools = "".join(f'<li><a href="{t["url"]}" target="_blank" rel="noopener">{t["name"]}</a>: {t["what"]}</li>'
                     for t in cat["tools"])
-    return (f'<div class="af-cat"><p>{cat["intro"]}</p><table><thead><tr><th>Scan</th><th>What</th><th>By</th>'
-            f'<th>Format</th><th>Get it</th></tr></thead><tbody>{"".join(rows)}</tbody></table>'
+    return (f'<div class="af-cat"><p>{cat["intro"]}</p><div class="af-tbl"><table><thead><tr><th>Scan</th><th>What</th><th>By</th>'
+            f'<th>Format</th><th>Get it</th></tr></thead><tbody>{"".join(rows)}</tbody></table></div>'
             f'<h3>Models and tools</h3><ul>{tools}</ul><p class="af-note">{cat["note"]}</p></div>')
 
 
@@ -190,6 +190,8 @@ CSS = """
 .af-head span { color:var(--body-text-color-subdued); font-size:15px; }
 /* no fixed height: onescroll.html fits the guide's frame to the guide, so the page scrolls and the frame does not */
 .af-guide iframe { width:100%; height:1400px; border:0; border-radius:12px; background:#0b0f17; display:block; }
+/* a phone scrolls the catalog sideways inside its box rather than cutting off the last columns */
+.af-cat .af-tbl { overflow-x:auto; }
 .af-cat table { width:100%; border-collapse:collapse; font-size:14.5px; }
 .af-cat th, .af-cat td { text-align:left; vertical-align:top; padding:9px 10px;
   border-bottom:1px solid var(--border-color-primary); }

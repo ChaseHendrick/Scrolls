@@ -216,6 +216,7 @@ Free: a CPU Space with no GPU. Times are in Runs on. The server's memory is domi
 
 ## History
 
+- 2026-10-28: phone fix ([PR #254](https://github.com/ChaseHendrick/Scrolls/pull/254)), found by `python -m kit spaceconnect scroll --width 390` and the live checks after the 27 October deploy: Gradio gives each of the gallery's 6 columns at least 100 px, so on a 390 px phone tiles 4 to 6 of every row on The atlas were clipped out of sight; phones now get 3 columns and tablets 4. Deployed as Space commit `61521458`.
 - 2026-10-27: one page scroll bar: the head carries `onescroll.html` (written by `python -m kit spaceconnect render`, [spaceconnect](spaceconnect.md)), so the page scrolls as a whole, and `tools/deploy.py` uploads it; the gallery on The atlas grows to show every surface instead of scrolling inside the page (Gradio caps a gallery at 55% of the window), and on a phone the Compare models table drops its bars and fits the screen instead of scrolling sideways; American spelling in the page, its API docstrings and code (the color helpers in `atlasdata` are now `LAYER_COLOR`, `color` and `mark(color_=)`). The published dataset's `meta.json` keeps the British spelling of its center-only windows key, and the page still reads that key.
 - 2026-10-27: color: ember maps by default, a color per model in Compare and the tables, colored header and cards (`ef7e9ba`).
 - 2026-10-27: first version: page, API, MCP server, Connect panel (`5d25489`).
