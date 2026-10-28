@@ -1,6 +1,6 @@
 # vc3d-plugins: run Scrolls and community tools from VC3D's Plugins menu
 
-Eight VC3D plugin manifests (the Center Finder, StrokeNet, the Scroll Text Reader, Ink Lens, three villa commands and the v8in ink model) for the Plugins menu proposed on villa branch `vc3d-plugins`, with a kit launcher and tests.
+Eight VC3D plugin manifests (the Center Finder, StrokeNet, the Scroll Text Reader, Ink Lens, three villa commands and the v8in ink model) for the Plugins menu proposed to villa as part E of villa PR #2219, with a kit launcher and tests.
 
 | Field | Value |
 | --- | --- |
@@ -8,15 +8,15 @@ Eight VC3D plugin manifests (the Center Finder, StrokeNet, the Scroll Text Reade
 | Status | Experimental |
 | Kind | data, patch |
 | Area | Viewers and apps |
-| Run | VC3D built from villa branch `vc3d-plugins`, started with `VC3D_PLUGIN_PATH=plugins`; `python3 plugins/run_kit.py COMMAND ...` runs the kit from a plain clone |
+| Run | VC3D built with the Plugins menu (villa PR #2219), started with `VC3D_PLUGIN_PATH=plugins`; `python3 plugins/run_kit.py COMMAND ...` runs the kit from a plain clone |
 | Code | `plugins/` |
 | Tests | `tests/test_plugins.py` |
-| Needs | VC3D built from villa branch `vc3d-plugins` (commit `a0c8b9e6d`, on villa `main` `d1b95150e`); each tool's own needs, on its page; Python 3.10 or newer for `plugins/run_kit.py` |
+| Needs | VC3D built from villa PR #2219 (ChaseHendrick/villa branch `vc3d-combined-oct21`, commit `7d205f6e4`), or from the older villa branch `vc3d-plugins` (commit `a0c8b9e6d`, on villa `main` `d1b95150e`, without the point collection metadata fix); each tool's own needs, on its page; Python 3.10 or newer for `plugins/run_kit.py` |
 | Runs on | Wherever VC3D runs; each tool takes the time its page gives. The manifest checks take about 1.2 s (measured 2026-10-20, 4-core cloud container) |
 | Network | Only what each tool contacts, on its page (the Center Finder reads the open-data bucket; StrokeNet and the Scroll Text Reader download their released weights once from this repository's GitHub releases) |
 | Writes | VC3D writes each run into `~/.vc3d/plugin-runs/ID/TIME/` with `plugin-run.json`; by result kind it also attaches a segment or an umbilicus to the open project, appends a record to the active segment's `ink-detections.json`, or adds point collections. Ink Lens writes its overlay, pins and a merged `ink-detections.json` into the segment folder itself (its result kind is `none`) |
-| Go-ahead | Not needed to run on public data. Opening the villa PR needs Chase's yes (rule 8); output from prize-eligible scrolls stays private (rule 1) |
-| Released | Not released; the villa side is a local branch, not pushed |
+| Go-ahead | Not needed to run on public data. Changing the villa PR's text needs Chase's yes (rule 8); output from prize-eligible scrolls stays private (rule 1) |
+| Released | Proposed upstream as part E of villa PR #2219 (draft, 2026-10-28); not merged in villa |
 | Checked | 2026-10-21 against commit `249096b` |
 | License | Manifests and launcher: Apache 2.0 ([LICENSE](../../LICENSE)); each tool keeps its own license, named in its manifest's `license` field |
 
@@ -48,7 +48,7 @@ Do not use it:
 git clone https://github.com/ChaseHendrick/Scrolls && cd Scrolls
 python -m unittest tests.test_plugins          # every manifest loads under VC3D's rules
 export VC3D_PLUGIN_PATH="$PWD/plugins"
-VC3D                                           # a VC3D built from villa branch vc3d-plugins
+VC3D                                           # a VC3D built with the Plugins menu (villa PR #2219)
 ```
 
 Output of the test run on 2026-10-20 (4-core cloud container):
@@ -156,17 +156,18 @@ Not measured inside VC3D. Each tool's time is on its page; the Center Finder too
 - **Rerun:** Safe; every run gets a new folder. Results that attach (umbilicus, segment) replace or add project entries, and VC3D asks before replacing an attached umbilicus; ink detections and point collections are added each time.
 - **Success:** The tests pass; in VC3D, `state` is `finished` and the message names what was loaded.
 - **Not a pass:** A Scroll Text Reader result with `no_control`; a StrokeNet score on a downsampled JPEG preview; an umbilicus on one of the 13 published scrolls from the `-all` weights; a manifest test pass taken as proof that a live VC3D loads the result (not yet run in VC3D).
-- **Go-ahead:** Nothing to run on public data. Opening the villa PR, posting media, or publishing outputs needs Chase's yes.
+- **Go-ahead:** Nothing to run on public data. Changing the villa PR's text, posting media, or publishing outputs needs Chase's yes.
 - **Never:** Put a manifest from an untrusted source in a plugin folder; call an ink detection or a score a reading; share output from prize-eligible scrolls before the announcement; put target-scroll results in this repository.
 
 ## Tests
 
-`python -m unittest tests.test_plugins` (six tests): manifest rules and a failing case, files named in this checkout exist, kit commands accept the arguments, script options exist, and the launcher runs from another working directory. Not covered here: VC3D itself (villa's `test_plugin_manifest` and `test_open_data_manifest`, which still need the Modal build), and whether each tool's output is right (each tool's own tests).
+`python -m unittest tests.test_plugins` (six tests): manifest rules and a failing case, files named in this checkout exist, kit commands accept the arguments, script options exist, and the launcher runs from another working directory. Not covered here: VC3D itself (villa's `test_plugin_manifest` and `test_open_data_manifest`, run in villa's own build: they passed in a Linux build of villa PR #2219 on 2026-10-28, VC3D app tests 48 of 48), and whether each tool's output is right (each tool's own tests).
 
 ## History
 
 - 2026-10-20: first version: seven manifests, `plugins/run_kit.py`, `tests/test_plugins.py`; villa branch `vc3d-plugins` at `25d616e16` adds the Plugins menu.
 - 2026-10-21: `ink-lens.json` in the `vc3d-plugin/1` format (Ink Lens had only a draft manifest); the script-option test also reads `spaces/`; villa branch rebased onto villa `main` `d1b95150e` as `a0c8b9e6d`.
+- 2026-10-28: the Plugins menu (`53440efef`) and a small fix that keeps each point collection's metadata when a `points` result loads (`7d205f6e4`) joined villa PR #2219 as part E, after a Linux build and test run at each commit (VC3D app tests 47 of 47 before, 48 of 48 with each).
 
 ## Related
 
