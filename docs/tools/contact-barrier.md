@@ -110,6 +110,7 @@ AutoPipeline is released as a package on its own branch per version and never on
 
 ## History
 
+- 2026-10-28: the scorer's half-winding check stated beside the held-out result ([#263](https://github.com/ChaseHendrick/Scrolls/pull/263)).
 - 2026-10-28: this page, the synthetic demo media and the held-out chart (`6bf0b4a`); review fixes before publishing: the barrier cuts a finished trace and does not stop growth, PHerc0500P2's reference wraps are automatic catalog meshes, and the parent rule's earlier reads are disclosed.
 - 2026-10-25: released inside AutoPipeline 0.1.9 (`2144cdf`).
 - 2026-10-22: preregistered held-out comparison on PHerc0139: AHEAD of villa's tracer in both repeats (`2144cdf` carries the same rule).
