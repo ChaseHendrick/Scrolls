@@ -53,15 +53,15 @@ In the AutoPipeline 0.1.9 package folder (branch `submission/progress-2026-10-fi
 
 ### 3. Voxel-exact label
 
-*Pending.* The command will be `python -m kit apcouple labels RUN`. The published labels moved onto the papyrus are already public as a dataset and a viewer ([snapped-labels](tools/snapped-labels.md)); the step that does the same for any traced surface is not released yet.
+*Pending.* It will run as the AutoPipeline stage `labels`, or alone on one run folder. The published labels moved onto the papyrus are already public as a dataset and a viewer ([snapped-labels](tools/snapped-labels.md)); the step that does the same for any traced surface is not released yet.
 
 ### 4. Fibers along the surface
 
-*Pending.* The command will be `python -m kit apcouple fibers RUN`. The fiber probabilities it reads are public ([afv-fibers](tools/afv-fibers.md), made with Qual's AFV V2 model).
+*Pending.* It will run as the AutoPipeline stage `fibers`, or alone on one run folder. The fiber probabilities it reads are public ([afv-fibers](tools/afv-fibers.md), made with Qual's AFV V2 model).
 
 ### 5. Glued sheet joins
 
-*Pending.* The command will be `python -m kit apcouple joins RUN`.
+*Pending.* It will run as the AutoPipeline stage `joins`, or alone on one run folder.
 
 ### 6. Ink
 
