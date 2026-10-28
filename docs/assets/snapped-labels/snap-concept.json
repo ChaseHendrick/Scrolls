@@ -1,0 +1,38 @@
+{
+  "schema": "scrolls-media/1",
+  "name": "snap-concept",
+  "label": "Concept illustration",
+  "alt": "A made-up cross section of two papyrus wraps: an orange published label beside the first wrap moves along its normals onto the wrap's recto face and turns blue; then a dashed truth face and its one-voxel band appear.",
+  "caption": "Concept illustration: a published label (orange) snapped along its normals onto the recto face (blue), then a truth face (dashed) with its band of one voxel on each side. Made-up data, no scan and no model output.",
+  "license": "Apache-2.0",
+  "release_id": null,
+  "data": null,
+  "sources": [],
+  "outputs": [
+    {
+      "file": "snap-concept.gif",
+      "bytes": 776229,
+      "sha256": "6cb0b62f8d164c319b7fd2c0943e4a8dd1fac2013b52f1e8d352dc2d54b1a320",
+      "width": 960,
+      "height": 540
+    },
+    {
+      "file": "snap-concept.png",
+      "bytes": 751812,
+      "sha256": "df0f634f6d7d0fa6901649df70cf919a7136175c64b369a3b25215f6d7299a4d",
+      "width": 960,
+      "height": 540
+    }
+  ],
+  "inputs": [],
+  "made": "2026-10-28",
+  "tool": {
+    "scripts": [
+      "common.py",
+      "snap_media.py"
+    ],
+    "scripts_sha256": "2034081d717d1ef252e31c236820558c900248d53480f9c2d5d32f31b94c56db",
+    "base_commit": "d8e65d8930db5c080c22be9e87a9186d37f12385"
+  },
+  "command": "python scripts/media/snap_media.py concept --out-dir OUT_DIR"
+}

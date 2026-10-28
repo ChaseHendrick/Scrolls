@@ -8,9 +8,9 @@ A Hugging Face dataset of the published surface labels of PHerc0139, PHerc0814, 
 | Status | Current |
 | Kind | data,app |
 | Area | Surfaces and tracing |
-| Run | [huggingface.co/spaces/SharpMeow/snapped-labels](https://huggingface.co/spaces/SharpMeow/snapped-labels) (viewer); `hf download SharpMeow/vesuvius-snapped-labels --repo-type dataset`; the dataset's `load_example.py`; in the page, `window.snappedLabels` |
-| Code | `spaces/snapped-labels/index.html`, `spaces/snapped-labels/app.js`, `spaces/snapped-labels/style.css`, `spaces/snapped-labels/connect.json` |
-| Tests | None for the page here: `python -m kit spaceconnect check` (run by the tests) checks its Connect panel; the page was checked in headless Chromium on the release output before upload (see Checks and controls) |
+| Run | [huggingface.co/spaces/SharpMeow/snapped-labels](https://huggingface.co/spaces/SharpMeow/snapped-labels) (viewer); `hf download SharpMeow/vesuvius-snapped-labels --repo-type dataset`; the dataset's `load_example.py`; in the page, `window.snappedLabels`; `python -m kit vxsummary check`, `python -m kit vxsummary fixture` (the Voxel exact tab's data) |
+| Code | `spaces/snapped-labels/index.html`, `spaces/snapped-labels/app.js`, `spaces/snapped-labels/vx.js`, `spaces/snapped-labels/style.css`, `spaces/snapped-labels/connect.json`, `kit/vxsummary.py`, `spaces/snapped-labels/vx/fixture/` |
+| Tests | `tests/test_vxsummary.py` (the Voxel exact data contract, the tab's wiring and the snap media); `python -m kit spaceconnect check` (run by the tests) checks its Connect panel; the page was checked in headless Chromium (see Checks and controls) |
 | Needs | A browser for the Space. For the data: Python 3.9+, `huggingface_hub`, `numpy`, `tifffile` and `imagecodecs` |
 | Runs on | Any browser; a segment's cross sections are at most about 8 MB, and each CT view reads up to 16 uncompressed 128 voxel chunks |
 | Network | `huggingface.co` (the dataset), `vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` (CT and the published meshes, read live) |
@@ -26,7 +26,11 @@ A surface label is a tifxyz mesh that follows one wrap of papyrus in a scan. Pub
 
 The dataset holds every published label of four scrolls after a snap: each vertex moved along its normal onto the face of the bright papyrus band, on the side toward the scroll's center line. On PHerc0139, PHerc0814 and PHerc0841 the face is found in a 2.4 µm scan of the same scroll registered vertex by vertex to the label's scan (finesnap); on PHerc0172 in the label's own 7.9 µm scan (labelsnap). Where a vertex's own face is unclear, nothing is measured at that vertex: it takes a Gaussian-weighted average of its measured neighbors' offsets when one lies within two grid cells (filled, `abstain.tif` 2), and otherwise keeps its published position (`abstain.tif` 1). Of 32.9 million released vertices, 66.0 % are snapped, 33.0 % filled (median move 2.7 voxels) and 1.0 % left in place. The snapped share counts measured vertices only; keep `abstain.tif` 0 to use only vertices whose own face was found. Version 1.0.1 (27 Oct 2026) added code 2; in 1.0.0 filled vertices were marked 1. Each mesh keeps the grid and voxel frame of its source, so it lines up with it vertex for vertex.
 
-The Space draws a segment's published and snapped lines on the CT plane you pick, and lists every segment.
+The Space draws a segment's published and snapped lines on the CT plane you pick, animates the snap (Animate snap: each line piece moves from its published position to its snapped one, slowly, on a loop), and lists every segment.
+
+A Voxel exact tab shows the frozen voxel-exact tests (live since 28 Oct 2026; it is hidden whenever `vx/summary.json` is missing or does not validate). Per scroll it shows a claim level: Measured (each snapped vertex scored against the face seen in an independent, finer scan, with at least one class clearing the bar), Certified (a truth-free lower bound with its assumptions listed), or Not shown (with the reason; where a test ran, the card still shows what it measured, which makes no claim). A card gives the share within 0.5, 1 and 2 label voxels with one-sided 95% intervals and the bar, the abstain strata (C0 snapped, C0L snapped in the label scan, C2 filled, C1 left in place) each with its verdict as text and a shape, the signed residual histogram beside the published label's, and the negative controls (the published label, planted offsets, the verso face) with what each required. A segment listed as a showcase adds a per-vertex residual heatmap beside its CT with the truth face drawn dashed; a region appears there only once its truth positions are named as spent, because drawing them publishes where the face is. Below the cards, a cross-section diagram, the steps of a test, the three claim levels and the limits. The data comes from a private exporter through `python -m kit vxsummary check`, which refuses keys outside the contract, numbers that do not add up, costs, long dashes, the word "letter", prize-eligible scrolls and unsafe showcase paths; `?vx=fixture` shows a synthetic fixture (scrolls SYNTH-A to SYNTH-C) under a banner that says every number is made up.
+
+First results (28 Oct 2026, Model output): one frozen test on PHerc0139, 680 sites in z 4680 to 5184 of the label scan, each scored against the recto face in the independent 1.129 µm scan. No class cleared the bar (a one-sided 95% lower bound of at least 90% within 1 voxel, counting every unscorable site as a miss), so PHerc0139 is Not shown. Snapped vertices (code 0): 152 of 200 sites within 1 voxel, lower bound 70.5%; 89.4% of the 170 sites that could be scored; median distance 0.27 voxels. Filled (code 2): 2 of 200; left in place (code 1): 0 of 200; most of those sites had no usable truth face. The 2.399 µm scan the snap used reaches a lower bound of only 68.4% on the same code 0 sites, so the instrument limits this test. Every control held: the published label was within 1 voxel at 28.2% of scorable sites (required below 60%), the reference face moved 1.5 voxels at 5.0% and 11.2% (below 50%), moved 3 voxels at 0% (below 20%), the verso face at 0% (below 50%), and the reference face itself at 87.1% (above 75%). PHerc0814, PHerc0841 and PHerc0172 have no frozen test yet.
 
 The meshes are geometry. They say nothing about ink or text.
 
@@ -57,14 +61,47 @@ It reads PHerc0841 w00 from the dataset and its published mesh from the open dat
 - Accuracy (frozen tests on fresh sites, scored against the recto face in an independent 1.129 µm scan): PHerc0139, 60 sites, within 1 voxel 23.7% published, 79.4% labelsnap, 91.2% finesnap; PHerc0814, 60 sites, 24.2% published, 71.0% labelsnap. A 3D surface model trained on snapped PHerc0139 labels placed the surface 0.61 voxels closer on PHerc0814 than the same model trained on the published labels (95% interval 0.39 to 0.84; all 9 seed pairings). These tests could fail, and the published labels are their control.
 - Release checks: every segment was snapped in overlapping row bands and stitched; on a test crop a banded finesnap run equals a whole run exactly. `release.json` carries the sha256 of every file and of the source mesh; the stitch refused any held-back vertex that came back valid.
 - The page: opened in headless Chromium on the release folder before upload; published and snapped lines were drawn over the CT of PHerc0139, PHerc0841 and PHerc0172.
+- The Voxel exact tab (28 Oct 2026): opened in headless Chromium on the synthetic fixture at 1360 px and 390 px, light and dark, with no horizontal scroll; without a summary the page keeps the tab hidden. The real summary passes `kit vxsummary check --deploy --online`; its cards were rendered from the page script in Node and every share, bound and control matched the exporter output, which itself recomputes each count, bound and control from the frozen per-site rows and refuses any mismatch. The Animate snap button was played on PHerc0139 w054 over its live CT. `tests/test_vxsummary.py` shows each contract check failing on a summary that breaks it.
 
-Claim label: Model output (the snapped meshes come from a band finder on CT; they are geometry, not a reading). The accuracy figures are the frozen tests' results on fresh sites.
+Claim label: Model output (the snapped meshes come from a band finder on CT; they are geometry, not a reading). The accuracy figures are the frozen tests' results on fresh sites. On the Voxel exact tab, shares, bounds and histograms are model output, measured; a certificate's bound is model output, certified; the truth face is model output too (found by a rule on the finer scan); which scrolls are prize-eligible is a sourced fact with its read date.
 
 ## Commands and options
 
 ### The Space
 
-[huggingface.co/spaces/SharpMeow/snapped-labels](https://huggingface.co/spaces/SharpMeow/snapped-labels): Viewer (scroll, segment, z plane, a 96, 192 or 384 voxel window, layers), All segments, How it works, Connect your tool. Keys: left and right step along the label, up and down step z. URL parameters: `seg=SEGMENT`, `z=Z`, `data=URL` (another copy of the dataset). The page has one scroll bar: the segment list grows with the page instead of scrolling on its own, picking a segment far down the list or the table brings the image back into view, and on a phone the list follows the viewer.
+[huggingface.co/spaces/SharpMeow/snapped-labels](https://huggingface.co/spaces/SharpMeow/snapped-labels): Viewer (scroll, segment, z plane, a 96, 192 or 384 voxel window, layers, Animate snap), All segments (with a Claim column once voxel-exact results load), Voxel exact (hidden until results load), How it works, Connect your tool. Keys: left and right step along the label, up and down step z. URL parameters: `seg=SEGMENT`, `z=Z`, `data=URL` (another copy of the dataset), `vx=URL` (another voxel-exact summary; `vx=fixture` for the synthetic fixture), `tab=exact` (open the Voxel exact tab). Animate snap holds 1.2 s on the published line, moves 2.4 s to the snapped one, holds 1.6 s and moves back; with reduced motion it never plays by itself and each click steps published, halfway, snapped.
+
+### `python -m kit vxsummary check`
+
+```
+usage: python -m kit vxsummary check [-h] [--deploy] [--online] path
+```
+
+| Option | Default | Meaning |
+| --- | --- | --- |
+| `path` | required | The summary JSON, such as `spaces/snapped-labels/vx/summary.json`; showcase files are read beside it |
+| `--deploy` | off | Also refuse the fixture, its placeholder digest and SYNTH scroll ids: run it before a summary ships |
+| `--online` | off | Also confirm on Hugging Face that the pinned dataset revision exists (network) |
+
+| Exit code | Meaning |
+| --- | --- |
+| `0` | Valid |
+| `1` | Problems found, one per line on stderr |
+| `2` | The summary could not be read |
+
+### `python -m kit vxsummary fixture`
+
+```
+usage: python -m kit vxsummary fixture [-h] out_dir
+```
+
+| Option | Default | Meaning |
+| --- | --- | --- |
+| `out_dir` | required | The folder to write `summary.json` and `show/` into, such as `spaces/snapped-labels/vx/fixture` |
+
+| Exit code | Meaning |
+| --- | --- |
+| `0` | The fixture was written | The page has one scroll bar: the segment list grows with the page instead of scrolling on its own, picking a segment far down the list or the table brings the image back into view, and on a phone the list follows the viewer.
 
 ### `load_example.py` (in the dataset)
 
@@ -83,6 +120,14 @@ usage: load_example.py [-h] [--root ROOT] [--segment SEGMENT]
 | --- | --- | --- | --- |
 | `window.snappedLabels.segments()` (page) | the index rows | | In the browser console or a headless browser |
 | `window.snappedLabels.open(SEGMENT, Z)` (page) | a promise | `Error` for an unknown segment | Opens a segment at the plane nearest Z |
+| `window.snappedLabels.animate(ON)` (page) | `true` while it plays | | Starts or stops Animate snap; no argument toggles it |
+| `window.snappedLabels.voxelExact()` (page) | the loaded summary, or `null` | | A copy of `vx/summary.json` once it validates |
+| `window.snappedLabels.openShowcase(SEGMENT)` (page) | a promise | `Error` when no showcase is listed | Opens a showcase segment's heatmap and CT |
+| `vxsummary.check(doc, deploy=False, base=None)` | a list of problems, `[]` when valid | | `base` is the summary's folder, for the showcase files |
+| `vxsummary.load(path)` | the parsed summary | `OSError`, `ValueError` | |
+| `vxsummary.fixture(out_dir)` | the fixture summary | `OSError` | Writes `summary.json` and `show/` |
+| `vxsummary.online_problems(doc, timeout=30)` | a list of problems | | Asks the Hugging Face API for the pinned revision |
+| `vxsummary.add_arguments(p)`, `vxsummary.run(args)`, `vxsummary.main(argv=None)` | an exit code (`run`, `main`) | | The command line |
 | `window.snappedLabels.view()` (page) | the open view: planes, step, voxel size, `center` ([x, y] in voxels; spelled the British way before 27 Oct 2026) | | `null` before a segment opens |
 
 ## Inputs
@@ -103,6 +148,8 @@ None to use it. The dataset was made from the published meshes and scans of the 
 | `index.json` | JSON | One row per segment with its summary |
 | `viewer/SCROLL/SEGMENT.{bin,json}` | float32 rows, JSON | The viewer's line pieces per z plane: published ax ay bx by, snapped ax ay bx by |
 | `SHA256SUMS` | text | Every file |
+| `spaces/snapped-labels/vx/summary.json` (the Space, once approved) | JSON, schema `snapped-labels/voxel-exact@1` | `fixture`, `generated`, `dataset` (repo, release, 40 hex revision), `rule` (tolerances 0.5, 1 and 2, the bar, the interval), `prereg` (sha256, frozen), `prizes_read`, `scrolls` (claim, `why_not_shown`, label scan, truth and oracle scans, `certificate` with `assumptions`, `vertices.by_code`, `void`, `strata` with `within` slots `{basis, k, n, share, lower, upper}` or `null`, `residual_hist`, `published_hist`, `controls`), `showcase` |
+| `vx/show/SCROLL/SEGMENT.json` | JSON, schema `snapped-labels/voxel-exact-show@1` | A showcase segment, its grids as number lists (no binary files in public Git): `residual` per vertex in voxels (`null` where none), `state` (0 measured, 1 no value, 2 held back), `xyz` vertex positions, `planes` and `rows`, the line pieces per z plane (published, snapped, truth: 12 numbers each), `truth_note`, `volume` (the CT, or `null`) |
 
 | Exit code | Meaning |
 | --- | --- |
@@ -115,6 +162,11 @@ None to use it. The dataset was made from the published meshes and scans of the 
 | --- | --- | --- |
 | "CT read failed" in the viewer | The open-data bucket did not answer | Reload; the dataset itself is unaffected |
 | No lines on a plane | The segment does not cross it, or that part is held back | Step z, or press the arrows |
+| `showcase ...: N held-back cells carry a residual; a held-back cell is null` | The exporter wrote a value where the release mask holds the vertex back | Write `null` there; held-back cells are never drawn |
+| No Voxel exact tab | No `vx/summary.json` in the Space yet, or it did not validate | Wait for the results; to preview, open `?vx=fixture` or `?vx=URL` (a bad file then shows its first problems) |
+| `summary: keys not in the contract: ...` from `kit vxsummary check` | The exporter wrote a key the page does not show | Drop it in the exporter; only allowlisted keys ship |
+| `--deploy: the synthetic fixture never deploys (fixture is true)` | `check --deploy` on the fixture | Run it on the real summary |
+| `dataset revision ... could not be confirmed` | `--online` without the network, or a wrong revision | Rerun with the network; pin the revision the scorer used |
 | `tifffile` cannot read a published mesh | Some source meshes are LZW compressed | `pip install imagecodecs` |
 
 ## How it works
@@ -123,7 +175,7 @@ The method, its constants and its tests are recorded with the snapping code, whi
 
 ## Cost and time
 
-The snap ran on Hugging Face CPU Jobs on 27 Oct 2026, under 9 USD in caps; stitching took minutes on a CPU. Using the dataset costs nothing.
+The snap ran on Hugging Face CPU Jobs on 27 Oct 2026; stitching took minutes on a CPU. Using the dataset costs nothing. `kit vxsummary check` takes under a second; the Voxel exact tab reads one small JSON, and a showcase segment a few hundred kilobytes.
 
 ## For agents
 
@@ -133,14 +185,16 @@ The snap ran on Hugging Face CPU Jobs on 27 Oct 2026, under 9 USD in caps; stitc
 - **Success:** `matches release.json: True`; `sha256sum -c SHA256SUMS` passes.
 - **Not a pass:** A snapped vertex is not proof the label follows the right wrap.
 - **Go-ahead:** Nothing to read it. Changing the dataset or making a new Space needs Chase's yes.
-- **Never:** Call the meshes a reading, or train on held-back regions (`release_mask.tif` = 1).
+- **Never:** Call the meshes a reading, or train on held-back regions (`release_mask.tif` = 1). Never ship a `vx/summary.json` that the private exporter did not write from frozen, collected verdicts (Chase approved the tab with results on 28 Oct 2026), never ship the fixture as results, and never list a showcase region that is not spent.
+- **Voxel exact:** `python -m kit vxsummary check spaces/snapped-labels/vx/summary.json --deploy --online` must exit 0 before a summary ships; in a headless browser, `window.snappedLabels.voxelExact()` returns it once it loads.
 
 ## Tests
 
-`python -m kit spaceconnect check` covers the Connect panel. The page has no unit tests here.
+`python -m unittest tests.test_vxsummary` shows every check of the voxel-exact data contract failing on a summary that breaks it, checks the committed fixture equals a fresh one, checks the tab is hidden until a summary loads and the fixture banner is wired, parses the page scripts with Node, and covers the snap media script's guards. `python -m kit spaceconnect check` covers the Connect panel.
 
 ## History
 
+- 2026-10-28: Voxel exact tab, `kit vxsummary`, the synthetic fixture and Animate snap ([PR #255](https://github.com/ChaseHendrick/Scrolls/pull/255)), deployed with the first frozen result: PHerc0139 Not shown (no class cleared the bar; instrument-limited), the other three scrolls not tested yet. A tested scroll that is Not shown keeps its numbers and controls on its card; Measured now needs a class that passed.
 - 2026-10-27: one page scroll bar and American English ([PR #253](https://github.com/ChaseHendrick/Scrolls/pull/253)): the segment list grows with the page (after the viewer on phones), a pick from far down the list or table brings the image back into view, and `view()` returns `center` (was `centre`).
 - 2026-10-27: dataset and Space released, page added (`bd34a59`).
 
