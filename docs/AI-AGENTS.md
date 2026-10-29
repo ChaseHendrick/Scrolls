@@ -47,6 +47,7 @@ See [`QUALITY.md`](QUALITY.md) and [`NOVELTY.md`](NOVELTY.md).
 - When the user wants to run the pipeline: use `.claude/skills/scroll-session/SKILL.md`, print the plan, estimate its time, help them run it on their machine or, for GPU work or more than about an hour of CPU, as a Hugging Face Job (rule 12), and record results in the ledger. Target runs and their records belong in Scrolls-private.
 - Draft villa issues and PRs for bugs hit along the way (the user submits them), following [Public writing for villa and the community](#public-writing-for-villa-and-the-community).
 - Summarize published runs and prize results with links.
+- Use swarm bursts on a hard problem (2026-10-29): many subagents at once, each on its own route (a method, a data source, a comparator, a fix), with the results kept or recorded as failures. A burst only speeds up the search: every test is still preregistered and frozen before any map or score exists (rule 3), spent and held-out sets stay as they are, and nothing goes public or outward without the user's go-ahead (rule 8).
 
 ## Disallowed work
 
