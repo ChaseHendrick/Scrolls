@@ -113,7 +113,7 @@ class BuildLines(unittest.TestCase):
         self.assertIsNone(b["lines"][0]["superseded_by"])  # copied from index.json; none in this copy
         # the license key is copied under the dataset's own spelling, so data/lines.json reads like index.json
         self.assertEqual([l[PUBLISHED] for l in a["lines"]], ["MIT", "CC BY 4.0"])
-        self.assertEqual(set(t["sources"]), {"bucket", "drobkov", "tauil", "dopico", "finder", "finder-polished"})
+        self.assertEqual(set(t["sources"]), {"bucket", "drobkov", "tauil", "dopico", "finder", "finder-polished", "finder-v2"})
 
     def test_every_source_has_a_color_and_a_chip_style(self):
         app = (SPACE / "app.js").read_text()
@@ -123,6 +123,19 @@ class BuildLines(unittest.TestCase):
             self.assertIn(f"{k}: '#" if "-" not in k else f"'{k}': '#", hexes, k)
             self.assertIn(f".src.s-{k} ", css, k)
 
+
+    def test_live_lines_keep_the_built_fields(self):
+        # the page reads the dataset's newest revision at load (app.js liveData); its lines must carry the same
+        # fields build_lines.py writes, so the rest of the page reads either the same way
+        app = (SPACE / "app.js").read_text()
+        live = app[app.index("async function liveLine"):]
+        live = live[:live.index("\n}\n")]
+        keys = app[app.index("const LINE_KEYS"):].split("\n", 1)[0]
+        for k in ("source", "kind", "credit", "licence", "upstream", "file", "sha256", "z", "note"):
+            self.assertIn(f"'{k}'", keys, k)
+        for k in ("grade", "ends", "untested", "usable", "stamp", "points", "superseded_by"):
+            self.assertIn(k, live, k)
+        self.assertIn("data/lines.json", app[app.index("// ---------- boot"):])
 
     def test_per_end_ct_grades(self):
         # from v2.2 each Center Finder end has its own CT grade; a line is FLAG when either end is
@@ -310,9 +323,13 @@ class Page(unittest.TestCase):
         self.assertIn("document.body.classList.toggle('focus', m !== 'array'); placeHud();", app)
 
     def test_labels_say_license(self):
-        # the page reads the dataset's key in one place; its labels, tables and CSV columns say license
+        # the page reads the dataset's key in one place and copies it in one more (the live lines keep the dataset's
+        # fields, LINE_KEYS); its labels, tables and CSV columns say license
         app = self.text("app.js")
-        self.assertEqual([l.strip() for l in app.splitlines() if PUBLISHED in l], [f"const lic = (l) => l.{PUBLISHED};"])
+        uses = [l.strip() for l in app.splitlines() if PUBLISHED in l]
+        self.assertEqual(uses[0], f"const lic = (l) => l.{PUBLISHED};")
+        self.assertEqual(len(uses), 2)
+        self.assertTrue(uses[1].startswith("const LINE_KEYS = ["), uses[1])
         self.assertIn("['license', 'license']", app)
         self.assertIn("${row('license', lic(l))}", app)
         self.assertIn("license: lic(l),", app)
