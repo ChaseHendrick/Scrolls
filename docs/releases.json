@@ -114,7 +114,7 @@
       "line": "Command-line tools, benchmarks and script folders that run from a clone of this repository.",
       "area": "Releases and repository",
       "page": "docs/tools/cli.md",
-      "released": "2026-10-29",
+      "released": "2026-10-30",
       "summary": "Command-line tools, benchmarks and script folders that run from a clone of this repository. Each line gives the tool's release date, its weights where it has them, one command to start with, its tool page and its evidence; each page lists the tool's own needs. Their outputs are model output or geometry measurements for a person to check, not readings.",
       "commands": [
         "git clone --depth 1 https://github.com/ChaseHendrick/Scrolls.git",
@@ -749,6 +749,17 @@
           "page": "docs/tools/finesnap.md",
           "evidence": "[Snapped Labels](docs/tools/snapped-labels.md), [results](docs/results.json)",
           "line": "Snaps a label traced on a coarse scan onto the recto face seen in a finer, per-site registered scan of the same scroll."
+        },
+        {
+          "id": "labelsuggest",
+          "name": "Label suggestions from reader disagreement",
+          "area": "Training",
+          "released": "2026-10-30",
+          "summary": "Ranks a segment's tiles by how much two or more readers' ink maps disagree and writes the top tiles as a mask to label first, with matched random and agree tiles and a shuffle control. In two preregistered tests on the organizers' own label rounds, the top 20 tiles held more of the reader committee's errors than random tiles on PHerc1667 (lift 3.82, bar 1.5) and PHerc0841 ag896 (edge measure, lift 1.84, bar 1.5, p 0.0005). Not shown to beat simple picks: plain margin did as well on both. Model output, not a reading.",
+          "command": "python -m kit labelsuggest map OUT MAP_A MAP_B MAP_C --json",
+          "page": "docs/tools/labelsuggest.md",
+          "evidence": "[results](docs/results.json)",
+          "line": "Ranks tiles by where readers' ink maps disagree, so a person labels there first; beat random tiles on two scrolls, not shown to beat simple picks."
         }
       ],
       "where": "main"
