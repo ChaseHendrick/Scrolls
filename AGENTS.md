@@ -76,6 +76,7 @@ One line per decision still in force. The dated record, with every superseded de
 - Every Space, now and future, gets a Connect your tool panel (`kit spaceconnect`, a `connect.json` per Space, listed in `spaces/connect/spaces.json`): data URLs and tested snippets for villa, VC3D, neuroglancer, Python and others' tools; data linked, never rehosted (2026-10-24).
 - Every Space keeps one page scroll bar: nothing inside a page scrolls on its own (`onescroll.html` from `kit spaceconnect`); one-screen viewers keep one scrolling list at most (2026-10-27).
 - American English in every Space, card and release entry; names from others keep theirs (`kit spaceconnect spelling`, run by `check`) (2026-10-27).
+- A frozen test may be rerun after a technical break, or after a noise-limited near miss on new seeds or sites preregistered first; each rerun is a new disclosed freeze with its attempt count and earlier result, never tuned on the spent result (2026-10-29).
 
 ## Repository map
 
