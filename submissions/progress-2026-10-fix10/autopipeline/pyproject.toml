@@ -1,0 +1,50 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "vc-autopipeline"
+version = "0.1.10"
+description = "Unattended runs of villa's VC3D tools and ink detection, from a released Vesuvius Challenge scan to checked surfaces and scored ink maps"
+readme = "README.md"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+requires-python = ">=3.11"   # zarr 3 needs 3.11; on 3.10 pip picks zarr 2.18 and kit shuffle fails
+authors = [{ name = "Chase Hendrick" }]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: MacOS",
+    "Topic :: Scientific/Engineering :: Image Processing",
+]
+# Planning, the catalog, VC3D discovery and the agent tools use only the standard library.
+# Maps, scoring, trimming and the demo need these four. Tested 2026-10-12 with numpy 2.4.6, tifffile 2026.3.3,
+# zarr 3.1.6, scipy 1.17.1 (Python 3.11) and the newest releases (3.12, 3.13); lower bounds untested.
+dependencies = [
+    "numpy>=1.25",
+    "tifffile>=2023.7.10",
+    "zarr>=3.0",
+    "scipy>=1.11",
+]
+
+[project.optional-dependencies]
+# The fibers step of `kit apcouple` reads the public AFV V2 probability blocks from a Hugging Face bucket (0.1.10);
+# the bucket calls it uses are in huggingface_hub 2.2.
+couple = ["huggingface_hub>=2.2"]
+
+[project.urls]
+# Where the submission workflow (a note of the source repository) placed the first release, submission id
+# progress-2026-10: branch submission/progress-2026-10 of public Scrolls, folder submissions/progress-2026-10/autopipeline.
+# Fixes go out under later ids (progress-2026-10-fix1, ...), each listed in public Scrolls' README.
+Source = "https://github.com/ChaseHendrick/Scrolls/tree/submission/progress-2026-10/submissions/progress-2026-10/autopipeline"
+villa = "https://github.com/ScrollPrize/villa"
+
+[project.scripts]
+scrolls-kit = "kit.cli:main"
+
+[tool.setuptools]
+packages = ["kit"]
+include-package-data = true
+
+[tool.setuptools.package-data]
+kit = ["data/*.json"]
