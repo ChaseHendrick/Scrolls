@@ -1,0 +1,33 @@
+{
+ "schema": "space-connect/1",
+ "space": "SharpMeow/vesuvius-radar",
+ "title": "Vesuvius Radar",
+ "checked": "2026-10-29",
+ "intro": "Everything this page shows is open JSON, CSV and RSS over HTTPS, and the whole radar is also an MCP server, so a script, a spreadsheet, a feed reader or an agent can use it. No key, no login and no GPU quota: anyone can call it, logged in or not.",
+ "sources": [
+  {"id": "mcp", "title": "MCP server for agents", "kind": "page-api",
+   "url": "https://sharpmeow-vesuvius-radar.hf.space/mcp",
+   "license": "Item titles, summaries and links belong to their sources (arXiv, GitHub, Hugging Face, PyPI, Zenodo, Crossref, the Vesuvius Challenge blog); the radar's code is Apache 2.0",
+   "note": "Streamable HTTP, no session, JSON replies, no key. Nine tools: search_items (by words or by meaning), get_item, find_similar, briefing, overview, source_status, check_now, list_views, get_settings.",
+   "links": [
+    {"label": "MCP endpoint (Streamable HTTP, POST)", "url": "https://sharpmeow-vesuvius-radar.hf.space/mcp"}
+   ]},
+  {"id": "api", "title": "JSON API, CSV and RSS", "kind": "page-api",
+   "url": "https://sharpmeow-vesuvius-radar.hf.space/api/items?since=1d",
+   "license": "Item titles, summaries and links belong to their sources; the radar's code is Apache 2.0",
+   "note": "since takes 1m up to 30d (default 1d); view takes all, research, team or builders. The same filters work on items, overview, briefing, export.csv and feed.xml. The OpenAPI page lists every parameter.",
+   "links": [
+    {"label": "Items from the last day (JSON)", "url": "https://sharpmeow-vesuvius-radar.hf.space/api/items?since=1d"},
+    {"label": "Papers and methods from the last week, score 35 or more (JSON)", "url": "https://sharpmeow-vesuvius-radar.hf.space/api/items?since=7d&view=research&min_score=35"},
+    {"label": "Search by meaning (JSON)", "url": "https://sharpmeow-vesuvius-radar.hf.space/api/items?since=30d&q=ink+detection+in+x-ray+ct&by_meaning=true"},
+    {"label": "The strongest items per topic (JSON)", "url": "https://sharpmeow-vesuvius-radar.hf.space/api/briefing?since=7d"},
+    {"label": "Counts behind the charts (JSON)", "url": "https://sharpmeow-vesuvius-radar.hf.space/api/overview?since=1d"},
+    {"label": "The collector: each source's last and next check (JSON)", "url": "https://sharpmeow-vesuvius-radar.hf.space/api/sources"},
+    {"label": "The last week as CSV", "url": "https://sharpmeow-vesuvius-radar.hf.space/api/export.csv?since=7d"},
+    {"label": "RSS feed: last week, score 60 or more", "url": "https://sharpmeow-vesuvius-radar.hf.space/feed.xml"},
+    {"label": "Reader views and their rules (JSON)", "url": "https://sharpmeow-vesuvius-radar.hf.space/api/views"},
+    {"label": "Sources, keywords, weights and anchor sentences (JSON)", "url": "https://sharpmeow-vesuvius-radar.hf.space/api/config"},
+    {"label": "OpenAPI page with every parameter", "url": "https://sharpmeow-vesuvius-radar.hf.space/docs"}
+   ]}
+ ]
+}

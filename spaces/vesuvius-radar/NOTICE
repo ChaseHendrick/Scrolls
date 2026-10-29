@@ -1,0 +1,12 @@
+Vesuvius Radar
+Copyright 2026 Chase Hendrick
+
+The Space's code (app.py, scanner.py, radar_mcp.py, radar.json, index.html and static/) is licensed under the
+Apache License, Version 2.0 (LICENSE).
+
+Data
+- Items are read at run time from public sources, logged out: arXiv, the GitHub API, the Hugging Face Hub API,
+  PyPI, Zenodo, Crossref and the Vesuvius Challenge blog feed. Titles, summaries and links belong to their sources
+  and authors; the Space shows short excerpts with links back.
+- The meaning scores use the embedding model BAAI/bge-small-en-v1.5 (MIT license), run on CPU with fastembed
+  (Apache 2.0).
