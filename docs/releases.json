@@ -8,6 +8,9 @@
     {
       "id": "autopipeline",
       "title": "AutoPipeline",
+      "line": "Runs villa's VC3D tools and ink detection on a released scan, from surface checks to ink maps scored with controls (package, 0.1.10).",
+      "area": "Pipeline and agents",
+      "page": "docs/tools/autopipeline.md",
       "summary": "AutoPipeline drives villa's VC3D tools and ink detection from a released scan through surface checks, rendering and controlled scoring. Version 0.1.10 adds three steps that follow a run, each a swappable stage with an off choice: labels moves each accepted surface onto the papyrus face of its sheet (Snapped Labels' placement code), fibers traces papyrus fibers around it with Weft, our fiber tracer, from the public probabilities of Qual's AFV V2 model, and joins scores glued sheet joins at the fiber ends along it with a control point beside each score. They are experimental: a smoke run on public data shows they run, not that any label, fiber or score is right. 0.1.9 let a plan swap any stage by name and added 3D ink readers; Reader V3 stays the default reader. These are software changes, not a new ink-accuracy or scroll-reading result. The package retains its earlier evidence and limitations.",
       "commands": [
         "git clone --branch submission/progress-2026-10-fix10 --depth 1 https://github.com/ChaseHendrick/Scrolls.git scrolls-autopipeline",
