@@ -29,8 +29,10 @@ public sources and scored for relevance. Open to everyone, logged in or not; it 
 - **Lookback:** 1 minute to 30 days (default 1 day), by publish or update time or by when the radar found an item.
 - **Views:** researchers (papers and methods), the Challenge team (community activity about the scrolls), and
   contributors (tools, models, data, releases and papers with code).
-- **Scores:** keyword matches with a per-term breakdown, plus a sentence-embedding model (BAAI/bge-small-en-v1.5)
-  that scores meaning, finds "more like this" and searches by meaning.
+- **Scores:** keyword matches with a per-term breakdown, a sentence-embedding model (BAAI/bge-small-en-v1.5) that
+  scores meaning, finds "more like this" and searches by meaning, and a small learned model, fitted to blind ratings
+  of 588 items, that sets the final score (rank agreement 0.86 on held-out items, against 0.70 for keywords and
+  meaning alone).
 - **For tools:** a JSON API (`/api/items`, `/api/overview`, `/api/briefing`, `/api/sources`; OpenAPI at `/docs`),
   CSV (`/api/export.csv`), RSS (`/feed.xml`) and an MCP server at `/mcp`. See CONNECT.md.
 

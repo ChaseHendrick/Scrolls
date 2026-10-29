@@ -294,7 +294,9 @@
       `<div class="card kpi"><span class="l">Items</span><span class="v">${fmtN(items)}</span><span class="d">${esc(win)}</span><div class="spark">${spark}</div></div>`,
       `<div class="card kpi"><span class="l">High relevance</span><span class="v">${fmtN(o.high)}</span><span class="d">score 60 or more; ${fmtN(o.medium)} medium</span><div class="spark">${bspark}</div></div>`,
       `<div class="card kpi"><span class="l">With code or data</span><span class="v">${fmtN(o.with_code + o.new_repos)}</span><span class="d">${fmtN(o.with_code)} link code, ${fmtN(o.new_repos)} new repositories</span></div>`,
-      `<div class="card kpi"><span class="l">Found by meaning</span><span class="v">${o.semantic.ready ? fmtN(o.lifted_by_meaning) : "off"}</span><span class="d">${o.semantic.ready ? "scored higher by the model than by keywords" : "the model is loading"}</span></div>`,
+      o.learned && o.learned.ready
+        ? `<div class="card kpi"><span class="l">Learned scores</span><span class="v">${fmtN(o.learned.items)}</span><span class="d">scored by a model fitted to blind ratings of ${fmtN(o.learned.trained_on)} items</span></div>`
+        : `<div class="card kpi"><span class="l">Found by meaning</span><span class="v">${o.semantic.ready ? fmtN(o.lifted_by_meaning) : "off"}</span><span class="d">${o.semantic.ready ? "scored higher by the model than by keywords" : "the model is loading"}</span></div>`,
       `<div class="card kpi"><span class="l">New since your visit</span><span class="v">${nNew == null ? "first" : fmtN(nNew)}</span><span class="d">${S.lastVisit ? "among the top items, since " + esc(stamp(S.lastVisit)) : "visit; marks start next time"}</span></div>`,
     ].join("");
   }
@@ -565,7 +567,7 @@
   };
   function ring(i) {
     const r = 20, c = 2 * Math.PI * r, f = c * i.score / 100;
-    const t = `<b>Score ${i.score}</b>` + row(`var(--b-${i.band})`, BAND_LABEL[i.band] + " band", "") + row("", "Keywords", i.keyword) + (i.semantic != null ? row("", "Meaning", i.semantic) : "") + (i.match != null ? row("", "Match to your search", i.match) : "");
+    const t = `<b>Score ${i.score}</b>` + row(`var(--b-${i.band})`, BAND_LABEL[i.band] + " band", "") + (i.learned ? row("", "Learned model", i.score) : "") + row("", "Keywords", i.keyword) + (i.semantic != null ? row("", "Meaning", i.semantic) : "") + (i.match != null ? row("", "Match to your search", i.match) : "");
     return `<div class="ring" data-tip="${esc(t)}"><svg viewBox="0 0 50 50"><circle class="bg" cx="25" cy="25" r="${r}"/><circle class="fg" cx="25" cy="25" r="${r}" style="stroke:var(--b-${i.band})" stroke-dasharray="${f} ${c}"/></svg><b>${i.score}</b></div>`;
   }
   function itemHTML(i) {
@@ -587,7 +589,7 @@
       i.new_repo ? `<span class="badge soft">created in window</span>` : "",
       i.updated ? `<span class="badge soft">updated</span>` : "",
       i.prerelease ? `<span class="badge soft">pre-release</span>` : "",
-      i.semantic != null && i.score > i.keyword ? `<span class="badge mean" title="The meaning model scored it higher than the keywords did">by meaning</span>` : "",
+      !i.learned && i.semantic != null && i.score > i.keyword ? `<span class="badge mean" title="The meaning model scored it higher than the keywords did">by meaning</span>` : "",
     ].filter(Boolean).join("");
     const byMeaning = new Set(i.topics_by_meaning || []);
     const links = [
@@ -627,7 +629,7 @@
     const rows = parts.map(([l, p]) => `<div class="why-row"><span class="lab">${esc(l)}</span><span class="bar"><i class="${p < 0 ? "neg" : ""}" style="width:${Math.round(100 * Math.abs(p) / max)}%"></i></span><span class="pts">${p > 0 ? "+" : ""}${p}</span></div>`).join("");
     const mean = i.semantic != null ? `<span>Meaning <b>${i.semantic}</b> (cosine ${i.sim} to "${esc(i.near || "")}")</span>` : `<span>Meaning: not scored${i.source === "pypi" ? " (package versions are scored by the package)" : ""}</span>`;
     return `<h4>Why this score</h4><div class="why">${rows || '<p class="note">No term matched; the score comes from meaning alone.</p>'}</div>
-      <div class="why-total"><span>Keywords <b>${i.keyword}</b></span>${mean}<span>Final <b>${i.score}</b> (${esc(BAND_LABEL[i.band])})</span></div>${i.capped ? `<p class="note">Capped at ${i.score}: ${esc(i.capped)}.</p>` : ""}
+      <div class="why-total"><span>Keywords <b>${i.keyword}</b></span>${mean}<span>Final <b>${i.score}</b> (${esc(BAND_LABEL[i.band])})</span></div>${i.learned ? `<p class="note">The final score comes from the learned model, fitted to blind ratings of what items are worth to scroll work; it reads the ${i.learned === "full" ? "text's meaning, " : ""}keyword score, source, kind and popularity. The keyword points above explain the match; they no longer set the score.</p>` : ""}${i.capped ? `<p class="note">Capped at ${i.score}: ${esc(i.capped)}.</p>` : ""}
       <div class="sims" data-sims></div>`;
   }
   function visible() {
@@ -761,6 +763,7 @@
       Object.entries(c.topics).map(([n, t]) => `<div class="t"><h3><span>${esc(n)}</span><span class="w">+${t.weight} strong, +${Math.floor(t.weight / 2)} weak</span></h3><p><b>strong:</b> ${t.strong.map(esc).join(", ")}<br><b>weak:</b> ${t.weak.map(esc).join(", ")}</p></div>`).join("") +
       `<div class="t"><h3><span>Context terms</span><span class="w">+${c.context_bonus}</span></h3><p>${c.context.map(esc).join(", ")}</p></div>` +
       `<div class="t"><h3><span>Off-topic terms</span><span class="w">-15 each, up to 2</span></h3><p>${c.negative.map(esc).join(", ")}</p></div>` +
+      (c.learned && c.learned.ready ? `<div class="t"><h3><span>Learned model</span><span class="w">rank agreement ${c.learned.evaluation.full.spearman} on held-out items</span></h3><p>Ridge regression on the embedding plus ${esc(c.learned.meta_features.join(", "))}, source and kind; fitted ${esc(c.learned.trained)} to blind ratings of ${fmtN(c.learned.items)} items, ${esc(c.learned.calibration)} calibration to 0 to 100. The keyword and meaning scores alone agreed ${c.learned.evaluation.rule_score} with the same ratings.</p></div>` : "") +
       `<div class="t"><h3><span>Meaning anchors</span><span class="w">cosine ${c.semantic.sim_floor} to ${c.semantic.sim_ceiling} maps to 0 to 100</span></h3><p>${Object.values(c.semantic.anchors).flat().map(esc).join("<br>")}</p></div>`;
     $("#howSources").innerHTML = SRC.map((k) => `<li><b><i class="dot s-${k}"></i> ${esc(SRC_LABEL[k])}</b> (every ${c.sources[k].every_min < 60 ? c.sources[k].every_min + " minutes" : c.sources[k].every_min / 60 + " hours"}): ${esc(SRC_ABOUT[k](c.sources[k]).join("; "))}.</li>`).join("");
     renderSources();

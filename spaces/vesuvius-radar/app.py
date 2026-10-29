@@ -55,6 +55,7 @@ VERSION = "1.0.0"
 CFG = scanner.load_config()
 SCORER = scanner.Scorer(CFG)
 SEM = scanner.Semantic(CFG)
+HEAD = scanner.Head()
 LOCK = threading.RLock()
 STORE: dict = {"saved": None, "items": {}, "sources": {}, "runs": [], "state": {}}
 CHECK = {"last": 0.0, "requested": None}
@@ -215,7 +216,7 @@ def run_source(src: str):
         RUNNING[src] = dict(row)
 
     try:
-        items, row = scanner.collect(src, since, CFG, SCORER, SEM if SEM.ready else None, state, prog)
+        items, row = scanner.collect(src, since, CFG, SCORER, SEM if SEM.ready else None, state, prog, HEAD)
         row["new"] = merge(items)
         with LOCK:
             if row["state"] != "error":
@@ -485,7 +486,11 @@ def overview(f: Filters) -> dict:
                           "new_scroll_repos": sum(1 for i in items if i.get("new_repo") and "Scroll work" in i["topics"])},
             "with_code": sum(1 for i in items if i.get("code")),
             "new_repos": sum(1 for i in items if i.get("new_repo")),
-            "lifted_by_meaning": sum(1 for i in items if i.get("semantic") is not None and i["score"] > i["keyword"]),
+            "lifted_by_meaning": sum(1 for i in items if i.get("semantic") is not None and not i.get("learned")
+                                     and i["score"] > i["keyword"]),
+            "learned": {"ready": HEAD.ready, "items": sum(1 for i in items if i.get("learned")),
+                        "trained_on": HEAD.info.get("items"),
+                        "spearman": (HEAD.info.get("evaluation") or {}).get("full", {}).get("spearman")},
             "timeline": timeline(f, items),
             "semantic": {"model": CFG["semantic"]["model"], "ready": SEM.ready, "error": SEM.error},
             "store": {"items": len(STORE["items"]), "saved": STORE.get("saved"), "booted": BOOT}}
@@ -630,16 +635,26 @@ def api_views():
     return {k: {"label": v["label"], "about": v["about"], "rule": v["any"]} for k, v in VIEWS.items()}
 
 
-@app.get("/api/config", summary="Sources, keywords, weights and anchor sentences")
+def head_summary() -> dict:
+    """What the learned head is, for the page and agents: no coefficients, just how it was fitted and how it did."""
+    if not HEAD.ready:
+        return {"ready": False}
+    i = HEAD.info
+    return {"ready": True, "trained": i.get("trained"), "items": i.get("items"), "target": i.get("target"),
+            "calibration": i.get("calibration"), "meta_features": i.get("meta_features"),
+            "evaluation": i.get("evaluation")}
+
+
+@app.get("/api/config", summary="Sources, keywords, weights, anchor sentences and the learned head's summary")
 def api_config():
-    return CFG
+    return {**CFG, "learned": head_summary()}
 
 
 @app.get("/api/export.csv", summary="A window as CSV, for the same filters as /api/items")
 def export_csv(f: Filters = Depends(filters), sort: str = Query("score", pattern="^(score|date|popularity)$")):
     items = query(f, sort)
     buf = io.StringIO()
-    cols = ["score", "band", "keyword", "semantic", "source", "kind", "date", "first_seen", "title", "url", "who", "topics",
+    cols = ["score", "band", "keyword", "semantic", "rule", "source", "kind", "date", "first_seen", "title", "url", "who", "topics",
             "matched", "code", "summary"]
     w = csv.writer(buf)
     w.writerow(cols)

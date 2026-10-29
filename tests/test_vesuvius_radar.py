@@ -120,6 +120,61 @@ class ScorerTest(unittest.TestCase):
         self.assertEqual(len(it["_text"]), CFG["semantic"]["embed_chars"])
 
     @unittest.skipIf(importlib.util.find_spec("numpy") is None, "numpy is not installed")
+    def test_learned_head_file_is_consistent(self):
+        import numpy as np
+        h = scanner.Head()
+        self.assertTrue(h.ready)
+        info = h.info
+        self.assertEqual(info["meta_features"], scanner.META_FEATURES)
+        width = len(scanner.META_FEATURES) + len(info["sources"]) + len(info["kinds"])
+        for name in ("full", "meta"):
+            self.assertEqual(len(info[name]["coef_meta"]), width)
+            cx, cy = np.array(info[name]["cal_x"]), np.array(info[name]["cal_y"])
+            self.assertTrue(np.all(np.diff(cx) > 0))  # np.interp needs increasing x; the mapping must be monotone
+            self.assertTrue(np.all(np.diff(cy) >= 0) and cy.min() >= 0 and cy.max() <= 100)
+        self.assertEqual(len(info["full"]["coef_emb"]), 384)
+        ev = info["evaluation"]
+        self.assertGreater(ev["full"]["spearman"], ev["rule_score"])  # held-out agreement beats the rule score
+        self.assertEqual(sorted(info["sources"]), info["sources"])
+        self.assertLessEqual(set(info["sources"]), set(scanner.SOURCES))
+
+    @unittest.skipIf(importlib.util.find_spec("numpy") is None, "numpy is not installed")
+    def test_finish_with_learned_head(self):
+        import numpy as np
+        h = scanner.Head()
+        stuffed = "Herculaneum papyri papyrology palimpsest cultural heritage greek latin epigraphy 3d volume " * 6
+        villa = scanner.make_item(self.s, source="github", kind="pr", id="v", title="villa #1: VC3D object store",
+                                  url="", date="2026-10-29T00:00:00Z", text="Volume Cartographer surfaces", base=30,
+                                  base_label="ScrollPrize/villa", state="merged")
+        spam = scanner.make_item(self.s, source="zenodo", kind="preprint", id="z", title="Ipotesi", url="",
+                                 date="2026-10-29T00:00:00Z", text=stuffed)
+        pkg = {"keyword": 25, "topics": [], "source": "pypi", "kind": "package"}
+
+        class VecSem:
+            ready = True
+
+            def score_many(self, texts, progress=None, what="items"):
+                return [{"semantic": 40, "sim": 0.74, "near": "Scroll work"} for _ in texts]
+
+            def embed(self, texts):
+                v = np.ones((len(texts), 384), "float32")
+                return v / np.linalg.norm(v, axis=1, keepdims=True)
+        scanner.finish([villa, spam, pkg], self.s, VecSem(), head=h)
+        self.assertEqual((villa["learned"], spam["learned"], pkg["learned"]), ("full", "full", "meta"))
+        for it in (villa, spam, pkg):
+            self.assertTrue(0 <= it["score"] <= 100)
+            self.assertEqual(it["band"], self.s.band(it["score"]))
+            self.assertIn("rule", it)  # the keep gate stays the rule score
+            self.assertNotIn("capped", it)
+        self.assertEqual(pkg["rule"], 25)
+        # Without head.json the rule score stays the final score.
+        none = scanner.Head(Path(tempfile.mkdtemp()) / "missing.json")
+        self.assertFalse(none.ready)
+        items = [{"keyword": 25, "topics": []}]
+        scanner.finish(items, self.s, None, head=none)
+        self.assertEqual((items[0]["score"], items[0].get("learned")), (25, None))
+
+    @unittest.skipIf(importlib.util.find_spec("numpy") is None, "numpy is not installed")
     def test_vector_cache_survives_a_restart(self):
         import numpy as np
         sem = scanner.Semantic(CFG)

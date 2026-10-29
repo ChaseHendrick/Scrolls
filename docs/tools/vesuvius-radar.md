@@ -24,7 +24,7 @@ A Hugging Face Space that collects new papers, repositories, models, datasets, p
 
 Work that could help read the scrolls appears in many places: arXiv, GitHub, Hugging Face, PyPI, Zenodo, journals and the Challenge's own blog. Most of it never says "Herculaneum". The radar reads all of those sources on a schedule, keeps 30 days of items, and scores each from 0 to 100 so the few relevant ones rise to the top.
 
-Each item gets two scores. The keyword score adds points for scroll terms (Vesuvius, Herculaneum, PHerc, papyrus, Volume Cartographer and similar) and for terms in eight topics (sheets and surfaces, ink and imaging, fibers and tracing, compression and storage, registration, 3D encoders, text and reading, speed and scale), and every item shows which terms gave which points. The meaning score comes from a small sentence-embedding model run on the Space's CPU, which compares the item with sentences that describe the work the scrolls need; it catches items that use none of the keywords. The final score is the higher of the keyword score and a blend of both, so meaning alone can lift an item to medium but never to high.
+Each item gets two scores. The keyword score adds points for scroll terms (Vesuvius, Herculaneum, PHerc, papyrus, Volume Cartographer and similar) and for terms in eight topics (sheets and surfaces, ink and imaging, fibers and tracing, compression and storage, registration, 3D encoders, text and reading, speed and scale), and every item shows which terms gave which points. The meaning score comes from a small sentence-embedding model run on the Space's CPU, which compares the item with sentences that describe the work the scrolls need; it catches items that use none of the keywords. A small learned model sets the final score: a ridge regression on the item's embedding plus its keyword and meaning scores, source, kind and popularity, fitted to blind ratings of what 588 collected items are worth to scroll work and calibrated so each band holds about as many items as the ratings put there. Which items are kept is still decided by keywords and meaning (the higher of the keyword score and a blend of both).
 
 The page shows the window you pick (1 minute to 30 days, default 1 day), by publish or update time or by when the radar first found the item, with charts (items over time by source, topics, the score histogram, sources, a topic by source grid and the top contributors, ranked by distinct pieces of work so many small related items count as one), a briefing of the strongest items per topic, and three reader views: researchers, the Challenge team, and contributors. The list opens on the newest items, 10 per page (10, 20, 50 or 100), with sources, topics, relevance and browser-only toggles in four dropdowns and the active filters shown as removable pills. Stars, hides and the last visit stay in your own browser.
 
@@ -55,7 +55,8 @@ From an agent, add the MCP server `https://sharpmeow-vesuvius-radar.hf.space/mcp
 ## Checks and controls
 
 - Meaning score calibration (29 Oct 2026, Model output): on items the keyword score had labeled, the meaning score with the bge query prefix separated relevant from unrelated items with AUC 0.873, against 0.811 without the prefix. On 39 arXiv abstracts (4 on scroll imaging, 35 recent cs.CV), the score from the first 600 characters correlated 0.93 with the score from 1,500 characters at the same AUC (0.957), at about three times the speed, so the Space reads 600.
-- Meaning alone cannot reach the high band: a test feeds a perfect meaning score to an item with no keywords and requires medium.
+- Learned head (29 Oct 2026, Model output): two language-model raters scored all 588 items of a 30-day window from 0 to 100 for value to scroll work, without seeing the radar's score, and agreed at Spearman 0.95 (both are the same model family, so this is an upper bound on reliability). Against their mean, the keyword score alone ranked items at 0.73 and the old final score (keyword and meaning) at 0.70. The learned head reached 0.86 in nested 5-fold cross-validation (5 repeats; calibration fitted inside each training fold), 0.84 without the embedding. Its high band held 61 items with precision 0.60 and recall 0.55 against the ratings' 66 high items; the old score put 124 items in high at precision 0.39. The biggest corrections: ScrollPrize/villa pull requests and the Challenge blog rose (a merged object-store PR from 30 to 81, a prize announcement from 50 to 94), and empty repositories named after the Challenge and off-topic archaeology preprints fell. `train_head.py` refits it from a ratings file and prints the same figures; `head.json` stores them.
+- Without the learned head, meaning alone cannot reach the high band: a test feeds a perfect meaning score to an item with no keywords and requires medium.
 - Every check of the collector reports its state per source (ok, partial or error) with its notes, on the Sources tab and at `/api/sources`; a rate limit or an error shows as partial, never as an empty ok.
 - `tests/test_vesuvius_radar.py` fails if any file in the Space names a token variable, an authorization header, Discord, or a long dash, or if `scanner.py` reads a host outside the public list above.
 
@@ -107,6 +108,22 @@ One check of the sources you name, without the server, run in `spaces/vesuvius-r
 | `--semantic` | off | Load the embedding model and add meaning scores |
 | `--out` | `-` | `-` prints; otherwise write the items and each source's status as JSON to this file |
 
+### `python train_head.py`
+
+```
+usage: train_head.py [-h] --items ITEMS --ratings RATINGS [--out OUT] [--models MODELS] [--calibration {quantile,isotonic}]
+```
+
+Refits `head.json` from collected items (as `/api/items` returns them) and a ratings file (item id to one or more raters' `{"value": 0..100}`). Needs scikit-learn, scipy and fastembed; the Space only needs numpy to apply the result. Prints the nested cross-validation figures it stores.
+
+| Option | Default | Meaning |
+| --- | --- | --- |
+| `--items` | required | JSON list of items |
+| `--ratings` | required | JSON object: item id to rating, or to several raters' ratings (averaged) |
+| `--out` | `head.json` beside the script | Where to write the head |
+| `--models` | the fastembed cache | Where the embedding model is kept |
+| `--calibration` | `quantile` | `quantile`: bands hold as many items as the ratings put there; `isotonic`: scores are the expected rating (fewer, surer high items) |
+
 ### Environment variables
 
 | Variable | Default | Meaning |
@@ -122,10 +139,11 @@ The Space is the interface; these are the pieces of `scanner.py` that `app.py` u
 
 | Function | Returns | Raises | Notes |
 | --- | --- | --- | --- |
-| `collect(source, since, cfg, scorer, sem, state, progress)` | `(items, status_row)` | Nothing: a failure becomes `state: error` with its note | One check of one source |
+| `collect(source, since, cfg, scorer, sem, state, progress, head)` | `(items, status_row)` | Nothing: a failure becomes `state: error` with its note | One check of one source |
 | `Scorer(cfg).score(text, base, base_label, core_terms)` | `{keyword, topics, matched, parts}` | Nothing | The keyword score and its breakdown |
 | `Semantic(cfg).load()` | `True` when the model loaded | Nothing: the error is kept in `error` | Then `score_many(texts)`, `embed(texts)`, `embed_query(text)` |
-| `finish(items, scorer, sem)` | the items, with `score`, `band` and meaning fields | Nothing | Blends keyword and meaning scores |
+| `Head(path)` | `ready` is `True` when `head.json` loaded | Nothing: a missing or unreadable file leaves `ready` False | Then `score(item, vec)`: the learned score, with or without the item's embedding |
+| `finish(items, scorer, sem, head=None)` | the items, with `score`, `band`, `rule` and meaning fields | Nothing | Rule score (keywords and meaning) for the keep gate; with a head, the learned score as `score` and `learned` set to `full` or `meta` |
 
 ## Inputs
 
@@ -133,7 +151,7 @@ The public sources listed under Network, read logged out. `radar.json` holds eve
 
 ## Outputs
 
-Each item: `id` (source and its own id), `source`, `kind`, `title`, `url`, `date` (UTC), `first_seen`, `summary` (up to 900 characters), `score` (0 to 100), `band` (high 60 or more, medium 35 or more, low), `keyword`, `semantic` and `sim` (when the model is on), `topics`, `topics_by_meaning`, `matched` (terms), `parts` (the keyword breakdown as label and points), `who`, and per kind `code`, `pdf`, `stars`, `downloads`, `likes`, `upvotes`, `license`, `version`.
+Each item: `id` (source and its own id), `source`, `kind`, `title`, `url`, `date` (UTC), `first_seen`, `summary` (up to 900 characters), `score` (0 to 100), `band` (high 60 or more, medium 35 or more, low), `keyword`, `semantic` and `sim` (when the model is on), `rule` (the keyword and meaning score that decides whether an item is kept), `learned` (`full` or `meta` when the learned head set the score), `topics`, `topics_by_meaning`, `matched` (terms), `parts` (the keyword breakdown as label and points), `who`, and per kind `code`, `pdf`, `stars`, `downloads`, `likes`, `upvotes`, `license`, `version`.
 
 ## Failure modes
 
@@ -150,9 +168,10 @@ Each item: `id` (source and its own id), `source`, `kind`, `title`, `url`, `date
 
 1. A collector thread checks each source on its own schedule (`every_min` in `radar.json`: GitHub and Hugging Face 20 minutes, arXiv, PyPI and the blog 60, Zenodo 120, journals 180). Each check reads from 6 hours before the last good one; the first reads `backfill_days`.
 2. Each item is scored by keywords (`Scorer` in `scanner.py`): scroll terms add 45 plus 5 for each more (at most 15 more); in each topic a strong term counts on its own and a weak term counts half and only with a context term; negative terms take points off.
-3. The meaning model (`Semantic`) embeds the title and the first 600 characters of the summary (`embed_chars`) and takes the cosine to the nearest anchor sentence; 0.70 maps to 0 and 0.80 to 100. The final score is the higher of the keyword score and 0.55 meaning plus 0.45 keywords. A cosine of 0.76 or more adds that anchor's topic.
-4. Items at `keep_score` (12) or more are merged into the store, which keeps `first_seen` and drops items older than 30 days.
-5. Every request filters the store, so changing the lookback is instant.
+3. The meaning model (`Semantic`) embeds the title and the first 600 characters of the summary (`embed_chars`) and takes the cosine to the nearest anchor sentence; 0.70 maps to 0 and 0.80 to 100. The rule score is the higher of the keyword score and 0.55 meaning plus 0.45 keywords. A cosine of 0.76 or more adds that anchor's topic.
+4. The learned head (`Head`, `head.json`) sets the shown score: ridge coefficients on the 384-number embedding and on eight metadata features (keyword and meaning scores, stars, likes and upvotes, new repository, links code, summary length, merged pull request) plus a one-hot of source and kind, then a monotone map to 0 to 100. Items with no embedding use the metadata-only head. Without `head.json` the rule score is shown.
+5. Items whose rule score is `keep_score` (12) or more are merged into the store, which keeps `first_seen` and drops items older than 30 days.
+6. Every request filters the store, so changing the lookback is instant.
 
 ## Cost and time
 
