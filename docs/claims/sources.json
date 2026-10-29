@@ -81,8 +81,9 @@
    }
   },
   "claim-label-rule-and-control-data-record-with": {
-   "line": 90,
+   "line": 129,
    "sources": {
+    "docs/tools/windlabel-box.md": "6b231dbe549e3b5f2c495ad41cc553f1cf7c47a66b238a5e8ae7055db0c76b9b",
     "docs/tools/contact-barrier.md": "1f43905d98ded0773f571b3fea0789e858f15d799a8870499fcc81e07536c874"
    },
    "doc": "docs/pipeline-october-2026.md"
@@ -149,6 +150,17 @@
    "line": 307,
    "sources": {
     "docs/logs/2026-10-07-production-speed.md": "512bbdd0f0129b81502bc236a190cd30e9b2b4903d44437efdf4b5ac675b0102"
+   }
+  },
+  "moves-each-traced-surface-onto-the-recto-face": {
+   "line": 70,
+   "sources": {
+    "docs/tools/snapped-labels.md": "aec22b7c52f46794fdf8b9dedb3c03f9756ac6948c3d03b1f406059f9f4c0c7a"
+   },
+   "doc": "docs/pipeline-october-2026.md",
+   "reasons": {
+    "1": "context: label value for surface",
+    "2": "context: label value for ignore"
    }
   },
   "on-pherc0139-w045-which-v8in-never-saw-but": {
@@ -225,6 +237,16 @@
    },
    "doc": "docs/FINDINGS.md"
   },
+  "scores-each-horizontal-fiber-end-on-the-surface": {
+   "line": 86,
+   "sources": {
+    "docs/tools/autopipeline.md": "ab96e1236e64c50ce914ef155b2484389e1e95dc487b18a9e5a006952889615c"
+   },
+   "doc": "docs/pipeline-october-2026.md",
+   "reasons": {
+    "3": "context: the control point's fixed offset, 3 cm, a setting of the joins step"
+   }
+  },
   "scoring-a-crop-needs-an-edge-margin": {
    "line": 294,
    "sources": {
@@ -258,6 +280,18 @@
     "0.1": "context: the version AutoPipeline 0.1.9"
    }
   },
+  "steps-3-to-5-run-from-the-autopipeline": {
+   "line": 56,
+   "sources": {
+    "docs/tools/autopipeline.md": "ab96e1236e64c50ce914ef155b2484389e1e95dc487b18a9e5a006952889615c"
+   },
+   "doc": "docs/pipeline-october-2026.md",
+   "reasons": {
+    "3": "context: step number",
+    "5": "context: step number",
+    "0.1": "context: the version AutoPipeline 0.1.10"
+   }
+  },
   "strokenet-s-two-density-score-which-needs-no": {
    "line": 12,
    "sources": {
@@ -285,6 +319,26 @@
     "docs/strokenet.md": "a976c280205ae6d40b2b625faf95b404749c9092e97aee68e067c0a74532fa81"
    },
    "doc": "docs/FINDINGS.md"
+  },
+  "synthetic-demo-a-score-at-each-fiber-end": {
+   "line": 119,
+   "sources": {
+    "docs/tools/autopipeline.md": "ab96e1236e64c50ce914ef155b2484389e1e95dc487b18a9e5a006952889615c"
+   },
+   "doc": "docs/pipeline-october-2026.md",
+   "reasons": {
+    "3": "context: the control point's fixed offset, 3 cm, a setting of the joins step"
+   }
+  },
+  "synthetic-demo-made-up-ct-probabilities-and-surfaces": {
+   "line": 123,
+   "sources": {
+    "docs/tools/autopipeline.md": "ab96e1236e64c50ce914ef155b2484389e1e95dc487b18a9e5a006952889615c"
+   },
+   "doc": "docs/pipeline-october-2026.md",
+   "reasons": {
+    "0.1": "context: the version AutoPipeline 0.1.10"
+   }
   },
   "the-center-finder-s-held-out-lines-sit": {
    "line": 9,
