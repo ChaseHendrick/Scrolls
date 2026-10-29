@@ -1,0 +1,63 @@
+{
+  "schema": "scrolls-media/1",
+  "name": "fibers-steps",
+  "label": "Synthetic demo",
+  "alt": "Seven slow steps on made-up fiber probabilities: the probabilities with their gaps, the pieces Weft traces along each ridge, where the pieces stop, the bridges that join lined-up ends, a long gap left open, a confidence per fiber, and the traced fibers alone.",
+  "caption": "Synthetic demo, step by step (1.2 s a step): the fibers step (Weft) tracing, bridging and scoring fibers on made-up probabilities. No scan data.",
+  "license": "Apache-2.0",
+  "release_id": null,
+  "data": null,
+  "sources": [],
+  "outputs": [
+    {
+      "file": "fibers-steps.gif",
+      "bytes": 432166,
+      "sha256": "aca9871903b5dbe9babbced2bc0106436d1794a619a2b4fb1e98a86910ee3041",
+      "width": 1080,
+      "height": 786,
+      "kind": "gif",
+      "format": "gif",
+      "frames": 7,
+      "seconds_per_frame": 1.2,
+      "last_frame_seconds": 2.6,
+      "seconds": 9.8
+    }
+  ],
+  "inputs": [],
+  "made": "2026-10-29",
+  "tool": {
+    "scripts": [
+      "couple_demo.py (kept in the source repository; it imports the AutoPipeline 0.1.10 code below)"
+    ],
+    "scripts_sha256": "4b8663d72d25840b8d5de9cb85119aaa1aadb86e0fbf0f12b8a46119ebc46560",
+    "base_commit": "b998d0bffe7bf4a84ab643f11df189b6e2cc0f0d",
+    "scripts_clean": false
+  },
+  "command": "python3 couple_demo.py --out-dir OUT (source repository)",
+  "step": "kit apcouple fibers",
+  "code_sha256": {
+    "submissions/progress-2026-10-fix10/autopipeline/scripts/afvfibers/weft_trace.py": "445d42442cf5e4738fec235a5b496b997e0e82af94d571dc3e2076f4e8fbd1e5"
+  },
+  "checks": {
+    "fibers": {
+      "V": 7,
+      "H": 3
+    },
+    "fragments": {
+      "V": 10,
+      "H": 6
+    },
+    "joins": {
+      "V": 3,
+      "H": 3
+    },
+    "short_gaps_crossed": 6,
+    "short_gaps": 6,
+    "long_gap_left_open": true,
+    "bridged_fibers": 6,
+    "confidence_whole_mean": 0.787,
+    "confidence_bridged_mean": 0.705
+  },
+  "note": "Every surface, label, fiber and score here is model output on made-up data, not a reading.",
+  "code_release": "AutoPipeline 0.1.10, branch submission/progress-2026-10-fix10 of public Scrolls"
+}

@@ -28,9 +28,9 @@ Each step has a stage name in AutoPipeline's stage registry (`python -m kit stag
 | --- | --- | --- | --- | --- |
 | Center line | `umbilicus`, choice `centerlines` | the scan | `umbilicus.json` | released |
 | Trace with the contact barrier | `trace`, `qa.repair` method `barrier` | the center line, the surface prediction | traced tifxyz surfaces, each cut back to its seed's sheet | released in AutoPipeline 0.1.9 |
-| Voxel-exact label | `labels`, choice `snapped` (baseline `mesh`) | each traced surface, the center line, the scan | the surface moved onto the recto face of its sheet, an abstain mask, an OME-Zarr surface label | *pending*: its test and its code release |
-| Fibers along the surface | `fibers` | the labeled surface, public AFV V2 fiber probabilities | fiber curves (`.afv`, opens in VC3D) in a box around the surface | *pending*: its test and its code release |
-| Glued sheet joins | `joins` | the fibers, the labeled surface, the scan | a score at each fiber end on the surface, with a control point 3 cm back along the surface | *pending*: its test and its code release |
+| Voxel-exact label | `labels`, choice `snapped` (baseline `mesh`) | each traced surface, the center line, the scan | the surface moved onto the recto face of its sheet, an abstain mask, an OME-Zarr surface label | experimental, in AutoPipeline 0.1.10 |
+| Fibers along the surface | `fibers`, choice `weft` | the labeled surface, public AFV V2 fiber probabilities | fiber curves (`.afv`, opens in VC3D) in a box around the surface | experimental, in AutoPipeline 0.1.10 |
+| Glued sheet joins | `joins`, choice `kfh1` | the fibers, the labeled surface, the scan | a score at each fiber end on the surface, with a control point 3 cm back along the surface | experimental, in AutoPipeline 0.1.10 |
 | Ink | `ink`, default Reader V3 | the rendered surface | an ink map and its reversed-depth control map | released |
 
 ## Run it
@@ -53,15 +53,37 @@ In the AutoPipeline 0.1.9 package folder (branch `submission/progress-2026-10-fi
 
 ### 3. Voxel-exact label
 
-*Pending.* It will run as the AutoPipeline stage `labels`, or alone on one run folder. The published labels moved onto the papyrus are already public as a dataset and a viewer ([snapped-labels](tools/snapped-labels.md)); the step that does the same for any traced surface is not released yet.
+Steps 3 to 5 run from the AutoPipeline 0.1.10 package, whose install puts its command line on the path as `scrolls-kit`:
+
+```bash
+git clone --branch submission/progress-2026-10-fix10 --depth 1 https://github.com/ChaseHendrick/Scrolls.git scrolls-autopipeline
+cd scrolls-autopipeline/submissions/progress-2026-10-fix10/autopipeline
+python3 -m venv .venv && . .venv/bin/activate && python -m pip install -e '.[couple]'
+```
+
+Each step takes a coupled run folder, RUN, made by `scrolls-kit apcouple from-run` from a finished AutoPipeline run or by `scrolls-kit apcouple init` from any surface ([All six in one run](#all-six-in-one-run)).
+
+```bash
+scrolls-kit apcouple labels RUN                  # or: --use mesh, the surface as given, the baseline
+```
+
+Moves each traced surface onto the recto face of its sheet, writes an abstain mask where it refuses, an OME-Zarr surface label (1 surface, 2 ignore) and a VC3D review queue: the placement code Snapped Labels used on PHerc0172 (labelsnap; [snapped-labels](tools/snapped-labels.md)), now run on any traced surface. The finer-scan snap used for the dataset's other three scrolls, and the dataset's filling of unmeasured vertices, are not part of this step.
 
 ### 4. Fibers along the surface
 
-*Pending.* It will run as the AutoPipeline stage `fibers`, or alone on one run folder. The fiber probabilities it reads are public ([afv-fibers](tools/afv-fibers.md), made with Qual's AFV V2 model).
+```bash
+scrolls-kit apcouple fibers RUN
+```
+
+Traces papyrus fibers with Weft, our fiber tracer, in a box around the surface the label step wrote, from the public fiber probabilities of Qual's AFV V2 model for the run's own scan ([afv-fibers](tools/afv-fibers.md)), and writes `.afv` files that open in VC3D.
 
 ### 5. Glued sheet joins
 
-*Pending.* It will run as the AutoPipeline stage `joins`, or alone on one run folder.
+```bash
+scrolls-kit apcouple joins RUN
+```
+
+Scores each horizontal fiber end on the surface for a glued sheet join, following the surface behind the end, and scores a point moved about 3 cm back along the surface beside it as the control. At coarse voxel sizes only ends with long unbroken surface behind them can be scored.
 
 ### 6. Ink
 
@@ -69,7 +91,14 @@ Ink detection runs inside AutoPipeline with Reader V3 by default, and always als
 
 ### All six in one run
 
-*Pending.* One command on a small public box, with its expected outputs and run time, goes here when the label, fiber and join steps are released.
+```bash
+scrolls-kit apcouple from-run work/autopipe/<folder>        # the run's accepted traces, scan and center line
+scrolls-kit apcouple chain work/autopipe/<folder>/coupled   # labels, fibers, joins in order
+scrolls-kit apcouple check work/autopipe/<folder>/coupled   # every record against its step's contract
+scrolls-kit apcouple swap work/autopipe/<folder>/coupled labels mesh snapped   # two choices side by side
+```
+
+Today the three steps follow a finished AutoPipeline run (`from-run`); as plan settings inside the run they come in a later version. `scrolls-kit apcouple init RUN --surface S --volume URL --voxel-um UM --umbilicus U --sample SCAN` starts from any tifxyz surface, a published segment included. A smoke run of the chain on public PHerc0814 data ran headless on a Hugging Face CPU Job: each step read the one before, and the copied run folder checked clean. That shows the steps run, not that a label, fiber or score is right.
 
 ## Pictures
 
@@ -81,7 +110,17 @@ The contact barrier on made-up sheets: a trace runs through a contact onto the n
 
 *Synthetic demo: made-up sheets, the released barrier code. No scan data.*
 
-*Pending: one still and one slow GIF per remaining step.*
+The three steps after a run, each on made-up data with the released code:
+
+![Synthetic demo: a made-up surface label moves onto its sheet's recto face; it abstains over a faint patch and a crack](assets/autopipeline-couple/labels-still.png)
+
+![Synthetic demo: Weft traces fibers on made-up probabilities, bridges short gaps and leaves a long gap open](assets/autopipeline-couple/fibers-still.png)
+
+![Synthetic demo: a score at each fiber end on a made-up surface, high where the sheet is doubled behind the end, with a control 3 cm back](assets/autopipeline-couple/joins-still.png)
+
+Slow step-by-step versions: [labels](assets/autopipeline-couple/labels-steps.gif), [fibers](assets/autopipeline-couple/fibers-steps.gif), [joins](assets/autopipeline-couple/joins-steps.gif).
+
+*Synthetic demo: made-up CT, probabilities and surfaces, the AutoPipeline 0.1.10 code. No scan data.*
 
 ## Evidence
 

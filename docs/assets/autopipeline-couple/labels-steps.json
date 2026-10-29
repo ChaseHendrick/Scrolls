@@ -1,0 +1,79 @@
+{
+  "schema": "scrolls-media/1",
+  "name": "labels-steps",
+  "label": "Synthetic demo",
+  "alt": "Eight slow steps on a made-up CT: three sheets, the published label off the face, each vertex looking along its normal, the label moved onto the recto face, abstaining over a faint stretch and a crack, the abstain mask from above, one review point per region, and the voxel label with surface and ignore values.",
+  "caption": "Synthetic demo, step by step (1.2 s a step): the labels step (kit labelsnap) moving a surface onto the recto face, its abstain mask, review points and voxel label, on a made-up CT. No scan data.",
+  "license": "Apache-2.0",
+  "release_id": null,
+  "data": null,
+  "sources": [],
+  "outputs": [
+    {
+      "file": "labels-steps.gif",
+      "bytes": 200313,
+      "sha256": "961195ccbb865b7d78357174420688af0c6bedce98668f98a1bdb9185e7dc2c1",
+      "width": 1080,
+      "height": 754,
+      "kind": "gif",
+      "format": "gif",
+      "frames": 8,
+      "seconds_per_frame": 1.2,
+      "last_frame_seconds": 2.6,
+      "seconds": 11.0
+    }
+  ],
+  "inputs": [],
+  "made": "2026-10-29",
+  "tool": {
+    "scripts": [
+      "couple_demo.py (kept in the source repository; it imports the AutoPipeline 0.1.10 code below)"
+    ],
+    "scripts_sha256": "4b8663d72d25840b8d5de9cb85119aaa1aadb86e0fbf0f12b8a46119ebc46560",
+    "base_commit": "b998d0bffe7bf4a84ab643f11df189b6e2cc0f0d",
+    "scripts_clean": false
+  },
+  "command": "python3 couple_demo.py --out-dir OUT (source repository)",
+  "step": "kit apcouple labels",
+  "code_sha256": {
+    "submissions/progress-2026-10-fix10/autopipeline/kit/labelsnap.py": "ffb45ac0f0420ffa65c1351a766a31cb80136d2fe1b2b920f6de78d3ea2a19db",
+    "submissions/progress-2026-10-fix10/autopipeline/kit/snap.py": "54a2ab0e790fd9c402093293776bf0fbb1de6c4a934d99cb68fcb2e5d1fb103e"
+  },
+  "checks": {
+    "vertices": 9216,
+    "measured": 8319,
+    "reasons": {
+      "measured": 8319,
+      "ambiguous or off the profile": 887,
+      "too far": 10
+    },
+    "published_to_face_mean_vox": 3.051,
+    "snapped_to_face_mean_vox": 0.245,
+    "snapped_to_face_p99_vox": 1.171,
+    "faint_abstain_share": 0.961,
+    "crack_abstain_share": 0.932,
+    "review_regions": [
+      {
+        "size": 551,
+        "reason": "ambiguous or off the profile"
+      },
+      {
+        "size": 346,
+        "reason": "ambiguous or off the profile"
+      }
+    ],
+    "label_voxels": {
+      "surface": 9437,
+      "ignore": 10490
+    },
+    "label_summary": {
+      "level": 0,
+      "chunks_written": 2,
+      "cells_surface": 7976,
+      "cells_ignore": 1001,
+      "samples_outside_volume": 0
+    }
+  },
+  "note": "Every surface, label, fiber and score here is model output on made-up data, not a reading.",
+  "code_release": "AutoPipeline 0.1.10, branch submission/progress-2026-10-fix10 of public Scrolls"
+}
