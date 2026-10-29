@@ -83,8 +83,9 @@
   "claim-label-rule-and-control-data-record-with": {
    "line": 129,
    "sources": {
-    "docs/tools/windlabel-box.md": "6b231dbe549e3b5f2c495ad41cc553f1cf7c47a66b238a5e8ae7055db0c76b9b",
-    "docs/tools/contact-barrier.md": "1f43905d98ded0773f571b3fea0789e858f15d799a8870499fcc81e07536c874"
+    "docs/tools/windlabel-box.md": "7663b5c960350155add245a81ed026112764c1f4e5942c19700cd39c3152cb76",
+    "docs/tools/contact-barrier.md": "1f43905d98ded0773f571b3fea0789e858f15d799a8870499fcc81e07536c874",
+    "docs/tools/snapped-labels.md": "3da92dca823c53779149f1aa9f7699e0e9ee7533b5767956b1c4bae539b977ed"
    },
    "doc": "docs/pipeline-october-2026.md"
   },
@@ -155,7 +156,7 @@
   "moves-each-traced-surface-onto-the-recto-face": {
    "line": 70,
    "sources": {
-    "docs/tools/snapped-labels.md": "aec22b7c52f46794fdf8b9dedb3c03f9756ac6948c3d03b1f406059f9f4c0c7a"
+    "docs/tools/snapped-labels.md": "3da92dca823c53779149f1aa9f7699e0e9ee7533b5767956b1c4bae539b977ed"
    },
    "doc": "docs/pipeline-october-2026.md",
    "reasons": {
