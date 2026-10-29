@@ -11827,6 +11827,201 @@
     "void_reasons": [],
     "verdict": "PASS"
    }
+  },
+  {
+   "date": "2026-10-29",
+   "source": "docs/tools/windlabel-box.md",
+   "claim": "Model output: kit windlabel-box relative windings, split rule v2, on 24 fresh PHerc1667 boxes (scan 20231117161658) from m7 and the published lasagna, scored against PHerc1667's published hand windings w028 to w037 under a readout fixed before any box had a prediction, with two community winding tools scored on the same boxes",
+   "claim_wording": "split chains 0.9706 of 7,937 judged steps, lower bound 0.9575, 75.4 % kept; ahead of winding-phase at matched coverage (0.978 against 0.942, lead lower bound +0.029) and of E1 on the steps both judged (0.971 against 0.948, lead lower bound +0.017); held out by position, not by scroll",
+   "verdict": "PASS",
+   "rule": "fixed before any box had a prediction: PASS when the split chains' pooled step accuracy is at least 0.95, its one-sided 95 % block bootstrap lower bound above 0.92, at least 70 % of the uncut chains' judged steps kept, and the accuracy above the random control's 97.5th percentile; INCONCLUSIVE when the accuracy is at least 0.95 and the lower bound at most 0.92; FAIL otherwise; VOID when the skip or shift control is above 0.5; a community tool is comparable when it judged at least 200 items, shares at least 10 blocks with windlabel-box in its decisive comparison and its own control held (E1 also its label-free units check); one read of the truth",
+   "chain_rule": "v1 0e53e0ae5016",
+   "split_rule": "v2 cd273aed7673",
+   "code": "public Scrolls a77ef4a",
+   "baselines": {
+    "E1": "pscamillo/constraint-gauge a72c423, winding count across each of the chains' own steps",
+    "winding-phase": "millerandmuller/winding-phase 95583f3, certified hops"
+   },
+   "pooled": {
+    "v1": {
+     "steps": 10523,
+     "step_accuracy": 0.9323,
+     "blocks": 44,
+     "lower_bound_95": 0.9036
+    },
+    "split": {
+     "steps": 7937,
+     "step_accuracy": 0.9706,
+     "blocks": 43,
+     "lower_bound_95": 0.9575,
+     "kept_share": 0.7543,
+     "skip_control": 0.0434,
+     "shift_control": 0.0357
+    },
+    "random_control": {
+     "draws": 1000,
+     "seed": 0,
+     "median": 0.9363,
+     "p97_5": 0.939
+    },
+    "bootstrap": {
+     "blocks": "box x 30 degree sector of the chain's seed",
+     "resamples": 10000,
+     "seed": 0,
+     "one_sided": 0.95
+    },
+    "void_reasons": [],
+    "verdict": "PASS"
+   },
+   "comparison": {
+    "E1": {
+     "step_accuracy": 0.914,
+     "shuffled_truth": 0.226,
+     "matched_steps": {
+      "windlabel_box": 0.971,
+      "E1": 0.948,
+      "lead_lower_bound": 0.017
+     }
+    },
+    "winding-phase": {
+     "step_accuracy": 0.927,
+     "repaired_control": 0.216,
+     "matched_coverage": {
+      "windlabel_box": 0.978,
+      "winding-phase": 0.942,
+      "lead_lower_bound": 0.029
+     }
+    }
+   }
+  },
+  {
+   "date": "2026-10-29",
+   "source": "docs/tools/windlabel-box.md",
+   "claim": "Model output: kit windlabel-box relative windings, split rule v2, on 27 boxes of held-out PHerc0172 (z 11,660 to 13,000 of the 7.91 um scan) with lasagna from villa's lasagna-preprocess predict3d, scored against the published hand windings under a readout fixed before any box had a prediction; second readout after a disclosed axis-check fix frozen before it",
+   "claim_wording": "split chains 0.9515 of 16,599 judged steps, lower bound 0.9408, 77.7 % kept; ahead of winding-phase at matched coverage (0.954 against 0.906, lead lower bound +0.028); E1 not comparable (its units check failed on our input)",
+   "verdict": "PASS",
+   "rule": "fixed before any box had a prediction: PASS when the split chains' pooled step accuracy is at least 0.95, its one-sided 95 % block bootstrap lower bound above 0.92, at least 70 % of the uncut chains' judged steps kept, and the accuracy above the random control's 97.5th percentile; INCONCLUSIVE when the accuracy is at least 0.95 and the lower bound at most 0.92; FAIL otherwise; VOID when the skip or shift control is above 0.5; a community tool is comparable when it judged at least 200 items, shares at least 10 blocks with windlabel-box in its decisive comparison and its own control held (E1 also its label-free units check); one read of the truth",
+   "chain_rule": "v1 0e53e0ae5016",
+   "split_rule": "v2 cd273aed7673",
+   "code": "public Scrolls a77ef4a",
+   "baselines": {
+    "E1": "pscamillo/constraint-gauge a72c423, winding count across each of the chains' own steps",
+    "winding-phase": "millerandmuller/winding-phase 95583f3, certified hops"
+   },
+   "pooled": {
+    "v1": {
+     "steps": 21372,
+     "step_accuracy": 0.9341,
+     "blocks": 54,
+     "lower_bound_95": 0.9212
+    },
+    "split": {
+     "steps": 16599,
+     "step_accuracy": 0.9515,
+     "blocks": 54,
+     "lower_bound_95": 0.9408,
+     "kept_share": 0.7767,
+     "skip_control": 0.1876,
+     "shift_control": 0.134
+    },
+    "random_control": {
+     "draws": 1000,
+     "seed": 0,
+     "median": 0.9346,
+     "p97_5": 0.9363
+    },
+    "bootstrap": {
+     "blocks": "box x 30 degree sector of the chain's seed",
+     "resamples": 10000,
+     "seed": 0,
+     "one_sided": 0.95
+    },
+    "void_reasons": [],
+    "verdict": "PASS"
+   },
+   "comparison": {
+    "E1": {
+     "comparable": false,
+     "why": "label-free units check failed on the input we built (median step 0 where 1 is expected)"
+    },
+    "winding-phase": {
+     "step_accuracy": 0.898,
+     "items": 46076,
+     "repaired_control": 0.183,
+     "matched_coverage": {
+      "windlabel_box": 0.954,
+      "winding-phase": 0.906,
+      "lead_lower_bound": 0.028
+     }
+    }
+   },
+   "disclosed": "a first readout read this scroll void on an axis check that used one winding over the whole band; the fix was frozen before a single second readout, which also reproduced the PHerc1667 result exactly"
+  },
+  {
+   "date": "2026-10-29",
+   "source": "docs/tools/windlabel-box.md",
+   "claim": "Model output: kit windlabel-box relative windings, split rule v2, on 20 fresh boxes of a second held-out PHerc0172 band (z 10,710 to 11,510, never scored for windings), scored against the published hand windings under a readout fixed before any box had a prediction, with both community winding tools comparable",
+   "claim_wording": "split chains 0.955 of 32,411 judged steps, lower bound 0.9471, 82.8 % kept; ahead of E1 on the steps both judged (0.955 against 0.944, lead lower bound +0.009) and of winding-phase at matched coverage (0.952 against 0.934, lead lower bound +0.005); both leads are small",
+   "verdict": "PASS",
+   "rule": "fixed before any box had a prediction: PASS when the split chains' pooled step accuracy is at least 0.95, its one-sided 95 % block bootstrap lower bound above 0.92, at least 70 % of the uncut chains' judged steps kept, and the accuracy above the random control's 97.5th percentile; INCONCLUSIVE when the accuracy is at least 0.95 and the lower bound at most 0.92; FAIL otherwise; VOID when the skip or shift control is above 0.5; a community tool is comparable when it judged at least 200 items, shares at least 10 blocks with windlabel-box in its decisive comparison and its own control held (E1 also its label-free units check); one read of the truth",
+   "chain_rule": "v1 0e53e0ae5016",
+   "split_rule": "v2 cd273aed7673",
+   "code": "public Scrolls a77ef4a",
+   "baselines": {
+    "E1": "pscamillo/constraint-gauge a72c423, winding count across each of the chains' own steps",
+    "winding-phase": "millerandmuller/winding-phase 95583f3, certified hops"
+   },
+   "pooled": {
+    "v1": {
+     "steps": 39155,
+     "step_accuracy": 0.9455,
+     "blocks": 50,
+     "lower_bound_95": 0.9376
+    },
+    "split": {
+     "steps": 32411,
+     "step_accuracy": 0.955,
+     "blocks": 50,
+     "lower_bound_95": 0.9471,
+     "kept_share": 0.8278,
+     "skip_control": 0.0963,
+     "shift_control": 0.0802
+    },
+    "random_control": {
+     "draws": 1000,
+     "seed": 0,
+     "median": 0.9455,
+     "p97_5": 0.9466
+    },
+    "bootstrap": {
+     "blocks": "box x 30 degree sector of the chain's seed",
+     "resamples": 10000,
+     "seed": 0,
+     "one_sided": 0.95
+    },
+    "void_reasons": [],
+    "verdict": "PASS"
+   },
+   "comparison": {
+    "E1": {
+     "comparable": true,
+     "matched_steps": {
+      "windlabel_box": 0.955,
+      "E1": 0.944,
+      "lead_lower_bound": 0.009
+     }
+    },
+    "winding-phase": {
+     "step_accuracy": 0.932,
+     "items": 75639,
+     "matched_coverage": {
+      "windlabel_box": 0.952,
+      "winding-phase": 0.934,
+      "lead_lower_bound": 0.005
+     }
+    }
+   },
+   "disclosed": "villa's lasagna-preprocess predict3d (db3dbea) failed twice the same way on one box's crop; that crop's upper end was moved out 4 voxels and nothing else changed"
   }
  ],
  "contact_barrier_checks": [

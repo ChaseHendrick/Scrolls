@@ -1,0 +1,128 @@
+{
+ "title": "windlabel-box relative windings under frozen tests",
+ "subtitle": "Step accuracy against the published hand windings; every rule and bar fixed before any box had a prediction",
+ "desc": "Left: windlabel-box's split-chain step accuracy and its one-sided 95 % lower bound in six frozen tests on three scrolls, five passing the 0.92 lower-bound bar and one failing its 70 % keep floor. Right: on the 29 October boxes, windlabel-box against constraint-gauge's E1 on the same steps and against winding-phase at matched coverage; windlabel-box is ahead in every comparable pair, by 0.011 to 0.048.",
+ "claim_label": "Model output",
+ "alt": "Two-panel chart. Left: six dots with downward whiskers for windlabel-box's step accuracy and lower bound in frozen tests from 24 to 29 October 2026 on PHerc0139, PHerc1667 and PHerc0172, all between 0.95 and 0.98, with lower bounds above a dashed 0.92 bar; the 24 October PHerc1667 split rule v1 test is drawn hollow and marked as failing its keep floor. Right: five paired dots, windlabel-box in blue against E1 in orange or winding-phase in green, each blue dot to the right of its partner; one row says E1 was not comparable.",
+ "caption": "windlabel-box's step accuracy under frozen tests, and against two community winding tools on the same boxes (Model output against the published hand windings, 24 to 29 October 2026; numbers from docs/results.json windlabel_box_checks).",
+ "credit": "Numbers from docs/results.json (windlabel_box_checks) and docs/tools/windlabel-box.md; hand windings and scans from the Vesuvius Challenge open data; E1 from pscamillo/constraint-gauge a72c423, winding-phase from millerandmuller/winding-phase 95583f3",
+ "foot": "Whisker: one-sided 95 % block bootstrap lower bound. Axis starts at 0.88. Leads on the right are small; PHerc1667 is held out by position, not by scroll.",
+ "bar": 0.92,
+ "tests": [
+  {
+   "label": "PHerc0139",
+   "acc": 0.9758,
+   "lb": 0.9683,
+   "steps": 13969,
+   "verdict": "PASS",
+   "date": "24 Oct",
+   "sub": "rule v1"
+  },
+  {
+   "label": "PHerc1667",
+   "acc": 0.9693,
+   "lb": 0.9508,
+   "steps": 4362,
+   "verdict": "FAIL",
+   "why": "68 % kept",
+   "date": "24 Oct",
+   "sub": "rule v1"
+  },
+  {
+   "label": "PHerc1667",
+   "acc": 0.9786,
+   "lb": 0.9671,
+   "steps": 5938,
+   "verdict": "PASS",
+   "date": "24 Oct",
+   "sub": "rule v2"
+  },
+  {
+   "label": "PHerc1667",
+   "acc": 0.9706,
+   "lb": 0.9575,
+   "steps": 7937,
+   "verdict": "PASS",
+   "date": "29 Oct",
+   "sub": "rule v2"
+  },
+  {
+   "label": "PHerc0172",
+   "acc": 0.9515,
+   "lb": 0.9408,
+   "steps": 16599,
+   "verdict": "PASS",
+   "date": "29 Oct",
+   "sub": "band 1"
+  },
+  {
+   "label": "PHerc0172",
+   "acc": 0.955,
+   "lb": 0.9471,
+   "steps": 32411,
+   "verdict": "PASS",
+   "date": "29 Oct",
+   "sub": "band 2"
+  }
+ ],
+ "arms": [
+  {
+   "id": "ours",
+   "legend": "windlabel-box",
+   "cls": "s0"
+  },
+  {
+   "id": "E1",
+   "legend": "E1 (constraint-gauge), same steps",
+   "cls": "s1"
+  },
+  {
+   "id": "wp",
+   "legend": "winding-phase, matched coverage",
+   "cls": "s2"
+  }
+ ],
+ "pairs": [
+  {
+   "label": "PHerc1667",
+   "arm": "E1",
+   "ours": 0.971,
+   "other": 0.948,
+   "lead_lb": 0.017
+  },
+  {
+   "label": "PHerc1667",
+   "arm": "wp",
+   "ours": 0.978,
+   "other": 0.942,
+   "lead_lb": 0.029
+  },
+  {
+   "label": "PHerc0172 band 1",
+   "arm": "E1",
+   "comparable": false,
+   "why": "E1 not comparable (units check failed on our input)"
+  },
+  {
+   "label": "PHerc0172 band 1",
+   "arm": "wp",
+   "ours": 0.954,
+   "other": 0.906,
+   "lead_lb": 0.028
+  },
+  {
+   "label": "PHerc0172 band 2",
+   "arm": "E1",
+   "ours": 0.955,
+   "other": 0.944,
+   "lead_lb": 0.009
+  },
+  {
+   "label": "PHerc0172 band 2",
+   "arm": "wp",
+   "ours": 0.952,
+   "other": 0.934,
+   "lead_lb": 0.005
+  }
+ ]
+}

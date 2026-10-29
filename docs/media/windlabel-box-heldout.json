@@ -1,0 +1,37 @@
+{
+  "schema": "scrolls-media/1",
+  "name": "windlabel-box-heldout",
+  "label": "Chart",
+  "claim_label": "Model output",
+  "alt": "Two-panel chart. Left: six dots with downward whiskers for windlabel-box's step accuracy and lower bound in frozen tests from 24 to 29 October 2026 on PHerc0139, PHerc1667 and PHerc0172, all between 0.95 and 0.98, with lower bounds above a dashed 0.92 bar; the 24 October PHerc1667 split rule v1 test is drawn hollow and marked as failing its keep floor. Right: five paired dots, windlabel-box in blue against E1 in orange or winding-phase in green, each blue dot to the right of its partner; one row says E1 was not comparable.",
+  "caption": "windlabel-box's step accuracy under frozen tests, and against two community winding tools on the same boxes (Model output against the published hand windings, 24 to 29 October 2026; numbers from docs/results.json windlabel_box_checks).",
+  "license": "Apache-2.0",
+  "release_id": null,
+  "data": {
+    "source": "docs/media/windlabel-box-heldout-data.json",
+    "source_sha256": "645d95adc9ae03efbc97a1032a8c1f475ce504aeaad68db09e5ff789ab9b8cab",
+    "credit": "Numbers from docs/results.json (windlabel_box_checks) and docs/tools/windlabel-box.md; hand windings and scans from the Vesuvius Challenge open data; E1 from pscamillo/constraint-gauge a72c423, winding-phase from millerandmuller/winding-phase 95583f3"
+  },
+  "outputs": [
+    {
+      "file": "windlabel-box-heldout.svg",
+      "bytes": 12278,
+      "sha256": "e8cdae9bfe99c1b87a6dac698bf98f441819703bddc092b966281cf9aa37d412",
+      "width": 960,
+      "height": 520,
+      "kind": "svg"
+    }
+  ],
+  "made": "2026-10-29",
+  "command": "python scripts/media/windings_chart.py docs/media/windlabel-box-heldout-data.json docs/media/windlabel-box-heldout.svg",
+  "tool": {
+    "scripts": [
+      "scripts/media/common.py",
+      "scripts/media/barrier_chart.py",
+      "scripts/media/windings_chart.py"
+    ],
+    "scripts_sha256": "5ea807175e192cd19778b9bce2ac21ff4a3653dc2e16f5128bc47250086c3584",
+    "base_commit": "afcc05ae96b7348d6a24951d5d95f11bb68dbf35"
+  },
+  "colors": "categorical slots 1 to 3 of the palette of greek-restoration-by-gap-length.svg (blue, orange, green; blue for windlabel-box); dark mode through prefers-color-scheme"
+}

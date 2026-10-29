@@ -114,7 +114,7 @@
       "line": "Command-line tools, benchmarks and script folders that run from a clone of this repository.",
       "area": "Releases and repository",
       "page": "docs/tools/cli.md",
-      "released": "2026-10-28",
+      "released": "2026-10-29",
       "summary": "Command-line tools, benchmarks and script folders that run from a clone of this repository. Each line gives the tool's release date, its weights where it has them, one command to start with, its tool page and its evidence; each page lists the tool's own needs. Their outputs are model output or geometry measurements for a person to check, not readings.",
       "commands": [
         "git clone --depth 1 https://github.com/ChaseHendrick/Scrolls.git",
@@ -205,10 +205,20 @@
           "line": "Grows chains of sheet crossings around a point and writes villa's relative_windings.json for a spiral fit, with a VC3D plugin.",
           "area": "Surfaces and tracing",
           "released": "2026-10-24",
-          "summary": "Grows chains of sheet crossings around a point on a published surface prediction, cuts every step where lasagna's grad_mag sees more than one sheet, and writes villa's relative_windings.json point collections for a spiral fit, with a VC3D plugin that runs it at the focus point. It needs the scroll's umbilicus and computes no prediction itself. Under readouts fixed beforehand it scored 0.9758 step accuracy on 13,969 judged steps of 18 fresh PHerc0139 boxes and, with its split rule v2, 0.9786 on 5,938 judged steps of 20 fresh PHerc1667 boxes, against the published hand windings (Model output, 24 October 2026); split rule v1 missed the PHerc1667 keep floor. It ran inside a VC3D build from the plugin branch, where a fix to keep the windings relative on load is pending.",
+          "summary": "Grows chains of sheet crossings around a point on a published surface prediction, cuts every step where lasagna's grad_mag sees more than one sheet, and writes villa's relative_windings.json point collections for a spiral fit, with a VC3D plugin that runs it at the focus point. It needs the scroll's umbilicus and computes no prediction itself. Under readouts fixed beforehand it passed on three scrolls against the published hand windings: 0.9758 step accuracy on 13,969 judged steps of PHerc0139, 0.9786 and then 0.9706 on fresh PHerc1667 boxes, and 0.955 of 32,411 on a held-out PHerc0172 band, slightly ahead of E1 and winding-phase on the same boxes (Model output, 24 to 29 October 2026); split rule v1 once missed its keep floor.",
           "command": "python -m kit windlabel-box --prediction PRED --grad-mag GM --umbilicus UMB.json --point X,Y,Z --out RUN",
           "page": "docs/tools/windlabel-box.md",
-          "evidence": "[PHerc0139 check](docs/evidence/windlabel-box-20261024/README.md), [PHerc1667 check](docs/evidence/windlabel-box-1667-20261024/README.md)"
+          "evidence": "[PHerc0139 check](docs/evidence/windlabel-box-20261024/README.md), [PHerc1667 check](docs/evidence/windlabel-box-1667-20261024/README.md), [chart and 29 October tests](docs/tools/windlabel-box.md#checks-and-controls)"
+        },
+        {
+          "id": "seamswitch",
+          "name": "Seam-aware winding switches",
+          "line": "Counts how often a spiral fit puts touching vertices of one traced sheet on different windings, allowing for the fit's seam.",
+          "area": "Scoring and controls",
+          "released": "2026-10-29",
+          "summary": "Scores a spiral fit on traced sheet grids: switches per 1000 neighbor pairs (touching vertices the fit puts on different windings once its seam is allowed for) and the seam wrong area, on unlabeled sheets from the fit's coordinates or on labeled ones against label windings. It restates the switch definition of CanadaApollo6/vesuvius-spiral-chains so numbers can be set side by side, and needs numpy only. Checked on synthetic grids with planted errors only; a number on a fit is model output.",
+          "command": "python -m kit.seamswitch demo",
+          "page": "docs/tools/seamswitch.md"
         },
         {
           "id": "hopbench",

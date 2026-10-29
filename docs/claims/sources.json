@@ -301,6 +301,22 @@
     "docs/logs/2026-10-12-upstream-reports.md": "57f81a96d5871d496ef9d88b97192cc53d5a99f383f5bf97e4e7e69f0bebe5f2"
    },
    "doc": "docs/FINDINGS.md"
+  },
+  "windlabel-box-s-automatic-relative-windings-passed-a": {
+   "line": 263,
+   "sources": {
+    "docs/tools/windlabel-box.md": "5a5e8b8baa079013560c11ca254915dfeb75291126366f8b85f8118db7c7d17b"
+   }
+  },
+  "windlabel-box-s-automatic-relative-windings-passed-a-2": {
+   "line": 15,
+   "sources": {
+    "docs/tools/windlabel-box.md": "5a5e8b8baa079013560c11ca254915dfeb75291126366f8b85f8118db7c7d17b"
+   },
+   "doc": "docs/FINDINGS.md",
+   "reasons": {
+    "97": "setting: the random control's 97.5th percentile, the rule's quantile"
+   }
   }
  },
  "results_baseline": [

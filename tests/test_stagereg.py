@@ -22,6 +22,17 @@ class TestCatalogue(unittest.TestCase):
         self.assertTrue(ink)
         self.assertTrue(all(r.get("dims") in ("2.5d", "3d") for r in ink.values()))
 
+    def test_winding_stages_list_ours_beside_the_community_tools(self):
+        stages = list(stagereg.STAGES)
+        self.assertLess(stages.index("windings"), stages.index("spiral"))
+        self.assertLess(stages.index("spiral"), stages.index("spiralcheck"))
+        found = {(r["stage"], r["name"]): r for r in stagereg.options()}
+        self.assertEqual(found[("windings", "windlabel-box")]["maturity"], "validated")
+        for name in ("winding-phase", "constraint-gauge-e1"):
+            self.assertEqual(found[("windings", name)]["origin"], "community")
+        self.assertEqual(found[("spiralcheck", "seamswitch")]["origin"], "ours")
+        self.assertEqual(found[("spiralcheck", "spiral-eval")]["origin"], "community")
+
     def test_every_stage_a_workflow_defaults_runs_there(self):
         _, d = stagereg.catalogue()
         for wf, st in d.items():
