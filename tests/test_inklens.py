@@ -688,7 +688,7 @@ class Client(unittest.TestCase):
         self.assertEqual((code, json.loads(out)["gpu_seconds_requested"]), (0, 21))
         code, out, _ = self.run_cli("samples")
         self.assertEqual(code, 0)
-        self.assertEqual(len(json.loads(out)["samples"]), 4)
+        self.assertEqual(len(json.loads(out)["samples"]), 3)
 
 
 # ---------------------------------------------------------------- the Space
@@ -701,7 +701,7 @@ class Space(unittest.TestCase):
         data = inklens.load_samples()
         for s in data["samples"]:
             self.assertNotIn(s["scroll"], eligible, s["id"])
-            self.assertIn(s["scroll"], ("PHerc0841", "PHerc0139"))
+            self.assertEqual(s["scroll"], "PHerc0841")      # PHerc0139 w035 left on 28 Oct 2026: held back for evaluation
             self.assertIn(s["role"], ("development", "training"))
             box = inklens.sample_box(s)
             self.assertEqual((box[1] - box[0], box[3] - box[2]), (640, 640))

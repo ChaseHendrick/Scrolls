@@ -31,6 +31,9 @@ reader = ["numpy", "pillow", "tifffile", "imagecodecs"]
 # zarr 3 needs Python 3.11; on 3.10 pip would pick zarr 2.18, whose missing create_array breaks kit shuffle and the
 # zarr outputs, so on 3.10 these extras leave zarr out (the zarr inputs and outputs then need Python 3.11 or newer).
 maps = ["numpy", "tifffile", "imagecodecs", "zarr>=3; python_version >= '3.11'", "scipy"]
+# Papyrus fibers in a box from the AFV Fibers datasets (python -m kit fibers): numpy, and pyarrow for the Parquet
+# stream shards.
+fibers = ["numpy", "pyarrow"]
 all = ["numpy", "pillow", "tifffile", "imagecodecs", "zarr>=3; python_version >= '3.11'", "scipy"]
 
 [project.scripts]

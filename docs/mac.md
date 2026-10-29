@@ -1,6 +1,6 @@
 # Working on an Apple Silicon Mac (M1 Pro)
 
-Checked 2026-10-07. Apple Silicon has no CUDA. Much of the pipeline still runs, but full-segment ink inference is slow on stock villa.
+Checked 2026-10-07; the ink inference rows updated 2026-10-28. Apple Silicon has no CUDA. Much of the pipeline still runs, but full-segment ink inference is slow on a laptop.
 
 ```bash
 python -m kit doctor              # on a Mac: "Apple Silicon, no CUDA" is a warning, not a failure
@@ -14,8 +14,8 @@ python -m kit plan PHerc0826 --mac
 | Browse scrolls, grow and fix surfaces (GrowPatch) | Yes: native `VC3D.app` for Apple Silicon | [VC3D README, macOS](https://github.com/ScrollPrize/villa/tree/main/volume-cartographer) |
 | Render a surface volume (`vc_render_tifxyz`) | Yes: CLI tools ship in `VC3D.app/Contents/MacOS/` | same |
 | Flatten with lasagna | Yes, on the GPU: `--device mps` (float32 by default; `LASAGNA_MAX_PRECISION_FLOAT=64` for float64 on CPU) | [villa #1639](https://github.com/ScrollPrize/villa/pull/1639), merged 1 Sep 2026 |
-| Ink inference, stock villa | CPU only (`cuda` if available, else `cpu`, in `inference_runtime.py`) | villa `e0bbb8b` |
-| Ink inference on the Mac GPU | Open, unreviewed PRs; see below | [#1865](https://github.com/ScrollPrize/villa/pull/1865), [#1812](https://github.com/ScrollPrize/villa/pull/1812) |
+| Ink inference, villa `main` | On the Mac GPU by itself: `get_accelerator()` in `inference_runtime.py` takes CUDA, then MPS, then the CPU. There is no flag to force the CPU (`--gpus` takes CUDA ids only) | villa `860f52cbf` |
+| Ink inference on the Mac GPU | Merged into villa `main` on 2026-10-08; see below. Before that, `main` ran only on CUDA or the CPU (villa `e0bbb8b`) | [#1865](https://github.com/ScrollPrize/villa/pull/1865), [#1812](https://github.com/ScrollPrize/villa/pull/1812) |
 | CPU analyses (scan atlas, catalog, audits) | Yes | [first-letters-scan-atlas](https://github.com/claudepro1515/first-letters-scan-atlas), [vesuvius-catalog](https://github.com/Schurkai/vesuvius-catalog) |
 | Training ink models | Not practical; rent a CUDA GPU | [compute.md](compute.md) |
 
@@ -23,7 +23,7 @@ Known VC3D issue: the stable build crashes opening some catalog samples, PHerc08
 
 ## Mac GPU ink inference: already in progress upstream
 
-Several people have written this patch already. Do not write another one.
+Several people have written this patch already. Do not write another one. Update 2026-10-28: #1865 and #1812 both merged into villa `main` on 2026-10-08 (commits `860f52cbf` and `9ea01ff4b`); the table is the 2026-10-07 snapshot.
 
 | PR | Author | Evidence reported | Status 2026-10-07 |
 | --- | --- | --- | --- |
@@ -31,18 +31,18 @@ Several people have written this patch already. Do not write another one.
 | [#1812](https://github.com/ScrollPrize/villa/pull/1812) | AndreasHad04 | M1 Max: 0.427 vs 3.261 s per tile; MPS vs CPU max diff 9.5e-7; needs torch 2.14 (fails on 2.8). Changes the separate `ink-detection/optimized_inference` pipeline, **not** the `vesuvius.ink_detection` command the tutorial uses | Open, awaiting code owner |
 | [#1770](https://github.com/ScrollPrize/villa/pull/1770) | SurgeFok | M5 Pro: 2.4x end to end | Closed for inactivity |
 
-For the tutorial's `python -m vesuvius.ink_detection.inference.infer`, the relevant PR is **#1865**. It is a four-line change in `inference_runtime.py` that calls villa's existing `get_accelerator()` (CUDA first, then MPS, then CPU), so CUDA machines behave as before. On a Mac it uses MPS automatically; stock `main` gives you the CPU reference.
+For the tutorial's `python -m vesuvius.ink_detection.inference.infer`, the relevant PR is **#1865**. It is a four-line change in `inference_runtime.py` that calls villa's existing `get_accelerator()` (CUDA first, then MPS, then CPU), so CUDA machines behave as before. On a Mac it uses MPS automatically. Since it merged, villa `main` does the same, so `main` no longer gives a CPU reference by itself: the runbook below and [`scripts/mac-verify.sh`](../scripts/mac-verify.sh) force the CPU run.
 
 Related open work: training on MPS ([#1927](https://github.com/ScrollPrize/villa/pull/1927)), `vesuvius.predict` on MPS ([#1988](https://github.com/ScrollPrize/villa/pull/1988)), spiral fitting on MPS and CPU ([#1925](https://github.com/ScrollPrize/villa/pull/1925)).
 
-To use one now:
+Any villa `main` from 2026-10-08 on has it. The scripts here pin the merge commit of #1865, whose ink inference code matches the PR's final head:
 
 ```bash
 cd villa
-git fetch origin pull/1865/head:pr-1865 && git checkout pr-1865
+git fetch origin main && git checkout 860f52cbfccb6a878032de12467d5e2f3d995560
 ```
 
-Record the PR and commit in your ledger (`--villa-commit`). Before trusting MPS output, run the PHerc0139 w035 control on the CPU and on MPS and compare the two maps. If they differ by more than a few gray levels, use the CPU result and report the difference on the PR.
+Record the commit in your ledger (`--villa-commit`). Before trusting MPS output, run the PHerc0139 w035 control on the CPU and on MPS and compare the two maps. If they differ by more than a few gray levels, use the CPU result and report the difference to villa.
 
 ## One command
 
@@ -52,7 +52,7 @@ brew install uv
 bash scripts/mac-verify.sh
 ```
 
-[`scripts/mac-verify.sh`](../scripts/mac-verify.sh) does the whole runbook below: clones villa, builds a Python 3.14 environment with villa's models stack (without its C++ `volume-cartographer` package, which inference does not need), downloads the published w035 surface volume (`kit fetch`, about 1 GB, no AWS CLI) and the seed42 checkpoint, runs the CPU reference on `main` (both directions), runs PR #1865 twice, checks the logs say `Using MPS device` (no silent CPU fallback), runs both `kit verify` comparisons, and prints a summary to paste. Everything lives in `~/scrolls-work` (override with `WORK=`); nothing is uploaded.
+[`scripts/mac-verify.sh`](../scripts/mac-verify.sh) does the whole runbook below: clones villa, builds a Python 3.14 environment with villa's models stack (without its C++ `volume-cartographer` package, which inference does not need), downloads the published w035 surface volume (`kit fetch`, about 1 GB, no AWS CLI) and the seed42 checkpoint, checks out villa `main` at a pinned commit (`VILLA_REV`), runs the CPU reference forced onto the CPU (both directions), runs it twice on MPS, checks that each log names the device the run was meant to use (`Using CPU device`, `Using MPS device`: no silent fallback either way), runs both `kit verify` comparisons, and prints a summary to paste. Everything lives in one work folder, set with `WORK=` ([default](tools/mac-verify.md#environment-variables)); nothing is uploaded.
 
 ## Generalization check on w045: one command
 
@@ -64,7 +64,7 @@ bash scripts/mac-w045.sh
 [`scripts/mac-w045.sh`](../scripts/mac-w045.sh) answers the question w035 cannot: does a model find ink it was not trained on? PHerc0139 w045 has published ink labels and is not in v8in's training set. It is not held out from `ink_9um`, which trained on its 2.4 um render, so for `ink_9um` it is a cross-scan check on a training surface ([log](logs/2026-10-08-w045-not-held-out.md)). In the same `~/scrolls-work` as `mac-verify.sh`, the script:
 
 1. Fetches w045 (1.7 GB) and its labels, plus `ink_9um` seeds 42 and 43 and v8in at a pinned revision; each `ink_9um` file must match its recorded SHA-256 or the script stops.
-2. Runs `ink_9um` on MPS through PR #1865, both seeds, both directions, and checks the logs for `Using MPS device`.
+2. Runs `ink_9um` on MPS through villa `main` at the same pinned commit, both seeds, both directions, and checks the logs for `Using MPS device`.
 3. Runs v8in on a 640 px crop on the CPU and on MPS, and stops unless `kit verify` passes, with the reverse map as the control.
 4. Runs v8in on MPS over the box around the labeled region, both directions. It picks the stride from the speed it measured and `V8IN_HOURS` (default 4), and the batch size from your memory: fp32 batch 8 needs about 10 GB.
 5. Prints a summary to paste: `kit auc` for every map against the labels (forward against reverse) and `kit rowscore`.
@@ -123,13 +123,18 @@ CKPT=checkpoints/ink_9um/hybrid_3d2d-seed42/step-075000.pth
 ZARR=ink-dataset/pherc0139/w035/w035_9um.zarr
 COMMON="--overlap 0.5 --blend-mode hann --batch-size 1 --no-compile"
 
-# 1. CPU reference on stock villa, both directions (the reverse map is the control)
-git -C "$VILLA" checkout main
-$INFER $ZARR $CKPT predictions/w035_cpu.tif $COMMON --direction both
+git -C "$VILLA" fetch origin main && git -C "$VILLA" checkout 860f52cbfccb6a878032de12467d5e2f3d995560
+
+# 1. CPU reference, both directions (the reverse map is the control). villa main picks MPS by itself and has
+#    no device flag, so this run hides MPS from its get_accelerator(); it must print "Using CPU device"
+CUDA_VISIBLE_DEVICES= uv run --extra models python -c 'import functools, runpy, sys, torch
+torch.backends.mps.is_available = functools.lru_cache(lambda: False)
+sys.argv[0] = "vesuvius.ink_detection.inference.infer"
+runpy.run_module("vesuvius.ink_detection.inference.infer", run_name="__main__", alter_sys=True)' \
+  $ZARR $CKPT predictions/w035_cpu.tif $COMMON --direction both
 #    writes predictions/w035_cpu.tif and predictions/w035_cpu_reverse.tif
 
-# 2. MPS on PR #1865, twice (repeatability)
-git -C "$VILLA" fetch origin pull/1865/head:pr-1865 && git -C "$VILLA" checkout pr-1865
+# 2. MPS, twice (repeatability); each run must print "Using MPS device"
 $INFER $ZARR $CKPT predictions/w035_mps_a.tif $COMMON
 $INFER $ZARR $CKPT predictions/w035_mps_b.tif $COMMON
 uv run --extra models python -c "import torch, platform; print(torch.__version__, platform.mac_ver()[0])"
@@ -157,7 +162,7 @@ CPU vs MPS **pass** (max |diff| 1/255, Pearson 0.99999999), MPS repeat bit-ident
 
 ## A useful M1 Pro contribution
 
-A fourth speed benchmark adds little. These would help:
+A fourth speed benchmark adds little. These would help (written 2026-10-07; #1865 merged the next day, so items 1 and 3 are settled upstream, and a `kit verify` pass on a newer torch or macOS is what still helps):
 
 1. **Reviewer-grade verification on #1865.** Run the runbook above and post both `kit verify --json` outputs on the PR with chip, macOS and torch versions. The method follows the [GENChase Apple GPU backend](https://github.com/ChaseHendrick/GENChase/blob/main/apps/validate/APPLE-GPU.md). Evidence with a control and a repeatability check is what lets a code owner merge.
 2. **Reproduce the torch 2.12.1 bug report** on an M1 Pro, with and without the proposed fix, so #1865 can settle it.

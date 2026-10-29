@@ -414,7 +414,7 @@ def lens_region(volume_npz, reader="d9v2", windows=3):
 
 
 def lens_sample(sample_id="0841-w00", size=640, reader="d9v2", windows=3):
-    """Ink Lens on a public sample crop (PHerc0841 or PHerc0139, not prize-eligible), read from the open-data
+    """Ink Lens on a public sample crop (PHerc0841, not prize-eligible), read from the open-data
     bucket, with the kept ink scored against the published labels. size: 128 up to the sample's 640 px crop."""
     s = inklens.sample_by(str(sample_id))
     box = inklens.sample_box(s, int(size) if size else None)

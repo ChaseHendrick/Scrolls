@@ -155,7 +155,7 @@ inklens.py run --from-vc3d [--bridge NAME] --volume OME_ZARR [--size 1024] ...
 
 | Option | Default | Meaning |
 | --- | --- | --- |
-| `SAMPLE` | required | A sample id from `samples` (`0841-w00`, `0841-ag896`, `0841-ag405`, `0139-w035`) |
+| `SAMPLE` | required | A sample id from `samples` (`0841-w00`, `0841-ag896`, `0841-ag405`; `0139-w035` was removed on 28 Oct 2026, when that segment was held back for evaluation) |
 | `--size` | the 640 px crop | A smaller square at the crop's center |
 | `--at` | none | `ROW COL`: the square's top-left corner on the segment instead |
 | `--vc3d-out` | none | Download the sample's tifxyz mesh here and write VC3D's files into it |
@@ -520,6 +520,7 @@ the live Space, and the agent bridge against a running VC3D.
 
 ## History
 
+- 2026-10-28: the Space redeployed from `main` `2e3c10c` as Space commit `b71193a2` (rollback `978066cc`): the `0139-w035` sample is gone from the live page and API ([PR #268](https://github.com/ChaseHendrick/Scrolls/pull/268)); live recheck: the three PHerc0841 samples run, and the 640 px `0841-w00` calibration gave gate `ink`, AUC 0.9147 as stored against 0.5954 reversed (Model output).
 - 2026-10-27: one scroll bar for the whole page (user decision, 27 October 2026): `app.py` adds `onescroll.html` (written by `python -m kit spaceconnect render`) to the page head, the run records (`gr.JSON`) grow with their content instead of scrolling in a 500 px box, and `tools/deploy.py` uploads `onescroll.html`. American spelling throughout: the window-center argument of `compare_sample` and `compare_region`, spelled the British way until now, is `centers`, and so are the run record's key, `compare.run(centers=...)` (it still takes the British keyword from scripts written before), `runners.window(center=...)`, `runners.windows_for(centers=...)` and `gallery_job.py flat --centers` ([PR #253](https://github.com/ChaseHendrick/Scrolls/pull/253)).
 - 2026-10-27: model comparison: `zoo.py` (eleven models, 2.5D and 3D, with pins and training exposure), `runners.py`, `compare.py` (fair 2.4 um canvas, controls, ink-sdk's liveness gate, ensemble, stability, mosaics, block-bootstrap intervals, run record), the Compare models and Gallery tabs, `compare_sample`, `compare_region`, `list_models` and `gallery` endpoints, and `tools/gallery_job.py`; branched from `main` at `152da8a`.
 - 2026-10-24: Connect your tool accordion, branched from `main` at `2ce4d50`.

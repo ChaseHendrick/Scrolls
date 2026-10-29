@@ -4,7 +4,8 @@
 # pack lists w033, w035, w041, w044). ink_9um trained on w045's 2.4 um render, so for ink_9um
 # it is a cross-scan check on a training surface; PHerc0841 (SEGMENT=0841-*) is held out from
 # both. Runs, on the Mac GPU:
-#   - ink_9um seeds 42 and 43 through villa PR #1865 (MPS), both depth directions;
+#   - ink_9um seeds 42 and 43 through villa main at a pinned commit (MPS, which villa picks
+#     itself since PRs #1812 and #1865 merged), both depth directions;
 #   - v8in (YoussefMoNader/ink-8um-v8in), first on a crop on CPU and MPS (kit verify: same map?),
 #     then over the labeled part of the segment, both directions;
 # and scores every map with kit auc (against the labels, reverse direction as the control) and
@@ -26,8 +27,9 @@
 # Needs: git, uv (brew install uv), about 6 GB free in $WORK. Shares $WORK with mac-verify.sh.
 # Nothing is uploaded. w045 is a training scroll with published labels, so its maps are not a
 # First Letters candidate.
-# EXPECT_GPU=cpu runs without MPS and SMOKE=1 crops everything to one 640 px window (both
-# used to test the script itself).
+# EXPECT_GPU=cpu runs without MPS (villa forced onto the CPU) and SMOKE=1 crops everything to
+# one 640 px window (both used to test the script itself). VILLA_REV=origin/main tries the newest
+# villa main instead of the pinned commit.
 set -euo pipefail
 unset PYTORCH_ENABLE_MPS_FALLBACK   # an op MPS lacks must fail, not quietly run on the CPU
 
@@ -39,7 +41,14 @@ PY="$WORK/venv/bin/python"
 EXPECT_GPU="${EXPECT_GPU:-mps}"
 SMOKE="${SMOKE:-0}"
 QUICK="${QUICK:-0}"
-PR=1865
+# villa main at a pinned commit, as the model revisions below are pinned: 860f52cbf is the merge of
+# PR #1865 (ink inference picks its device with get_accelerator(): CUDA, then MPS, then the CPU),
+# after #1812; its ink inference code matches the final head of PR #1865, which this script ran before.
+VILLA_REV="${VILLA_REV:-860f52cbfccb6a878032de12467d5e2f3d995560}"
+case "$EXPECT_GPU" in
+  mps|cpu) ;;
+  *) echo "EXPECT_GPU must be mps or cpu" >&2; exit 2 ;;
+esac
 # MODEL picks the v8in-architecture weights (same code, so the CPU vs MPS check carries over).
 MODEL="${MODEL:-v8in}"
 case "$MODEL" in
@@ -84,6 +93,19 @@ FRESH="${FRESH:-0}"                  # 1: rerun everything; otherwise finished r
 
 say() { printf '\n== %s\n' "$*"; }
 sha() { local s; s="$(shasum -a 256 "$1" 2>/dev/null || sha256sum "$1")"; echo "${s%% *}"; }
+# villa's ink inference has no device option (--gpus takes CUDA ids only); get_accelerator() picks
+# CUDA, then MPS, then the CPU, and prints "Using ... device". With EXPECT_GPU=cpu, villa's own entry
+# point runs with MPS reported unavailable and CUDA hidden, so it falls through to the CPU; villa's
+# code is unchanged.
+CPU_ONLY='import functools, runpy, sys, torch
+torch.backends.mps.is_available = functools.lru_cache(lambda: False)   # cached as torch caches it: torch._dynamo reads __wrapped__
+sys.argv[0] = "vesuvius.ink_detection.inference.infer"
+runpy.run_module("vesuvius.ink_detection.inference.infer", run_name="__main__", alter_sys=True)'
+INFER=("$PY" -m vesuvius.ink_detection.inference.infer)
+[[ "$EXPECT_GPU" == mps ]] || INFER=(env CUDA_VISIBLE_DEVICES= "$PY" -c "$CPU_ONLY")
+log_device() {  # log_device LOG: the device villa says it used (cpu, mps, cuda), or nothing
+  grep -o -m1 -E 'Using (CPU|MPS|CUDA) device' "$1" 2>/dev/null | awk '{print tolower($2)}' || true
+}
 
 if [[ "$EXPECT_GPU" == "mps" && "$(uname -s)/$(uname -m)" != "Darwin/arm64" ]]; then
   echo "This needs an Apple Silicon Mac (or EXPECT_GPU=cpu to test the script elsewhere)." >&2
@@ -111,15 +133,17 @@ trap 'rm -rf "$LOCK"' EXIT
 # Keep the Mac awake while this runs (an idle sleep would pause inference; closing the lid still sleeps it).
 command -v caffeinate >/dev/null 2>&1 && { caffeinate -i -w $$ >/dev/null 2>&1 & }
 
-say "1/7 villa main and PR #$PR, Python 3.14 environment"
+say "1/7 villa main at $VILLA_REV, Python 3.14 environment"
 if [[ ! -d "$VILLA/.git" ]]; then
   git clone -q --filter=blob:none https://github.com/ScrollPrize/villa.git "$VILLA"
 fi
-git -C "$VILLA" fetch -q origin main "+pull/$PR/head:pr-$PR"
-MAIN_SHA="$(git -C "$VILLA" rev-parse --short origin/main)"
-PR_SHA="$(git -C "$VILLA" rev-parse --short "pr-$PR")"
+git -C "$VILLA" fetch -q origin main
+git -C "$VILLA" rev-parse -q --verify "$VILLA_REV^{commit}" >/dev/null \
+  && git -C "$VILLA" merge-base --is-ancestor "$VILLA_REV" origin/main \
+  || { echo "villa main has no commit $VILLA_REV" >&2; exit 2; }
+git -C "$VILLA" checkout -q --detach "$VILLA_REV"
+VILLA_SHA="$(git -C "$VILLA" rev-parse --short HEAD)"
 [[ -x "$PY" ]] || uv venv -q --python 3.14 "$WORK/venv"
-git -C "$VILLA" checkout -q --detach origin/main
 "$PY" - "$VILLA/vesuvius/pyproject.toml" > "$WORK/models-reqs.txt" <<'EOF'
 import sys, tomllib
 skip = ("volume-cartographer", "cucim", "nnunetv2", "batchgeneratorsv2")
@@ -213,29 +237,26 @@ EOF
   echo "v8in region: rows ${V8IN_CROP[0]}-${V8IN_CROP[1]}, columns ${V8IN_CROP[2]}-${V8IN_CROP[3]}"
 fi
 
-say "3/7 ink_9um on $EXPECT_GPU (PR #$PR, $PR_SHA): seeds 42 and 43, both directions"
-git -C "$VILLA" checkout -q --detach "pr-$PR"
+say "3/7 ink_9um on $EXPECT_GPU (villa $VILLA_SHA): seeds 42 and 43, both directions"
 for seed in 42 43; do
   log="$WORK/logs/${NAME}_${INK}_s$seed.log"
   start=$SECONDS
-  # Reuse a finished seed: both maps present, and on a Mac its log shows it ran on MPS.
+  # Reuse a finished seed: both maps present, and its log shows it ran on $EXPECT_GPU.
   if [[ "$FRESH" != "1" && -f "$OUT/maps/${INK}_s$seed.tif" && -f "$OUT/maps/${INK}_s${seed}_reverse.tif" && -f "$log" ]] \
-     && { [[ "$EXPECT_GPU" != "mps" ]] || grep -q "Using MPS device" "$log"; }; then
+     && [[ "$(log_device "$log")" == "$EXPECT_GPU" ]]; then
     printf -v "T_ink9um_s$seed" %s "earlier"
     echo "seed $seed: finished in an earlier run, reused (FRESH=1 to redo)"
     continue
   fi
-  (cd "$WORK" && "$PY" -m vesuvius.ink_detection.inference.infer "$INPUT" \
+  (cd "$WORK" && "${INFER[@]}" "$INPUT" \
      "$WORK/checkpoints/ink_9um/hybrid_3d2d-seed$seed/step-075000.pth" "$OUT/maps/${INK}_s$seed.tif" \
      --overlap 0.5 --blend-mode hann --batch-size 1 --no-compile --direction both) >"$log" 2>&1 \
     || { echo "ink_9um seed $seed failed, see $log" >&2; tail -20 "$log" >&2; exit 1; }
   printf -v "T_ink9um_s$seed" %s "$(( SECONDS - start ))"
-  if [[ "$EXPECT_GPU" == "mps" ]]; then
-    grep -q "Using MPS device" "$log" || { echo "seed $seed did not run on MPS; see $log" >&2; exit 1; }
-  fi
+  got="$(log_device "$log")"   # no silent fallback: villa's log must name the expected device
+  [[ "$got" == "$EXPECT_GPU" ]] || { echo "seed $seed ran on ${got:-an unnamed device}, expected $EXPECT_GPU; see $log" >&2; exit 1; }
   t="T_ink9um_s$seed"; echo "seed $seed: ${!t}s for both directions"
 done
-git -C "$VILLA" checkout -q --detach origin/main
 
 say "4/7 layers for v8in (kit layers)"
 cd "$SCROLLS"
@@ -432,7 +453,7 @@ print("chip: $CHIP | os: $OS | torch: $TORCH | smoke: $SMOKE | quick: $QUICK")
 if "$QUICK" == "1":
     print("quick: every AUC below is on the crop ${CROP[*]} (rows, columns) less a 64 px edge, so the models face the same test")
     print("quick: row scores need about 1 cm of map, so the crop has none")
-print(f"villa PR #$PR $PR_SHA on $EXPECT_GPU | $MODEL $V8IN_REV on $V8IN_DEVICE, stride $STRIDE (reverse ${REV_STRIDE:-$STRIDE}), batch $BATCH, fp16 ${V8IN_FP16:-0}, region {'crop' if '$QUICK' == '1' else '${V8IN_CROP[*]:-all}'}")
+print(f"villa main $VILLA_SHA on $EXPECT_GPU | $MODEL $V8IN_REV on $V8IN_DEVICE, stride $STRIDE (reverse ${REV_STRIDE:-$STRIDE}), batch $BATCH, fp16 ${V8IN_FP16:-0}, region {'crop' if '$QUICK' == '1' else '${V8IN_CROP[*]:-all}'}")
 print("sha256 seed42 $SHA42 | seed43 $SHA43 | v8in $SHAV8")
 print("times (s): ink_9um s42 ${T_ink9um_s42}, s43 ${T_ink9um_s43} (both directions) | v8in ${T_v8in} + ${T_v8in_reverse}")
 d = j("$DEVJSON"); c = d["candidate"]

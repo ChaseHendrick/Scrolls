@@ -142,6 +142,13 @@ tbody tr { cursor: pointer; } tbody tr:hover { background: var(--bg); }
 .vx-ctl li.yes span { color: var(--ok); font-weight: 700; } .vx-ctl li.no span { color: var(--bad); font-weight: 700; }
 .vx-not { margin-top: 10px; }
 .vx-assume { margin: 4px 0 8px; font-size: .9em; }
+.vx-fill.cov { background: var(--fill); }
+.vx-cov { margin-bottom: 4px; }
+.vx-scope { border-left: 3px solid var(--accent); padding: 6px 10px; margin: 6px 0 10px; background: color-mix(in srgb, var(--accent) 7%, transparent); border-radius: 0 6px 6px 0; font-size: .92em; }
+.vx-single, .vx-earlier { margin-top: 8px; }
+.vx-single summary, .vx-earlier summary { cursor: pointer; color: var(--accent); }
+.vx-earlier ul { margin: 4px 0 0; padding-left: 18px; font-size: .88em; }
+.vx-earlier small { color: var(--mute); }
 .vx-num summary { cursor: pointer; color: var(--accent); margin-top: 6px; }
 .vx-num table { font-size: .82em; }
 .vx-showwrap { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 12px 16px; margin: 16px 0; }

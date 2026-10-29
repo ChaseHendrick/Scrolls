@@ -99,67 +99,67 @@
     {
      "name": "Commands and options",
      "start_line": 75,
-     "end_line": 107,
+     "end_line": 111,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 108,
-     "end_line": 118,
-     "applicable": true
-    },
-    {
-     "name": "Inputs",
-     "start_line": 119,
+     "start_line": 112,
      "end_line": 122,
      "applicable": true
     },
     {
-     "name": "Outputs",
+     "name": "Inputs",
      "start_line": 123,
-     "end_line": 141,
+     "end_line": 126,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 127,
+     "end_line": 146,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 142,
-     "end_line": 150,
+     "start_line": 147,
+     "end_line": 155,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 151,
-     "end_line": 157,
+     "start_line": 156,
+     "end_line": 162,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 158,
-     "end_line": 168,
+     "start_line": 163,
+     "end_line": 173,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 169,
-     "end_line": 178,
+     "start_line": 174,
+     "end_line": 183,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 179,
-     "end_line": 182,
+     "start_line": 184,
+     "end_line": 187,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 183,
-     "end_line": 188,
+     "start_line": 188,
+     "end_line": 194,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 189,
-     "end_line": 192,
+     "start_line": 195,
+     "end_line": 199,
      "applicable": true
     }
    ]
@@ -1413,67 +1413,67 @@
     {
      "name": "Commands and options",
      "start_line": 85,
-     "end_line": 202,
+     "end_line": 203,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 203,
-     "end_line": 231,
+     "start_line": 204,
+     "end_line": 232,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 232,
-     "end_line": 235,
+     "start_line": 233,
+     "end_line": 236,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 236,
-     "end_line": 246,
+     "start_line": 237,
+     "end_line": 247,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 247,
-     "end_line": 260,
+     "start_line": 248,
+     "end_line": 261,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 261,
-     "end_line": 270,
+     "start_line": 262,
+     "end_line": 271,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 271,
-     "end_line": 274,
+     "start_line": 272,
+     "end_line": 275,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 275,
-     "end_line": 284,
+     "start_line": 276,
+     "end_line": 285,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 285,
-     "end_line": 292,
+     "start_line": 286,
+     "end_line": 293,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 293,
-     "end_line": 304,
+     "start_line": 294,
+     "end_line": 305,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 305,
-     "end_line": 311,
+     "start_line": 306,
+     "end_line": 312,
      "applicable": true
     }
    ]
@@ -3423,6 +3423,162 @@
      "name": "Related",
      "start_line": 261,
      "end_line": 265,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "fibers",
+   "name": "fibers",
+   "tagline": "read the AFV fibers in one box of a scan without downloading the whole scan",
+   "summary": "Stream the papyrus fibers in any box of a scan from the public AFV Fibers datasets on Hugging Face, reading only the Parquet shards that box needs, with exactly the same fibers and `.afv` bytes as filtering the full download.",
+   "status": "Current",
+   "kind": [
+    "kit command"
+   ],
+   "area": "Data and downloads",
+   "commands": [
+    "python -m kit fibers scans",
+    "python -m kit fibers stream",
+    "python -m kit fibers filter",
+    "python -m kit fibers parity",
+    "python -m kit fibers build"
+   ],
+   "imports": [],
+   "code": [
+    {
+     "path": "kit/fiberstream.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/cli.py",
+     "symbols": [
+      "cmd_fibers"
+     ]
+    },
+    {
+     "path": "scripts/fiberstream/stream_job.py",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_fiberstream.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed to read. Publishing shards to a dataset follows rule 8"
+   },
+   "checked": {
+    "date": "2026-10-28",
+    "commit": "bd27a0d"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`fibers`",
+    "Status": "Current",
+    "Kind": "kit command",
+    "Area": "Data and downloads",
+    "Run": "`python -m kit fibers scans`, `python -m kit fibers stream`, `python -m kit fibers filter`, `python -m kit fibers parity`, `python -m kit fibers build`",
+    "Code": "`kit/fiberstream.py`, `kit/cli.py` (`cmd_fibers`), `scripts/fiberstream/stream_job.py` (the Hugging Face Job that built and checked the published shards)",
+    "Tests": "`tests/test_fiberstream.py`",
+    "Needs": "Python 3.10 or newer, numpy, and pyarrow 14 or newer for `stream` and `build` (`pip install \"numpy\" \"pyarrow\"`); nothing for `scans`. VC3D and villa's `import_afv.py` to open a written `.afv` in VC3D",
+    "Runs on": "Any machine. A small or medium box takes 0.1 to 4 s over the network, a 1024-grid-voxel box 0.5 to 16 s (measured 28 Oct 2026 from Hugging Face CPU Jobs, Cost and time)",
+    "Network": "`huggingface.co` and the file servers it redirects to (HTTP range requests for `stream` and `parity`); none for `filter`, `build`, or `--source DIR`",
+    "Writes": "Nothing unless asked: `--out BOX.afv`, `--json FIBERS.json`; `parity --out` also writes `BOX.afv.reference.afv`; `build` writes `stream/` under its output folder",
+    "Go-ahead": "Not needed to read. Publishing shards to a dataset follows rule 8",
+    "Released": "Public `main`; stream shards for the six datasets `SharpMeow/SCAN-afv-fibers`, built and checked 28 Oct 2026",
+    "Checked": "2026-10-28 against commit `bd27a0d`"
+   },
+   "page": "docs/tools/fibers.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 22,
+     "end_line": 31,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 32,
+     "end_line": 44,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 45,
+     "end_line": 72,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 73,
+     "end_line": 95,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 96,
+     "end_line": 220,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 221,
+     "end_line": 244,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 245,
+     "end_line": 250,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 251,
+     "end_line": 281,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 282,
+     "end_line": 312,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 313,
+     "end_line": 320,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 321,
+     "end_line": 343,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 344,
+     "end_line": 353,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 354,
+     "end_line": 357,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 358,
+     "end_line": 361,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 362,
+     "end_line": 365,
      "applicable": true
     }
    ]
@@ -5498,13 +5654,13 @@
     {
      "name": "History",
      "start_line": 521,
-     "end_line": 531,
+     "end_line": 532,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 532,
-     "end_line": 539,
+     "start_line": 533,
+     "end_line": 540,
      "applicable": true
     }
    ]
@@ -7723,7 +7879,7 @@
    "id": "mac-verify",
    "name": "mac-verify",
    "tagline": "check on a Mac that villa's MPS ink inference gives the CPU's map",
-   "summary": "`scripts/mac-verify.sh` runs `ink_9um` seed 42 on PHerc0139 w035 on the CPU with stock villa and twice on the Mac GPU with villa PR #1865, then checks both pairs with `kit verify` against a reverse-depth control and prints a summary to paste.",
+   "summary": "`scripts/mac-verify.sh` runs `ink_9um` seed 42 on PHerc0139 w035 with villa `main` at a pinned commit, once forced onto the CPU and twice on the Mac GPU, then checks both pairs with `kit verify` against a reverse-depth control and prints a summary to paste.",
    "status": "Current",
    "kind": [
     "script"
@@ -7740,11 +7896,12 @@
     }
    ],
    "tests": [
+    "tests/test_mac_scripts.py",
     "tests/test_repo.py"
    ],
    "go_ahead": {
     "needed": false,
-    "text": "Not needed to run it on your own Mac. Posting its summary, for example on villa PR #1865, needs Chase's yes (the go-ahead rule, hard rule 8)"
+    "text": "Not needed to run it on your own Mac. Posting its summary, for example on villa, needs Chase's yes (the go-ahead rule, hard rule 8)"
    },
    "checked": {
     "date": "2026-10-16",
@@ -7758,12 +7915,12 @@
     "Area": "Scoring and controls",
     "Run": "`bash scripts/mac-verify.sh`",
     "Code": "`scripts/mac-verify.sh`",
-    "Tests": "`tests/test_repo.py` (only that the script parses with `bash -n` and uses no bash 4 syntax)",
-    "Needs": "An Apple Silicon Mac (macOS, arm64) with git and uv (`brew install uv`); about 3 GB free in `WORK` (script header). The script itself builds the rest: villa (`main` and PR #1865), a Python 3.14 virtual environment with villa's `models` extra minus `volume-cartographer`, `cucim`, `nnunetv2` and `batchgeneratorsv2`, plus tifffile and imagecodecs; the published w035 surface volume and the `ink_9um` seed 42 checkpoint",
+    "Tests": "`tests/test_mac_scripts.py` (runs the script off a Mac with stubs for git, uv, uname and the venv's Python: a failing verdict fails it, `PYTORCH_ENABLE_MPS_FALLBACK` is unset for every inference, the shared GPU lock, villa `main` at the pinned commit, the forced CPU arm and the device checks); `tests/test_repo.py` (it parses with `bash -n` and uses no bash 4 syntax)",
+    "Needs": "An Apple Silicon Mac (macOS, arm64) with git and uv (`brew install uv`); about 3 GB free in `WORK` (script header). The script itself builds the rest: villa (`main` at a pinned commit), a Python 3.14 virtual environment with villa's `models` extra minus `volume-cartographer`, `cucim`, `nnunetv2` and `batchgeneratorsv2`, plus tifffile and imagecodecs; the published w035 surface volume and the `ink_9um` seed 42 checkpoint",
     "Runs on": "Apple Silicon Mac only (or any machine with `EXPECT_GPU=cpu`, to test the script). On an Apple M1 Pro: CPU 1,740 s for both directions, MPS 218 s and 212 s forward ([w035 log](../logs/2026-10-07-w035-cpu.md), 2026-10-07), plus the downloads",
     "Network": "`github.com` (clones and fetches `ScrollPrize/villa`); `vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` (the w035 surface volume, through `kit fetch`); `huggingface.co` (the checkpoint `scrollprize/ink_9um`, through `uvx --from huggingface_hub hf download`); the Python package index and uv's Python downloads (the environment). Nothing is uploaded",
-    "Writes": "Under `WORK` (default `~/scrolls-work`): `villa/` (a clone; the script checks out `origin/main` or `pr-1865` detached), `venv/`, `models-reqs.txt`, `checkpoints/ink_9um/hybrid_3d2d-seed42/step-075000.pth`, `data/w035_9um.zarr/`, `predictions/w035_cpu.tif`, `predictions/w035_cpu_reverse.tif`, `predictions/w035_gpu_a.tif`, `predictions/w035_gpu_b.tif`, `logs/cpu.log`, `logs/gpu_a.log`, `logs/gpu_b.log`, `results/cpu_vs_gpu.json`, `results/gpu_repeat.json`, `results/summary.txt`, and the lock folder `.gpu-job.lock/` while it runs. uv also fills its own cache",
-    "Go-ahead": "Not needed to run it on your own Mac. Posting its summary, for example on villa PR #1865, needs Chase's yes (the go-ahead rule, hard rule 8)",
+    "Writes": "Under `WORK` (default under Environment variables): `villa/` (a clone; the script checks out `VILLA_REV` detached), `venv/`, `models-reqs.txt`, `checkpoints/ink_9um/hybrid_3d2d-seed42/step-075000.pth`, `data/w035_9um.zarr/`, `predictions/w035_cpu.tif`, `predictions/w035_cpu_reverse.tif`, `predictions/w035_gpu_a.tif`, `predictions/w035_gpu_b.tif`, `logs/cpu.log`, `logs/gpu_a.log`, `logs/gpu_b.log`, `results/cpu_vs_gpu.json`, `results/gpu_repeat.json`, `results/summary.txt`, and the lock folder `.gpu-job.lock/` while it runs. uv also fills its own cache",
+    "Go-ahead": "Not needed to run it on your own Mac. Posting its summary, for example on villa, needs Chase's yes (the go-ahead rule, hard rule 8)",
     "Released": "Public `main` since 2026-10-07",
     "Guide": "[mac.md, \"One command\"](../mac.md#one-command) and its [runbook](../mac.md#runbook-verify-mps-against-cpu-on-the-control-segment)",
     "Checked": "2026-10-16 against commit `0747c06`"
@@ -7797,67 +7954,67 @@
     {
      "name": "Commands and options",
      "start_line": 86,
-     "end_line": 98,
+     "end_line": 99,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 99,
-     "end_line": 102,
+     "start_line": 100,
+     "end_line": 103,
      "applicable": false
     },
     {
      "name": "Inputs",
-     "start_line": 103,
-     "end_line": 112,
+     "start_line": 104,
+     "end_line": 113,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 113,
-     "end_line": 134,
+     "start_line": 114,
+     "end_line": 135,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 135,
-     "end_line": 152,
+     "start_line": 136,
+     "end_line": 155,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 153,
-     "end_line": 164,
+     "start_line": 156,
+     "end_line": 167,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 165,
-     "end_line": 175,
+     "start_line": 168,
+     "end_line": 178,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 176,
-     "end_line": 185,
+     "start_line": 179,
+     "end_line": 188,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 186,
-     "end_line": 193,
+     "start_line": 189,
+     "end_line": 207,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 194,
-     "end_line": 200,
+     "start_line": 208,
+     "end_line": 215,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 201,
-     "end_line": 208,
+     "start_line": 216,
+     "end_line": 223,
      "applicable": true
     }
    ]
@@ -7902,7 +8059,7 @@
     "Run": "`bash scripts/mac-w045.sh`",
     "Code": "`scripts/mac-w045.sh`",
     "Tests": "`tests/test_repo.py` (only that the script parses with `bash -n` and uses no bash 4 syntax)",
-    "Needs": "An Apple Silicon Mac (macOS, arm64) with git and uv (`brew install uv`); about 6 GB free in `WORK` (script header). The script builds the rest: villa (`main` and PR #1865), a Python 3.14 environment with villa's `models` extra (minus `volume-cartographer`, `cucim`, `nnunetv2`, `batchgeneratorsv2`) plus tifffile, imagecodecs, scipy, opencv-python-headless, safetensors and huggingface_hub; the segment's surface volume and labels; the `ink_9um` seed 42 and 43 checkpoints; v8in or v8in-1447 at a pinned revision. It also runs `scripts/v8in_run.py` ([v8in-run](v8in-run.md)) and the kit commands `fetch`, `layers`, `verify`, `auc`, `rowscore` and `provenance`",
+    "Needs": "An Apple Silicon Mac (macOS, arm64) with git and uv (`brew install uv`); about 6 GB free in `WORK` (script header). The script builds the rest: villa (`main` at a pinned commit), a Python 3.14 environment with villa's `models` extra (minus `volume-cartographer`, `cucim`, `nnunetv2`, `batchgeneratorsv2`) plus tifffile, imagecodecs, scipy, opencv-python-headless, safetensors and huggingface_hub; the segment's surface volume and labels; the `ink_9um` seed 42 and 43 checkpoints; v8in or v8in-1447 at a pinned revision. It also runs `scripts/v8in_run.py` ([v8in-run](v8in-run.md)) and the kit commands `fetch`, `layers`, `verify`, `auc`, `rowscore` and `provenance`",
     "Runs on": "Apple Silicon Mac only (any machine with `EXPECT_GPU=cpu`, to test the script). `QUICK=1` is meant to finish in under an hour once w045's device check exists (script header; the recorded steps are under Cost and time); a full run spends up to `V8IN_HOURS` (default 4) on v8in plus about 11 min per `ink_9um` seed ([mac.md](../mac.md#watching-a-run), [community scan log](../logs/2026-10-07-community-scan.md), 2026-10-07)",
     "Network": "`github.com` (villa); `vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` (surface volume and labels, through `kit fetch`); `huggingface.co` (`scrollprize/ink_9um`, and `YoussefMoNader/ink-8um-v8in` or `YoussefMoNader/ink-8um-v8in-pherc1447-loo-w062`); the Python package index and uv's Python downloads. Nothing is uploaded",
     "Writes": "Under `WORK` (default `~/scrolls-work`): shared `villa/`, `venv/`, `models-reqs.txt`, `checkpoints/`, `data/`, `logs/`, and the lock folder `.gpu-job.lock/` while it runs; per run, `WORK/NAME/maps/`, `WORK/NAME/layers/`, `WORK/NAME/crop_layers/` and `WORK/NAME/results/` (see Outputs). `NAME` is the segment, with `-smoke` added under `SMOKE=1`",
@@ -7940,67 +8097,67 @@
     {
      "name": "Commands and options",
      "start_line": 90,
-     "end_line": 117,
+     "end_line": 118,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 118,
-     "end_line": 121,
+     "start_line": 119,
+     "end_line": 122,
      "applicable": false
     },
     {
      "name": "Inputs",
-     "start_line": 122,
-     "end_line": 132,
+     "start_line": 123,
+     "end_line": 133,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 133,
-     "end_line": 175,
+     "start_line": 134,
+     "end_line": 176,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 176,
-     "end_line": 198,
+     "start_line": 177,
+     "end_line": 201,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 199,
-     "end_line": 213,
+     "start_line": 202,
+     "end_line": 216,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 214,
-     "end_line": 227,
+     "start_line": 217,
+     "end_line": 230,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 228,
-     "end_line": 237,
+     "start_line": 231,
+     "end_line": 240,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 238,
-     "end_line": 245,
+     "start_line": 241,
+     "end_line": 248,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 246,
-     "end_line": 261,
+     "start_line": 249,
+     "end_line": 265,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 262,
-     "end_line": 271,
+     "start_line": 266,
+     "end_line": 275,
      "applicable": true
     }
    ]
@@ -12227,13 +12384,13 @@
     {
      "name": "History",
      "start_line": 195,
-     "end_line": 200,
+     "end_line": 201,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 201,
-     "end_line": 205,
+     "start_line": 202,
+     "end_line": 206,
      "applicable": true
     }
    ]
@@ -16819,67 +16976,67 @@
     {
      "name": "Checks and controls",
      "start_line": 66,
-     "end_line": 77,
+     "end_line": 79,
      "applicable": true
     },
     {
      "name": "Commands and options",
-     "start_line": 78,
-     "end_line": 111,
+     "start_line": 80,
+     "end_line": 113,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 112,
-     "end_line": 119,
+     "start_line": 114,
+     "end_line": 121,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 120,
-     "end_line": 153,
+     "start_line": 122,
+     "end_line": 155,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 154,
-     "end_line": 211,
+     "start_line": 156,
+     "end_line": 213,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 212,
-     "end_line": 222,
+     "start_line": 214,
+     "end_line": 224,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 223,
-     "end_line": 226,
+     "start_line": 225,
+     "end_line": 228,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 227,
-     "end_line": 236,
+     "start_line": 229,
+     "end_line": 238,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 237,
-     "end_line": 244,
+     "start_line": 239,
+     "end_line": 246,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 245,
-     "end_line": 248,
+     "start_line": 247,
+     "end_line": 250,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 249,
-     "end_line": 254,
+     "start_line": 251,
+     "end_line": 256,
      "applicable": true
     }
    ]

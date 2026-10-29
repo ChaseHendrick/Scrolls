@@ -86,7 +86,7 @@
 </header>
 
 <section class="stats" aria-label="Measured accuracy">
-  <div class="stat"><b>91%</b><span>of vertices within 1 voxel of the recto face in a 1.129 µm scan, on 60 fresh PHerc0139 test sites. Published labels: 24%.</span></div>
+  <div class="stat"><b>91%</b><span>of scorable vertices within 1 voxel of the recto face in a 1.129 µm scan, on 60 fresh PHerc0139 test sites (sites it could not score left out). Published labels: 24%.</span></div>
   <div class="stat"><b>71%</b><span>within 1 voxel on 60 fresh PHerc0814 test sites with the single-scan snap. Published labels: 24%.</span></div>
   <div class="stat"><b>+0.61 voxels</b><span>closer to the surface: a 3D surface model trained on snapped labels against the same model trained on published ones, scored on a scroll neither saw.</span></div>
   <div class="stat"><b id="st-count">108</b><span>segments on PHerc0139, PHerc0814, PHerc0841 and PHerc0172, as tifxyz meshes you can drop into VC3D or villa.</span></div>
@@ -136,7 +136,7 @@
   <p id="vx-error" class="vx-error" hidden></p>
   <div class="vx-intro">
     <h2>Is each snapped vertex within one voxel of the papyrus face?</h2>
-    <p>Per scroll, one of three claim levels. <b>Measured</b>: scored against the face seen in an independent, finer scan of the same scroll, and at least one class cleared the bar. <b>Certified</b>: no finer scan, so a lower bound from a truth-free certificate whose assumptions are listed. <b>Not shown</b>: neither holds, and the card says why; where a test ran, the card still shows what it measured, which makes no claim. Every number here is model output: the snapped meshes come from a band finder, and the truth face is itself found by a rule.</p>
+    <p>Per scroll, one of three claim levels. <b>Measured</b>: scored against the face seen in an independent, finer scan of the same scroll, and at least one class cleared the bar. Where a card says <i>covered</i>, the claim holds only on the share of sites where two finer scans agree on the face; that share is shown beside it, and the card says in words what exact means there. <b>Certified</b>: no finer scan, so a lower bound from a truth-free certificate whose assumptions are listed. <b>Not shown</b>: neither holds, and the card says why; where a test ran, the card still shows what it measured, which makes no claim. Every number here is model output: the snapped meshes come from a band finder, and the truth face is itself found by a rule.</p>
   </div>
   <section class="stats vx-tiles" id="vx-tiles" aria-label="Scrolls by claim level"></section>
   <div id="vx-cards" class="vx-cards"></div>
@@ -215,18 +215,18 @@
       <li><b>Release 1.0.1</b>, pinned by its revision, so the vertices scored are the ones you download.</li>
       <li><b>Split by <code>abstain.tif</code></b>: C0 snapped, C2 filled, C1 left in place. Each is scored on its own.</li>
       <li><b>Test sites</b> drawn after the rule was frozen, in regions never used before.</li>
-      <li><b>Truth face</b> found in the finer scan (1.129 µm for PHerc0139); a 2.4 µm scan, where one exists, is the positive control.</li>
-      <li><b>Negative controls</b>: the published label, offsets of 1.5 and 3 voxels planted on purpose, and the verso face. Each must fail the bar.</li>
+      <li><b>Truth face</b> found in the finer scan (1.129 µm for PHerc0139); a 2.4 µm scan, where one exists, is the positive control. In a two-scan test a second finer scan (2.403 µm for PHerc0139) reads the face too, and a site counts only where the two agree within 1 voxel (covered); the claim is then on covered sites, with the covered share and its own bar beside it.</li>
+      <li><b>Negative controls</b>: the published label, offsets of 1.5 and 3 voxels planted on purpose, and the verso face; in a two-scan test also the second scan moved by 1.5 and 3 voxels, and the snapped offsets scored against other sites' faces. Each must fail the bar.</li>
       <li><b>Verdict</b> per stratum: PASS, FAIL, NOT SHOWN or UNANSWERABLE; or VOID for the whole test when a control or the integrity check breaks.</li>
     </ol>
     <h2>The three claim levels</h2>
-    <p><b>Measured.</b> A finer scan of the same scroll exists. At test sites drawn after the rule was fixed, the face is found in it, registered into the label scan, and each snapped vertex's distance to it is measured along the normal. The share within 1 voxel and its one-sided 95% lower bound are reported; the claim holds when the bound clears the bar. The rule was fixed before any test site was looked at; its preregistration digest is <code id="vx-prereg"></code>.</p>
+    <p><b>Measured.</b> A finer scan of the same scroll exists. At test sites drawn after the rule was fixed, the face is found in it, registered into the label scan, and each snapped vertex's distance to it is measured along the normal. The share within 1 voxel and its one-sided 95% lower bound are reported; the claim holds when the bound clears the bar. In a two-scan test the share counts covered sites only (where both finer scans name the face and agree within 1 voxel), so two numbers always go together: how many drawn sites are covered, and how many snapped vertices on those lie within 1 voxel. The rule was fixed before any test site was looked at; its preregistration digest is <code id="vx-prereg"></code>.</p>
     <p><b>Certified.</b> No finer scan. A certificate computed from the label scan alone gives a lower bound on the share within 1 voxel, valid only under the assumptions the card lists. It was fixed before any test site was looked at too, under the same preregistration.</p>
     <p><b>Not shown.</b> Neither a measurement nor a certificate holds for that scroll, or a control failed. The card says why. Where a test ran, the card still shows its shares, intervals and controls, so you can see how far it is from the bar; nothing on it is a claim.</p>
     <h2>Limits</h2>
     <ul>
       <li>A snap moves along the normal only. It cannot fix a label that follows the wrong wrap, and where two sheets touch the face it finds can belong to the neighbor.</li>
-      <li>Only scored strata carry a claim, and a share is a share of test sites, not of every vertex.</li>
+      <li>Only scored strata carry a claim, and a share is a share of test sites, not of every vertex. A covered claim says nothing about the sites the two scans do not cover, and agreement of two scans cannot see an error both share.</li>
       <li>The truth face is itself found by a rule on the finer scan, so it is model output too.</li>
       <li>A certificate rests on its stated assumptions. The certificate code and the snapping code are not public.</li>
       <li>Only the scrolls in the dataset appear here. The meshes are geometry: they say nothing about ink or text.</li>

@@ -22,6 +22,12 @@ histogram, the published label's histogram, and the negative controls. A check r
 "letter", a prize-eligible scroll (from the newest kit/data/prizes-*.json), unsafe showcase paths, counts that do not
 add up, an interval that does not hold its share, and a control whose "holds" disagrees with its numbers.
 
+A two-scan test (since 28 October 2026) adds, per stratum, "coverage": the share of drawn sites where two independent
+scans both name the face and agree, with its interval, bar and verdict; its share within each tolerance then has the
+basis "covered" (n is the covered count). Such a scroll states in "scope" what exact means there, names the second scan
+("second_truth"), and may carry the same stratum scored against one scan alone ("single_truth"). "earlier" lists spent
+tests of the same scroll that a later test replaced on the card, each with its digest and a one-line summary.
+
 Every number in a summary is model output: the snapped meshes are geometry from a band finder, and the truth face is
 itself found by a rule on the finer scan. Standard library only.
 """
@@ -41,7 +47,8 @@ CLAIMS = ("measured", "certified", "not_shown")
 VERDICTS = ("PASS", "FAIL", "NOT SHOWN", "UNANSWERABLE", "VOID")
 STRATA = {"C0": 0, "C2": 2, "C1": 1, "C0L": 0}
 TOLERANCES = ("0.5", "1", "2")
-BASES = ("itt", "scorable")
+BASES = ("itt", "scorable", "covered")
+COVERAGE_VERDICTS = ("COVERED", "NOT COVERED", "UNANSWERABLE")
 CONTROL_REQUIRE = ("below", "above")
 ROOT = Path(__file__).resolve().parent.parent
 PRIZE_DATA = ROOT / "kit" / "data"
@@ -55,13 +62,16 @@ INTERVAL_KEYS = {"method", "sided", "level"}
 PREREG_KEYS = {"sha256", "frozen"}
 PRIZES_KEYS = {"url", "date"}
 SCROLL_KEYS = {"scroll", "claim", "why_not_shown", "label_scan", "truth", "oracle", "certificate", "vertices", "void",
-               "strata"}
+               "strata", "scope", "second_truth", "earlier"}
 SCAN_KEYS = {"volume_id", "voxel_um"}
 TRUTH_KEYS = {"kind", "volume_id", "voxel_um"}
 CERT_KEYS = {"method", "lower", "level", "n", "assumptions"}
 VERTEX_KEYS = {"released", "held_back", "by_code"}
 STRATUM_KEYS = {"id", "code", "primary", "verdict", "instrument_limited", "why", "n_selected", "n_scorable", "within",
-                "median_abs", "residual_hist", "published_hist", "controls"}
+                "median_abs", "residual_hist", "published_hist", "controls", "coverage", "single_truth"}
+COVERAGE_KEYS = {"k", "n", "share", "lower", "upper", "bar", "verdict", "what"}
+SINGLE_KEYS = {"verdict", "instrument_limited", "why", "within_1", "controls"}
+EARLIER_KEYS = {"prereg", "scope", "summary"}
 SLOT_KEYS = {"basis", "k", "n", "share", "lower", "upper"}
 HIST_KEYS = {"edges", "counts", "under", "over", "sign"}
 CONTROL_KEYS = {"name", "observed", "require", "limit", "holds"}
@@ -221,7 +231,70 @@ def _control(c, where, out):
         out.append(f"{where}: holds is null when nothing was observed")
 
 
-def _stratum(s, where, claim, out):
+def _coverage(c, where, n_selected, out):
+    """A two-scan test's coverage: k of the n drawn sites where both scans name the face and agree."""
+    if not _keys(c, COVERAGE_KEYS, where, out):
+        return None
+    k, n = c.get("k"), c.get("n")
+    if not (_int(k) and _int(n) and 0 <= k <= n):
+        out.append(f"{where}: k and n are counts with 0 <= k <= n")
+        return None
+    if n_selected is not None and n != n_selected:
+        out.append(f"{where}.n is {n}, but the stratum drew {n_selected} sites")
+    share, lo, hi, bar = c.get("share"), c.get("lower"), c.get("upper"), c.get("bar")
+    if not _share(share) or (n and abs(share - k / n) > 1e-6):
+        out.append(f"{where}.share: k/n")
+    for name, v in (("lower", lo), ("upper", hi)):
+        if not _share(v):
+            out.append(f"{where}.{name}: a fraction from 0 to 1")
+    if _share(share) and _share(lo) and lo > share + 1e-9:
+        out.append(f"{where}: the lower bound {lo} is above the share {share}")
+    if _share(share) and _share(hi) and hi < share - 1e-9:
+        out.append(f"{where}: the upper bound {hi} is below the share {share}")
+    if not (_share(bar) and bar > 0):
+        out.append(f"{where}.bar: the preregistered coverage bar, such as 0.40")
+    verdict = c.get("verdict")
+    if verdict not in COVERAGE_VERDICTS:
+        out.append(f"{where}.verdict: one of {', '.join(COVERAGE_VERDICTS)}")
+    elif verdict == "COVERED" and _share(lo) and _share(bar) and lo < bar:
+        out.append(f"{where}: COVERED needs the lower bound {lo} at or above the bar {bar}")
+    elif verdict == "NOT COVERED" and _share(lo) and _share(bar) and lo >= bar:
+        out.append(f"{where}: NOT COVERED, but the lower bound {lo} clears the bar {bar}")
+    if not (isinstance(c.get("what"), str) and c["what"].strip()):
+        out.append(f"{where}.what: what covered means, in words")
+    return c
+
+
+def _single(s, where, n_selected, n_scorable, out):
+    """The same stratum scored against one scan alone, beside a two-scan claim."""
+    if not _keys(s, SINGLE_KEYS, where, out):
+        return
+    if s.get("verdict") not in VERDICTS:
+        out.append(f"{where}.verdict: one of {', '.join(VERDICTS)}")
+    if not isinstance(s.get("instrument_limited"), bool):
+        out.append(f"{where}.instrument_limited: true or false")
+    if not (isinstance(s.get("why"), str) and s["why"].strip()):
+        out.append(f"{where}.why: the verdict's reason in words")
+    slot = s.get("within_1")
+    if slot is None:
+        out.append(f"{where}.within_1: the share within 1 voxel against the one scan")
+    else:
+        slot = _slot(slot, f"{where}.within_1", out)
+        if slot:
+            want = {"itt": n_selected, "scorable": n_scorable}.get(slot.get("basis"))
+            if slot.get("basis") == "covered":
+                out.append(f"{where}.within_1.basis: itt or scorable (one scan has no coverage)")
+            elif want is not None and slot.get("n") != want:
+                out.append(f"{where}.within_1: n is {slot.get('n')}, but its basis {slot.get('basis')} has {want} sites")
+    controls = s.get("controls")
+    if not isinstance(controls, list):
+        out.append(f"{where}.controls: a list")
+    else:
+        for i, c in enumerate(controls):
+            _control(c, f"{where}.controls[{i}]", out)
+
+
+def _stratum(s, where, claim, out, bar=None):
     if not _keys(s, STRATUM_KEYS, where, out):
         return
     sid = s.get("id")
@@ -240,19 +313,36 @@ def _stratum(s, where, claim, out):
     if not (_int(sel) and _int(sco) and 0 <= sco <= sel):
         out.append(f"{where}: n_selected and n_scorable are counts with n_scorable <= n_selected")
         sel = sco = None
+    cov = None
+    if s.get("coverage") is not None:
+        cov = _coverage(s.get("coverage"), f"{where}.coverage", sel, out)
+        if cov and cov.get("verdict") != "COVERED" and s.get("verdict") == "PASS":
+            out.append(f"{where}: a PASS needs the coverage verdict COVERED")
+    if s.get("single_truth") is not None:
+        _single(s.get("single_truth"), f"{where}.single_truth", sel, sco, out)
     within = s.get("within")
     if not isinstance(within, dict) or set(within) != set(TOLERANCES):
         out.append(f"{where}.within: exactly the slots {', '.join(TOLERANCES)} (null for one not measured)")
         within = {}
     for tol in TOLERANCES:
         slot = _slot(within.get(tol), f"{where}.within.{tol}", out)
-        if slot and sel is not None:
+        if slot and slot.get("basis") == "covered":
+            if not cov:
+                out.append(f"{where}.within.{tol}: basis covered needs the stratum's coverage")
+            elif slot.get("n") != cov.get("k"):
+                out.append(f"{where}.within.{tol}: n is {slot.get('n')}, but {cov.get('k')} sites are covered")
+        elif slot and sel is not None:
             want = sel if slot.get("basis") == "itt" else sco
             if slot.get("n") != want:
                 out.append(f"{where}.within.{tol}: n is {slot.get('n')}, but its basis {slot.get('basis')} "
                            f"has {want} sites")
     if claim == "measured" and s.get("primary") and within.get("1") is None:
         out.append(f"{where}: a measured scroll's primary stratum reports the share within 1 voxel")
+    one = within.get("1")
+    if s.get("verdict") == "PASS" and _share(bar):
+        lo = one.get("lower") if isinstance(one, dict) else None
+        if not _share(lo) or lo < bar - 1e-9:
+            out.append(f"{where}: a PASS needs a lower bound within 1 voxel at or above the bar {bar}")
     med = s.get("median_abs")
     if med is not None and not (_num(med) and med >= 0):
         out.append(f"{where}.median_abs: a nonnegative number, or null")
@@ -266,7 +356,7 @@ def _stratum(s, where, claim, out):
             _control(c, f"{where}.controls[{i}]", out)
 
 
-def _scroll(sc, i, eligible, out):
+def _scroll(sc, i, eligible, out, bar=None):
     where = f"scrolls[{i}]"
     if not _keys(sc, SCROLL_KEYS, where, out):
         return None
@@ -341,8 +431,35 @@ def _scroll(sc, i, eligible, out):
     ids = [s.get("id") for s in strata if isinstance(s, dict)]
     if len(ids) != len(set(ids)):
         out.append(f"{where}.strata: a stratum appears twice")
+    two_scan = any(isinstance(s, dict) and s.get("coverage") is not None for s in strata)
+    scope = sc.get("scope")
+    if scope is not None and not (isinstance(scope, str) and scope.strip()):
+        out.append(f"{where}.scope: what exact means for this scroll, in words, or null")
+    if two_scan:
+        if not (isinstance(scope, str) and scope.strip()):
+            out.append(f"{where}: a two-scan test states in scope what exact means here")
+        t2 = sc.get("second_truth")
+        if not (_keys(t2, TRUTH_KEYS, f"{where}.second_truth", out) and _num(t2.get("voxel_um")) and t2["voxel_um"] > 0):
+            out.append(f"{where}.second_truth: the second scan of a two-scan test, with its voxel size in um")
+    elif sc.get("second_truth") is not None:
+        out.append(f"{where}.second_truth: only a two-scan test names a second scan")
+    earlier = sc.get("earlier", [])
+    if not isinstance(earlier, list):
+        out.append(f"{where}.earlier: a list (empty when no earlier test)")
+        earlier = []
+    for k, e in enumerate(earlier):
+        w = f"{where}.earlier[{k}]"
+        if not _keys(e, EARLIER_KEYS, w, out):
+            continue
+        pre = e.get("prereg")
+        if not (_keys(pre, PREREG_KEYS, f"{w}.prereg", out) and isinstance(pre.get("sha256"), str)
+                and HEX64.fullmatch(pre["sha256"]) and isinstance(pre.get("frozen"), str) and STAMP.fullmatch(pre["frozen"])):
+            out.append(f"{w}.prereg: the earlier test's 64 hex digest and UTC freeze time")
+        for key in ("scope", "summary"):
+            if not (isinstance(e.get(key), str) and e[key].strip()):
+                out.append(f"{w}.{key}: words")
     for j, s in enumerate(strata):
-        _stratum(s, f"{where}.strata[{j}]", claim, out)
+        _stratum(s, f"{where}.strata[{j}]", claim, out, bar)
         if void and isinstance(s, dict) and s.get("verdict") != "VOID":
             out.append(f"{where}.strata[{j}]: the test is void, so every stratum's verdict is VOID")
     return name
@@ -468,7 +585,7 @@ def check(doc, deploy=False, base=None):
         out.append("scrolls: at least one scroll")
         scrolls = []
     for i, sc in enumerate(scrolls):
-        names.append(_scroll(sc, i, eligible, out))
+        names.append(_scroll(sc, i, eligible, out, rule.get("bar") if isinstance(rule, dict) else None))
     if len([n for n in names if n]) != len({n for n in names if n}):
         out.append("scrolls: a scroll appears twice")
     show = doc.get("showcase", [])
@@ -588,13 +705,13 @@ def fixture(out_dir):
              "certificate": None,
              "vertices": {"released": 120000, "held_back": 18000, "by_code": {"0": 80000, "2": 38800, "1": 1200}},
              "void": [],
-             "strata": [stratum("C0", True, "PASS", "every leg holds", 60, 58, 41, 56, 58, 0.856, 0.1, 0.45, 11,
+             "strata": [stratum("C0", True, "PASS", "every leg holds", 60, 59, 41, 59, 59, 0.9218, 0.1, 0.45, 11,
                                 0.22),
                         stratum("C2", False, "NOT SHOWN", "the lower bound is under the bar", 60, 55, 22, 44, 52,
                                 0.632, 0.3, 0.9, 23, 0.25),
                         stratum("C1", False, "UNANSWERABLE", "12 selected sites, under the minimum of 30", 12, 12, 2,
                                 5, 9, None, 0.9, 1.6, 31, 0.21),
-                        stratum("C0L", False, "PASS", "every leg holds", 60, 59, 38, 55, 59, 0.835, 0.2, 0.55, 41,
+                        stratum("C0L", False, "PASS", "every leg holds", 60, 59, 38, 59, 59, 0.9218, 0.2, 0.55, 41,
                                 0.24)]},
             {"scroll": "SYNTH-B", "claim": "certified", "why_not_shown": None,
              "label_scan": {"volume_id": "synthetic-label-scan-b", "voxel_um": 7.9},
