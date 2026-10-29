@@ -118,6 +118,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **fiber evidence**: Fiber Checker's per-patch score, from 0.5 to 1: how strongly its judge prefers the CT rendered along a traced surface over a copy with the same texture but its strands scrambled. Near 1 where fibers show, near 0.5 where none do. Model output ([page](docs/tools/fibercheck.md)).
 
+**finesnap**: `kit finesnap`, which snaps a surface label traced on a coarse scan onto the recto face seen in a finer scan of the same scroll, registered per site along the normal ([page](docs/tools/finesnap.md)).
+
 **fine-tune**: A model made by further training an existing model on new data.
 
 **First Letters prize**: A Vesuvius Challenge prize for the first letters found in a given scroll. Current eligible scrolls are listed by `python -m kit prizes`.
@@ -211,6 +213,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 ## L
 
 **label set**: One dated folder of a segment's published ink labels on the open-data bucket, `SCROLL/segments/SEGMENT/ink-labels/<voxel size>um-volume-<VOLUME>/<date>/`, holding `inklabels.zarr`, `supervision.zarr` and sometimes `validation.zarr`, all drawn on one volume's render. `kit labels` lists them ([`docs/tools/labels.md`](docs/tools/labels.md)).
+
+**labelsnap**: `kit labelsnap`, which moves each vertex of a tifxyz surface label along its normal onto the recto face of its papyrus band in the label's own CT, with a confidence and an abstain mask ([page](docs/tools/labelsnap.md)).
 
 **label smoothing**: Training with softened targets, so ink and background labels are not exactly 1 and 0.
 
@@ -333,6 +337,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 **Reader v2**: A community fine-tune of `ink_9um` by Domenico Russo. It is AutoPipeline's default ink reader.
 
 **recto**: The written inner side of a roll, where the fibers run horizontally.
+
+**recto face**: The side of a papyrus band in CT that faces the scroll's axis, where a surface label should sit; `kit labelsnap` and `kit finesnap` find it as the band's edge toward the axis along each vertex normal.
 
 **relative windings**: Points along a line from a scroll's core, each labeled with how many windings it lies outward of the first, without saying which absolute winding that is. villa's spiral fit reads them as a `relative_windings.json` point collection; `kit windlabel-box` makes them and `kit windconsistency` checks them.
 

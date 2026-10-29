@@ -1,0 +1,34 @@
+{
+ "about": "Numbers behind label-snap-within1.svg and label-snap-community.svg, copied from label_snap_checks in docs/results.json (rounded where the release did not already publish them). Model output: geometry, never a reading.",
+ "credit": "Vesuvius Challenge open data, CC BY-NC 4.0 (the scans the tests read); numbers from docs/results.json",
+ "within1": {
+  "claim_label": "Model output: share of surface label vertices within 1 voxel of the recto face of an independent finer scan, fresh sites, each test's rule fixed before it ran",
+  "arms": [
+   {"id": "published", "cls": "s9", "legend": "Published label"},
+   {"id": "community", "cls": "s1", "legend": "Best of seven community snaps"},
+   {"id": "labelsnap", "cls": "s0", "legend": "kit labelsnap (label scan only)"},
+   {"id": "finesnap", "cls": "s3", "legend": "kit finesnap (finer registered scan)"}
+  ],
+  "groups": [
+   {"name": "PHerc0139", "note": "60 sites, 27 Oct", "values": {"published": 23.7, "labelsnap": 79.4, "finesnap": 91.2}},
+   {"name": "PHerc0814", "note": "42 sites, 27 Oct", "values": {"published": 24.2, "labelsnap": 71.0}},
+   {"name": "PHerc0814", "note": "26 sites, 29 Oct", "values": {"published": 18.5, "community": 22.3, "labelsnap": 55.4, "finesnap": 84.8}},
+   {"name": "PHerc0841", "note": "45 sites, 29 Oct", "values": {"published": 19.0, "community": 21.3, "labelsnap": 65.6}}
+  ]
+ },
+ "community": {
+  "claim_label": "Model output: mean distance gained toward a finer scan's recto face over the published label, label-scan voxels, 71 fresh PHerc0814 and PHerc0841 sites pooled, 95 % site bootstrap intervals, rule fixed before the run",
+  "rows": [
+   {"name": "kit labelsnap", "cls": "s0", "mean": 2.153, "lo": 1.821, "hi": 2.507},
+   {"name": "One fixed offset for every vertex (reference)", "cls": "s9", "mean": 0.77, "lo": 0.56, "hi": 0.97},
+   {"name": "vc_objrefine port, thresholds tuned on PHerc0139", "cls": "s1", "mean": 0.26, "lo": -0.01, "hi": 0.48},
+   {"name": "recto-offset r2, no gate", "cls": "s1", "mean": 0.21, "lo": -0.07, "hi": 0.50},
+   {"name": "Nearest peak (surface_placement_audit)", "cls": "s1", "mean": 0.10, "lo": -0.07, "hi": 0.28},
+   {"name": "recto-offset r2, with its gate", "cls": "s1", "mean": 0.02, "lo": -0.19, "hi": 0.23},
+   {"name": "Snap onto a surface prediction (m7)", "cls": "s1", "mean": -0.08, "lo": -0.39, "hi": 0.23},
+   {"name": "RectoRefine midline", "cls": "s1", "mean": -0.41, "lo": -0.52, "hi": -0.30},
+   {"name": "vc_objrefine port, as shipped", "cls": "s1", "mean": -9.72, "lo": -10.71, "hi": -8.76}
+  ],
+  "notes": "The fixed offset moves every vertex by labelsnap's median move (about 1.85 voxels toward the recto), so it shows how much of the gain a single shift gives. Midline and nearest-peak snaps aim at the sheet center by design, so part of their loss is the target, not error."
+ }
+}

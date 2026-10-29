@@ -12124,5 +12124,141 @@
    "verdict": "VOID",
    "why": "gate G1: four neighboring wrap pairs (w003-w004, w009-w010, w010-w011, w012-w013) were 2 voxels apart on 0.95, 0.957, 0.72 and 0.854 of samples against 0.98, leaving 4 seeded wraps of the 6 the rule needs; no trace, control or readout ran; the VOID is about the reference meshes, not any tracer; the region is spent for this test"
   }
+ ],
+ "label_snap_checks": [
+  {
+   "date": "2026-10-25",
+   "tool": "kit labelsnap snap (face snap)",
+   "source": "docs/tools/labelsnap.md",
+   "claim": "Model output: published PHerc0139 surface label vertices snapped onto the recto face of the 9.362 um label scan, scored against the recto face of the independent 1.129 um scan registered per site, on fresh sites, rule fixed before the run; geometry only, never a reading",
+   "sites_scored": 59,
+   "vertices": 444,
+   "endpoint": "mean gain toward the finer scan's recto face along the vertex normal, label-scan voxels, per-site means, site bootstrap 95 % interval",
+   "gain_merged_band_rule": [
+    1.71,
+    1.38,
+    2.07
+   ],
+   "gain_default": [
+    2.37,
+    2.01,
+    2.76
+   ],
+   "controls": "the sham (the snap's move reversed) moved labels away; a random sign gave no gain",
+   "disclosure": "11 of the 59 sites lie on three segments the Snapped Labels release later held back for evaluation; the test ran before that hold and its per-site rows were not kept"
+  },
+  {
+   "date": "2026-10-27",
+   "tool": "kit labelsnap snap (face snap)",
+   "source": "docs/tools/labelsnap.md",
+   "claim": "Model output: published PHerc0814 surface label vertices (12 automatic segments on the 9.362 um scan) snapped onto the recto face, scored against the recto face of the 1.129 um scan registered per site, on 60 fresh sites, rule fixed before the run; geometry only, never a reading",
+   "sites_drawn": 60,
+   "sites_scored": 42,
+   "vertices": 310,
+   "within_1_voxel": {
+    "published": 0.242,
+    "labelsnap": 0.71
+   },
+   "within_2_voxels": {
+    "labelsnap": 0.82
+   },
+   "median_distance_voxels": {
+    "published": 2.32,
+    "labelsnap": 0.45
+   },
+   "gain": [
+    1.78,
+    1.4,
+    2.21
+   ],
+   "controls": {
+    "sham": -2.38,
+    "random_sign": -0.58,
+    "positive_control_2399um_face": 2.4
+   },
+   "merged_band_rule_cost": [
+    0.52,
+    0.32,
+    0.75
+   ],
+   "note": "18 sites fell below the registration floor and were not scored; the merged-band rule's cost made the default drop it"
+  },
+  {
+   "date": "2026-10-27",
+   "tool": "kit finesnap snap (bands finder)",
+   "source": "docs/tools/finesnap.md",
+   "claim": "Model output: PHerc0139 surface label vertices snapped through a per-site registration onto the recto face of the 2.399 um scan, scored against the recto face of the 1.129 um scan registered per site, on 60 fresh sites, rule fixed before the run; geometry only, never a reading",
+   "sites_scored": 60,
+   "vertices": 476,
+   "within_1_voxel": {
+    "published": 0.237,
+    "labelsnap": 0.794,
+    "finesnap": 0.912,
+    "positive_control_2399um_face": 0.903
+   },
+   "within_2_voxels": {
+    "finesnap": 0.93
+   },
+   "median_distance_voxels": {
+    "published": 2.37,
+    "labelsnap": 0.37,
+    "finesnap": 0.24
+   },
+   "gain_finesnap": [
+    2.85,
+    2.43,
+    3.28
+   ],
+   "finesnap_minus_labelsnap": [
+    0.65,
+    0.41,
+    0.93
+   ],
+   "controls": {
+    "sham": -3.12
+   },
+   "limits": "the finder shares the truth's face definition and the truth is chained through the 2.4 um frame; misses concentrate where the 1.129 um band is split (33 % against 6 %); 11 of the 60 sites lie on three segments the Snapped Labels release later held back for evaluation, the test ran before that hold and its per-site rows were not kept"
+  },
+  {
+   "date": "2026-10-29",
+   "tool": "kit labelsnap snap against seven community snaps",
+   "source": "docs/tools/snapped-labels.md",
+   "claim": "Model output: on fresh PHerc0814 sites (1.129 um truth) and PHerc0841 sites (2.403 um truth), mean distance along the published normal to the finer scan's recto face, per site, then pooled; rule fixed before the run; geometry only, never a reading",
+   "sites_scored": {
+    "PHerc0814": 26,
+    "PHerc0841": 45,
+    "pooled": 71
+   },
+   "labelsnap_minus_published": [
+    2.153,
+    1.821,
+    2.507
+   ],
+   "labelsnap_minus_vc_objrefine_tuned": [
+    1.892,
+    1.48,
+    2.349
+   ],
+   "within_1_voxel": {
+    "PHerc0814": {
+     "published": 0.19,
+     "labelsnap": 0.55,
+     "finesnap": 0.85,
+     "best_community": 0.22
+    },
+    "PHerc0841": {
+     "published": 0.19,
+     "labelsnap": 0.66,
+     "best_community": 0.21
+    }
+   },
+   "finesnap_minus_labelsnap_PHerc0814": [
+    0.93,
+    0.53,
+    1.32
+   ],
+   "compared": "vc_objrefine (villa 382e48d35ae8) as shipped and with thresholds tuned on PHerc0139, recto-offset r2 (commit 16bc31f) with and without its gate, surface_placement_audit (villa PR #2147), RectoRefine's midline, a surface prediction snap",
+   "limits": "two scrolls and these sites only; PHerc0814 is held out by site, not by scroll; the planted toward-verso control was weak; midline and nearest-peak snaps aim at the sheet center by design; on PHerc0841 the truth scan is the one the release's finesnap read, so the released PHerc0841 meshes were not scored; one-voxel exactness is not claimed"
+  }
  ]
 }
