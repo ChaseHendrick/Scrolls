@@ -130,14 +130,14 @@
   "labelsnap-moved-published-surface-labels-closer-to-the": {
    "line": 264,
    "sources": {
-    "docs/results.json": "ccdc59ef732b0e0dbe33cd830b6dbad9b73f7a7eb970949e262277f84e757fe0",
+    "docs/results.json": "0f559df73c22b99671e98f3c98139f9358a8689fa677fd14367a51e4a8425567",
     "docs/tools/snapped-labels.md": "3da92dca823c53779149f1aa9f7699e0e9ee7533b5767956b1c4bae539b977ed"
    }
   },
   "labelsnap-moved-published-surface-labels-closer-to-the-2": {
    "line": 15,
    "sources": {
-    "docs/results.json": "ccdc59ef732b0e0dbe33cd830b6dbad9b73f7a7eb970949e262277f84e757fe0",
+    "docs/results.json": "0f559df73c22b99671e98f3c98139f9358a8689fa677fd14367a51e4a8425567",
     "docs/tools/snapped-labels.md": "3da92dca823c53779149f1aa9f7699e0e9ee7533b5767956b1c4bae539b977ed"
    },
    "doc": "docs/FINDINGS.md"
@@ -181,13 +181,13 @@
   "parting-a-contact-classifier-on-base-dinovol-features": {
    "line": 267,
    "sources": {
-    "docs/logs/2026-10-29-parting-fragment-contact.md": "e646dfd0032e9207037a5bf7c9054477b347b9c9297adaac208c530127bdaecf"
+    "docs/logs/2026-10-29-parting-fragment-contact.md": "2a80ece780e7cabdc65cbfb1a8fef5f73fb514b8cee938a83a2d70c24156582a"
    }
   },
   "parting-a-contact-classifier-on-base-dinovol-features-2": {
    "line": 17,
    "sources": {
-    "docs/logs/2026-10-29-parting-fragment-contact.md": "e646dfd0032e9207037a5bf7c9054477b347b9c9297adaac208c530127bdaecf"
+    "docs/logs/2026-10-29-parting-fragment-contact.md": "2a80ece780e7cabdc65cbfb1a8fef5f73fb514b8cee938a83a2d70c24156582a"
    },
    "doc": "docs/FINDINGS.md"
   },

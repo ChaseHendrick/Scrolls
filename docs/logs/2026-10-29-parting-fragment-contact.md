@@ -1,6 +1,6 @@
-# Parting: telling touching layers apart on a fragment it never saw (29 October 2026)
+# Parting: telling touching layers apart on fragments it never saw (29 October 2026)
 
-**Result (Model output).** Where two papyrus layers lie 3 to 8 voxels apart, Parting told a point on the same layer from a point on the next layer better than the dinovol features it starts from, in a test fixed before any CT of the object was read: touching AUC **0.895** against **0.839** for base dinovol's token cosine, a gain of **+0.056** (2.5 % bootstrap bound **+0.037**), on 150 touching sites over 5 layer pairs of PHercParis1Fr34. The preregistered bar was a gain of at least +0.05 with its 2.5 % bound above 0, so the test passed. It is the second fragment tried: the first, on a fragment of PHerc1667, missed the bar (+0.045). Where the layers are fused, under 3 voxels apart, it adds little.
+**Result (Model output).** Where two papyrus layers lie 3 to 8 voxels apart, Parting told a point on the same layer from a point on the next layer better than the dinovol features it starts from, in a test fixed before any CT of the object was read: touching AUC **0.895** against **0.839** for base dinovol's token cosine, a gain of **+0.056** (2.5 % bootstrap bound **+0.037**), on 150 touching sites over 5 layer pairs of PHercParis1Fr34. The preregistered bar was a gain of at least +0.05 with its 2.5 % bound above 0, so the test passed. It is one pass in three fragments tried: the first, on a fragment of PHerc1667, missed the bar (+0.045), and the third, on a fragment of PHerc. Paris 2, missed it too (+0.010), where base dinovol alone already scored 0.965. Where the layers are fused, under 3 voxels apart, it adds little.
 
 Parting reads model features of the scan; it does not read ink or text, and nothing here is a reading of a scroll.
 
@@ -37,11 +37,15 @@ Reported, not judged: the gain was positive on all five pairs (+0.026, +0.071, +
 
 The same model, rule and bar were first tried on PHerc1667Cr1Fr3 (Frag5 in the open data), a crust fragment of PHerc1667, on 29 October 2026: 0.960 against base dinovol's 0.915 on 203 touching sites over 7 pairs, a gain of +0.045 (bound +0.020), **FAIL** by the margin. That result stands and was not rerun. Frag3 was then tested once as the second object tried, with nothing in the method changed. One control-validity gate changed before the freeze: the single shuffled-label check became the mean of 1,000 permutations, because one permutation voids a sound run of this size by chance about 15 % of the time. Under the old single check Parting's run also passes (0.541, inside 0.45 to 0.55).
 
+## The later miss, disclosed
+
+After the Frag3 pass, the same frozen model, comparator, rule and bar were tested once on a third fragment, PHercParis2Fr143 (Frag2 in the open data, fragment 143 of PHerc. Paris 2), frozen on 29 October 2026 before any CT value was read and read once about 23:20 UTC: **FAIL**. Parting scored a touching AUC of 0.9754 (2.5 % bound 0.9615) against 0.9651 for base dinovol's token cosine, a gain of +0.0103 (2.5 % bound -0.0005), on 270 touching sites over 9 layer pairs. The controls held: the shuffled-label mean was 0.50057 and the pipeline check, base dinovol on 135 apart sites, 0.9988. Per pair the gain ran from -0.029 to +0.030. The Job cost 0.64 USD. Interpretation: base dinovol was already close to a perfect score there, so even a perfect Parting score could have gained only +0.035, under the +0.05 bar. That result stands and is not rerun.
+
 ## Limits
 
 - **Fused layers are not solved.** On 38 fused sites (gaps under 3 voxels) Parting scored 0.633 against 0.611 for base dinovol, a gain of +0.022, not judged. Only 3 touching sites had both gaps at 4 voxels or less, too few to read.
-- **One pass in two fragments.** Five layer pairs is the floor the rule allows, so the bound is coarse. Before the read we put the chance of a PASS at about 0.3 to 0.4 (Interpretation).
-- **Room for a gain.** Base dinovol was weaker here than on Frag5 (0.839 against 0.915), which left more room for a gain (Interpretation).
+- **One pass in three fragments.** One PASS (Frag3) and two misses (Frag5 by the margin, Frag2 with base dinovol near its ceiling). On Frag3, five layer pairs is the floor the rule allows, so the bound is coarse. Before the read we put the chance of a PASS at about 0.3 to 0.4 (Interpretation).
+- **Room for a gain.** Base dinovol was weaker on Frag3 than on Frag5 and Frag2 (0.839 against 0.915 and 0.965), which left more room for a gain; the bar of +0.05 can only be met where dinovol leaves that much room (Interpretation).
 - **Geometry reference.** A reference that reads only the traced normal at `a`, how far each candidate sits off `a`'s sheet, scored 0.972 on these sites. It uses no CT, and on a flat stack the normal alone is a strong cue (Interpretation). The test asks whether Parting adds to dinovol's image features, not whether it beats the traced geometry.
 - **A resampled scan is not a native 7.91 um scan.** Both arms saw the same windows, so the comparison is fair, but the absolute AUCs may differ on a native scan.
 - **Team traces.** Layer segments can hold local jumps that geometry cannot find; the crossing rule removes only places where two traces actually cross.

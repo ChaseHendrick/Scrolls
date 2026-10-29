@@ -12267,7 +12267,7 @@
    "tool": "Parting (private contact classifier, not released)",
    "source": "docs/logs/2026-10-29-parting-fragment-contact.md",
    "claim": "Model output: Parting, a contact classifier on base dinovol (scrollprize/dinovol_ps8_9.6um_101626) token, CT and normal-profile features trained on PHerc0139 and PHerc0172 hand-traced windings, against base dinovol's raw token cosine on the same sites, telling a same-layer point from a next-layer point at touching sites (both gaps 3 to 8 voxels) of PHercParis1Fr34 (Frag3), a fragment of PHerc. Paris 1 that neither model saw; truth the team's six layer segments of October 2024; standardized 54 keV 3.24 um volume box-averaged to 7.91 um; rule frozen before any CT value was read, read once",
-   "claim_wording": "touching AUC 0.8952 against 0.8392, gain +0.0560 with 2.5 % bound +0.0368 on 150 sites over 5 layer pairs; second fragment tried, after a FAIL on PHerc1667Cr1Fr3 (+0.045)",
+   "claim_wording": "touching AUC 0.8952 against 0.8392, gain +0.0560 with 2.5 % bound +0.0368 on 150 sites over 5 layer pairs; one pass in three fragments, after a FAIL on PHerc1667Cr1Fr3 (+0.045) and before a FAIL on PHercParis2Fr143 (+0.0103)",
    "verdict": "PASS",
    "rule": "PASS when the touching AUC is at least 0.75, the gain over base dinovol at least 0.05 and the 2.5 % bound of the gain (20,000 resamples of layer pairs, seed 0) above 0; VOID when fewer than 100 touching sites or 5 pairs, base dinovol under 0.85 on apart sites, or the mean AUC of 1,000 shuffled-label permutations outside 0.5 plus or minus 3 standard errors",
    "touching": {
@@ -12322,6 +12322,27 @@
     "delta": 0.045,
     "delta_bound": 0.02,
     "verdict": "FAIL"
+   },
+   "later_attempt": {
+    "object": "PHercParis2Fr143 (Frag2)",
+    "date": "2026-10-29",
+    "sites": 270,
+    "pairs": 9,
+    "apart_sites": 135,
+    "model": 0.9754,
+    "model_bound": 0.9615,
+    "dino_base": 0.9651,
+    "delta": 0.0103,
+    "delta_bound": -0.0005,
+    "permutation_mean": 0.50057,
+    "pipeline_apart_dino_base": 0.9988,
+    "per_pair_delta_range": [
+     -0.029,
+     0.03
+    ],
+    "usd": 0.64,
+    "verdict": "FAIL",
+    "note": "Interpretation: base dinovol near its ceiling, so the largest possible gain was +0.035, under the +0.05 bar"
    }
   }
  ]
