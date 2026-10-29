@@ -78,7 +78,7 @@ VIEWS = {
                       "Challenge blog.",
              "any": [{"sources": ["github", "blog"]},
                      {"sources": ["hf", "zenodo", "journals", "arxiv"], "topics": ["Scroll work"]}]},
-    "builders": {"label": "Contributors and competitors",
+    "builders": {"label": "Contributors",
                  "about": "Things you can use today: new and updated repositories, releases, models, datasets and "
                           "Spaces, package versions, and papers that link their code.",
                  "any": [{"kinds": ["repo", "release", "model", "dataset", "space", "package", "software"]},
@@ -414,9 +414,58 @@ def timeline(f: Filters, items: list[dict]) -> dict:
     return {"bin_seconds": step, "bins": bins}
 
 
+WORK_SIM = 0.80  # two items by one person whose texts are this close in meaning are one piece of work
+
+
+def author(i: dict) -> str:
+    return i.get("who", "").split(",")[0].strip() if i["source"] not in ("pypi", "blog") else ""
+
+
+def top_people(items: list[dict], limit: int = 10) -> list[dict]:
+    """People and organizations ranked by distinct pieces of work, not raw item counts. A person's items are grouped
+    when their texts are close in meaning (cosine >= WORK_SIM, same source), so twenty small related pull requests
+    count as one piece of work; each piece is worth its best score, and the person's total is the sum. Without the
+    meaning model, items from one source on the same day form one piece."""
+    by: dict[str, list[dict]] = {}
+    names: dict[str, str] = {}
+    for i in items:
+        w = author(i)
+        if w:
+            by.setdefault(w.lower(), []).append(i)
+            names.setdefault(w.lower(), w)
+    rows = []
+    for key, its in by.items():
+        n = len(its)
+        parent = list(range(n))
+
+        def root(a):
+            while parent[a] != a:
+                parent[a] = parent[parent[a]]
+                a = parent[a]
+            return a
+        if SEM.ready and n > 1:
+            v = SEM.embed([_vec_text(i) for i in its])
+            sims = v @ v.T
+            for a in range(n):
+                for b in range(a + 1, n):
+                    if sims[a, b] >= WORK_SIM and its[a]["source"] == its[b]["source"]:
+                        parent[root(a)] = root(b)
+        elif n > 1:
+            first: dict = {}
+            for a, i in enumerate(its):
+                parent[a] = first.setdefault((i["source"], i["date"][:10]), a)
+        groups: dict[int, list[dict]] = {}
+        for a in range(n):
+            groups.setdefault(root(a), []).append(its[a])
+        value = sum(max(i["score"] for i in g) for g in groups.values())
+        rows.append({"name": names[key], "value": value, "works": len(groups), "items": n})
+    rows.sort(key=lambda r: (-r["value"], -r["works"], r["name"].lower()))
+    return rows[:limit]
+
+
 def overview(f: Filters) -> dict:
     items = query(f)
-    people = tally(items, lambda i: [i.get("who", "").split(",")[0].strip()] if i["source"] not in ("pypi", "blog") else [])
+    people = top_people(items)
     hist = [0] * 20
     for i in items:
         hist[min(19, i["score"] // 5)] += 1
@@ -430,7 +479,10 @@ def overview(f: Filters) -> dict:
             "medium": sum(1 for i in items if i["band"] == "medium"),
             "by_source": tally(items, lambda i: [i["source"]]), "by_band": tally(items, lambda i: [i["band"]]),
             "by_topic": tally(items, lambda i: i["topics"]), "by_kind": tally(items, lambda i: [i["kind"]]),
-            "topic_source": matrix, "score_hist": hist, "top_people": dict(list(people.items())[:10]),
+            "topic_source": matrix, "score_hist": hist, "top_people": {p["name"]: p["value"] for p in people},
+            "people": people,
+            "community": {"villa_merged": sum(1 for i in items if i["kind"] == "pr" and i.get("state") == "merged"),
+                          "new_scroll_repos": sum(1 for i in items if i.get("new_repo") and "Scroll work" in i["topics"])},
             "with_code": sum(1 for i in items if i.get("code")),
             "new_repos": sum(1 for i in items if i.get("new_repo")),
             "lifted_by_meaning": sum(1 for i in items if i.get("semantic") is not None and i["score"] > i["keyword"]),

@@ -26,7 +26,7 @@ Work that could help read the scrolls appears in many places: arXiv, GitHub, Hug
 
 Each item gets two scores. The keyword score adds points for scroll terms (Vesuvius, Herculaneum, PHerc, papyrus, Volume Cartographer and similar) and for terms in eight topics (sheets and surfaces, ink and imaging, fibers and tracing, compression and storage, registration, 3D encoders, text and reading, speed and scale), and every item shows which terms gave which points. The meaning score comes from a small sentence-embedding model run on the Space's CPU, which compares the item with sentences that describe the work the scrolls need; it catches items that use none of the keywords. The final score is the higher of the keyword score and a blend of both, so meaning alone can lift an item to medium but never to high.
 
-The page shows the window you pick (1 minute to 30 days, default 1 day), by publish or update time or by when the radar first found the item, with charts (items over time by source, topics, the score histogram, sources, a topic by source grid and the most active people), a briefing of the strongest items per topic, and three reader views: researchers, the Challenge team, and contributors and competitors. Stars, hides and the last visit stay in your own browser.
+The page shows the window you pick (1 minute to 30 days, default 1 day), by publish or update time or by when the radar first found the item, with charts (items over time by source, topics, the score histogram, sources, a topic by source grid and the top contributors, ranked by distinct pieces of work so many small related items count as one), a briefing of the strongest items per topic, and three reader views: researchers, the Challenge team, and contributors. The list opens on the newest items, 10 per page (10, 20, 50 or 100), with sources, topics, relevance and browser-only toggles in four dropdowns and the active filters shown as removable pills. Stars, hides and the last visit stay in your own browser.
 
 A score is a triage aid. It says an item may be worth reading, not that it is useful or correct.
 
@@ -65,7 +65,7 @@ Claim label: Model output (relevance scores, topics by meaning and similar items
 
 ### The Space
 
-[huggingface.co/spaces/SharpMeow/vesuvius-radar](https://huggingface.co/spaces/SharpMeow/vesuvius-radar): Radar (KPIs, charts, filters and the list in pages of 20; each item opens "Why this score" and "More like this"), Briefing, Sources (each source's last and next check, with Check now), API and MCP (the Connect your tool panel), How it works. Themes: Auto, Light, Dark and Vesuvius. URL parameters mirror the API filters (`since`, `by`, `view`, `q`, `sources`, `topics`, `bands`, `min`), so a filtered page can be shared as a link.
+[huggingface.co/spaces/SharpMeow/vesuvius-radar](https://huggingface.co/spaces/SharpMeow/vesuvius-radar): Radar (KPIs, charts, filters and the list, newest first, in pages of 10, 20, 50 or 100; each item opens "Why this score" and "More like this"), Briefing, Sources (each source's last and next check, with Check now), API and MCP (the Connect your tool panel), How it works. Themes: Auto, Light, Dark and Vesuvius. URL parameters mirror the API filters (`since`, `by`, `view`, `q`, `sources`, `topics`, `bands`, `min`, plus `sort` and `per` for the page), so a filtered page can be shared as a link.
 
 ### HTTP API
 

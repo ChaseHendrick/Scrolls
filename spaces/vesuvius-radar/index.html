@@ -183,38 +183,48 @@
       <div id="chMatrix" class="plot"></div>
     </figure>
     <figure class="card chart half">
-      <figcaption><div><h2>Most active</h2><p>People, labs and organizations with the most items in view.</p></div></figcaption>
+      <figcaption><div><h2>Top contributors</h2><p>Ranked by distinct pieces of work, each worth its best score: many small related items count as one.</p></div></figcaption>
       <div id="chPeople" class="plot"></div>
     </figure>
   </section>
 
   <section class="card filters" id="filters" aria-label="Filters">
-    <div class="frow">
+    <div class="frow ftop">
       <label class="search"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="9" cy="9" r="5.5" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="m13.2 13.2 3.6 3.6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
-        <input id="q" type="search" placeholder="Search titles, summaries, authors, terms" autocomplete="off" aria-label="Search"></label>
-      <label class="toggle" title="Rank by closeness in meaning to your words, using sentence embeddings"><input type="checkbox" id="meaning"><span>By meaning</span></label>
-      <label class="field inline"><span>Sort</span>
-        <select id="sort"><option value="score">Most relevant</option><option value="date">Newest</option><option value="popularity">Stars, likes and upvotes</option></select></label>
-      <label class="field inline range"><span>Min score <b id="minOut">20</b></span>
-        <input id="min" type="range" min="0" max="90" step="5" value="20" aria-label="Minimum score"></label>
+        <input id="q" type="search" placeholder="Search titles, summaries, authors, terms" autocomplete="off" aria-label="Search">
+        <span class="mtoggle" title="Rank by closeness in meaning to your words, using sentence embeddings"><input type="checkbox" id="meaning" aria-label="Search by meaning"><label for="meaning">By meaning</label></span></label>
+      <label class="field inline sortf"><span>Sort</span>
+        <span class="select-wrap"><select id="sort"><option value="date">Newest</option><option value="score">Most relevant</option><option value="popularity">Stars, likes and upvotes</option></select></span></label>
     </div>
-    <div class="frow chips-row">
-      <div class="chipset" id="fSources" aria-label="Sources"></div>
+    <div class="frow fbar" id="fbar">
+      <details class="dd" id="ddSources"><summary class="ddbtn"><span class="ddl">Sources</span><span class="ddv" id="vSources"></span></summary>
+        <div class="ddpanel"><div class="opts" id="fSources" role="group" aria-label="Sources"></div></div></details>
+      <details class="dd" id="ddTopics"><summary class="ddbtn"><span class="ddl">Topics</span><span class="ddv" id="vTopics"></span></summary>
+        <div class="ddpanel"><div class="opts" id="fTopics" role="group" aria-label="Topics"></div></div></details>
+      <details class="dd" id="ddRel"><summary class="ddbtn"><span class="ddl">Relevance</span><span class="ddv" id="vRel"></span></summary>
+        <div class="ddpanel">
+          <div class="opts" id="fBands" role="group" aria-label="Bands"></div>
+          <label class="range-row"><span>Minimum score <b id="minOut">20</b></span>
+            <input id="min" type="range" min="0" max="90" step="5" value="20" aria-label="Minimum score"></label>
+        </div></details>
+      <details class="dd" id="ddMore"><summary class="ddbtn"><span class="ddl">More</span><span class="ddv" id="vMore"></span></summary>
+        <div class="ddpanel"><div class="opts" id="fToggles" role="group" aria-label="Show"></div></div></details>
+      <span class="grow"></span>
+      <button class="btn ghost" id="reset" type="button" hidden>Clear filters</button>
     </div>
-    <div class="frow chips-row">
-      <div class="chipset" id="fBands" aria-label="Bands"></div>
-      <span class="sep" aria-hidden="true"></span>
-      <div class="chipset" id="fToggles" aria-label="Show"></div>
-    </div>
-    <div class="frow chips-row"><div class="chipset" id="fTopics" aria-label="Topics"></div></div>
+    <div class="pills" id="pills" aria-label="Active filters" hidden></div>
     <div class="frow foot">
       <span id="count" class="count" aria-live="polite"></span>
       <span class="grow"></span>
-      <button class="btn ghost" id="reset" type="button">Reset filters</button>
-      <button class="btn ghost" id="shareBtn" type="button">Copy link to this view</button>
-      <a class="btn ghost" id="dlCsv" href="api/export.csv">CSV</a>
-      <a class="btn ghost" id="dlJson" href="api/items" target="_blank" rel="noopener">JSON</a>
-      <a class="btn ghost" id="dlRss" href="feed.xml" target="_blank" rel="noopener">RSS</a>
+      <label class="field inline perf"><span>Per page</span>
+        <span class="select-wrap"><select id="per"><option value="10">10</option><option value="20">20</option><option value="50">50</option><option value="100">100</option></select></span></label>
+      <details class="dd right" id="ddShare"><summary class="ddbtn"><span class="ddl">Share and export</span></summary>
+        <div class="ddpanel menu">
+          <button class="mitem" id="shareBtn" type="button">Copy link to this view</button>
+          <a class="mitem" id="dlCsv" href="api/export.csv">Download CSV</a>
+          <a class="mitem" id="dlJson" href="api/items" target="_blank" rel="noopener">Open as JSON</a>
+          <a class="mitem" id="dlRss" href="feed.xml" target="_blank" rel="noopener">RSS feed</a>
+        </div></details>
     </div>
   </section>
 
@@ -371,7 +381,7 @@ hits = get("/api/items", since="30d", q="tracing papyrus fibers", by_meaning="tr
       <ul>
         <li><b>Researchers</b> see new papers and methods in the areas the scrolls need: sheet and surface segmentation, ink detection in X-ray CT, fiber tracing, registration, compression of huge volumes, 3D encoders and reading damaged Greek and Latin text.</li>
         <li><b>The Challenge team</b> sees what the community shipped and said about the scrolls: villa pull requests, issues and releases, new repositories, Hugging Face uploads, Zenodo records and blog posts.</li>
-        <li><b>Contributors and competitors</b> see what they can use today: repositories, releases, models, datasets, Spaces, package versions and papers that link their code.</li>
+        <li><b>Contributors</b> see what they can use today: repositories, releases, models, datasets, Spaces, package versions and papers that link their code.</li>
       </ul>
       <h2>What the collector reads</h2>
       <p>Only public pages and APIs, logged out, on a schedule per source (the Sources tab shows when each last ran). It keeps 30 days, so changing the lookback is instant.</p>
@@ -396,6 +406,7 @@ hits = get("/api/items", since="30d", q="tracing papyrus fibers", by_meaning="tr
 </div>
 
 <div class="tip" id="tip" role="tooltip" hidden></div>
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
 <script src="static/app.js"></script>
 </body>
 </html>

@@ -239,6 +239,29 @@ class AppTest(unittest.TestCase):
         c = self.get("/api/counts").json()["lookbacks"]
         self.assertEqual((c["1m"], c["5m"], c["1d"], c["30d"]), (0, 1, 2, 4))
 
+    def test_top_people_count_pieces_of_work(self):
+        # Without the meaning model, one person's items from one source on one day are one piece of work, so many small
+        # pull requests on one day do not outrank someone with two separate pieces.
+        day = "2026-10-28T1"
+        many = [{"who": "busy", "source": "github", "kind": "pr", "date": f"{day}{k % 10}:00:00Z", "score": 30} for k in range(9)]
+        two = [{"who": "Builder", "source": "github", "kind": "repo", "date": "2026-10-27T10:00:00Z", "score": 80},
+               {"who": "builder", "source": "hf", "kind": "model", "date": "2026-10-28T10:00:00Z", "score": 70}]
+        rows = app.top_people(many + two + [{"who": "pkg", "source": "pypi", "kind": "package", "date": day + "0:00:00Z", "score": 90}])
+        self.assertEqual([r["name"] for r in rows], ["Builder", "busy"])  # names merge across case; packages have no author
+        self.assertEqual((rows[0]["works"], rows[0]["items"], rows[0]["value"]), (2, 2, 150))
+        self.assertEqual((rows[1]["works"], rows[1]["items"], rows[1]["value"]), (1, 9, 30))
+        o = self.get("/api/overview?since=30d").json()
+        self.assertEqual(set(o["community"]), {"villa_merged", "new_scroll_repos"})
+        self.assertEqual(list(o["top_people"]), [r["name"] for r in o["people"]])
+
+    def test_builders_view_is_called_contributors(self):
+        self.assertEqual(self.get("/api/views").json()["builders"]["label"], "Contributors")
+        page = (HERE / "index.html").read_text()
+        self.assertNotIn("competitor", page.lower())
+        js = (HERE / "static" / "app.js").read_text()
+        self.assertIn('sort: "date"', js)  # the page's list opens on Newest
+        self.assertIn("PER = [10, 20, 50, 100]", js)
+
     def test_item_csv_feed_docs(self):
         it = self.get("/api/item?id=arxiv:1").json()
         self.assertEqual(it["similar"], [])  # no model in tests

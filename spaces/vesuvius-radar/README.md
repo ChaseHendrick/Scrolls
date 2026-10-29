@@ -28,7 +28,7 @@ public sources and scored for relevance. Open to everyone, logged in or not; it 
   (new versions of the libraries the work uses), Zenodo, Crossref journals and the Vesuvius Challenge blog.
 - **Lookback:** 1 minute to 30 days (default 1 day), by publish or update time or by when the radar found an item.
 - **Views:** researchers (papers and methods), the Challenge team (community activity about the scrolls), and
-  contributors and competitors (tools, models, data, releases and papers with code).
+  contributors (tools, models, data, releases and papers with code).
 - **Scores:** keyword matches with a per-term breakdown, plus a sentence-embedding model (BAAI/bge-small-en-v1.5)
   that scores meaning, finds "more like this" and searches by meaning.
 - **For tools:** a JSON API (`/api/items`, `/api/overview`, `/api/briefing`, `/api/sources`; OpenAPI at `/docs`),

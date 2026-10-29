@@ -254,30 +254,107 @@ select { padding-right: 28px; }
 .legend span { display: inline-flex; align-items: center; gap: 6px; }
 .legend i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
 
-/* Filters */
-.filters { display: grid; gap: 14px; }
-.frow { display: flex; gap: 12px 18px; align-items: center; flex-wrap: wrap; }
-.search { flex: 1 1 300px; display: flex; align-items: center; gap: 8px; border: 1px solid var(--border-strong); background: var(--raised);
-  border-radius: 11px; padding: 0 12px; color: var(--muted); }
+/* Filters: one search row, one row of dropdowns, pills for what is on, then the count */
+.filters { display: grid; gap: 12px; }
+.filters > * { min-width: 0; }
+.filters select { appearance: none; -webkit-appearance: none; }
+.frow { display: flex; gap: 10px 14px; align-items: center; flex-wrap: wrap; }
+.search { flex: 1 1 260px; display: flex; align-items: center; gap: 8px; border: 1px solid var(--border-strong); background: var(--raised);
+  border-radius: 11px; padding: 0 6px 0 12px; color: var(--muted); min-width: 0; }
 .search:focus-within { border-color: var(--accent); }
 .search svg { width: 17px; height: 17px; flex: none; }
-.search input { border: 0; background: transparent; padding: 10px 0; flex: 1; outline: none; }
-.toggle { display: inline-flex; align-items: center; gap: 8px; font-size: 13.5px; color: var(--fg2); cursor: pointer; }
-.toggle input { accent-color: var(--accent); width: 16px; height: 16px; margin: 0; }
-.range input { accent-color: var(--accent); width: 140px; }
-.range b { font-family: var(--mono); color: var(--fg); font-weight: 600; display: inline-block; min-width: 2ch; }
-.chips-row { gap: 8px 10px; }
-.chipset { display: flex; flex-wrap: wrap; gap: 7px; }
-.sep { width: 1px; height: 22px; background: var(--border-strong); }
-.fchip { all: unset; cursor: pointer; display: inline-flex; align-items: center; gap: 7px; font-size: 13px; padding: 5px 12px;
-  border-radius: 99px; border: 1px solid var(--border-strong); color: var(--fg2); background: var(--raised); white-space: nowrap; }
-.fchip:hover { border-color: var(--accent); color: var(--fg); }
-.fchip[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent); color: var(--fg); font-weight: 600; }
+.search input { border: 0; background: transparent; padding: 10px 0; flex: 1; outline: none; min-width: 0; }
+.mtoggle { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--fg2); padding: 4px 10px; border-radius: 8px;
+  background: var(--chip); white-space: nowrap; cursor: pointer; }
+.mtoggle label { cursor: pointer; }
+@media (max-width: 480px) { .mtoggle label { font-size: 0; } .mtoggle label::after { content: "Meaning"; font-size: 12.5px; } }
+.mtoggle input { accent-color: var(--accent); width: 14px; height: 14px; margin: 0; cursor: pointer; }
+.mtoggle:has(input:checked) { background: var(--accent-soft); color: var(--fg); }
+.sortf select, .perf select { padding-top: 8px; padding-bottom: 8px; }
+.dd { position: relative; }
+.ddbtn { list-style: none; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; font-size: 13.5px; padding: 7px 12px 7px 14px;
+  border-radius: 10px; border: 1px solid var(--border-strong); background: var(--raised); color: var(--fg); white-space: nowrap; user-select: none; }
+.ddbtn::-webkit-details-marker { display: none; }
+.ddbtn::after { content: ""; width: 6px; height: 6px; margin: -3px 2px 0 2px; border-right: 2px solid var(--fg2); border-bottom: 2px solid var(--fg2);
+  transform: rotate(45deg); transition: transform .15s; }
+.dd[open] > .ddbtn::after { transform: rotate(225deg); margin-top: 3px; }
+.ddbtn:hover, .dd[open] > .ddbtn { border-color: var(--accent); }
+.dd.active > .ddbtn { background: var(--accent-soft); border-color: var(--accent); }
+.ddl { font-weight: 600; }
+.ddv { color: var(--accent-ink); font-weight: 600; max-width: 22ch; overflow: hidden; text-overflow: ellipsis; }
+.ddv:empty { display: none; }
+.ddpanel { position: absolute; z-index: 20; top: calc(100% + 6px); left: 0; min-width: 250px; width: max-content; max-width: min(360px, calc(100vw - 24px));
+  background: var(--raised); border: 1px solid var(--border-strong); border-radius: 13px; box-shadow: 0 14px 40px rgba(0, 0, 0, .28); padding: 8px;
+  display: grid; gap: 6px; }
+.dd.right .ddpanel { left: auto; right: 0; }
+.opts { display: grid; gap: 2px; }
+.opt { all: unset; box-sizing: border-box; cursor: pointer; display: grid; grid-template-columns: auto auto 1fr auto; align-items: center; gap: 9px;
+  padding: 7px 10px; border-radius: 8px; font-size: 13.5px; color: var(--fg); }
+.opt:not(:has(.dot)) { grid-template-columns: auto 1fr auto; }
+.opt:hover { background: var(--chip); }
+.opt:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.opt .box { width: 15px; height: 15px; border-radius: 4px; border: 1.5px solid var(--border-strong); box-sizing: border-box; position: relative; }
+.opt[aria-checked="true"] .box { background: var(--accent); border-color: var(--accent); }
+.opt[aria-checked="true"] .box::after { content: ""; position: absolute; left: 4px; top: 1px; width: 4px; height: 8px; border: solid var(--on-accent);
+  border-width: 0 2px 2px 0; transform: rotate(45deg); }
+.opt[aria-checked="true"] .ol { font-weight: 600; }
+.opt .n { font-family: var(--mono); font-size: 11.5px; color: var(--muted); }
+.range-row { display: grid; gap: 6px; padding: 8px 10px 6px; border-top: 1px solid var(--border); font-size: 13px; color: var(--fg2); }
+.range-row input { accent-color: var(--accent); width: 100%; }
+.range-row b { font-family: var(--mono); color: var(--fg); }
+.menu { min-width: 210px; gap: 2px; }
+.mitem { all: unset; box-sizing: border-box; cursor: pointer; display: block; padding: 8px 12px; border-radius: 8px; font-size: 13.5px; color: var(--fg); }
+.mitem:hover { background: var(--chip); }
+.mitem:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.pills { display: flex; flex-wrap: wrap; gap: 6px; }
+.pill { all: unset; cursor: pointer; display: inline-flex; align-items: center; gap: 7px; font-size: 12.5px; padding: 4px 6px 4px 11px; border-radius: 99px;
+  background: var(--accent-soft); color: var(--fg); border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent); }
+.pill span { display: inline-grid; place-items: center; width: 18px; height: 18px; border-radius: 50%; font-size: 14px; line-height: 1; color: var(--fg2); }
+.pill:hover span { background: var(--accent); color: var(--on-accent); }
+.pill.clear { background: transparent; border-color: var(--border-strong); color: var(--fg2); padding-right: 11px; }
+.pill:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .fchip .n { font-family: var(--mono); font-size: 11.5px; color: var(--muted); }
-.foot { border-top: 1px solid var(--border); padding-top: 14px; gap: 8px 10px; }
+.foot { border-top: 1px solid var(--border); padding-top: 12px; gap: 8px 12px; }
 .count { font-size: 14px; color: var(--fg2); }
 .count b { color: var(--fg); }
 .grow { flex: 1; }
+.perf > span:first-child, .sortf > span:first-child { font-weight: 600; }
+
+/* Toast and easter eggs */
+.toast { position: fixed; left: 50%; bottom: 22px; z-index: 60; transform: translateX(-50%); max-width: min(560px, calc(100vw - 32px));
+  background: var(--raised); color: var(--fg); border: 1px solid var(--border-strong); border-radius: 14px; padding: 12px 16px; font-size: 14px;
+  line-height: 1.5; box-shadow: 0 16px 44px rgba(0, 0, 0, .3); animation: toastIn .5s ease-out; }
+.toast.out { opacity: 0; transition: opacity .6s; }
+@keyframes toastIn { from { opacity: 0; transform: translate(-50%, 12px); } to { opacity: 1; transform: translate(-50%, 0); } }
+/* the hero's text sits over the drawing; only its own controls take clicks, so the volcano can be clicked */
+.hero-in, .hero-bar, .cta, .hero-stats { pointer-events: none; }
+.hero-in a, .hero-in button, .hero-in .hstat, .hero-in .brand, .hero-in h1, .hero-in .lede, .hero-in .eyebrow, .hero-in .seg { pointer-events: auto; }
+.scene .vhit { pointer-events: none; }
+:root[data-theme="vesuvius"] .scene .vhit { pointer-events: auto; cursor: pointer; }
+.erupting .scene { animation: quake .5s ease-in-out 6; }
+@keyframes quake { 0%, 100% { translate: 0 0; } 25% { translate: -2px 1px; } 50% { translate: 2px -1px; } 75% { translate: -1px -1px; } }
+.scene .e-flash { animation: eflash 9s ease-out forwards; transform-box: fill-box; transform-origin: center; }
+@keyframes eflash { 0% { opacity: 0; transform: scale(.4); } 6% { opacity: 1; transform: scale(1.3); } 40% { opacity: .85; } 100% { opacity: 0; transform: scale(1); } }
+.scene .e-ash { opacity: 0; animation: eash 8.5s ease-out forwards; transform-box: fill-box; transform-origin: center; filter: blur(6px); }
+@keyframes eash { 0% { opacity: 0; transform: translate(0, 0) scale(.2); } 12% { opacity: .85; }
+  70% { opacity: .75; } 100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(2.4); } }
+.scene .e-bomb { opacity: 0; animation: ebomb 2.6s cubic-bezier(.25, .6, .45, 1) forwards; }
+@keyframes ebomb { 0% { opacity: 1; transform: translate(0, 0); } 45% { opacity: 1; transform: translate(calc(var(--dx) * .5), var(--up)); }
+  100% { opacity: 0; transform: translate(var(--dx), var(--down)); } }
+.scene .e-bolt { opacity: 0; animation: ebolt .9s steps(1) forwards; filter: drop-shadow(0 0 6px currentColor); }
+@keyframes ebolt { 0% { opacity: 1; } 15% { opacity: 0; } 30% { opacity: 1; } 55% { opacity: 0; } 100% { opacity: 0; } }
+.scene .e-flow { stroke-dasharray: 100; stroke-dashoffset: 100; animation: eflow 6s ease-in forwards; filter: drop-shadow(0 0 5px #ff6a2b); }
+@keyframes eflow { 0% { stroke-dashoffset: 100; opacity: 1; } 70% { stroke-dashoffset: 0; opacity: 1; } 100% { stroke-dashoffset: 0; opacity: 0; } }
+.scene .e-spark { opacity: 0; animation: espark 2.4s ease-out forwards; }
+@keyframes espark { 0% { opacity: 1; transform: translate(0, 0); } 70% { opacity: 1; } 100% { opacity: 0; transform: translate(var(--dx), calc(var(--dy) + 30px)); } }
+.party .scene .sweep { animation-duration: 1.6s; }
+.plinian .scene .plume { animation: pliny 4.5s ease-in-out 2 alternate; }
+@keyframes pliny { from { transform: scale(1); } to { transform: translate(10px, -24px) scale(1.35); } }
+@media (prefers-reduced-motion: reduce) {
+  .scene .e-ash, .scene .e-bomb, .scene .e-bolt, .scene .e-flow, .scene .e-spark { display: none; }
+  .erupting .scene, .toast { animation: none; }
+  .scene .e-flash { animation: glow 1.2s ease-in-out 2 alternate !important; }
+}
 
 /* Items */
 .list { display: grid; gap: 12px; }
