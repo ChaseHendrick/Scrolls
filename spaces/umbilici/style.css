@@ -117,6 +117,7 @@ body.modal .rail, body.modal .card { overflow: hidden; }
 .src.s-dopico { border-color: rgba(242,245,247,.55); color: #f2f5f7; }
 .src.s-finder { border-color: rgba(255,179,71,.7); color: var(--amber); }
 .src.s-finder-polished { border-color: rgba(198,243,107,.7); color: #c6f36b; }
+.src.s-finder-v2 { border-color: rgba(255,122,89,.7); color: #ff7a59; }
 .grade.lt-good { color: var(--pass); } .grade.lt-caution { color: var(--caution); } .grade.lt-bad { color: var(--flag); }
 
 .ln.off { opacity: .45; }

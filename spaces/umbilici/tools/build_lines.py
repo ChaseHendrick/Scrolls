@@ -19,6 +19,7 @@ SOURCES = {
     "drobkov": {"label": "Alexey Drobkov", "short": "AD"},
     "tauil": {"label": "Abd Elilah (manual)", "short": "AE"},
     "dopico": {"label": "Iyan Dopico", "short": "ID"},
+    "finder-v2": {"label": "Chase Hendrick's Center Finder v2", "short": "C2"},
     "finder-polished": {"label": "Chase Hendrick's Center Finder, polished", "short": "CP"},
     "finder": {"label": "Chase Hendrick's Center Finder", "short": "CF"},
 }
