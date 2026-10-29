@@ -368,6 +368,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **Scrolls Starter**: The local browser introduction to the released tools, with a synthetic controls exercise, setup checks and a Scroll Text Reader command builder. Its portable edition opens without Python and leaves setup unchecked. See [starter](docs/tools/starter.md).
 
+**seam (of a spiral fit)**: The angle at which a spiral fit's winding count steps by one as it goes around the roll. A fit may put it anywhere, so a sheet that crosses it is not an error; `kit.seamswitch` allows for it in seam cells of 10 degrees by 250 voxels ([`docs/tools/seamswitch.md`](docs/tools/seamswitch.md)).
+
 **seating (of a surface)**: Whether a traced surface lies on papyrus rather than in the gap between sheets. A seating check can reject misplaced surfaces, but passing it does not by itself rule out a jump to a neighboring sheet.
 
 **seed (seed point)**: A starting point for tracing a surface. villa's tracer does not hold an explicit seed, so a trace can start on the next winding.
@@ -481,6 +483,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 **winding (wrap, turn, layer, sheet)**: One turn of papyrus around the roll. The terms are used interchangeably. A winding number counts turns from the center.
 
 **winding coverage**: How many times a slice's traced sheet winds around a point: the summed angle its segments subtend there, divided by a full turn, in wraps. Deep inside the roll it is high; off center it drops. `kit windcheck` computes it from villa's normal grids, and `kit axispolish` moves a center line to where it is highest (the coverage polish) ([page](docs/tools/windcheck.md)). A measurement on model-predicted sheets, not a distance to the true axis.
+
+**winding switch (seam-aware)**: A pair of touching vertices of one traced sheet that a spiral fit puts on different windings, once the fit's seam is allowed for. `python -m kit.seamswitch` counts them per 1000 neighbor pairs; a geometry score of a fit, not a reading ([`docs/tools/seamswitch.md`](docs/tools/seamswitch.md)).
 
 **window and level (CT display)**: Display controls for CT brightness and contrast. Window sets the range of values shown, and level sets its midpoint. Changing them changes the view, not the stored scan values.
 

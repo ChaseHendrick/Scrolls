@@ -168,6 +168,7 @@ Under a second; it reads one JSON file.
 
 ## History
 
+- 2026-10-29: stages `windings` (windlabel-box, winding-phase, constraint-gauge E1) and `spiralcheck` (seamswitch, spiral_eval) around `spiral` (on top of `afcc05a`).
 - 2026-10-25: first version, with scroll2ink's `--use` (`fb2170a`).
 
 ## Related
