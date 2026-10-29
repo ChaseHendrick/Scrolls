@@ -32,8 +32,9 @@ INSTRUCTIONS = (
     "Vesuvius Radar keeps collecting new work that could help read the Herculaneum scrolls (the Vesuvius Challenge): "
     "papers from arXiv and journals, GitHub repositories with ScrollPrize/villa pull requests, issues and releases, "
     "Hugging Face models, datasets, Spaces and daily papers, Zenodo records, PyPI versions of the libraries the work "
-    "uses, and the Challenge blog. Every item is scored 0 to 100 (60 or more is high) from keyword matches and from a "
-    "sentence-embedding model's sense of meaning; the item lists both and the terms that matched. Start with briefing "
+    "uses, and the Challenge blog. Every item is scored 0 to 100 (60 or more is high) by a small model fitted to blind "
+    "ratings, which reads keyword matches, a sentence-embedding model's sense of meaning, source and popularity; the "
+    "item lists its keyword and meaning scores and the terms that matched. Start with briefing "
     "or search_items over a lookback (1m to 30d, default 1d). Views: research, team, builders, all. Scores are a "
     "triage aid, not judgment: read the item before acting on it."
 )

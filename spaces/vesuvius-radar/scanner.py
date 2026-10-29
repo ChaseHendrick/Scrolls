@@ -3,7 +3,9 @@
 Every source is public and read logged out; nothing here holds or sends a key. Each collector returns the items it found
 since a given time, each scored 0 to 100 twice: by keywords (the matched terms are kept, so a score can be explained
 term by term) and, when the embedding model is loaded, by meaning (cosine similarity to the anchor sentences in
-radar.json). The final score is the higher of the keyword score and their blend.
+radar.json). When head.json is present, the final score comes from a small learned model on the embedding and a few
+metadata features (Head, trained by train_head.py on blind ratings); otherwise it is the higher of the keyword score and
+their blend. The keyword breakdown is kept either way, to explain a score.
 
   python scanner.py --days 1 --sources arxiv,hf --out items.json     # one check, printed or written as JSON
 """
@@ -16,6 +18,7 @@ import email.utils
 import hashlib
 import html
 import json
+import math
 import os
 import re
 import sys
@@ -300,38 +303,94 @@ class Semantic:
         return out
 
 
-def finish(items: list[dict], scorer: Scorer, sem: Semantic | None, progress=None) -> list[dict]:
-    """Final score, band and topics for collected items: keyword score, plus the meaning score when the model is
-    loaded. Mutates and returns the items."""
+class Head:
+    """Learned relevance: a ridge model on an item's embedding plus a few metadata features, fitted to blind ratings of
+    what each item is worth to scroll work (train_head.py), then mapped to 0..100 by a monotone calibration fitted on
+    held-out predictions. Items without an embedding (no text, or the model not loaded) get the metadata-only head.
+    Numpy only, microseconds per item. `ready` stays False when head.json is missing or unreadable."""
+
+    def __init__(self, path: Path = HERE / "head.json"):
+        self.ready, self.info = False, {}
+        try:
+            self.info = json.loads(path.read_text())
+            self.heads = {}
+            import numpy as np
+            for name in ("full", "meta"):
+                h = self.info[name]
+                self.heads[name] = (np.array(h.get("coef_emb", []), "float32"), np.array(h["coef_meta"], "float32"),
+                                    float(h["intercept"]), np.array(h["cal_x"], "float32"), np.array(h["cal_y"], "float32"))
+            self.ready = True
+        except Exception:  # noqa: BLE001 - no head: the rule score stays the final score
+            self.ready = False
+
+    @staticmethod
+    def features(item: dict, sources: list[str], kinds: list[str]) -> list[float]:
+        """Metadata features, the same in training and at run time. Order: see META_FEATURES, then a one-hot of the
+        source and of the kind (lists stored in head.json; an unseen value is all zeros)."""
+        likes = (item.get("likes") or 0) + (item.get("upvotes") or 0)
+        f = [item.get("keyword", 0) / 100, (item.get("semantic") or 0) / 100, math.log1p(item.get("stars") or 0) / 5,
+             math.log1p(likes) / 5, 1.0 if item.get("new_repo") else 0.0, 1.0 if item.get("code") else 0.0,
+             min(len(item.get("summary") or ""), 900) / 900, 1.0 if item.get("state") == "merged" else 0.0]
+        return f + [1.0 if item.get("source") == s else 0.0 for s in sources] + \
+            [1.0 if item.get("kind") == k else 0.0 for k in kinds]
+
+    def score(self, item: dict, vec=None) -> int:
+        import numpy as np
+        emb, meta, b, cx, cy = self.heads["full" if vec is not None else "meta"]
+        x = np.array(self.features(item, self.info["sources"], self.info["kinds"]), "float32")
+        raw = b + float(meta @ x) + (float(emb @ vec) if vec is not None else 0.0)
+        return int(round(float(np.interp(raw, cx, cy))))
+
+
+META_FEATURES = ["keyword", "semantic", "stars", "likes", "new_repo", "code", "summary_len", "merged"]
+
+
+def finish(items: list[dict], scorer: Scorer, sem: Semantic | None, progress=None, head: Head | None = None) -> list[dict]:
+    """Final score, band and topics for collected items. The rule score is the keyword score, lifted by the meaning
+    score when the model is loaded; it decides which items are kept (`rule`, the gate the training items passed). With
+    a learned head the shown score is the head's (`learned` says which head); otherwise it is the rule score. Mutates and
+    returns the items."""
     # Items without text of their own (package versions) keep their keyword score.
     texts = [i.get("_text") for i in items]
     idx = [k for k, t in enumerate(texts) if t]
     got = sem.score_many([texts[k] for k in idx], progress) if sem and sem.ready and idx else []
-    sems = [{} for _ in items]
+    sems, vecs = [{} for _ in items], [None for _ in items]
     for k, s in zip(idx, got):
         sems[k] = s
+    if got and head and head.ready:
+        for k, v in zip(idx, sem.embed([texts[k] for k in idx])):  # cached by score_many: no second model pass
+            vecs[k] = v
     blend = scorer.cfg["semantic"]["blend"]
     topic_sim = scorer.cfg["semantic"]["topic_sim"]
     floor, high = scorer.cfg["semantic"]["sim_floor"], scorer.cfg["bands"]["high"]
-    for i, s in zip(items, sems):
+    for i, s, v in zip(items, sems, vecs):
         i.pop("_text", None)
         i.pop("_pre", None)
         watched = i.pop("_base", False)
         kw = i["keyword"]
+        capped = None
         if s:
             i.update(s)
             mix = int(round(blend * s["semantic"] + (1 - blend) * kw))
-            i["score"] = max(kw, mix)
+            rule = max(kw, mix)
             # A long text the model reads as unrelated (keyword stuffing, or a language the model does not read) stays
             # below high unless it comes from a watched place (villa) that gives points of its own.
-            if not watched and len(i.get("summary") or "") >= 300 and s["sim"] < floor and i["score"] >= high:
-                i["score"] = high - 1
-                i["capped"] = "the text reads as unrelated to the scrolls' work, so it stays below high"
+            if not watched and len(i.get("summary") or "") >= 300 and s["sim"] < floor and rule >= high:
+                rule = high - 1
+                capped = "the text reads as unrelated to the scrolls' work, so it stays below high"
             if s["sim"] >= topic_sim and s["near"] not in i["topics"]:
                 i["topics"].append(s["near"])
                 i["topics_by_meaning"] = [s["near"]]
         else:
-            i["score"] = kw
+            rule = kw
+        i["rule"] = rule
+        if head and head.ready:
+            i["score"] = max(0, min(100, head.score(i, v)))
+            i["learned"] = "full" if v is not None else "meta"
+        else:
+            i["score"] = rule
+            if capped:
+                i["capped"] = capped
         i["band"] = scorer.band(i["score"])
     return items
 
@@ -753,7 +812,8 @@ def merge_daily_papers(items: list[dict]) -> list[dict]:
 
 
 def collect(source: str, since: dt.datetime, cfg: dict | None = None, scorer: Scorer | None = None,
-            sem: Semantic | None = None, state: dict | None = None, progress=None) -> tuple[list[dict], dict]:
+            sem: Semantic | None = None, state: dict | None = None, progress=None,
+            head: Head | None = None) -> tuple[list[dict], dict]:
     """One source, one check: items kept (score at or above keep_score) and a status row."""
     cfg = cfg or load_config()
     scorer = scorer or Scorer(cfg)
@@ -773,8 +833,8 @@ def collect(source: str, since: dt.datetime, cfg: dict | None = None, scorer: Sc
         if source == "hf":
             items = merge_daily_papers(items)
         prog(f"scoring {len(items)} items")
-        finish(items, scorer, sem, prog)
-        items = [i for i in items if i["score"] >= cfg["keep_score"]]
+        finish(items, scorer, sem, prog, head)
+        items = [i for i in items if i["rule"] >= cfg["keep_score"]]
         bad = any(re.search(r"HTTP \d|Error|rate limited|skipped|timed out", n) for n in info["notes"])
         row.update(state="partial" if bad else "ok", read=info["read"], kept=len(items), notes=info["notes"])
     except Exception as e:  # noqa: BLE001
@@ -794,7 +854,7 @@ def main(argv=None) -> int:
     ap.add_argument("--out", default="-")
     a = ap.parse_args(argv)
     cfg = load_config()
-    scorer, sem = Scorer(cfg), None
+    scorer, sem, head = Scorer(cfg), None, Head()
     if a.semantic:
         sem = Semantic(cfg)
         if not sem.load():
@@ -802,7 +862,7 @@ def main(argv=None) -> int:
     since = utcnow() - dt.timedelta(days=a.days)
     allitems = []
     for s in [x for x in a.sources.split(",") if x]:
-        items, row = collect(s, since, cfg, scorer, sem)
+        items, row = collect(s, since, cfg, scorer, sem, head=head)
         allitems += items
         print(f"{s}: {row['state']} read {row['read']} kept {row['kept']} in {row['ms']} ms; {'; '.join(row['notes'])}", file=sys.stderr)
     allitems.sort(key=lambda i: (-i["score"], i["date"]))

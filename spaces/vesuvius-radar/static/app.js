@@ -19,7 +19,7 @@
     builders: '<svg viewBox="0 0 20 20"><path d="m7 6-4 4 4 4M13 6l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>',
   };
   const VIEW_SHORT = { all: "Everything, from every source", research: "Papers and methods", team: "Community activity about the scrolls", builders: "Tools, models, data, releases" };
-  const PAGE = 20;  // items per page: the list is paged, so the page never grows without end
+  const PER = [10, 20, 50, 100];  // items per page: the list is paged, so the page never grows without end
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
   const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -31,9 +31,14 @@
   };
 
   /* ------------------------------------------------------------ state */
-  const defaults = () => ({ view: "all", since: "1d", by: "date", q: "", meaning: false, sort: "score", min: 20, sources: [], bands: [], topics: [],
+  const defaults = () => ({ view: "all", since: "1d", by: "date", q: "", meaning: false, sort: "date", min: 20, sources: [], bands: [], topics: [],
     code: false, starred: false, showHidden: false, newOnly: false });
-  const S = Object.assign({ f: Object.assign(defaults(), store.get("filters", {})), page: 0, items: [], matched: 0,
+  // Saved filters from before version 2 kept "Most relevant" as the sort; the default is now Newest, so drop the old sort.
+  const saved = store.get("filters", {});
+  if (saved.v !== 2) delete saved.sort;
+  delete saved.v;
+  const perSaved = +store.get("per", 10);
+  const S = Object.assign({ f: Object.assign(defaults(), saved), per: PER.includes(perSaved) ? perSaved : 10, page: 0, items: [], matched: 0,
     stars: new Set(store.get("stars", [])), hide: new Set(store.get("hidden", [])), ov: null, base: null, counts: null, cfg: null,
     open: new Set() });
   // The last visit: items first seen after it get a "new" mark. Updated a little after the page opens.
@@ -54,6 +59,7 @@
     if (p.get("min")) f.min = Math.max(0, Math.min(90, +p.get("min") || 0));
     ["sources", "bands", "topics"].forEach((k) => { if (p.get(k)) f[k] = p.get(k).split(",").filter(Boolean); });
     if (p.get("code") === "1") f.code = true;
+    if (PER.includes(+p.get("per"))) S.per = +p.get("per");
     S.f = f;
   }
   function viewParams(extra) {
@@ -78,6 +84,7 @@
     if (f.min !== d.min) p.set("min", f.min);
     ["sources", "bands", "topics"].forEach((k) => { if (f[k].length) p.set(k, f[k].join(",")); });
     if (f.code) p.set("code", "1");
+    if (S.per !== 10) p.set("per", S.per);
     const qs = p.toString();
     return location.origin + location.pathname + (qs ? "?" + qs : "");
   }
@@ -152,13 +159,14 @@
   let seq = 0;
   async function load() {
     const my = ++seq;
-    store.set("filters", Object.assign({}, S.f, { starred: false, showHidden: false, newOnly: false }));
+    store.set("filters", Object.assign({}, S.f, { starred: false, showHidden: false, newOnly: false, v: 2 }));
+    store.set("per", S.per);
     try { history.replaceState(null, "", pageUrl().replace(location.origin, "") + location.hash); } catch (e) { /* sandboxed */ }
     const base = viewParams({ sources: null, bands: null, topics: null });
     const sort = S.f.meaning && S.f.q.trim() ? "score" : S.f.sort;
     const [ov, bs, items, counts] = await Promise.all([
       getJSON("api/overview?" + viewParams()), getJSON("api/overview?" + base),
-      getJSON("api/items?" + viewParams({ sort, limit: PAGE, offset: 0 })),
+      getJSON("api/items?" + viewParams({ sort, limit: S.per, offset: 0 })),
       getJSON("api/counts?" + viewParams({ since: "30d", by_meaning: null })),
     ]);
     if (my !== seq) return;
@@ -169,16 +177,16 @@
     renderLinks();
   }
   async function goPage(n) {
-    const pages = Math.max(1, Math.ceil(S.matched / PAGE));
+    const pages = Math.max(1, Math.ceil(S.matched / S.per));
     n = Math.max(0, Math.min(pages - 1, n));
     const sort = S.f.meaning && S.f.q.trim() ? "score" : S.f.sort;
-    const { body } = await getJSON("api/items?" + viewParams({ sort, limit: PAGE, offset: n * PAGE }));
+    const { body } = await getJSON("api/items?" + viewParams({ sort, limit: S.per, offset: n * S.per }));
     S.items = body.items; S.page = n; S.matched = body.matched; renderList();
     const top = $("#listTop");
     if (top.getBoundingClientRect().top < 0) top.scrollIntoView({ block: "start" });
   }
   function pagerHTML() {
-    const pages = Math.ceil(S.matched / PAGE), p = S.page;
+    const pages = Math.ceil(S.matched / S.per), p = S.page;
     if (pages <= 1) return "";
     const nums = [...new Set([0, p - 2, p - 1, p, p + 1, p + 2, pages - 1].filter((k) => k >= 0 && k < pages))].sort((a, b) => a - b);
     let out = "", prev = -1;
@@ -187,7 +195,7 @@
       out += `<button type="button" data-page="${k}" ${k === p ? 'aria-current="page"' : ""} aria-label="Page ${k + 1}">${k + 1}</button>`;
       prev = k;
     });
-    const from = p * PAGE + 1, to = Math.min(S.matched, (p + 1) * PAGE);
+    const from = p * S.per + 1, to = Math.min(S.matched, (p + 1) * S.per);
     return `<span class="pinfo">${fmtN(from)} to ${fmtN(to)} of ${fmtN(S.matched)}</span>
       <button type="button" data-page="${p - 1}" ${p === 0 ? "disabled" : ""} aria-label="Previous page">Previous</button>${out}
       <button type="button" data-page="${p + 1}" ${p >= pages - 1 ? "disabled" : ""} aria-label="Next page">Next</button>`;
@@ -248,8 +256,7 @@
     $("#colText").innerHTML = running
       ? `<b>Checking sources now.</b> ${list.filter((s) => s.state !== "running").length} of ${list.length} done.`
       : (newest ? `Collecting around the clock. Last check <b>${esc(ago(newest))}</b>; next in <b>${esc(until(next))}</b>. ` : "Waiting for the first check. ") +
-        `${list.length - bad.length} of ${list.length} sources healthy · ${fmtN(b.store.items)} items from the last 30 days` +
-        (b.semantic.ready ? " · meaning model on" : b.semantic.error ? " · meaning model off" : " · meaning model loading");
+        `${list.length - bad.length} of ${list.length} sources healthy · ${fmtN(b.store.items)} items from the last 30 days`;
     const btn = $("#checkBtn");
     btn.disabled = running; btn.classList.toggle("busy", running);
     btn.querySelector("span").textContent = running ? "Checking..." : "Check now";
@@ -287,7 +294,9 @@
       `<div class="card kpi"><span class="l">Items</span><span class="v">${fmtN(items)}</span><span class="d">${esc(win)}</span><div class="spark">${spark}</div></div>`,
       `<div class="card kpi"><span class="l">High relevance</span><span class="v">${fmtN(o.high)}</span><span class="d">score 60 or more; ${fmtN(o.medium)} medium</span><div class="spark">${bspark}</div></div>`,
       `<div class="card kpi"><span class="l">With code or data</span><span class="v">${fmtN(o.with_code + o.new_repos)}</span><span class="d">${fmtN(o.with_code)} link code, ${fmtN(o.new_repos)} new repositories</span></div>`,
-      `<div class="card kpi"><span class="l">Found by meaning</span><span class="v">${o.semantic.ready ? fmtN(o.lifted_by_meaning) : "off"}</span><span class="d">${o.semantic.ready ? "scored higher by the model than by keywords" : "the model is loading"}</span></div>`,
+      o.learned && o.learned.ready
+        ? `<div class="card kpi"><span class="l">Learned scores</span><span class="v">${fmtN(o.learned.items)}</span><span class="d">scored by a model fitted to blind ratings of ${fmtN(o.learned.trained_on)} items</span></div>`
+        : `<div class="card kpi"><span class="l">Found by meaning</span><span class="v">${o.semantic.ready ? fmtN(o.lifted_by_meaning) : "off"}</span><span class="d">${o.semantic.ready ? "scored higher by the model than by keywords" : "the model is loading"}</span></div>`,
       `<div class="card kpi"><span class="l">New since your visit</span><span class="v">${nNew == null ? "first" : fmtN(nNew)}</span><span class="d">${S.lastVisit ? "among the top items, since " + esc(stamp(S.lastVisit)) : "visit; marks start next time"}</span></div>`,
     ].join("");
   }
@@ -421,18 +430,21 @@
 
   function chartPeople() {
     const host = $("#chPeople"); host.innerHTML = "";
-    const rows = Object.entries(S.ov.top_people).slice(0, 8);
+    const rows = (S.ov.people || Object.entries(S.ov.top_people).map(([name, value]) => ({ name, value, works: null, items: null }))).slice(0, 8);
     if (!rows.length) { host.innerHTML = '<p class="note">No authors in view.</p>'; return; }
-    const W = width(host, 320, 560), rowH = 30, L = Math.min(210, W * 0.42), R = 40, H = rows.length * rowH + 6;
-    const max = Math.max(1, ...rows.map((r) => r[1]));
-    const svg = el("svg", { viewBox: `0 0 ${W} ${H}`, role: "img", "aria-label": "Most active people and organizations" });
-    rows.forEach(([p, n], k) => {
-      const y = 3 + k * rowH, w = (W - L - R) * n / max;
+    const W = width(host, 320, 560), rowH = 30, L = Math.min(210, W * 0.42), R = 96, H = rows.length * rowH + 6;
+    const max = Math.max(1, ...rows.map((r) => r.value));
+    const svg = el("svg", { viewBox: `0 0 ${W} ${H}`, role: "img", "aria-label": "Top contributors by pieces of work" });
+    rows.forEach((r, k) => {
+      const y = 3 + k * rowH, w = (W - L - R) * r.value / max, p = r.name;
       const name = p.length > 28 ? p.slice(0, 26) + "..." : p;
+      const works = r.works == null ? "" : `${r.works} ${r.works === 1 ? "piece" : "pieces"}`;
       svg.appendChild(el("text", { x: L - 10, y: y + rowH / 2 + 4, "text-anchor": "end", "font-size": 12.5 }, name));
       svg.appendChild(el("path", { d: barPath(L, y + 8, Math.max(3, w), rowH - 16, 4, true), style: "fill:var(--b-medium)" }));
-      svg.appendChild(el("text", { x: L + w + 7, y: y + rowH / 2 + 4, class: "tick", style: "fill:var(--fg2)" }, fmtN(n)));
-      const hit = el("rect", { x: 0, y, width: W, height: rowH, class: "hit", "data-tip": `<b>${esc(p)}</b>` + row("", "Items", fmtN(n)) + hint("Click to search for this name") });
+      svg.appendChild(el("text", { x: L + w + 7, y: y + rowH / 2 + 4, class: "tick", style: "fill:var(--fg2)" }, works || fmtN(r.value)));
+      const tipHtml = `<b>${esc(p)}</b>` + (r.works != null ? row("", "Pieces of work", fmtN(r.works)) + row("", "Items", fmtN(r.items)) : "") +
+        row("", "Weight (best score per piece, summed)", fmtN(r.value)) + hint("Click to search for this name");
+      const hit = el("rect", { x: 0, y, width: W, height: rowH, class: "hit", "data-tip": tipHtml });
       hit.addEventListener("click", () => { S.f.q = p; S.f.meaning = false; reload(); });
       svg.appendChild(hit);
     });
@@ -440,24 +452,66 @@
   }
 
   /* ------------------------------------------------------------ filters */
-  function chip(group, value, label, n, extra, title) {
+  // Sources, topics, relevance and the browser-only toggles sit in four small dropdowns; what is switched on shows as
+  // removable pills under them, so the panel stays one row however many filters exist.
+  function opt(group, value, label, n, extra, title) {
     const on = group === "toggle" ? S.f[value] : S.f[group].includes(value);
-    return `<button type="button" class="fchip" aria-pressed="${on}" data-g="${group}" data-v="${esc(value)}"${title ? ` title="${esc(title)}"` : ""}>${extra || ""}${esc(label)}${n != null ? ` <span class="n">${fmtN(n)}</span>` : ""}</button>`;
+    return `<button type="button" class="fchip opt" role="checkbox" aria-checked="${on}" aria-pressed="${on}" data-g="${group}" data-v="${esc(value)}"${title ? ` title="${esc(title)}"` : ""}><i class="box" aria-hidden="true"></i>${extra || ""}<span class="ol">${esc(label)}</span>${n != null ? `<span class="n">${fmtN(n)}</span>` : ""}</button>`;
+  }
+  const TOGGLES = { code: "Links code", starred: "Starred", showHidden: "Show hidden", newOnly: "New since your visit" };
+  function summary(sel, all, label) {
+    if (!sel.length) return "";
+    return sel.length === 1 ? label(sel[0]) : `${sel.length} of ${all}`;
   }
   function renderFilters() {
     const b = S.base;
-    $("#fSources").innerHTML = SRC.map((k) => chip("sources", k, SRC_LABEL[k], b.by_source[k] || 0, `<i class="dot s-${k}"></i>`)).join("");
-    $("#fBands").innerHTML = BANDS.map((x) => chip("bands", x, BAND_LABEL[x], b.by_band[x] || 0, `<i class="dot" style="background:var(--b-${x})"></i>`)).join("");
-    $("#fToggles").innerHTML = chip("toggle", "code", "Links code", null, "", "Only items that link code, models or data") +
-      chip("toggle", "starred", "Starred", S.stars.size, "", "Stars live in this browser") +
-      chip("toggle", "showHidden", "Show hidden", S.hide.size, "", "Hidden items live in this browser") +
-      (S.lastVisit ? chip("toggle", "newOnly", "New since your visit", null, "", "First seen by the radar after " + stamp(S.lastVisit)) : "");
+    // Only what this window holds, plus anything already picked, so the lists carry no rows of zeros.
+    const srcs = SRC.filter((k) => b.by_source[k] || S.f.sources.includes(k));
+    $("#fSources").innerHTML = srcs.map((k) => opt("sources", k, SRC_LABEL[k], b.by_source[k] || 0, `<i class="dot s-${k}"></i>`)).join("") ||
+      '<p class="note">Nothing in this window.</p>';
     const topics = Object.keys(b.by_topic);
     S.f.topics.forEach((t) => { if (!topics.includes(t)) topics.push(t); });
-    $("#fTopics").innerHTML = topics.map((t) => chip("topics", t, t, b.by_topic[t] || 0)).join("");
+    $("#fTopics").innerHTML = topics.map((t) => opt("topics", t, t, b.by_topic[t] || 0)).join("") || '<p class="note">Nothing in this window.</p>';
+    $("#fBands").innerHTML = BANDS.map((x) => opt("bands", x, BAND_LABEL[x] + (x === "high" ? " (60+)" : x === "medium" ? " (35 to 59)" : " (under 35)"), b.by_band[x] || 0, `<i class="dot" style="background:var(--b-${x})"></i>`)).join("");
+    $("#fToggles").innerHTML = opt("toggle", "code", TOGGLES.code, null, "", "Only items that link code, models or data") +
+      opt("toggle", "starred", TOGGLES.starred, S.stars.size, "", "Stars live in this browser") +
+      opt("toggle", "showHidden", TOGGLES.showHidden, S.hide.size, "", "Hidden items live in this browser") +
+      (S.lastVisit ? opt("toggle", "newOnly", TOGGLES.newOnly, null, "", "First seen by the radar after " + stamp(S.lastVisit)) : "");
+    $("#vSources").textContent = summary(S.f.sources, srcs.length, (k) => SRC_LABEL[k]);
+    $("#vTopics").textContent = summary(S.f.topics, topics.length, (t) => t);
+    $("#vRel").textContent = [S.f.bands.length ? S.f.bands.map((x) => BAND_LABEL[x]).join(", ") : "", S.f.min ? S.f.min + "+" : ""].filter(Boolean).join(" · ");
+    const tg = Object.keys(TOGGLES).filter((k) => S.f[k]);
+    $("#vMore").textContent = summary(tg, Object.keys(TOGGLES).length, (k) => TOGGLES[k]);
+    $$("#fbar .dd").forEach((d) => d.classList.toggle("active", !!d.querySelector(".ddv") && !!d.querySelector(".ddv").textContent));
     $("#q").value = S.f.q; $("#meaning").checked = S.f.meaning; $("#sort").value = S.f.sort; $("#min").value = S.f.min; $("#minOut").textContent = S.f.min;
+    $("#per").value = String(S.per);
     $("#sort").disabled = S.f.meaning && !!S.f.q.trim();
+    renderPills();
   }
+  function renderPills() {
+    const d = defaults(), pills = [];
+    const pill = (g, v, label, dot) => pills.push(`<button type="button" class="pill" data-pg="${g}" data-pv="${esc(v)}" title="Remove this filter">${dot || ""}${esc(label)}<span aria-hidden="true">×</span></button>`);
+    if (S.f.q.trim()) pill("q", "", (S.f.meaning ? "Meaning: " : "Search: ") + S.f.q.trim());
+    S.f.sources.forEach((k) => pill("sources", k, SRC_LABEL[k], `<i class="dot s-${k}"></i>`));
+    S.f.topics.forEach((t) => pill("topics", t, t));
+    S.f.bands.forEach((x) => pill("bands", x, BAND_LABEL[x], `<i class="dot" style="background:var(--b-${x})"></i>`));
+    if (S.f.min !== d.min) pill("min", "", "Score " + S.f.min + "+");
+    Object.keys(TOGGLES).forEach((k) => { if (S.f[k]) pill("toggle", k, TOGGLES[k]); });
+    $("#pills").innerHTML = pills.join("") + (pills.length > 1 ? '<button type="button" class="pill clear" data-pg="all">Clear all</button>' : "");
+    $("#pills").hidden = !pills.length;
+    $("#reset").hidden = !pills.length;
+  }
+  $("#pills").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-pg]");
+    if (!b) return;
+    const g = b.dataset.pg, v = b.dataset.pv;
+    if (g === "all") return resetFilters();
+    if (g === "q") { S.f.q = ""; S.f.meaning = false; }
+    else if (g === "min") S.f.min = defaults().min;
+    else if (g === "toggle") S.f[v] = false;
+    else S.f[g] = S.f[g].filter((x) => x !== v);
+    if (g === "toggle" && v !== "code" && v !== "starred") { renderFilters(); renderList(); } else reload();
+  });
   function toggle(group, v) {
     const a = S.f[group], k = a.indexOf(v);
     if (k >= 0) a.splice(k, 1); else a.push(v);
@@ -472,11 +526,29 @@
       if (v === "starred" || v === "code") reload(); else { renderFilters(); renderList(); }
     } else toggle(g, v);
   });
-  $("#q").addEventListener("input", (e) => { S.f.q = e.target.value; reload(S.f.meaning ? 450 : 220); });
+  // Dropdowns: one open at a time, closed by a click elsewhere or Escape, and kept inside the screen on a phone.
+  $$(".filters .dd").forEach((d) => d.addEventListener("toggle", () => {
+    if (!d.open) return;
+    $$(".filters .dd[open]").forEach((o) => { if (o !== d) o.open = false; });
+    const pnl = d.querySelector(".ddpanel");
+    pnl.style.transform = "";
+    const r = pnl.getBoundingClientRect(), edge = document.documentElement.clientWidth - 12;
+    if (r.right > edge) pnl.style.transform = `translateX(${Math.round(edge - r.right)}px)`;
+    else if (r.left < 12) pnl.style.transform = `translateX(${Math.round(12 - r.left)}px)`;
+  }));
+  document.addEventListener("click", (e) => { $$(".filters .dd[open]").forEach((d) => { if (!d.contains(e.target)) d.open = false; }); });
+  document.addEventListener("keydown", (e) => {
+    if (e.key !== "Escape") return;
+    const d = $(".filters .dd[open]");
+    if (d) { d.open = false; d.querySelector("summary").focus(); }
+  });
+  $("#q").addEventListener("input", (e) => { S.f.q = e.target.value; reload(S.f.meaning ? 450 : 220); egg.typed(S.f.q); });
   $("#meaning").addEventListener("change", (e) => { S.f.meaning = e.target.checked; reload(); });
   $("#sort").addEventListener("change", (e) => { S.f.sort = e.target.value; reload(); });
+  $("#per").addEventListener("change", (e) => { S.per = PER.includes(+e.target.value) ? +e.target.value : 10; reload(); });
   $("#min").addEventListener("input", (e) => { S.f.min = +e.target.value; $("#minOut").textContent = S.f.min; reload(250); });
-  $("#reset").addEventListener("click", () => { const keep = { view: S.f.view, since: S.f.since }; S.f = Object.assign(defaults(), keep); renderViews(); renderLookback(); reload(); });
+  function resetFilters() { const keep = { view: S.f.view, since: S.f.since, sort: S.f.sort }; S.f = Object.assign(defaults(), keep); renderViews(); renderLookback(); reload(); }
+  $("#reset").addEventListener("click", resetFilters);
   $("#shareBtn").addEventListener("click", (e) => copy(pageUrl(), e.currentTarget, "Copy link to this view"));
   function copy(text, btn, label) {
     const done = () => { btn.textContent = "Copied"; setTimeout(() => (btn.textContent = label), 1300); };
@@ -495,7 +567,7 @@
   };
   function ring(i) {
     const r = 20, c = 2 * Math.PI * r, f = c * i.score / 100;
-    const t = `<b>Score ${i.score}</b>` + row(`var(--b-${i.band})`, BAND_LABEL[i.band] + " band", "") + row("", "Keywords", i.keyword) + (i.semantic != null ? row("", "Meaning", i.semantic) : "") + (i.match != null ? row("", "Match to your search", i.match) : "");
+    const t = `<b>Score ${i.score}</b>` + row(`var(--b-${i.band})`, BAND_LABEL[i.band] + " band", "") + (i.learned ? row("", "Learned model", i.score) : "") + row("", "Keywords", i.keyword) + (i.semantic != null ? row("", "Meaning", i.semantic) : "") + (i.match != null ? row("", "Match to your search", i.match) : "");
     return `<div class="ring" data-tip="${esc(t)}"><svg viewBox="0 0 50 50"><circle class="bg" cx="25" cy="25" r="${r}"/><circle class="fg" cx="25" cy="25" r="${r}" style="stroke:var(--b-${i.band})" stroke-dasharray="${f} ${c}"/></svg><b>${i.score}</b></div>`;
   }
   function itemHTML(i) {
@@ -517,7 +589,7 @@
       i.new_repo ? `<span class="badge soft">created in window</span>` : "",
       i.updated ? `<span class="badge soft">updated</span>` : "",
       i.prerelease ? `<span class="badge soft">pre-release</span>` : "",
-      i.semantic != null && i.score > i.keyword ? `<span class="badge mean" title="The meaning model scored it higher than the keywords did">by meaning</span>` : "",
+      !i.learned && i.semantic != null && i.score > i.keyword ? `<span class="badge mean" title="The meaning model scored it higher than the keywords did">by meaning</span>` : "",
     ].filter(Boolean).join("");
     const byMeaning = new Set(i.topics_by_meaning || []);
     const links = [
@@ -557,7 +629,7 @@
     const rows = parts.map(([l, p]) => `<div class="why-row"><span class="lab">${esc(l)}</span><span class="bar"><i class="${p < 0 ? "neg" : ""}" style="width:${Math.round(100 * Math.abs(p) / max)}%"></i></span><span class="pts">${p > 0 ? "+" : ""}${p}</span></div>`).join("");
     const mean = i.semantic != null ? `<span>Meaning <b>${i.semantic}</b> (cosine ${i.sim} to "${esc(i.near || "")}")</span>` : `<span>Meaning: not scored${i.source === "pypi" ? " (package versions are scored by the package)" : ""}</span>`;
     return `<h4>Why this score</h4><div class="why">${rows || '<p class="note">No term matched; the score comes from meaning alone.</p>'}</div>
-      <div class="why-total"><span>Keywords <b>${i.keyword}</b></span>${mean}<span>Final <b>${i.score}</b> (${esc(BAND_LABEL[i.band])})</span></div>${i.capped ? `<p class="note">Capped at ${i.score}: ${esc(i.capped)}.</p>` : ""}
+      <div class="why-total"><span>Keywords <b>${i.keyword}</b></span>${mean}<span>Final <b>${i.score}</b> (${esc(BAND_LABEL[i.band])})</span></div>${i.learned ? `<p class="note">The final score comes from the learned model, fitted to blind ratings of what items are worth to scroll work; it reads the ${i.learned === "full" ? "text's meaning, " : ""}keyword score, source, kind and popularity. The keyword points above explain the match; they no longer set the score.</p>` : ""}${i.capped ? `<p class="note">Capped at ${i.score}: ${esc(i.capped)}.</p>` : ""}
       <div class="sims" data-sims></div>`;
   }
   function visible() {
@@ -691,6 +763,7 @@
       Object.entries(c.topics).map(([n, t]) => `<div class="t"><h3><span>${esc(n)}</span><span class="w">+${t.weight} strong, +${Math.floor(t.weight / 2)} weak</span></h3><p><b>strong:</b> ${t.strong.map(esc).join(", ")}<br><b>weak:</b> ${t.weak.map(esc).join(", ")}</p></div>`).join("") +
       `<div class="t"><h3><span>Context terms</span><span class="w">+${c.context_bonus}</span></h3><p>${c.context.map(esc).join(", ")}</p></div>` +
       `<div class="t"><h3><span>Off-topic terms</span><span class="w">-15 each, up to 2</span></h3><p>${c.negative.map(esc).join(", ")}</p></div>` +
+      (c.learned && c.learned.ready ? `<div class="t"><h3><span>Learned model</span><span class="w">rank agreement ${c.learned.evaluation.full.spearman} on held-out items</span></h3><p>Ridge regression on the embedding plus ${esc(c.learned.meta_features.join(", "))}, source and kind; fitted ${esc(c.learned.trained)} to blind ratings of ${fmtN(c.learned.items)} items, ${esc(c.learned.calibration)} calibration to 0 to 100. The keyword and meaning scores alone agreed ${c.learned.evaluation.rule_score} with the same ratings.</p></div>` : "") +
       `<div class="t"><h3><span>Meaning anchors</span><span class="w">cosine ${c.semantic.sim_floor} to ${c.semantic.sim_ceiling} maps to 0 to 100</span></h3><p>${Object.values(c.semantic.anchors).flat().map(esc).join("<br>")}</p></div>`;
     $("#howSources").innerHTML = SRC.map((k) => `<li><b><i class="dot s-${k}"></i> ${esc(SRC_LABEL[k])}</b> (every ${c.sources[k].every_min < 60 ? c.sources[k].every_min + " minutes" : c.sources[k].every_min / 60 + " hours"}): ${esc(SRC_ABOUT[k](c.sources[k]).join("; "))}.</li>`).join("");
     renderSources();
@@ -803,6 +876,8 @@
         o.push(`<path class="glow" d="M${sx} ${cy + 2} q${f(-6 + k * 6)} 50 ${f(-14 + k * 22)} 110 t${f(-10 + k * 16)} 90" fill="none" stroke="${P.crater}" stroke-width="2.2" stroke-linecap="round" opacity=".8" filter="url(#vsoft)" style="animation-delay:${k * .7}s"/>`);
       }
     }
+    // eruption layer (filled on a click in the Vesuvius theme) and the click target over the mountain
+    o.push(`<g id="erupt"></g><path class="vhit" d="${mtn}" fill="transparent"><title>Vesuvius</title></path>`);
     // the bay
     o.push(`<path d="M-300 648 C300 640 560 652 820 646 C1000 642 1180 652 1600 646 L1600 760 L-300 760Z" fill="url(#vsea)"/>`);
     for (let k = 0; k < 26; k++) {
@@ -834,10 +909,9 @@
       const ranked = SRC.filter((k) => by[k]).sort((a, b) => by[b] - by[a]);
       HERO.blips = ranked.concat(ranked.slice(0, 3)).concat(ranked.slice(0, 1));
       drawScene();
-      const src = S.src ? Object.values(S.src.sources) : [];
-      const ok = src.filter((x) => x.state === "ok").length;
+      const c = d7.body.community || {};
       const stats = [[fmtN(d1.body.items), "new in the last day"], [fmtN(d7.body.high), "high scores this week"],
-        [ok ? `${ok} of ${src.length}` : "7", ok ? "sources healthy" : "public sources"], [S.src ? fmtN(S.src.store.items) : "...", "kept for 30 days"]];
+        [fmtN(c.new_scroll_repos || 0), "new scroll repositories this week"], [fmtN(c.villa_merged || 0), "villa pull requests merged this week"]];
       $("#heroStats").innerHTML = stats.map(([b, l]) => `<div class="hstat"><b>${b}</b><span>${l}</span></div>`).join("");
     } catch (e) { /* the hero keeps its drawing; the stats wait for the next try */ }
   }
@@ -850,6 +924,92 @@
     $(".tabs").scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
   }));
 
+  /* ------------------------------------------------------------ easter eggs */
+  // 1. In the Vesuvius theme, click the volcano: it erupts (lava fountain, ash column, flows, volcanic lightning).
+  // 2. The Konami code (up up down down left right left right B A): every source's color goes up as fireworks.
+  // 3. Type "pliny" in the search box: Pliny the Younger's line on the pine-shaped cloud, and the plume swells.
+  const reduce = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let toastTimer;
+  function toast(html, ms) {
+    const t = $("#toast");
+    t.innerHTML = html; t.hidden = false; t.classList.remove("out");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => { t.classList.add("out"); setTimeout(() => { t.hidden = true; }, 600); }, ms || 6500);
+  }
+  const egg = {
+    busy: false,
+    erupt() {
+      if (egg.busy || sceneTheme() !== "vesuvius") return;
+      const g = $("#erupt");
+      if (!g) return;
+      egg.busy = true;
+      const cx = 1162, cy = 292, o = [];
+      let seed = 79;
+      const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+      const LAVA = ["#ffd27a", "#ffb347", "#ff8a3d", "#ff6a2b", "#ff3b2f", "#ffe9a8"];
+      o.push(`<ellipse class="e-flash" cx="${cx}" cy="${cy}" rx="140" ry="60" fill="url(#vglow)"/>`);
+      // the ash column: puffs that rise, spread and drift with the wind
+      for (let k = 0; k < 26; k++) {
+        const r = 30 + rnd() * 40, d = (k * 0.16).toFixed(2), dx = Math.round(-60 + rnd() * 160 + k * 4), dy = Math.round(-200 - rnd() * 260);
+        o.push(`<circle class="e-ash" cx="${cx + 10}" cy="${cy - 10}" r="${r.toFixed(0)}" fill="${k % 3 ? "#4a3a34" : "#6b5a52"}" style="--dx:${dx}px;--dy:${dy}px;animation-delay:${d}s"/>`);
+      }
+      // volcanic lightning inside the column
+      [[cx - 40, cy - 250, "#c9b6ff"], [cx + 70, cy - 320, "#9fd0ff"], [cx + 10, cy - 200, "#ffd1f0"]].forEach(([x, y, col], k) => {
+        let d = `M${x} ${y}`;
+        for (let j = 0; j < 5; j++) d += ` l${Math.round(-18 + rnd() * 36)} ${Math.round(14 + rnd() * 16)}`;
+        o.push(`<path class="e-bolt" d="${d}" stroke="${col}" stroke-width="3" fill="none" stroke-linecap="round" style="animation-delay:${(2.2 + k * 1.3).toFixed(1)}s"/>`);
+      });
+      // the lava fountain: glowing bombs thrown in arcs
+      for (let k = 0; k < 46; k++) {
+        const ang = (-90 + (rnd() - 0.5) * 70) * Math.PI / 180, v = 120 + rnd() * 230;
+        const dx = Math.round(Math.cos(ang) * v * 1.4), up = Math.round(Math.sin(ang) * v), down = Math.round(160 + rnd() * 120);
+        o.push(`<circle class="e-bomb" cx="${cx}" cy="${cy}" r="${(2.5 + rnd() * 4).toFixed(1)}" fill="${LAVA[k % LAVA.length]}" style="--dx:${dx}px;--up:${up}px;--down:${down}px;animation-delay:${(0.4 + rnd() * 4.5).toFixed(2)}s"/>`);
+      }
+      // lava flows down the cone
+      [[-10, 260, 0.6], [18, 300, 1.1], [44, 240, 1.7], [-34, 220, 2.3]].forEach(([off, len, d]) => {
+        o.push(`<path class="e-flow" d="M${cx + off} ${cy + 4} q${off * 1.6} ${len * 0.45} ${off * 3.2 + 20} ${len}" stroke="${off > 20 ? "#ff3b2f" : "#ff8a3d"}" stroke-width="6" fill="none" stroke-linecap="round" pathLength="100" style="animation-delay:${d}s"/>`);
+      });
+      g.innerHTML = o.join("");
+      $(".hero").classList.add("erupting");
+      toast("<b>Vesuvius erupts.</b> Herculaneum's library lay under the ash for about 1,700 years; the radar is here to help read it.", 7000);
+      setTimeout(() => { g.innerHTML = ""; $(".hero").classList.remove("erupting"); egg.busy = false; }, reduce() ? 2500 : 11000);
+    },
+    fireworks() {
+      const svg = $("#scene");
+      if (!svg) return;
+      const box = svg.viewBox.baseVal, o = [];
+      let seed = 4;
+      const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+      SRC.concat(SRC).forEach((k, n) => {
+        const x = box.width * (0.45 + rnd() * 0.5), y = 60 + rnd() * 260, d = (n * 0.45).toFixed(2);
+        for (let j = 0; j < 12; j++) {
+          const a = j / 12 * 2 * Math.PI, r = 50 + rnd() * 30;
+          o.push(`<circle class="e-spark" cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" r="3.2" fill="var(--s-${k})" style="--dx:${(Math.cos(a) * r).toFixed(0)}px;--dy:${(Math.sin(a) * r).toFixed(0)}px;animation-delay:${d}s"/>`);
+        }
+      });
+      const g = el("g", { class: "e-fire" });
+      g.innerHTML = o.join("");
+      svg.appendChild(g);
+      document.body.classList.add("party");
+      toast("<b>ΧΑΙΡΕ!</b> (Greek for hello.) Seven sources, seven colors.", 6500);
+      setTimeout(() => { g.remove(); document.body.classList.remove("party"); }, reduce() ? 2000 : 9000);
+    },
+    typed(q) {
+      if (q.trim().toLowerCase() !== "pliny") return;
+      $(".hero").classList.add("plinian");
+      setTimeout(() => $(".hero").classList.remove("plinian"), 9000);
+      toast('<i>"Nubes... oriebatur, cuius similitudinem et formam non alia magis arbor quam pinus expresserit."</i> No tree shows the shape of the cloud over Vesuvius better than a pine: Pliny the Younger, Letters 6.16.', 9000);
+    },
+  };
+  $("#scene").addEventListener("click", (e) => { if (e.target.closest(".vhit")) egg.erupt(); });
+  const KONAMI = ["ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown", "ArrowLeft", "ArrowRight", "ArrowLeft", "ArrowRight", "b", "a"];
+  let kpos = 0;
+  document.addEventListener("keydown", (e) => {
+    const k = e.key.length === 1 ? e.key.toLowerCase() : e.key;
+    kpos = k === KONAMI[kpos] ? kpos + 1 : (k === KONAMI[0] ? 1 : 0);
+    if (kpos === KONAMI.length) { kpos = 0; egg.fireworks(); }
+  });
+
   /* ------------------------------------------------------------ start */
   const startTab = (location.hash || "#radar").slice(1);
   renderViews(); renderLookback();
@@ -859,5 +1019,6 @@
   load().catch(fail);
   pollSources();
   // A public helper for people driving the page from the console or a test.
-  window.vesuviusRadar = { state: () => JSON.parse(JSON.stringify(S.f)), set: (f) => { Object.assign(S.f, f); renderViews(); renderLookback(); return load(); } };
+  window.vesuviusRadar = { state: () => JSON.parse(JSON.stringify(S.f)), set: (f) => { Object.assign(S.f, f); renderViews(); renderLookback(); return load(); },
+    erupt: () => egg.erupt(), fireworks: () => egg.fireworks() };
 })();

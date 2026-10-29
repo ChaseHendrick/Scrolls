@@ -55,6 +55,7 @@ VERSION = "1.0.0"
 CFG = scanner.load_config()
 SCORER = scanner.Scorer(CFG)
 SEM = scanner.Semantic(CFG)
+HEAD = scanner.Head()
 LOCK = threading.RLock()
 STORE: dict = {"saved": None, "items": {}, "sources": {}, "runs": [], "state": {}}
 CHECK = {"last": 0.0, "requested": None}
@@ -78,7 +79,7 @@ VIEWS = {
                       "Challenge blog.",
              "any": [{"sources": ["github", "blog"]},
                      {"sources": ["hf", "zenodo", "journals", "arxiv"], "topics": ["Scroll work"]}]},
-    "builders": {"label": "Contributors and competitors",
+    "builders": {"label": "Contributors",
                  "about": "Things you can use today: new and updated repositories, releases, models, datasets and "
                           "Spaces, package versions, and papers that link their code.",
                  "any": [{"kinds": ["repo", "release", "model", "dataset", "space", "package", "software"]},
@@ -215,7 +216,7 @@ def run_source(src: str):
         RUNNING[src] = dict(row)
 
     try:
-        items, row = scanner.collect(src, since, CFG, SCORER, SEM if SEM.ready else None, state, prog)
+        items, row = scanner.collect(src, since, CFG, SCORER, SEM if SEM.ready else None, state, prog, HEAD)
         row["new"] = merge(items)
         with LOCK:
             if row["state"] != "error":
@@ -414,9 +415,58 @@ def timeline(f: Filters, items: list[dict]) -> dict:
     return {"bin_seconds": step, "bins": bins}
 
 
+WORK_SIM = 0.80  # two items by one person whose texts are this close in meaning are one piece of work
+
+
+def author(i: dict) -> str:
+    return i.get("who", "").split(",")[0].strip() if i["source"] not in ("pypi", "blog") else ""
+
+
+def top_people(items: list[dict], limit: int = 10) -> list[dict]:
+    """People and organizations ranked by distinct pieces of work, not raw item counts. A person's items are grouped
+    when their texts are close in meaning (cosine >= WORK_SIM, same source), so twenty small related pull requests
+    count as one piece of work; each piece is worth its best score, and the person's total is the sum. Without the
+    meaning model, items from one source on the same day form one piece."""
+    by: dict[str, list[dict]] = {}
+    names: dict[str, str] = {}
+    for i in items:
+        w = author(i)
+        if w:
+            by.setdefault(w.lower(), []).append(i)
+            names.setdefault(w.lower(), w)
+    rows = []
+    for key, its in by.items():
+        n = len(its)
+        parent = list(range(n))
+
+        def root(a):
+            while parent[a] != a:
+                parent[a] = parent[parent[a]]
+                a = parent[a]
+            return a
+        if SEM.ready and n > 1:
+            v = SEM.embed([_vec_text(i) for i in its])
+            sims = v @ v.T
+            for a in range(n):
+                for b in range(a + 1, n):
+                    if sims[a, b] >= WORK_SIM and its[a]["source"] == its[b]["source"]:
+                        parent[root(a)] = root(b)
+        elif n > 1:
+            first: dict = {}
+            for a, i in enumerate(its):
+                parent[a] = first.setdefault((i["source"], i["date"][:10]), a)
+        groups: dict[int, list[dict]] = {}
+        for a in range(n):
+            groups.setdefault(root(a), []).append(its[a])
+        value = sum(max(i["score"] for i in g) for g in groups.values())
+        rows.append({"name": names[key], "value": value, "works": len(groups), "items": n})
+    rows.sort(key=lambda r: (-r["value"], -r["works"], r["name"].lower()))
+    return rows[:limit]
+
+
 def overview(f: Filters) -> dict:
     items = query(f)
-    people = tally(items, lambda i: [i.get("who", "").split(",")[0].strip()] if i["source"] not in ("pypi", "blog") else [])
+    people = top_people(items)
     hist = [0] * 20
     for i in items:
         hist[min(19, i["score"] // 5)] += 1
@@ -430,10 +480,17 @@ def overview(f: Filters) -> dict:
             "medium": sum(1 for i in items if i["band"] == "medium"),
             "by_source": tally(items, lambda i: [i["source"]]), "by_band": tally(items, lambda i: [i["band"]]),
             "by_topic": tally(items, lambda i: i["topics"]), "by_kind": tally(items, lambda i: [i["kind"]]),
-            "topic_source": matrix, "score_hist": hist, "top_people": dict(list(people.items())[:10]),
+            "topic_source": matrix, "score_hist": hist, "top_people": {p["name"]: p["value"] for p in people},
+            "people": people,
+            "community": {"villa_merged": sum(1 for i in items if i["kind"] == "pr" and i.get("state") == "merged"),
+                          "new_scroll_repos": sum(1 for i in items if i.get("new_repo") and "Scroll work" in i["topics"])},
             "with_code": sum(1 for i in items if i.get("code")),
             "new_repos": sum(1 for i in items if i.get("new_repo")),
-            "lifted_by_meaning": sum(1 for i in items if i.get("semantic") is not None and i["score"] > i["keyword"]),
+            "lifted_by_meaning": sum(1 for i in items if i.get("semantic") is not None and not i.get("learned")
+                                     and i["score"] > i["keyword"]),
+            "learned": {"ready": HEAD.ready, "items": sum(1 for i in items if i.get("learned")),
+                        "trained_on": HEAD.info.get("items"),
+                        "spearman": (HEAD.info.get("evaluation") or {}).get("full", {}).get("spearman")},
             "timeline": timeline(f, items),
             "semantic": {"model": CFG["semantic"]["model"], "ready": SEM.ready, "error": SEM.error},
             "store": {"items": len(STORE["items"]), "saved": STORE.get("saved"), "booted": BOOT}}
@@ -578,16 +635,26 @@ def api_views():
     return {k: {"label": v["label"], "about": v["about"], "rule": v["any"]} for k, v in VIEWS.items()}
 
 
-@app.get("/api/config", summary="Sources, keywords, weights and anchor sentences")
+def head_summary() -> dict:
+    """What the learned head is, for the page and agents: no coefficients, just how it was fitted and how it did."""
+    if not HEAD.ready:
+        return {"ready": False}
+    i = HEAD.info
+    return {"ready": True, "trained": i.get("trained"), "items": i.get("items"), "target": i.get("target"),
+            "calibration": i.get("calibration"), "meta_features": i.get("meta_features"),
+            "evaluation": i.get("evaluation")}
+
+
+@app.get("/api/config", summary="Sources, keywords, weights, anchor sentences and the learned head's summary")
 def api_config():
-    return CFG
+    return {**CFG, "learned": head_summary()}
 
 
 @app.get("/api/export.csv", summary="A window as CSV, for the same filters as /api/items")
 def export_csv(f: Filters = Depends(filters), sort: str = Query("score", pattern="^(score|date|popularity)$")):
     items = query(f, sort)
     buf = io.StringIO()
-    cols = ["score", "band", "keyword", "semantic", "source", "kind", "date", "first_seen", "title", "url", "who", "topics",
+    cols = ["score", "band", "keyword", "semantic", "rule", "source", "kind", "date", "first_seen", "title", "url", "who", "topics",
             "matched", "code", "summary"]
     w = csv.writer(buf)
     w.writerow(cols)

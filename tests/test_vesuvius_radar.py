@@ -120,6 +120,61 @@ class ScorerTest(unittest.TestCase):
         self.assertEqual(len(it["_text"]), CFG["semantic"]["embed_chars"])
 
     @unittest.skipIf(importlib.util.find_spec("numpy") is None, "numpy is not installed")
+    def test_learned_head_file_is_consistent(self):
+        import numpy as np
+        h = scanner.Head()
+        self.assertTrue(h.ready)
+        info = h.info
+        self.assertEqual(info["meta_features"], scanner.META_FEATURES)
+        width = len(scanner.META_FEATURES) + len(info["sources"]) + len(info["kinds"])
+        for name in ("full", "meta"):
+            self.assertEqual(len(info[name]["coef_meta"]), width)
+            cx, cy = np.array(info[name]["cal_x"]), np.array(info[name]["cal_y"])
+            self.assertTrue(np.all(np.diff(cx) > 0))  # np.interp needs increasing x; the mapping must be monotone
+            self.assertTrue(np.all(np.diff(cy) >= 0) and cy.min() >= 0 and cy.max() <= 100)
+        self.assertEqual(len(info["full"]["coef_emb"]), 384)
+        ev = info["evaluation"]
+        self.assertGreater(ev["full"]["spearman"], ev["rule_score"])  # held-out agreement beats the rule score
+        self.assertEqual(sorted(info["sources"]), info["sources"])
+        self.assertLessEqual(set(info["sources"]), set(scanner.SOURCES))
+
+    @unittest.skipIf(importlib.util.find_spec("numpy") is None, "numpy is not installed")
+    def test_finish_with_learned_head(self):
+        import numpy as np
+        h = scanner.Head()
+        stuffed = "Herculaneum papyri papyrology palimpsest cultural heritage greek latin epigraphy 3d volume " * 6
+        villa = scanner.make_item(self.s, source="github", kind="pr", id="v", title="villa #1: VC3D object store",
+                                  url="", date="2026-10-29T00:00:00Z", text="Volume Cartographer surfaces", base=30,
+                                  base_label="ScrollPrize/villa", state="merged")
+        spam = scanner.make_item(self.s, source="zenodo", kind="preprint", id="z", title="Ipotesi", url="",
+                                 date="2026-10-29T00:00:00Z", text=stuffed)
+        pkg = {"keyword": 25, "topics": [], "source": "pypi", "kind": "package"}
+
+        class VecSem:
+            ready = True
+
+            def score_many(self, texts, progress=None, what="items"):
+                return [{"semantic": 40, "sim": 0.74, "near": "Scroll work"} for _ in texts]
+
+            def embed(self, texts):
+                v = np.ones((len(texts), 384), "float32")
+                return v / np.linalg.norm(v, axis=1, keepdims=True)
+        scanner.finish([villa, spam, pkg], self.s, VecSem(), head=h)
+        self.assertEqual((villa["learned"], spam["learned"], pkg["learned"]), ("full", "full", "meta"))
+        for it in (villa, spam, pkg):
+            self.assertTrue(0 <= it["score"] <= 100)
+            self.assertEqual(it["band"], self.s.band(it["score"]))
+            self.assertIn("rule", it)  # the keep gate stays the rule score
+            self.assertNotIn("capped", it)
+        self.assertEqual(pkg["rule"], 25)
+        # Without head.json the rule score stays the final score.
+        none = scanner.Head(Path(tempfile.mkdtemp()) / "missing.json")
+        self.assertFalse(none.ready)
+        items = [{"keyword": 25, "topics": []}]
+        scanner.finish(items, self.s, None, head=none)
+        self.assertEqual((items[0]["score"], items[0].get("learned")), (25, None))
+
+    @unittest.skipIf(importlib.util.find_spec("numpy") is None, "numpy is not installed")
     def test_vector_cache_survives_a_restart(self):
         import numpy as np
         sem = scanner.Semantic(CFG)
@@ -238,6 +293,29 @@ class AppTest(unittest.TestCase):
         self.assertEqual(len(ids), len(set(ids)))
         c = self.get("/api/counts").json()["lookbacks"]
         self.assertEqual((c["1m"], c["5m"], c["1d"], c["30d"]), (0, 1, 2, 4))
+
+    def test_top_people_count_pieces_of_work(self):
+        # Without the meaning model, one person's items from one source on one day are one piece of work, so many small
+        # pull requests on one day do not outrank someone with two separate pieces.
+        day = "2026-10-28T1"
+        many = [{"who": "busy", "source": "github", "kind": "pr", "date": f"{day}{k % 10}:00:00Z", "score": 30} for k in range(9)]
+        two = [{"who": "Builder", "source": "github", "kind": "repo", "date": "2026-10-27T10:00:00Z", "score": 80},
+               {"who": "builder", "source": "hf", "kind": "model", "date": "2026-10-28T10:00:00Z", "score": 70}]
+        rows = app.top_people(many + two + [{"who": "pkg", "source": "pypi", "kind": "package", "date": day + "0:00:00Z", "score": 90}])
+        self.assertEqual([r["name"] for r in rows], ["Builder", "busy"])  # names merge across case; packages have no author
+        self.assertEqual((rows[0]["works"], rows[0]["items"], rows[0]["value"]), (2, 2, 150))
+        self.assertEqual((rows[1]["works"], rows[1]["items"], rows[1]["value"]), (1, 9, 30))
+        o = self.get("/api/overview?since=30d").json()
+        self.assertEqual(set(o["community"]), {"villa_merged", "new_scroll_repos"})
+        self.assertEqual(list(o["top_people"]), [r["name"] for r in o["people"]])
+
+    def test_builders_view_is_called_contributors(self):
+        self.assertEqual(self.get("/api/views").json()["builders"]["label"], "Contributors")
+        page = (HERE / "index.html").read_text()
+        self.assertNotIn("competitor", page.lower())
+        js = (HERE / "static" / "app.js").read_text()
+        self.assertIn('sort: "date"', js)  # the page's list opens on Newest
+        self.assertIn("PER = [10, 20, 50, 100]", js)
 
     def test_item_csv_feed_docs(self):
         it = self.get("/api/item?id=arxiv:1").json()
