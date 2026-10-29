@@ -705,11 +705,11 @@ function buildCard(s) {
     const ends = endsText(l);
     const ver = l.superseded_by ? '<span class="ver old" title="a newer version of this line exists; it is kept for comparison">SUPERSEDED</span>' : (isNewest(s, l) ? '<span class="ver new" title="the newest version of this line; kit takes it by default">NEWEST</span>' : '');
     const was = l.superseded_by ? '<div class="note">Superseded: the newer version of this line is on this card, marked NEWEST. This one is kept for comparison and drawn faded.</div>' : '';
-    const note = f ? `<div class="note">${ends ? `CT end check: ${endsHTML(l)}` : (GRADE_TEXT[l.grade] || '')}.${l.untested ? ` Untested: ${UNTESTED}.` : ''} Usable ends: ${usable(l) || 'see note'}. Model output: no end has been checked on CT by a person.</div>`
-      : (l.note ? `<div class="note">${l.note}.</div>` : '');
+    const note = f ? `<div class="note">${ends ? `CT end check: ${endsHTML(l)}` : `${GRADE_TEXT[l.grade] || 'No CT end check'}.`}</div><div class="note">${l.untested ? `Untested: ${UNTESTED}. ` : ''}Usable ends: ${usable(l) || 'see note'}. Model output: no end has been checked on CT by a person.</div>`
+      : (l.note ? `<div class="note">${l.note}${/[.!?]$/.test(l.note.trim()) ? '' : '.'}</div>` : '');
     const row = (k, v) => `<tr><th>${k}</th><td>${v}</td></tr>`;
     const k = lineKey(s, l);
-    return `<div class="ln${shown(s, l) ? '' : ' off'}"><div class="who"><label class="show" title="show or hide this line"><input type="checkbox" data-line="${k}"${OFF.line.has(k) ? '' : ' checked'}${OFF.src.has(l.source) ? ' disabled' : ''}></label><b style="color:${hexOf(l)}">${src.label}</b>${ver}${grade}</div>
+    return `<div class="ln${shown(s, l) ? '' : ' off'}"><div class="who"><span class="name"><label class="show" title="show or hide this line"><input type="checkbox" data-line="${k}"${OFF.line.has(k) ? '' : ' checked'}${OFF.src.has(l.source) ? ' disabled' : ''}></label><b style="color:${hexOf(l)}">${src.label}</b></span><span class="tags">${ver}${grade}</span></div>
       <div class="meta">${t.points} points · z ${t.z_start} to ${t.z_end} (${fmt(t.height_mm, 0)} mm, ${fmt(t.coverage * 100, 0)}% of the scan) · strays up to ${fmt(t.stray_mm, 1)} mm from its mean · ${lic(l)}</div>${was}${note}
       <div class="links"><a href="${RAW(l)}" download>download</a><button class="lk" data-copy="${RAW(l)}" data-what="file URL copied">copy URL</button><button class="lk" data-copy="python -m kit centerline get ${s.scroll} --source ${l.source} --into YOUR_PROJECT_FOLDER" data-what="kit command copied: it writes YOUR_PROJECT_FOLDER/umbilicus.json" title="A command for the Scrolls kit that downloads this line, checks its sha256 and writes it as umbilicus.json where VC3D looks">copy kit command</button><a href="${DATASET}/blob/main/${l.file}" target="_blank" rel="noopener">view</a>${up}</div>
       <details class="full"><summary>every number</summary><table class="kv">
