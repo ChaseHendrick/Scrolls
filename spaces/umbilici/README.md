@@ -155,7 +155,7 @@ The page is driven from the console or a headless browser through `window.umbili
 URL parameters: `?mode=scan&scan=PHerc0191&z=10400`, `?mode=lasagna&scan=PHerc0175A&z=6400`, `?ex=5`,
 `?guide=vc3d`, `?data=lines`, `?glow=1.5`. The gear button holds the settings (glow strength and spread, quality,
 film grain, spin), saved in the browser.
-`data/lines.json` is the page's whole line table, built by `tools/build_lines.py` from a copy of the dataset.
+`data/lines.json` is the line table built at deploy by `tools/build_lines.py` from a copy of the dataset. On load the page reads the dataset's newest revision from huggingface.co and shows it instead, so new releases appear without a redeploy; the built table is the fallback.
 
 ## License
 
