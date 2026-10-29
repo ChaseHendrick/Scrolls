@@ -7,13 +7,14 @@ import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 
-const VERSION = '1.11.1';
+const VERSION = '1.12.0';
 const DATASET = 'https://huggingface.co/datasets/SharpMeow/vesuvius-center-lines';
 const LASAGNA_SCROLL = 'PHerc0175A';
 const ICE = new THREE.Color('#89f0ff');
 const AMBER = new THREE.Color('#ffb347');
 // one color per maker, so two people's lines on one scan never share a color (Chase, 24 Oct 2026)
-const SRC_HEX = { bucket: '#89f0ff', drobkov: '#ff7eb6', tauil: '#b69cff', dopico: '#f2f5f7', finder: '#ffb347', 'finder-polished': '#c6f36b' };
+const SRC_HEX = { bucket: '#89f0ff', drobkov: '#ff7eb6', tauil: '#b69cff', dopico: '#f2f5f7', finder: '#ffb347', 'finder-polished': '#c6f36b', 'finder-v2': '#ff7a59' };
+const SRC_OTHER = '#d8d0c0'; // a maker the dataset added after this page was built
 const SRC_COL = Object.fromEntries(Object.entries(SRC_HEX).map(([k, v]) => [k, new THREE.Color(v)]));
 const colOf = (l) => SRC_COL[l.source] || ICE;
 const hexOf = (l) => SRC_HEX[l.source] || '#89f0ff';
@@ -58,11 +59,13 @@ controls.addEventListener('end', () => { clearTimeout(settleT); settleT = setTim
 const composer = new EffectComposer(renderer);
 composer.addPass(new RenderPass(scene, camera));
 // ---------- settings (glow, quality, film), kept per viewer ----------
-const SET_DEFAULT = { glow: 0.8, radius: 0.5, quality: 'auto', film: true, spin: true, inset: true, turn: false };
+const SET_DEFAULT = { glow: 0.25, radius: 0.5, quality: 'auto', film: true, spin: true, inset: true, turn: false };
 const SET = { ...SET_DEFAULT };
-try { Object.assign(SET, JSON.parse(localStorage.getItem('umbilici.settings') || '{}')); } catch { /* storage blocked */ }
+// a saved glow of 0.8 is the old default (1.11 and earlier saved every setting on any change), so it gives way to the new one
+try { const saved = JSON.parse(localStorage.getItem('umbilici.settings') || '{}'); if (saved.glow === 0.8) delete saved.glow; Object.assign(SET, saved); } catch { /* storage blocked */ }
 { const q = new URLSearchParams(location.search); if (q.has('glow')) SET.glow = Math.max(0, Math.min(3, +q.get('glow') || 0)); }
-function saveSet() { try { localStorage.setItem('umbilici.settings', JSON.stringify(SET)); } catch { /* storage blocked */ } }
+// only the settings a viewer changed are kept, so a later default reaches everyone else
+function saveSet() { try { localStorage.setItem('umbilici.settings', JSON.stringify(Object.fromEntries(Object.entries(SET).filter(([k, v]) => v !== SET_DEFAULT[k])))); } catch { /* storage blocked */ } }
 // auto quality starts at 1.25 pixels per CSS pixel (1 on touch screens) and steps down, at most twice, when frames
 // run slow; 'high' is the screen's full density and 'low' is 0.75
 let autoLevel = 0;
@@ -626,7 +629,7 @@ sc.addEventListener('wheel', (e) => { if (!S.sel) return; e.preventDefault(); co
 // ---------- showing and hiding lines ----------
 function buildLegend() {
   const used = Object.keys(S.data.sources).filter((k) => S.data.scrolls.some((s) => s.lines.some((l) => l.source === k)));
-  $('legend').innerHTML = used.map((k) => `<button class="lg${OFF.src.has(k) ? ' off' : ''}" data-src="${k}" aria-pressed="${!OFF.src.has(k)}" title="show or hide every line by ${S.data.sources[k].label}"><i class="sw" style="background:${SRC_HEX[k]};box-shadow:0 0 6px ${SRC_HEX[k]}"></i>${k === 'finder' ? 'Center Finder (model output)' : k === 'finder-polished' ? 'Center Finder, polished (model output)' : S.data.sources[k].label}</button>`).join('');
+  $('legend').innerHTML = used.map((k) => `<button class="lg${OFF.src.has(k) ? ' off' : ''}" data-src="${k}" aria-pressed="${!OFF.src.has(k)}" title="show or hide every line by ${S.data.sources[k].label}"><i class="sw" style="background:${SRC_HEX[k]};box-shadow:0 0 6px ${SRC_HEX[k]}"></i>${k === 'finder' ? 'Center Finder (model output)' : k === 'finder-polished' ? 'Center Finder, polished (model output)' : k === 'finder-v2' ? 'Center Finder v2 (model output)' : S.data.sources[k].label}</button>`).join('');
 }
 function linesChanged() {
   buildLegend(); buildArray(); if (S.sel) { buildScanLines(S.sel); buildCard(S.sel); drawSlice(); }
@@ -702,11 +705,11 @@ function buildCard(s) {
     const ends = endsText(l);
     const ver = l.superseded_by ? '<span class="ver old" title="a newer version of this line exists; it is kept for comparison">SUPERSEDED</span>' : (isNewest(s, l) ? '<span class="ver new" title="the newest version of this line; kit takes it by default">NEWEST</span>' : '');
     const was = l.superseded_by ? '<div class="note">Superseded: the newer version of this line is on this card, marked NEWEST. This one is kept for comparison and drawn faded.</div>' : '';
-    const note = f ? `<div class="note">${ends ? `CT end check: ${endsHTML(l)}` : (GRADE_TEXT[l.grade] || '')}.${l.untested ? ` Untested: ${UNTESTED}.` : ''} Usable ends: ${usable(l) || 'see note'}. Model output: no end has been checked on CT by a person.</div>`
-      : (l.note ? `<div class="note">${l.note}.</div>` : '');
+    const note = f ? `<div class="note">${ends ? `CT end check: ${endsHTML(l)}` : `${GRADE_TEXT[l.grade] || 'No CT end check'}.`}</div><div class="note">${l.untested ? `Untested: ${UNTESTED}. ` : ''}Usable ends: ${usable(l) || 'see note'}. Model output: no end has been checked on CT by a person.</div>`
+      : (l.note ? `<div class="note">${l.note}${/[.!?]$/.test(l.note.trim()) ? '' : '.'}</div>` : '');
     const row = (k, v) => `<tr><th>${k}</th><td>${v}</td></tr>`;
     const k = lineKey(s, l);
-    return `<div class="ln${shown(s, l) ? '' : ' off'}"><div class="who"><label class="show" title="show or hide this line"><input type="checkbox" data-line="${k}"${OFF.line.has(k) ? '' : ' checked'}${OFF.src.has(l.source) ? ' disabled' : ''}></label><b style="color:${hexOf(l)}">${src.label}</b>${ver}${grade}</div>
+    return `<div class="ln${shown(s, l) ? '' : ' off'}"><div class="who"><span class="name"><label class="show" title="show or hide this line"><input type="checkbox" data-line="${k}"${OFF.line.has(k) ? '' : ' checked'}${OFF.src.has(l.source) ? ' disabled' : ''}></label><b style="color:${hexOf(l)}">${src.label}</b></span><span class="tags">${ver}${grade}</span></div>
       <div class="meta">${t.points} points · z ${t.z_start} to ${t.z_end} (${fmt(t.height_mm, 0)} mm, ${fmt(t.coverage * 100, 0)}% of the scan) · strays up to ${fmt(t.stray_mm, 1)} mm from its mean · ${lic(l)}</div>${was}${note}
       <div class="links"><a href="${RAW(l)}" download>download</a><button class="lk" data-copy="${RAW(l)}" data-what="file URL copied">copy URL</button><button class="lk" data-copy="python -m kit centerline get ${s.scroll} --source ${l.source} --into YOUR_PROJECT_FOLDER" data-what="kit command copied: it writes YOUR_PROJECT_FOLDER/umbilicus.json" title="A command for the Scrolls kit that downloads this line, checks its sha256 and writes it as umbilicus.json where VC3D looks">copy kit command</button><a href="${DATASET}/blob/main/${l.file}" target="_blank" rel="noopener">view</a>${up}</div>
       <details class="full"><summary>every number</summary><table class="kv">
@@ -1018,9 +1021,73 @@ function tick(now = performance.now()) {
   }
 }
 
+// ---------- live lines ----------
+// The page reads the dataset's newest revision when it opens, so a new release of SharpMeow/vesuvius-center-lines
+// shows here without a redeploy. data/lines.json, built at deploy, is the fallback and supplies what a line file
+// does not change: the points and frame stamp of a file it already holds (dataset files never change in place; a
+// new version is a new file) and each scan's pyramid. A file or scan it lacks is read from the dataset and the bucket.
+const LINE_KEYS = ['source', 'kind', 'credit', 'licence', 'upstream', 'file', 'sha256', 'z', 'note'];
+const STAMP_KEYS = ['voxelsize_um', 'volume', 'volume_width', 'volume_height', 'volume_slices'];
+async function liveData(bundle) {
+  try {
+    const api = await fetch(`${DATASET.replace('/datasets/', '/api/datasets/')}`, { credentials: 'omit' }).then((r) => (r.ok ? r.json() : null));
+    const rev = api?.sha || 'main', at = (f) => `${DATASET}/resolve/${rev}/${f}`;
+    const ix = await getJSON(at('index.json'));
+    const held = new Map(bundle.scrolls.flatMap((s) => s.lines.map((l) => [`${l.file}:${l.sha256}`, l])));
+    const scanOf = new Map(bundle.scrolls.map((s) => [s.scroll, s]));
+    const sources = { ...bundle.sources };
+    for (const f of ix.files) sources[f.source] ||= { label: f.credit, short: f.source.slice(0, 2).toUpperCase() };
+    const order = Object.keys(sources);
+    const scrolls = await Promise.all(Object.entries(ix.scrolls)
+      .sort(([a, x], [b, y]) => (!(x.first_letters || x.grand_prize)) - (!(y.first_letters || y.grand_prize)) || (a < b ? -1 : a > b ? 1 : 0))
+      .map(async ([name, sc]) => {
+        const rows = ix.files.filter((f) => f.scroll === name);
+        const vol = rows.find((f) => f.scan === sc.scan && f.volume)?.volume;
+        let s = scanOf.get(name);
+        if (!s || s.scan !== sc.scan || s.volume !== vol) s = await newScan(name, sc, vol);
+        const lines = await Promise.all(rows.map((f) => liveLine(f, held.get(`${f.file}:${f.sha256}`), at)));
+        lines.sort((a, b) => order.indexOf(a.source) - order.indexOf(b.source));
+        return { ...s, first_letters: sc.first_letters, grand_prize: sc.grand_prize, lines };
+      }));
+    return { ...bundle, made: ix.made, frame: ix.frame, sources, scrolls, revision: rev, live: true };
+  } catch (e) {
+    console.warn('center lines: using the copy built with this page', e);
+    return { ...bundle, live: false };
+  }
+}
+async function newScan(name, sc, vol) {
+  const zarr = `https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/${name}/volumes/${vol}`;
+  const levels = (await getJSON(`${zarr}/.zattrs`)).multiscales[0].datasets.map((d) => d.path);
+  const pyramid = await Promise.all(levels.map(async (path) => {
+    const za = await getJSON(`${zarr}/${path}/.zarray`);
+    return { path, shape: za.shape, chunks: za.chunks, dtype: za.dtype, compressor: za.compressor ? za.compressor.id : null };
+  }));
+  return { scroll: name, scan: sc.scan, volume: vol, zarr, voxel_um: parseFloat(vol.match(/-([0-9.]+)um-/)[1]),
+    shape: pyramid[0].shape, levels: levels.length, pyramid };
+}
+// one line as data/lines.json holds it (tools/build_lines.py makes the same fields)
+async function liveLine(f, had, at) {
+  const ends = {};
+  for (const [k, e] of Object.entries(f.ct_ends || {})) { ends[k] = {}; for (const q of ['grade', 'recapped', 'D_mm']) if (q in e) ends[k][q] = e[q]; }
+  let grade = null;
+  if (Object.keys(ends).length) grade = Object.values(ends).some((e) => e.grade !== 'PASS') ? 'FLAG' : 'PASS';
+  else { const m = (f.note || '').match(/end check (PASS|FLAG|VOID)/); if (m) grade = m[1]; }
+  let points = had?.points, stamp = had?.stamp, usable = had ? had.usable : null;
+  if (!had) {
+    const doc = await getJSON(at(f.file)), md = doc.metadata || {};
+    points = [...doc.control_points].sort((a, b) => a.z - b.z).flatMap((p) => [Math.round(p.x), Math.round(p.y), Math.round(p.z)]);
+    stamp = Object.fromEntries(STAMP_KEYS.filter((k) => k in md).map((k) => [k, md[k]]));
+    const use = md.usable_ends;
+    usable = use && typeof use === 'object' ? ['low', 'high'].filter((k) => use[k]) : null;
+  }
+  const l = Object.fromEntries(LINE_KEYS.map((k) => [k, f[k] ?? (k === 'note' ? '' : f[k])]));
+  return { ...l, grade, ends, untested: !!f.ct_untested_scan, usable, stamp, points, superseded_by: f.superseded_by ?? null };
+}
+
 // ---------- boot ----------
 (async () => {
-  S.data = await getJSON('data/lines.json');
+  S.data = await liveData(await getJSON('data/lines.json'));
+  for (const k of Object.keys(S.data.sources)) SRC_HEX[k] ||= SRC_OTHER;
   try { S.las = await getJSON('data/lasagna/meta.json'); } catch { S.las = null; document.querySelector('.chip.las').disabled = true; }
   const nPrize = S.data.scrolls.filter(onPrize).length, nOther = S.data.scrolls.length - nPrize;
   $('k-count').textContent = nPrize; $('k-other').innerHTML = nOther ? `<span class="sep">/</span>${nOther} OTHER PUBLIC SCANS` : '';
@@ -1036,7 +1103,7 @@ function tick(now = performance.now()) {
   $('g-stamped').textContent = all.length - bare.length;
   const bareBy = {}; for (const [, l] of bare) bareBy[S.data.sources[l.source].label] = (bareBy[S.data.sources[l.source].label] || 0) + 1;
   $('g-unstamped').textContent = bare.length ? `the ${bare.length} without it (${Object.entries(bareBy).map(([k, n]) => `${k}: ${n}`).join('; ')})` : 'none';
-  $('g-made').textContent = S.data.made; $('g-frame').textContent = S.data.frame;
+  $('g-made').textContent = S.data.made + (S.data.live ? `, read live at revision ${S.data.revision.slice(0, 8)}` : ', the copy built with this page'); $('g-frame').textContent = S.data.frame;
   $('g-nlev').textContent = S.data.scrolls.reduce((n, s) => n + s.pyramid.length, 0);
   $('g-las').textContent = S.las ? `cos at ${S.las.slice_z.length} heights (z ${S.las.slice_z.join(', ')}) as ${S.las.slice_px} px WebP; an orientation picture per height at ${S.las.ori_px} px (hue from the doubled in-plane angle, so a normal and its opposite match); ${S.las.needles.count.toLocaleString('en-US')} normals on a ${S.las.needles.grid_voxels.join(' x ')} voxel grid where cos > 40 and grad_mag > 20, with nz rebuilt as the square root of 1 - nx² - ny². Frame: ${S.las.frame}.` : 'not loaded.';
   // the lasagna dataset may still be on its way to the Hub: say so instead of linking a 404

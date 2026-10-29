@@ -17,7 +17,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=9">
+<link rel="stylesheet" href="style.css?v=10">
 <script type="importmap">
 { "imports": {
   "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
@@ -117,7 +117,7 @@
 </nav>
 <section class="settings mono small" id="settings" hidden>
   <div class="s-head">SETTINGS</div>
-  <label>glow strength <b id="s-glow-v">0.80</b><input type="range" id="s-glow" min="0" max="300" value="80"></label>
+  <label>glow strength <b id="s-glow-v">0.25</b><input type="range" id="s-glow" min="0" max="300" value="25"></label>
   <label>glow spread <b id="s-radius-v">0.50</b><input type="range" id="s-radius" min="0" max="100" value="50"></label>
   <label>quality <select id="s-quality"><option value="auto">auto (adapts to your device)</option><option value="high">high (sharpest)</option><option value="low">low (fastest)</option></select></label>
   <label class="row"><input type="checkbox" id="s-film" checked> film grain and scan lines</label>
@@ -450,6 +450,6 @@ Page source and build scripts: https://huggingface.co/spaces/SharpMeow/umbilici/
   <div class="tbl-wrap"><table class="tbl" id="tbl"></table></div>
 </dialog>
 
-<script type="module" src="app.js?v=13"></script>
+<script type="module" src="app.js?v=14"></script>
 </body>
 </html>

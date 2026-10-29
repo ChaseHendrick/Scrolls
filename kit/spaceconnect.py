@@ -795,6 +795,8 @@ ALLOW_SPELLING = [
     ("spaces/umbilici/app.js", "const lic = (l) => l.licence;",
      "the license key as published in SharpMeow/vesuvius-center-lines and in the Space's data/lines.json, which the "
      "Connect panel links; the page reads it only here and every label says license"),
+    ("spaces/umbilici/app.js", "'credit', 'licence', 'upstream'",
+     "the live lines (liveData) copy the published dataset's keys unchanged, as build_lines.py does"),
     ("spaces/umbilici/tools/build_lines.py", '"licence": f["licence"]',
      "copies the published dataset's key unchanged into data/lines.json"),
     ("docs/tools/umbilici.md", "`licence`", "the page names the published dataset's index.json key"),
