@@ -16120,6 +16120,182 @@
    ]
   },
   {
+   "id": "vesuvius-radar",
+   "name": "vesuvius-radar",
+   "tagline": "new papers, code, models and data for the Herculaneum scrolls, scored and searchable",
+   "summary": "A Hugging Face Space that collects new papers, repositories, models, datasets, package versions and posts from public sources around the clock, scores each for relevance to reading the Herculaneum scrolls, and serves them as a page, a JSON API, CSV, RSS and an MCP server.",
+   "status": "Current",
+   "kind": [
+    "app"
+   ],
+   "area": "Viewers and apps",
+   "commands": [
+    "https://sharpmeow-vesuvius-radar.hf.space/api/items?since=1d",
+    "/mcp",
+    "uvicorn app:app --port 7860",
+    "spaces/vesuvius-radar",
+    "python scanner.py --days 3 --out scan.json",
+    "window.vesuviusRadar"
+   ],
+   "imports": [],
+   "code": [
+    {
+     "path": "spaces/vesuvius-radar/app.py",
+     "symbols": []
+    },
+    {
+     "path": "spaces/vesuvius-radar/scanner.py",
+     "symbols": []
+    },
+    {
+     "path": "spaces/vesuvius-radar/radar_mcp.py",
+     "symbols": []
+    },
+    {
+     "path": "spaces/vesuvius-radar/radar.json",
+     "symbols": []
+    },
+    {
+     "path": "spaces/vesuvius-radar/index.html",
+     "symbols": []
+    },
+    {
+     "path": "spaces/vesuvius-radar/static/app.js",
+     "symbols": []
+    },
+    {
+     "path": "spaces/vesuvius-radar/static/style.css",
+     "symbols": []
+    },
+    {
+     "path": "spaces/vesuvius-radar/connect.json",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_vesuvius_radar.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed to use. Making the Space public was Chase's yes (29 Oct 2026); later redeploys from merged `main` fall under the standing yes (rule 8)"
+   },
+   "checked": {
+    "date": "2026-10-29",
+    "commit": "8491642"
+   },
+   "license": "Code Apache 2.0; item titles, summaries and links belong to their sources",
+   "fields": {
+    "Id": "`vesuvius-radar`",
+    "Status": "Current",
+    "Kind": "app",
+    "Area": "Viewers and apps",
+    "Run": "[huggingface.co/spaces/SharpMeow/vesuvius-radar](https://huggingface.co/spaces/SharpMeow/vesuvius-radar) (page); `https://sharpmeow-vesuvius-radar.hf.space/api/items?since=1d` (JSON); `/mcp` (MCP, Streamable HTTP); locally `uvicorn app:app --port 7860` in `spaces/vesuvius-radar`; `python scanner.py --days 3 --out scan.json` (one scan, no server); in the page, `window.vesuviusRadar`",
+    "Code": "`spaces/vesuvius-radar/app.py`, `spaces/vesuvius-radar/scanner.py`, `spaces/vesuvius-radar/radar_mcp.py`, `spaces/vesuvius-radar/radar.json`, `spaces/vesuvius-radar/index.html`, `spaces/vesuvius-radar/static/app.js`, `spaces/vesuvius-radar/static/style.css`, `spaces/vesuvius-radar/connect.json`",
+    "Tests": "`tests/test_vesuvius_radar.py` (scoring, lookbacks, views, filters, API, CSV, RSS, MCP, the vector cache, and that no key or private material is in the Space's files); `python -m kit spaceconnect check` checks its Connect panel",
+    "Needs": "A browser, or any HTTP client. To run it yourself: Python 3.10+, `fastapi` 0.115.6, `uvicorn` 0.34.0, `fastembed` 0.9.1 and `numpy` (`requirements.txt`); the model BAAI/bge-small-en-v1.5 (MIT, about 130 MB) downloads on first use",
+    "Runs on": "A free Hugging Face CPU Space (2 vCPU, 16 GB); no GPU and no GPU quota. The page and API answer at once; see Cost and time for the collector",
+    "Network": "`rss.arxiv.org`, `arxiv.org`, `export.arxiv.org` (papers), `api.github.com` (repositories, ScrollPrize/villa), `huggingface.co` (models, datasets, Spaces, daily papers, the embedding model), `pypi.org`, `zenodo.org`, `api.crossref.org`, `scrollprize.substack.com` (the Challenge blog); all read logged out",
+    "Writes": "In the Space: `/data/radar` with persistent storage, else `/tmp/radar` (`store.json`, `vectors.npz`); `RADAR_DATA` moves it. `scanner.py --out` writes the file you name",
+    "Go-ahead": "Not needed to use. Making the Space public was Chase's yes (29 Oct 2026); later redeploys from merged `main` fall under the standing yes (rule 8)",
+    "Released": "Public on Hugging Face since 2026-10-29; README \"Released tools\" entry `vesuvius-radar`",
+    "License": "Code Apache 2.0; item titles, summaries and links belong to their sources",
+    "Checked": "2026-10-29 against commit `8491642`"
+   },
+   "page": "docs/tools/vesuvius-radar.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 23,
+     "end_line": 32,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 33,
+     "end_line": 44,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 45,
+     "end_line": 54,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 55,
+     "end_line": 63,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 64,
+     "end_line": 118,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 119,
+     "end_line": 129,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 130,
+     "end_line": 133,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 134,
+     "end_line": 137,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 138,
+     "end_line": 148,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 149,
+     "end_line": 156,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 157,
+     "end_line": 160,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 161,
+     "end_line": 170,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 171,
+     "end_line": 174,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 175,
+     "end_line": 178,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 179,
+     "end_line": 182,
+     "applicable": true
+    }
+   ]
+  },
+  {
    "id": "view",
    "name": "view",
    "tagline": "one offline HTML page that overlays several ink maps and the labels",
