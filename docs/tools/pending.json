@@ -1,0 +1,35 @@
+{
+  "about": "Pages still to be written (docs/TOOL-DOCS.md, Where pages live). Each entry names what its page will cover; remove an entry when its page exists.",
+  "pages": {
+    "villafmt": {
+      "why": "kit/villafmt.py came with kit labelsnap, which writes its VC3D review points through vc3d_points; the module's own page (VC3D and villa format checks and writers) is still to be written",
+      "covers": [
+        "kit/villafmt.py"
+      ]
+    },
+    "vc3d-prep": {
+      "why": "kit/vc3d_prep.py came with kit snap, whose prediction source reads nearest voxels through sample_nearest; the module's own page (seed and surface checks for VC3D) is still to be written",
+      "covers": [
+        "kit/vc3d_prep.py"
+      ]
+    },
+    "vc3d-region": {
+      "why": "kit/vc3d_region.py came with kit snap, which reads CT and predictions through its Volume; the module's own page (box reads and sampling of local or remote OME-Zarr) is still to be written",
+      "covers": [
+        "kit/vc3d_region.py"
+      ]
+    },
+    "vc3d-orient": {
+      "why": "kit/vc3d_orient.py came with kit snap, which reads --umbilicus files through load_umbilicus; the module's own page (normal orientation of a tifxyz surface) is still to be written",
+      "covers": [
+        "kit/vc3d_orient.py"
+      ]
+    },
+    "vc3d-landmarks": {
+      "why": "kit/vc3d_landmarks.py came with kit finesnap, which reads and inverts its --matrix through as_matrix and invert; the module's own page (checks of the catalog's cross-scan transforms) is still to be written",
+      "covers": [
+        "kit/vc3d_landmarks.py"
+      ]
+    }
+  }
+}

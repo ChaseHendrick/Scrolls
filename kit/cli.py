@@ -1,4 +1,4 @@
-"""Command line: python -m kit {start,help,prizes,submitcheck,live,style,stages,doctor,plan,cost,find,labels,centerline,cite,fetch,s3relay,vc3dcache,prclock,prtext,verify,rowscore,auc,hpscore,overlap,collate,stackcheck,tifxyz,sheetview,atlas,coverage,uvgate,windconsistency,axispolish,windlabel-box,hopbench,meshaudit,ensemble,fibertensor,sheetcheck,gate,layers,shuffle,provenance,compute,run,surfacefix,phantom,view,strokenet,letterread,letterlines,letterdemo,greeklm,releases,spaceconnect,leaderboard,routines,stale,integrity,volumeview,segzoo,fibers,scroll2ink,vxsummary}.
+"""Command line: python -m kit {start,help,prizes,submitcheck,live,style,stages,doctor,plan,cost,find,labels,centerline,cite,fetch,s3relay,vc3dcache,prclock,prtext,verify,rowscore,auc,hpscore,overlap,collate,stackcheck,tifxyz,sheetview,atlas,coverage,uvgate,windconsistency,axispolish,windlabel-box,hopbench,meshaudit,snap,labelsnap,finesnap,ensemble,fibertensor,sheetcheck,gate,layers,shuffle,provenance,compute,run,surfacefix,phantom,view,strokenet,letterread,letterlines,letterdemo,greeklm,releases,spaceconnect,leaderboard,routines,stale,integrity,volumeview,segzoo,fibers,scroll2ink,vxsummary}.
 
 An installed package (pyproject.toml) has the same commands as console scripts: scrolls-workbench (every command;
 gate, releases and leaderboard read the repository's docs/ and README.md, so they need a clone), and scrolls-letterread,
@@ -1031,7 +1031,8 @@ GROUPS = (
                                     "volumeview", "segzoo", "fibers")),
     ("Segments and geometry", ("scroll2ink", "stages", "tifxyz", "sheetview", "atlas", "coverage", "stackcheck",
                                "uvgate", "windconsistency", "axispolish",
-                               "windlabel-box", "hopbench", "overlap", "meshaudit", "surfacefix", "layers")),
+                               "windlabel-box", "hopbench", "overlap", "meshaudit", "surfacefix", "layers",
+                               "snap", "labelsnap", "finesnap")),
     ("Ink maps: score, compare, control", ("auc", "verify", "hpscore", "rowscore", "collate", "ensemble", "view",
                                            "strokenet", "fibertensor", "sheetcheck", "phantom", "shuffle", "gate",
                                            "leaderboard")),
@@ -1379,6 +1380,25 @@ def build_parser(prog="python -m kit", sub_progs=None):
     from . import windlabel_box
     windlabel_box.build_parser(p)
     p.set_defaults(func=windlabel_box.cmd_windlabel_box)
+
+    p = sub.add_parser("snap", help="snap a tifxyz mesh along its normals onto the nearest predicted sheet, the CT "
+                                    "sheet midline or a band face, regularized")
+    from . import snap
+    snap.build_parser(p)
+    p.set_defaults(func=snap.cmd_snap)
+
+    p = sub.add_parser("labelsnap", help="move a tifxyz surface label onto the papyrus recto face: snapped tifxyz, "
+                                         "abstain mask, OME-Zarr surface label (1 surface, 2 ignore), VC3D review "
+                                         "points")
+    from . import labelsnap
+    labelsnap.build_parser(p)
+    p.set_defaults(func=labelsnap.cmd_labelsnap)
+
+    p = sub.add_parser("finesnap", help="move a tifxyz surface label onto the recto face seen in a finer registered "
+                                        "scan of the same scroll (kit labelsnap's products plus source.tif)")
+    from . import finesnap
+    finesnap.build_parser(p)
+    p.set_defaults(func=finesnap.cmd_finesnap)
 
     p = sub.add_parser("meshaudit", help="audit published meshes, cross-scan transforms and render depth offsets")
     actions = p.add_subparsers(dest="action", required=True)

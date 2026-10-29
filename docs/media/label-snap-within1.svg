@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" width="960" height="540" role="img" aria-label="Label vertices within 1 voxel of an independent scan's recto face">
+<title>Label vertices within 1 voxel of an independent scan's recto face</title>
+<style>svg{font-family:system-ui,-apple-system,'Segoe UI',sans-serif}.bg{fill:#fcfcfb}.t1{fill:#0b0b0b}.t2{fill:#52514e}.grid{stroke:#e4e3df}.axis{stroke:#9c9a94}.s0{fill:#2a78d6}.s1{fill:#eb6834}.s3{fill:#eda100}.s9{fill:#a8a69f}.ci{stroke:#0b0b0b;stroke-width:1.5}.lab{fill:#fcfcfb}@media (prefers-color-scheme:dark){.bg{fill:#1a1a19}.t1{fill:#f0efec}.t2{fill:#c3c2b7}.grid{stroke:#383835}.axis{stroke:#6b6a64}.s0{fill:#3987e5}.s1{fill:#d95926}.s3{fill:#c98500}.s9{fill:#6b6a64}.ci{stroke:#f0efec}.lab{fill:#1a1a19}}</style>
+<rect class="bg" width="960" height="540" rx="12"/>
+<text class="t1" x="32" y="44" font-size="20" font-weight="650">Label vertices within 1 voxel of an independent scan's recto face</text>
+<text class="t2" x="32" y="68" font-size="13">Fresh sites, each test's rule fixed before it ran; truth from a finer scan of the same scroll, registered per site. Model output.</text>
+<rect class="s9" x="32" y="88" width="12" height="12" rx="3"/>
+<text class="t2" x="50" y="99" font-size="12.5">Published label</text>
+<rect class="s1" x="170.0" y="88" width="12" height="12" rx="3"/>
+<text class="t2" x="188.0" y="99" font-size="12.5">Best of seven community snaps</text>
+<rect class="s0" x="408.8" y="88" width="12" height="12" rx="3"/>
+<text class="t2" x="426.8" y="99" font-size="12.5">kit labelsnap (label scan only)</text>
+<rect class="s3" x="662.0" y="88" width="12" height="12" rx="3"/>
+<text class="t2" x="680.0" y="99" font-size="12.5">kit finesnap (finer registered scan)</text>
+<line class="axis" x1="72" x2="928" y1="470.0" y2="470.0"/>
+<text class="t2" x="64" y="474.0" font-size="11.5" text-anchor="end">0 %</text>
+<line class="grid" x1="72" x2="928" y1="402.0" y2="402.0"/>
+<text class="t2" x="64" y="406.0" font-size="11.5" text-anchor="end">20 %</text>
+<line class="grid" x1="72" x2="928" y1="334.0" y2="334.0"/>
+<text class="t2" x="64" y="338.0" font-size="11.5" text-anchor="end">40 %</text>
+<line class="grid" x1="72" x2="928" y1="266.0" y2="266.0"/>
+<text class="t2" x="64" y="270.0" font-size="11.5" text-anchor="end">60 %</text>
+<line class="grid" x1="72" x2="928" y1="198.0" y2="198.0"/>
+<text class="t2" x="64" y="202.0" font-size="11.5" text-anchor="end">80 %</text>
+<line class="grid" x1="72" x2="928" y1="130.0" y2="130.0"/>
+<text class="t2" x="64" y="134.0" font-size="11.5" text-anchor="end">100 %</text>
+<path class="s9" d="M95.0 470.0v-76.6a4.0 4.0 0 0 1 4.0 -4.0h29.5a4.0 4.0 0 0 1 4.0 4.0v76.6z"><title>PHerc0139, 60 sites, 27 Oct: Published label 23.7 %</title></path>
+<text class="t1" x="113.8" y="383.4" font-size="11.5" text-anchor="middle">24</text>
+<text class="t2" x="157.2" y="464" font-size="10.5" text-anchor="middle">n/a</text>
+<path class="s0" d="M182.0 470.0v-266.0a4.0 4.0 0 0 1 4.0 -4.0h29.5a4.0 4.0 0 0 1 4.0 4.0v266.0z"><title>PHerc0139, 60 sites, 27 Oct: kit labelsnap (label scan only) 79.4 %</title></path>
+<text class="t1" x="200.8" y="194.0" font-size="11.5" text-anchor="middle">79</text>
+<path class="s3" d="M225.5 470.0v-306.1a4.0 4.0 0 0 1 4.0 -4.0h29.5a4.0 4.0 0 0 1 4.0 4.0v306.1z"><title>PHerc0139, 60 sites, 27 Oct: kit finesnap (finer registered scan) 91.2 %</title></path>
+<text class="t1" x="244.2" y="153.9" font-size="11.5" text-anchor="middle">91</text>
+<text class="t1" x="179.0" y="492" font-size="13.5" font-weight="600" text-anchor="middle">PHerc0139</text>
+<text class="t2" x="179.0" y="510" font-size="12" text-anchor="middle">60 sites, 27 Oct</text>
+<path class="s9" d="M309.0 470.0v-78.3a4.0 4.0 0 0 1 4.0 -4.0h29.5a4.0 4.0 0 0 1 4.0 4.0v78.3z"><title>PHerc0814, 42 sites, 27 Oct: Published label 24.2 %</title></path>
+<text class="t1" x="327.8" y="381.7" font-size="11.5" text-anchor="middle">24</text>
+<text class="t2" x="371.2" y="464" font-size="10.5" text-anchor="middle">n/a</text>
+<path class="s0" d="M396.0 470.0v-237.4a4.0 4.0 0 0 1 4.0 -4.0h29.5a4.0 4.0 0 0 1 4.0 4.0v237.4z"><title>PHerc0814, 42 sites, 27 Oct: kit labelsnap (label scan only) 71.0 %</title></path>
+<text class="t1" x="414.8" y="222.6" font-size="11.5" text-anchor="middle">71</text>
+<text class="t2" x="458.2" y="464" font-size="10.5" text-anchor="middle">n/a</text>
+<text class="t1" x="393.0" y="492" font-size="13.5" font-weight="600" text-anchor="middle">PHerc0814</text>
+<text class="t2" x="393.0" y="510" font-size="12" text-anchor="middle">42 sites, 27 Oct</text>
+<path class="s9" d="M523.0 470.0v-58.9a4.0 4.0 0 0 1 4.0 -4.0h29.5a4.0 4.0 0 0 1 4.0 4.0v58.9z"><title>PHerc0814, 26 sites, 29 Oct: Published label 18.5 %</title></path>
+<text class="t1" x="541.8" y="401.1" font-size="11.5" text-anchor="middle">18</text>
+<path class="s1" d="M566.5 470.0v-71.8a4.0 4.0 0 0 1 4.0 -4.0h29.5a4.0 4.0 0 0 1 4.0 4.0v71.8z"><title>PHerc0814, 26 sites, 29 Oct: Best of seven community snaps 22.3 %</title></path>
+<text class="t1" x="585.2" y="388.2" font-size="11.5" text-anchor="middle">22</text>
+<path class="s0" d="M610.0 470.0v-184.4a4.0 4.0 0 0 1 4.0 -4.0h29.5a4.0 4.0 0 0 1 4.0 4.0v184.4z"><title>PHerc0814, 26 sites, 29 Oct: kit labelsnap (label scan only) 55.4 %</title></path>
+<text class="t1" x="628.8" y="275.6" font-size="11.5" text-anchor="middle">55</text>
+<path class="s3" d="M653.5 470.0v-284.3a4.0 4.0 0 0 1 4.0 -4.0h29.5a4.0 4.0 0 0 1 4.0 4.0v284.3z"><title>PHerc0814, 26 sites, 29 Oct: kit finesnap (finer registered scan) 84.8 %</title></path>
+<text class="t1" x="672.2" y="175.7" font-size="11.5" text-anchor="middle">85</text>
+<text class="t1" x="607.0" y="492" font-size="13.5" font-weight="600" text-anchor="middle">PHerc0814</text>
+<text class="t2" x="607.0" y="510" font-size="12" text-anchor="middle">26 sites, 29 Oct</text>
+<path class="s9" d="M737.0 470.0v-60.6a4.0 4.0 0 0 1 4.0 -4.0h29.5a4.0 4.0 0 0 1 4.0 4.0v60.6z"><title>PHerc0841, 45 sites, 29 Oct: Published label 19.0 %</title></path>
+<text class="t1" x="755.8" y="399.4" font-size="11.5" text-anchor="middle">19</text>
+<path class="s1" d="M780.5 470.0v-68.4a4.0 4.0 0 0 1 4.0 -4.0h29.5a4.0 4.0 0 0 1 4.0 4.0v68.4z"><title>PHerc0841, 45 sites, 29 Oct: Best of seven community snaps 21.3 %</title></path>
+<text class="t1" x="799.2" y="391.6" font-size="11.5" text-anchor="middle">21</text>
+<path class="s0" d="M824.0 470.0v-219.0a4.0 4.0 0 0 1 4.0 -4.0h29.5a4.0 4.0 0 0 1 4.0 4.0v219.0z"><title>PHerc0841, 45 sites, 29 Oct: kit labelsnap (label scan only) 65.6 %</title></path>
+<text class="t1" x="842.8" y="241.0" font-size="11.5" text-anchor="middle">66</text>
+<text class="t2" x="886.2" y="464" font-size="10.5" text-anchor="middle">n/a</text>
+<text class="t1" x="821.0" y="492" font-size="13.5" font-weight="600" text-anchor="middle">PHerc0841</text>
+<text class="t2" x="821.0" y="510" font-size="12" text-anchor="middle">45 sites, 29 Oct</text>
+<text class="t2" x="32" y="526" font-size="11.5">n/a: not run in that test. Best community snap: the highest of seven on that scroll. Numbers: label_snap_checks in docs/results.json.</text>
+</svg>

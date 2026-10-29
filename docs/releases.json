@@ -727,6 +727,28 @@
           "command": "bash -n scripts/mac-w045.sh scripts/mac-verify.sh scripts/mac-phase0.sh",
           "page": "docs/tools/mac-w045.md",
           "evidence": "[device check](docs/tools/mac-verify.md), [queued checks](docs/tools/mac-phase0.md)"
+        },
+        {
+          "id": "labelsnap",
+          "name": "Label snap onto the recto face",
+          "area": "Surfaces and tracing",
+          "released": "2026-10-29",
+          "summary": "Moves a published or traced tifxyz surface label along its normals onto the recto face of its papyrus band in the CT, with a per-vertex abstain mask, confidence, an OME-Zarr surface label (1 surface, 2 ignore) and a VC3D review queue. On fresh PHerc0814 sites, scored against an independent 1.129 um scan, 71.0% of vertices were within one voxel of the face against 24.2% published; on 71 fresh PHerc0814 and PHerc0841 sites it was closer to a finer scan's recto face than the published labels and seven community snaps. Geometry, not a reading; not exact at every vertex.",
+          "command": "python -m kit labelsnap snap LABEL --volume ZARR --out OUT --umbilicus UMB.json",
+          "page": "docs/tools/labelsnap.md",
+          "evidence": "[Snapped Labels](docs/tools/snapped-labels.md), [results](docs/results.json)",
+          "line": "Moves a tifxyz surface label along its normals onto the recto face of its papyrus band, with an abstain mask and VC3D review points."
+        },
+        {
+          "id": "finesnap",
+          "name": "Label snap on a finer registered scan",
+          "area": "Surfaces and tracing",
+          "released": "2026-10-29",
+          "summary": "Snaps a label traced on a coarse scan onto the recto face seen in a finer scan of the same scroll, registered per vertex along the normal through the catalog matrix, with labelsnap's products plus a per-vertex source grid. On 60 fresh PHerc0139 sites, scored against an independent 1.129 um scan, 91.2% of vertices were within one voxel of the face, against 79.4% for labelsnap and 23.7% for the published labels. Needs a finer scan of the same scroll.",
+          "command": "python -m kit finesnap snap LABEL --volume COARSE --fine FINE --matrix TRANSFORM.json --umbilicus UMB.json --out OUT",
+          "page": "docs/tools/finesnap.md",
+          "evidence": "[Snapped Labels](docs/tools/snapped-labels.md), [results](docs/results.json)",
+          "line": "Snaps a label traced on a coarse scan onto the recto face seen in a finer, per-site registered scan of the same scroll."
         }
       ],
       "where": "main"
@@ -905,7 +927,7 @@
         "cd snapped-labels && sha256sum -c SHA256SUMS",
         "python load_example.py"
       ],
-      "details": "Viewer: [huggingface.co/spaces/SharpMeow/snapped-labels](https://huggingface.co/spaces/SharpMeow/snapped-labels), with a Connect your tool panel; source [`spaces/snapped-labels/`](spaces/snapped-labels/); page: [docs/tools/snapped-labels.md](docs/tools/snapped-labels.md). Credit: the people who traced the published labels, and the Vesuvius Challenge open data.",
+      "details": "Viewer: [huggingface.co/spaces/SharpMeow/snapped-labels](https://huggingface.co/spaces/SharpMeow/snapped-labels), with a Connect your tool panel; source [`spaces/snapped-labels/`](spaces/snapped-labels/); page: [docs/tools/snapped-labels.md](docs/tools/snapped-labels.md). Credit: the people who traced the published labels, and the Vesuvius Challenge open data. The code that made it is in the Scrolls kit: [labelsnap](docs/tools/labelsnap.md) and [finesnap](docs/tools/finesnap.md).",
       "where": "main"
     },
     {

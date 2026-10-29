@@ -77,11 +77,13 @@ Command-line tools, benchmarks and script folders that run from a clone of this 
 </details>
 
 <details>
-<summary><b>Surfaces and tracing</b> (13)</summary>
+<summary><b>Surfaces and tracing</b> (15)</summary>
 
 | Tool | What it does |
 | --- | --- |
 | [Bounded surface correction (experimental)](docs/tools/surfacefix.md) | Suggests bounded surface shifts using agreement between maps from two traces and keeps only shifts that pass its controls. |
+| [Label snap on a finer registered scan](docs/tools/finesnap.md) | Snaps a label traced on a coarse scan onto the recto face seen in a finer, per-site registered scan of the same scroll. |
+| [Label snap onto the recto face](docs/tools/labelsnap.md) | Moves a tifxyz surface label along its normals onto the recto face of its papyrus band, with an abstain mask and VC3D review points. |
 | [Mesh and cross-scan audit](docs/tools/meshaudit.md) | Checks cross-scan transforms, mesh canvases and rendering depth against public catalog geometry. |
 | [Planted defect generator](docs/tools/planted.md) | Plants sheet switches, holes and other defects into synthetic tifxyz surfaces with a known answer, to test checkers against. |
 | [Published segment coverage](docs/tools/coverage.md) | Shows the heights and winding angles covered by published meshes and the gaps between them. |
@@ -261,6 +263,7 @@ Every command is in [`docs/tools/cli.md`](docs/tools/cli.md), and every tool has
 19. **Three hosted text models restored hidden Greek letters in Philodemus, De Musica, less often than a Kneser-Ney letter model** (gap letter accuracy 0.181, 0.181 and 0.118 against 0.331, single letters 0.447 at best against 0.895, no recall detected (probe about 0.08); public text, 22 October 2026, model output).
 20. **Our letter classifier, trained on Hell-Char only, named Greek letters on fresh papyrus photographs better than Hell-Char ConvNeXt-V2** (error 0.291 against 0.340 on the 8,479 ICDAR 2023 test boxes, boxes given, every control passed; as lines with a no-Homer Greek letter model it was level with Hell-Char given the same model; 24 October 2026, model output; photographs, not ink maps).
 21. **windlabel-box's automatic relative windings passed a held-out test on a third scroll and were slightly more often right than two community winding tools** (0.955 of 32,411 judged steps on fresh PHerc0172 boxes, against 0.944 for constraint-gauge's E1 on the same steps and 0.934 for winding-phase at matched coverage, leads with lower bounds +0.009 and +0.005; rules fixed before any box had a prediction; 29 October 2026, model output against the published hand windings).
+22. **labelsnap moved published surface labels closer to the papyrus recto face than the published labels and seven community snaps** (mean +2.153 voxels closer than the published label, +1.892 closer than VC3D's `vc_objrefine` tuned on PHerc0139, 71 fresh PHerc0814 and PHerc0841 sites scored against a finer scan; within 1 voxel 55 to 66 % against 19 %; finesnap, on a finer registered scan, 85 % on PHerc0814 and 91 % on PHerc0139; 25 to 29 October 2026, model output; geometry, not a reading).
 
 **Pipeline and reader checks** ([details](docs/FINDINGS.md#pipeline-and-reader-checks))
 

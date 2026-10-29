@@ -1,0 +1,38 @@
+{
+  "schema": "scrolls-media/1",
+  "name": "labelsnap-ladder",
+  "label": "Synthetic demo",
+  "alt": "Two cross sections of a made-up stack of three papyrus sheets whose lower gap shrinks from 4 voxels to 0 across the picture. An orange label line inside the middle sheet moves to a blue line on the sheet's lower face where the gap is 2 voxels or more; under 1 voxel the default drops to the neighbor's face, and with --merged those vertices stay in place in gray.",
+  "caption": "Synthetic demo of kit labelsnap on the gap ladder of tests/test_snap_face.py, default and --merged. No scan data; geometry, not a reading.",
+  "license": "Apache-2.0",
+  "release_id": null,
+  "data": null,
+  "sources": [],
+  "outputs": [
+    {
+      "file": "labelsnap-ladder.gif",
+      "bytes": 167098,
+      "sha256": "a4d44a5dc8a146dd7979b74fa384c1822e8c53baf3f6562f7edaf8f44afa278f",
+      "width": 960,
+      "height": 540
+    },
+    {
+      "file": "labelsnap-ladder.png",
+      "bytes": 25714,
+      "sha256": "6157d423a3b79bffed75f038232b1e928e3ebc334021ef54bb966f63b242d67e",
+      "width": 960,
+      "height": 540
+    }
+  ],
+  "inputs": [],
+  "made": "2026-10-29",
+  "tool": {
+    "scripts": [
+      "common.py",
+      "snap_media.py"
+    ],
+    "scripts_sha256": "7b310a9e010b9f373ab28909ae87a636ac8fad3789117da5f23a5f2e0dea1aed",
+    "base_commit": "afcc05ae96b7348d6a24951d5d95f11bb68dbf35"
+  },
+  "command": "python scripts/media/labelsnap_demo.py --out-dir docs/assets/labelsnap"
+}
