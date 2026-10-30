@@ -8,6 +8,8 @@
   const SHORT = { arxiv: "arXiv", github: "GitHub", hf: "HF", pypi: "PyPI", zenodo: "Zenodo", journals: "Journals", blog: "Blog" };
   const BANDS = ["high", "medium", "low"];
   const BAND_LABEL = { high: "High", medium: "Medium", low: "Low" };
+  // An issue's or pull request's author is who opened it; a later comment or review has its own author.
+  const OPENED = { issue: "opened by", pr: "opened by", thread: "started by" };
   const KIND = { paper: "paper", repo: "repository", pr: "pull request", issue: "issue", release: "release", model: "model",
     dataset: "dataset", space: "Space", "daily-paper": "daily paper", package: "package version", post: "blog post" };
   const LOOKBACKS = [["1m", "1 min"], ["5m", "5 min"], ["15m", "15 min"], ["30m", "30 min"], ["1h", "1 hour"], ["3h", "3 hours"],
@@ -40,7 +42,7 @@
   const perSaved = +store.get("per", 10);
   const S = Object.assign({ f: Object.assign(defaults(), saved), per: PER.includes(perSaved) ? perSaved : 10, page: 0, items: [], matched: 0,
     stars: new Set(store.get("stars", [])), hide: new Set(store.get("hidden", [])), ov: null, base: null, counts: null, cfg: null,
-    open: new Set() });
+    open: new Set(), like: new Set() });
   // The last visit: items first seen after it get a "new" mark. Updated a little after the page opens.
   S.lastVisit = store.get("lastVisit", null);
   setTimeout(() => store.set("lastVisit", new Date().toISOString().slice(0, 19) + "Z"), 15000);
@@ -575,8 +577,8 @@
     const meta = [
       `<span class="src"><i class="dot s-${i.source}"></i>${esc(SRC_LABEL[i.source] || i.source)}</span>`,
       `<span>${esc(KIND[i.kind] || i.kind)}${i.state ? " · " + esc(i.state) : ""}${i.category ? " · " + esc(i.category) : ""}</span>`,
-      `<span title="${esc(stamp(i.date))}${i.first_seen ? "; found " + esc(stamp(i.first_seen)) : ""}">${esc(dm(D(i.date)))} (${esc(ago(i.date))})</span>`,
-      i.who ? `<span>${esc(i.who.length > 80 ? i.who.slice(0, 78) + "..." : i.who)}</span>` : "",
+      `<span title="${esc(stamp(i.date))}${i.created && i.created !== i.date ? "; opened " + esc(stamp(i.created)) : ""}${i.first_seen ? "; found " + esc(stamp(i.first_seen)) : ""}">${esc(dm(D(i.date)))} (${esc(ago(i.date))})</span>`,
+      i.who ? `<span>${OPENED[i.kind] ? OPENED[i.kind] + " " : ""}${esc(i.who.length > 80 ? i.who.slice(0, 78) + "..." : i.who)}</span>` : "",
       i.stars != null ? `<span>${fmtN(i.stars)} stars</span>` : "",
       i.likes ? `<span>${fmtN(i.likes)} likes</span>` : "",
       i.downloads ? `<span>${fmtN(i.downloads)} downloads</span>` : "",
@@ -599,7 +601,7 @@
       i.doi_url ? `<a href="${esc(safe(i.doi_url))}" target="_blank" rel="noopener">DOI</a>` : "",
       ...(i.code || []).map((u) => `<a href="${esc(safe(u))}" target="_blank" rel="noopener">Code: ${esc(u.replace(/^https?:\/\/(www\.)?/, "").slice(0, 48))}</a>`),
     ].filter(Boolean).join("");
-    const starred = S.stars.has(i.id), hidden = S.hide.has(i.id), open = S.open.has(i.id);
+    const starred = S.stars.has(i.id), hidden = S.hide.has(i.id), open = S.open.has(i.id), like = S.like.has(i.id);
     return `<article class="card item${hidden ? " hidden-item" : ""}" data-id="${esc(i.id)}">
       ${ring(i)}
       <div class="t"><h3><a href="${esc(safe(i.url))}" target="_blank" rel="noopener">${esc(i.title)}</a></h3></div>
@@ -610,18 +612,32 @@
       </div>
       <div class="meta">${meta}</div>
       <div class="body">
-        ${i.summary ? `<p class="summary" title="Click to expand">${esc(i.summary)}</p>` : ""}
+        ${updateHTML(i)}
+        ${i.summary ? `<p class="summary" title="Click to expand">${i.activity && i.activity.who ? `<span class="slab">${esc(cap(OPENED[i.kind] || "posted by"))} ${esc(i.who || "")}:</span> ` : ""}${esc(i.summary)}</p>` : ""}
         <div class="tags">${i.topics.map((t) => `<button class="tag${byMeaning.has(t) ? " meaning" : ""}" data-topic="${esc(t)}"${byMeaning.has(t) ? ' title="Added by the meaning model"' : ""}>${esc(t)}</button>`).join("")}</div>
         <div class="links-row">
           <div class="links">${links}</div>
           <div class="more-row">
-            <button class="btn ghost" data-act="why" type="button" aria-expanded="${open}">Why this score</button>
-            <button class="btn ghost" data-act="like" type="button">More like this</button>
+            <button class="btn ghost" data-act="why" type="button" aria-expanded="${open}" title="How the score was made: keywords, meaning and the learned model">Why this score</button>
+            <button class="btn ghost" data-act="like" type="button" aria-expanded="${like}" title="The items closest to this one in meaning">More like this</button>
           </div>
         </div>
         <div class="detail" data-detail ${open ? "" : "hidden"}>${open ? whyHTML(i) : ""}</div>
+        <div class="detail" data-similar ${like ? "" : "hidden"}></div>
       </div>
     </article>`;
+  }
+  const cap = (t) => t.charAt(0).toUpperCase() + t.slice(1);
+  const SEE = { comment: "the comment", review: "the review", commit: "the commit" };
+  function updateHTML(i) {
+    const a = i.activity;
+    if (!a || !a.who) return "";
+    const what = cap(a.what);
+    const kind = /comment/.test(a.what) ? "comment" : /review|approved|changes requested/.test(a.what) ? "review" : a.what === "new commits" ? "commit" : "";
+    const also = (a.also || []).length ? ` · <span class="also">also: ${esc(a.also.join(", "))}</span>` : "";
+    const link = a.url ? ` · <a class="ulink" href="${esc(safe(a.url))}" target="_blank" rel="noopener">See ${SEE[kind] || "it"}</a>` : "";
+    return `<div class="update-row"><span class="ulab">Latest update</span><span class="uwho"><b>${esc(what)}</b> by <b>${esc(a.who)}</b> · <span title="${esc(stamp(a.date))}">${esc(ago(a.date))}</span>${also}${link}</span>` +
+      (a.text ? `<p class="usaid" title="Click to expand">${esc(a.text)}</p>` : "") + `</div>`;
   }
   function whyHTML(i) {
     const parts = i.parts || [];
@@ -629,8 +645,7 @@
     const rows = parts.map(([l, p]) => `<div class="why-row"><span class="lab">${esc(l)}</span><span class="bar"><i class="${p < 0 ? "neg" : ""}" style="width:${Math.round(100 * Math.abs(p) / max)}%"></i></span><span class="pts">${p > 0 ? "+" : ""}${p}</span></div>`).join("");
     const mean = i.semantic != null ? `<span>Meaning <b>${i.semantic}</b> (cosine ${i.sim} to "${esc(i.near || "")}")</span>` : `<span>Meaning: not scored${i.source === "pypi" ? " (package versions are scored by the package)" : ""}</span>`;
     return `<h4>Why this score</h4><div class="why">${rows || '<p class="note">No term matched; the score comes from meaning alone.</p>'}</div>
-      <div class="why-total"><span>Keywords <b>${i.keyword}</b></span>${mean}<span>Final <b>${i.score}</b> (${esc(BAND_LABEL[i.band])})</span></div>${i.learned ? `<p class="note">The final score comes from the learned model, fitted to blind ratings of what items are worth to scroll work; it reads the ${i.learned === "full" ? "text's meaning, " : ""}keyword score, source, kind and popularity. The keyword points above explain the match; they no longer set the score.</p>` : ""}${i.capped ? `<p class="note">Capped at ${i.score}: ${esc(i.capped)}.</p>` : ""}
-      <div class="sims" data-sims></div>`;
+      <div class="why-total"><span>Keywords <b>${i.keyword}</b></span>${mean}<span>Final <b>${i.score}</b> (${esc(BAND_LABEL[i.band])})</span></div>${i.learned ? `<p class="note">The final score comes from the learned model, fitted to blind ratings of what items are worth to scroll work; it reads the ${i.learned === "full" ? "text's meaning, " : ""}keyword score, source, kind and popularity. The keyword points above explain the match; they no longer set the score.</p>` : ""}${i.capped ? `<p class="note">Capped at ${i.score}: ${esc(i.capped)}.</p>` : ""}`;
   }
   function visible() {
     let items = S.items.filter((i) => S.f.showHidden || !S.hide.has(i.id));
@@ -650,7 +665,7 @@
     }
     $("#list").innerHTML = items.map(itemHTML).join("");
     $("#pager").innerHTML = pagerHTML();
-    $$("[data-detail]:not([hidden])").forEach((d) => loadSims(d.closest(".item").dataset.id, d));
+    $$("[data-similar]:not([hidden])").forEach((d) => loadSims(d.closest(".item").dataset.id, d));
   }
   $("#pager").addEventListener("click", (e) => { const b = e.target.closest("[data-page]"); if (b && !b.disabled) goPage(+b.dataset.page).catch(fail); });
   $("#list").addEventListener("click", (e) => {
@@ -664,25 +679,27 @@
     const id = card.dataset.id, item = S.items.find((x) => x.id === id);
     const t = e.target.closest("[data-topic]");
     if (t) { if (!S.f.topics.includes(t.dataset.topic)) toggle("topics", t.dataset.topic); return; }
-    if (e.target.closest(".summary")) { e.target.closest(".summary").classList.toggle("open"); return; }
+    if (e.target.closest(".summary, .usaid")) { e.target.closest(".summary, .usaid").classList.toggle("open"); return; }
     const a = e.target.closest("[data-act]");
     if (!a || !item) return;
     const act = a.dataset.act;
     if (act === "star") { S.stars.has(id) ? S.stars.delete(id) : S.stars.add(id); store.set("stars", Array.from(S.stars)); renderFilters(); renderList(); }
     if (act === "hide") { S.hide.has(id) ? S.hide.delete(id) : S.hide.add(id); store.set("hidden", Array.from(S.hide)); renderFilters(); renderList(); }
     if (act === "copy") { (navigator.clipboard ? navigator.clipboard.writeText(item.url) : Promise.reject()).then(() => { a.innerHTML = ICON.ok; setTimeout(() => (a.innerHTML = ICON.copy), 1200); }).catch(() => {}); }
-    if (act === "why" || act === "like") {
+    // Each button opens and closes its own panel: the score's breakdown, or the nearest items in meaning.
+    if (act === "why") {
       const d = card.querySelector("[data-detail]");
-      const opening = d.hidden || act === "like";
-      if (opening) { S.open.add(id); d.innerHTML = whyHTML(item); d.hidden = false; loadSims(id, d, act === "like"); }
-      else { S.open.delete(id); d.hidden = true; }
-      card.querySelector('[data-act="why"]').setAttribute("aria-expanded", String(!d.hidden));
+      if (d.hidden) { S.open.add(id); d.innerHTML = whyHTML(item); d.hidden = false; } else { S.open.delete(id); d.hidden = true; }
+      a.setAttribute("aria-expanded", String(!d.hidden));
+    }
+    if (act === "like") {
+      const d = card.querySelector("[data-similar]");
+      if (d.hidden) { S.like.add(id); d.hidden = false; loadSims(id, d, true); } else { S.like.delete(id); d.hidden = true; }
+      a.setAttribute("aria-expanded", String(!d.hidden));
     }
   });
   const simCache = {};
-  async function loadSims(id, d, scroll) {
-    const box = d.querySelector("[data-sims]");
-    if (!box) return;
+  async function loadSims(id, box, scroll) {
     box.innerHTML = '<h4>More like this</h4><p class="note">Finding the closest items in meaning...</p>';
     try {
       const it = simCache[id] || (simCache[id] = (await getJSON("api/item?id=" + encodeURIComponent(id))).body);
@@ -711,7 +728,7 @@
     const topics = Object.entries(b.topics);
     $("#briefGrid").innerHTML = topics.length ? topics.map(([t, items]) => `<section class="card brief-topic"><h3>${esc(t)}<span>${fmtN((S.ov && S.ov.by_topic[t]) || items.length)} in view</span></h3>${items.map((i) => `
       <div class="bitem"><span class="sc ${i.band === "high" ? "high" : ""}">${i.score}</span><a href="${esc(safe(i.url))}" target="_blank" rel="noopener">${esc(i.title)}</a>
-      <span class="m"><i class="dot s-${esc(i.source)}"></i>${esc(SRC_LABEL[i.source] || i.source)} · ${esc(KIND[i.kind] || i.kind)} · ${esc(ago(i.date))}${i.who ? " · " + esc(i.who.split(",")[0]) : ""}${i.code ? ' · <span class="badge code">code</span>' : ""}</span></div>`).join("")}</section>`).join("")
+      <span class="m"><i class="dot s-${esc(i.source)}"></i>${esc(SRC_LABEL[i.source] || i.source)} · ${esc(KIND[i.kind] || i.kind)} · ${esc(ago(i.date))}${i.activity && i.activity.who ? " · " + esc(i.activity.what) + " by " + esc(i.activity.who) : i.who ? " · " + esc(i.who.split(",")[0]) : ""}${i.code ? ' · <span class="badge code">code</span>' : ""}</span></div>`).join("")}</section>`).join("")
       : `<div class="card emptybox"><b>Nothing scores 35 or more in this window.</b><span>Widen the lookback above, or switch to Everyone.</span></div>`;
   }
 

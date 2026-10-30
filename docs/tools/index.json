@@ -16971,8 +16971,8 @@
     "text": "Not needed to use. Making the Space public was Chase's yes (29 Oct 2026); later redeploys from merged `main` fall under the standing yes (rule 8)"
    },
    "checked": {
-    "date": "2026-10-29",
-    "commit": "8491642"
+    "date": "2026-10-30",
+    "commit": "d0a600c"
    },
    "license": "Code Apache 2.0; item titles, summaries and links belong to their sources",
    "fields": {
@@ -16990,98 +16990,98 @@
     "Go-ahead": "Not needed to use. Making the Space public was Chase's yes (29 Oct 2026); later redeploys from merged `main` fall under the standing yes (rule 8)",
     "Released": "Public on Hugging Face since 2026-10-29; README \"Released tools\" entry `vesuvius-radar`",
     "License": "Code Apache 2.0; item titles, summaries and links belong to their sources",
-    "Checked": "2026-10-29 against commit `8491642`"
+    "Checked": "2026-10-30 against commit `d0a600c`"
    },
    "page": "docs/tools/vesuvius-radar.md",
    "sections": [
     {
      "name": "What it does",
      "start_line": 23,
-     "end_line": 32,
+     "end_line": 34,
      "applicable": true
     },
     {
      "name": "When to use it",
-     "start_line": 33,
-     "end_line": 44,
+     "start_line": 35,
+     "end_line": 46,
      "applicable": true
     },
     {
      "name": "Quick start",
-     "start_line": 45,
-     "end_line": 54,
+     "start_line": 47,
+     "end_line": 56,
      "applicable": true
     },
     {
      "name": "Checks and controls",
-     "start_line": 55,
-     "end_line": 64,
+     "start_line": 57,
+     "end_line": 66,
      "applicable": true
     },
     {
      "name": "Commands and options",
-     "start_line": 65,
-     "end_line": 135,
+     "start_line": 67,
+     "end_line": 137,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 136,
-     "end_line": 147,
+     "start_line": 138,
+     "end_line": 149,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 148,
-     "end_line": 151,
+     "start_line": 150,
+     "end_line": 153,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 152,
-     "end_line": 155,
+     "start_line": 154,
+     "end_line": 157,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 156,
-     "end_line": 166,
+     "start_line": 158,
+     "end_line": 170,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 167,
-     "end_line": 175,
+     "start_line": 171,
+     "end_line": 180,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 176,
-     "end_line": 179,
+     "start_line": 181,
+     "end_line": 184,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 180,
-     "end_line": 189,
+     "start_line": 185,
+     "end_line": 194,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 190,
-     "end_line": 193,
+     "start_line": 195,
+     "end_line": 198,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 194,
-     "end_line": 197,
+     "start_line": 199,
+     "end_line": 204,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 198,
-     "end_line": 201,
+     "start_line": 205,
+     "end_line": 208,
      "applicable": true
     }
    ]
