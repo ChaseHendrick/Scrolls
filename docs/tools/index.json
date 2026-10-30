@@ -6727,7 +6727,7 @@
    "id": "lasagna-fields",
    "name": "lasagna-fields",
    "tagline": "whole-scan lasagna fields for 24 scrolls, listed by scroll, and villa's field for any box on demand",
-   "summary": "Whole-scan lasagna fields for 24 scrolls, listed by scroll (villa's own in the open data and 20 public datasets made with villa's lasagna or Lasagnetta 0.1.1), and a Space that runs villa's lasagna on ZeroGPU for any box of any public scan, from its page, API or MCP server.",
+   "summary": "Whole-scan lasagna fields for 24 scrolls, listed by scroll (villa's own in the open data and 22 public datasets made with villa's lasagna or Lasagnetta 0.1.1), and a Space that runs villa's lasagna on ZeroGPU for any box of any public scan, from its page, API or MCP server.",
    "status": "Current",
    "kind": [
     "data",

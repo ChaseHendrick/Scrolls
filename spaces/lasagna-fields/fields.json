@@ -26,6 +26,42 @@
    "note": "the release's self-check kept Lasagnetta on this volume"
   },
   {
+   "scroll": "PHerc0009B",
+   "volume": "20250820154339",
+   "zarr": "20250820154339-2.401um-0.3m-77keV-masked.zarr",
+   "voxel_um": 2.401,
+   "read_level": 2,
+   "model": "Lasagnetta 0.1.1",
+   "source": "dataset",
+   "made_by": "Chase Hendrick",
+   "run": null,
+   "bytes": 4397390728,
+   "dataset": "SharpMeow/pherc0009b-20250820154339-lasagnetta",
+   "url": "https://huggingface.co/datasets/SharpMeow/pherc0009b-20250820154339-lasagnetta",
+   "manifest": null,
+   "stream": null,
+   "gallery": false,
+   "note": "the release's self-check kept Lasagnetta on this volume"
+  },
+  {
+   "scroll": "PHerc0009B",
+   "volume": "20260319104112",
+   "zarr": "20260319104112-2.401um-0.3m-77keV-masked.zarr",
+   "voxel_um": 2.401,
+   "read_level": 2,
+   "model": "Lasagnetta 0.1.1",
+   "source": "dataset",
+   "made_by": "Chase Hendrick",
+   "run": null,
+   "bytes": 4076425380,
+   "dataset": "SharpMeow/pherc0009b-20260319104112-lasagnetta",
+   "url": "https://huggingface.co/datasets/SharpMeow/pherc0009b-20260319104112-lasagnetta",
+   "manifest": null,
+   "stream": null,
+   "gallery": false,
+   "note": "the release's self-check kept Lasagnetta on this volume"
+  },
+  {
    "scroll": "PHerc0139",
    "volume": "20260102150214",
    "zarr": "20260102150214-2.399um-0.2m-78keV-masked.zarr",
@@ -493,28 +529,5 @@
    "gallery": false,
    "note": null
   }
- ],
- "pending_not_public": {
-  "note": "DRAFT, 30 Oct 2026: Lasagnetta fields being made, not public and maybe never. Delete this whole key to drop them. The page shows them without any link; list_fields never returns them.",
-  "items": [
-   {
-    "scroll": "PHerc0009B",
-    "volume": "20250820154339",
-    "zarr": "20250820154339-2.401um-0.3m-77keV-masked.zarr",
-    "voxel_um": 2.401,
-    "read_level": 2,
-    "model": "Lasagnetta 0.1.1",
-    "planned_dataset": "SharpMeow/pherc0009b-20250820154339-lasagnetta"
-   },
-   {
-    "scroll": "PHerc0009B",
-    "volume": "20260319104112",
-    "zarr": "20260319104112-2.401um-0.3m-77keV-masked.zarr",
-    "voxel_um": 2.401,
-    "read_level": 2,
-    "model": "Lasagnetta 0.1.1",
-    "planned_dataset": "SharpMeow/pherc0009b-20260319104112-lasagnetta"
-   }
-  ]
- }
+ ]
 }
