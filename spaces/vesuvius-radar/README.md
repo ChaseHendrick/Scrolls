@@ -25,7 +25,8 @@ public sources and scored for relevance. Open to everyone, logged in or not; it 
 
 - **Sources:** arXiv (announcements, past-week lists and a search for scroll terms), GitHub (repository searches and
   ScrollPrize/villa pull requests, issues and releases), Hugging Face (models, datasets, Spaces, daily papers), PyPI
-  (new versions of the libraries the work uses), Zenodo, Crossref journals and the Vesuvius Challenge blog.
+  (new versions of the libraries the work uses), Zenodo, Crossref journals, the Vesuvius Challenge blog and news
+  searches (Google News, Bing News and Hacker News).
 - **Lookback:** 1 minute to 30 days (default 1 day), by publish or update time or by when the radar found an item.
 - **Views:** researchers (papers and methods), the Challenge team (community activity about the scrolls), and
   contributors (tools, models, data, releases and papers with code).

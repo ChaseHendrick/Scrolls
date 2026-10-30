@@ -36,7 +36,7 @@ CONFIG = HERE / "radar.json"
 UA = "vesuvius-radar/1.0 (+https://huggingface.co/spaces/SharpMeow/vesuvius-radar)"
 SOURCES = ("arxiv", "github", "hf", "pypi", "zenodo", "journals", "blog")
 LABELS = {"arxiv": "arXiv", "github": "GitHub", "hf": "Hugging Face", "pypi": "PyPI", "zenodo": "Zenodo",
-          "journals": "Journals", "blog": "Challenge blog"}
+          "journals": "Journals", "blog": "News and blogs"}
 
 
 def load_config() -> dict:
@@ -932,22 +932,68 @@ def c_journals(sc, ctx):
     return list(out.values()), {"read": read, "notes": notes}
 
 
+def _tag(el, name: str):
+    """A child by its local name, whatever its namespace (Bing puts Source in a namespace named after the query)."""
+    return next((c for c in el if c.tag == name or c.tag.endswith("}" + name)), None)
+
+
+def news_link(link: str) -> str:
+    """The article itself: Bing's news links go through a click counter that carries it in its url parameter, and a
+    Hacker News story sometimes carries its link pasted as Markdown ("url](url")."""
+    link = link.split("](")[0]
+    u = urllib.parse.urlparse(link)
+    if u.netloc.endswith("bing.com") and "apiclick" in u.path:
+        return urllib.parse.parse_qs(u.query).get("url", [link])[0]
+    return link
+
+
+def news_key(title: str) -> str:
+    """One story under one id, whichever search found it: the title in lower-case letters and digits."""
+    return re.sub(r"[^a-z0-9]+", " ", title.lower()).strip()[:120]
+
+
 def c_blog(sc, ctx):
+    """The Challenge's own blog, where every post counts (a base of 50), and news searches (Google News, Bing News,
+    Hacker News), whose stories go through the scorer like any other listing. A story found by several searches is
+    kept once; a feed that fails or answers with something other than RSS is a note, and the other feeds still count."""
     scorer, since, prog = ctx["scorer"], ctx["since"], ctx["progress"]
-    out, read, notes = [], 0, []
-    for name, url in sc["feeds"]:
+    out, read, notes, seen = [], 0, [], set()
+    for f in sc["feeds"]:
+        name, url, search = (f[0], f[1], False) if isinstance(f, list) else (f["name"], f["url"], bool(f.get("search")))
         prog(name)
-        root = ET.fromstring(FETCH.get(url))
+        try:
+            root = ET.fromstring(FETCH.get(url))
+        except GH_ERRORS as e:
+            notes.append(f"{name}: {_why(e)}")
+            continue
+        except ET.ParseError:
+            notes.append(f"{name}: skipped, the answer was not RSS")
+            continue
         for it in root.iter("item"):
             t = parse_time(it.findtext("pubDate"))
             if not t or t < since:
                 continue
             read += 1
-            link = it.findtext("link", "")
-            out.append(make_item(scorer, source="blog", kind="post", id="blog:" + link.lower().rstrip("/"),
-                                 title=it.findtext("title", ""), url=link, date=t, text=it.findtext("description", ""),
-                                 base=50, base_label=f"{name} post", core_terms=False, who=name,
-                                 topics_extra=["Scroll work"]))
+            link, title = it.findtext("link", ""), it.findtext("title", "")
+            if not search:
+                out.append(make_item(scorer, source="blog", kind="post", id="blog:" + link.lower().rstrip("/"),
+                                     title=title, url=link, date=t, text=it.findtext("description", ""),
+                                     base=50, base_label=f"{name} post", core_terms=False, who=name,
+                                     topics_extra=["Scroll work"]))
+                continue
+            src = _tag(it, "source")
+            src = src if src is not None else _tag(it, "Source")
+            outlet = (src.text or "").strip() if src is not None else ""
+            if outlet and title.endswith(" - " + outlet):  # Google News ends each title with the outlet's name
+                title = title[:-len(outlet) - 3]
+            key = news_key(title)
+            if not key or key in seen:
+                continue
+            seen.add(key)
+            text = it.findtext("description", "") if "news.google." not in url else ""  # Google's is the title again
+            out.append(make_item(scorer, source="blog", kind="news", id="news:" + key, title=title, url=news_link(link),
+                                 date=t, text=text, who=outlet or name, feed=name,
+                                 comments=safe_url(it.findtext("comments", "")) or None))
     return out, {"read": read, "notes": notes}
 
 

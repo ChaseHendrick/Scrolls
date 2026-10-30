@@ -50,7 +50,7 @@ VECS_FILE = DATA_DIR / "vectors.npz"
 COLLECT = os.environ.get("RADAR_COLLECT", "1") != "0"  # tests set 0: no background collector
 SEMANTIC = os.environ.get("RADAR_SEMANTIC", "1") != "0"
 PUBLIC_URL = "https://sharpmeow-vesuvius-radar.hf.space"
-VERSION = "1.1.2"
+VERSION = "1.2.0"
 
 CFG = scanner.load_config()
 SCORER = scanner.Scorer(CFG)
@@ -75,8 +75,8 @@ VIEWS = {
                                     "book chapter", "report", "thesis", "presentation", "poster"]}]},
     "team": {"label": "Challenge team",
              "about": "What the community shipped and said about the scrolls: villa pull requests, issues and releases, "
-                      "new repositories, Hugging Face uploads and Zenodo records that name the scrolls, and the "
-                      "Challenge blog.",
+                      "new repositories, Hugging Face uploads and Zenodo records that name the scrolls, the "
+                      "Challenge blog and news stories.",
              "any": [{"sources": ["github", "blog"]},
                      {"sources": ["hf", "zenodo", "journals", "arxiv"], "topics": ["Scroll work"]}]},
     "builders": {"label": "Contributors",

@@ -129,7 +129,7 @@
    "search": "all:herculaneum OR all:papyrus OR all:papyri OR abs:\"vesuvius challenge\" OR abs:\"virtual unwrapping\" OR abs:\"carbonized scroll\" OR abs:\"carbonized papyrus\""},
   "github": {"label": "GitHub", "every_min": 20, "backfill_days": 30,
    "queries": ["vesuvius challenge", "herculaneum", "vesuvius scroll", "scrollprize", "volume-cartographer",
-               "papyrus ct", "topic:vesuvius-challenge"],
+               "papyrus ct", "topic:vesuvius-challenge", "org:ScrollPrize"],
    "watch_repos": ["ScrollPrize/villa"], "pr_lookups": 2},
   "hf": {"label": "Hugging Face", "every_min": 20, "backfill_days": 30,
    "search": ["vesuvius", "herculaneum", "papyrus", "scroll-prize", "dinovol"],
@@ -145,7 +145,12 @@
   "journals": {"label": "Journals", "every_min": 180, "backfill_days": 30,
    "queries": ["herculaneum papyri", "herculaneum scrolls", "virtual unwrapping", "carbonized papyrus",
                "papyrus x-ray tomography"]},
-  "blog": {"label": "Challenge blog", "every_min": 60, "backfill_days": 30,
-   "feeds": [["Vesuvius Challenge", "https://scrollprize.substack.com/feed"]]}
+  "blog": {"label": "News and blogs", "every_min": 60, "backfill_days": 30,
+   "feeds": [["Vesuvius Challenge", "https://scrollprize.substack.com/feed"],
+             {"name": "Google News", "search": true, "url": "https://news.google.com/rss/search?q=%22vesuvius+challenge%22+OR+%22herculaneum+scrolls%22+OR+%22herculaneum+papyri%22+OR+%22herculaneum+scroll%22+OR+scrollprize+when:30d&hl=en-US&gl=US&ceid=US:en"},
+             {"name": "Bing News", "search": true, "url": "https://www.bing.com/news/search?q=herculaneum+scrolls&format=rss&qft=sortbydate%3d%221%22"},
+             {"name": "Bing News", "search": true, "url": "https://www.bing.com/news/search?q=%22vesuvius+challenge%22&format=rss&qft=sortbydate%3d%221%22"},
+             {"name": "Hacker News", "search": true, "url": "https://hnrss.org/newest?q=herculaneum"},
+             {"name": "Hacker News", "search": true, "url": "https://hnrss.org/newest?q=%22vesuvius+challenge%22"}]}
  }
 }
