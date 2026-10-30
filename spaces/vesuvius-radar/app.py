@@ -50,7 +50,7 @@ VECS_FILE = DATA_DIR / "vectors.npz"
 COLLECT = os.environ.get("RADAR_COLLECT", "1") != "0"  # tests set 0: no background collector
 SEMANTIC = os.environ.get("RADAR_SEMANTIC", "1") != "0"
 PUBLIC_URL = "https://sharpmeow-vesuvius-radar.hf.space"
-VERSION = "1.1.0"
+VERSION = "1.1.1"
 
 CFG = scanner.load_config()
 SCORER = scanner.Scorer(CFG)

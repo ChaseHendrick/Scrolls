@@ -162,6 +162,7 @@ Each item: `id` (source and its own id), `source`, `kind`, `title`, `url`, `date
 | `lookback must be above zero` | `since` was 0 or negative | Use a positive lookback such as `15m` |
 | `lookback '...' is not like 15m, 6h, 1d or an ISO time` | `since` was not a number with m, h, d or w, nor an ISO time | Use `1m` to `30d` or an ISO time |
 | `by must be date (published or updated) or found (first seen by the radar)` | Another value of `by` | Use `date` or `found` |
+| GitHub `partial` with `network error (IncompleteRead)` | A villa listing was cut off three times in a row; the repository search results of the same check are still kept | Nothing: the next check reads it again |
 | GitHub `partial` with `HTTP 403 (rate limited)` | GitHub allows few logged-out calls per hour from one address | Nothing: the next check catches up; unchanged listings come from the ETag cache |
 | `semantic` missing on items | The model has not loaded yet, or is off | Wait for the first check; keyword scores still apply |
 | 429 from `/api/check` | A check started under 5 minutes ago | Wait `retry_after` seconds |
@@ -199,6 +200,7 @@ Free: a CPU Space (cpu-basic), no paid compute. The first collection after a sta
 
 - 2026-10-29: first version (1.0.0), built from `8491642`, tested in a private Space, then made public.
 - 2026-10-30: version 1.1.0 ([PR #285](https://github.com/ChaseHendrick/Scrolls/pull/285)). Villa issue and pull request cards say who made the latest update and what it said, with the opener kept as "opened by" (a card for villa #193 credited only the issue's opener for a newer comment by someone else); "Why this score" and "More like this" open separate panels (they opened the same one); long titles wrap on phones. Items gain `activity`; CSV gains `update`, `update_by`, `update_said` and `update_url`; RSS and the briefing name the update.
+- 2026-10-30: version 1.1.1 (PR_PENDING). A cut-off download (`IncompleteRead`) is retried like a refused one, and a villa listing that still fails is a `partial` note that keeps the check's repository search results; the first check after the 1.1.0 redeploy had lost every GitHub item to one cut-off download.
 
 ## Related
 

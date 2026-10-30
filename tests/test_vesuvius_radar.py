@@ -307,6 +307,48 @@ class GitHubActivityTest(unittest.TestCase):
         _, _, again = self.run_github(state)
         self.assertEqual(sum("/reviews?" in u or "/commits?" in u for u in again), 0)  # same updated time: remembered
 
+    def test_cut_off_download_is_retried(self):
+        import http.client
+        import urllib.request
+        tries = []
+
+        class Resp:
+            headers = {}
+            def __enter__(self): return self
+            def __exit__(self, *a): return False
+            def read(self): return b'{"ok": 1}'
+
+        def urlopen(req, timeout=None):
+            tries.append(req.full_url)
+            if len(tries) == 1:
+                raise http.client.IncompleteRead(b"x" * 10)
+            return Resp()
+        orig, sleep = urllib.request.urlopen, scanner.time.sleep
+        urllib.request.urlopen, scanner.time.sleep = urlopen, lambda s: None
+        self.addCleanup(setattr, urllib.request, "urlopen", orig)
+        self.addCleanup(setattr, scanner.time, "sleep", sleep)
+        self.assertEqual(scanner.Fetcher().json("https://api.github.com/x"), {"ok": 1})
+        self.assertEqual(len(tries), 2)
+
+    def test_villa_network_error_keeps_the_search_results(self):
+        import http.client
+
+        def get(url):
+            if "/search/repositories" in url:
+                return {"items": [{"full_name": "someone/vesuvius-tools", "html_url": "https://github.com/someone/vesuvius-tools",
+                                   "pushed_at": ago_iso(10), "created_at": ago_iso(9000), "description": "Vesuvius Challenge segmentation tools",
+                                   "owner": {"login": "someone"}, "topics": []}]}
+            raise http.client.IncompleteRead(b"x")
+        orig, sleep = scanner._gh_get, scanner.time.sleep
+        scanner._gh_get, scanner.time.sleep = get, lambda s: None
+        self.addCleanup(setattr, scanner, "_gh_get", orig)
+        self.addCleanup(setattr, scanner.time, "sleep", sleep)
+        sc = dict(CFG["sources"]["github"], queries=["vesuvius challenge"])
+        items, info = scanner.c_github(sc, {"scorer": scanner.Scorer(CFG), "since": T0 - dt.timedelta(hours=8),
+                                            "progress": lambda m: None, "state": {}})
+        self.assertEqual([i["id"] for i in items], ["github:someone/vesuvius-tools"])
+        self.assertIn("ScrollPrize/villa: network error (IncompleteRead)", info["notes"])
+
     def test_lookup_budget_and_partial_listing(self):
         state = {}
         sc_budget = CFG["sources"]["github"].get("pr_lookups")
