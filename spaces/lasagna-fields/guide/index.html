@@ -27,130 +27,170 @@ html{scroll-behavior:smooth}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
 a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
 h1,h2,h3{font-family:Fraunces,Georgia,serif;font-weight:650;letter-spacing:-.01em;line-height:1.15;margin:0}
-h2{font-size:clamp(26px,3.2vw,36px);margin-bottom:10px}
+h2{font-size:clamp(26px,3vw,34px);margin-bottom:8px}
 h3{font-size:19px;margin-bottom:6px}
 p{margin:0 0 12px}
-code,pre,.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13.5px}
+code,pre,.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13.5px;font-variant-ligatures:none}
 :not(pre)>code{overflow-wrap:anywhere;background:var(--bg2);border:1px solid var(--line);padding:1px 6px;border-radius:5px;font-size:.88em}
 .wrap{max-width:1180px;margin:0 auto;padding:0 24px}
-nav{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
-nav .wrap{display:flex;align-items:center;gap:22px;height:56px}
-.brand{font-family:Fraunces,serif;font-weight:650;font-size:18px;color:var(--ink);display:flex;align-items:center;gap:10px;white-space:nowrap}
-.layers{width:22px;height:18px;border-radius:4px;background:repeating-linear-gradient(180deg,var(--accent) 0 3px,var(--accent2) 3px 5px,#f3e2bf 5px 7px,var(--basil) 7px 8px,#f3e2bf 8px 9px)}
-.navlinks{display:flex;gap:18px;overflow-x:auto;scrollbar-width:none;flex:1}
-.navlinks a{color:var(--ink2);font-size:14px;white-space:nowrap}
-.tbtn{border:1px solid var(--line);background:var(--card);color:var(--ink2);border-radius:8px;padding:5px 10px;cursor:pointer;font:inherit;font-size:13px}
+.tbtn{position:absolute;top:14px;right:16px;z-index:3;border:1px solid var(--line);background:var(--card);color:var(--ink2);border-radius:8px;padding:5px 10px;cursor:pointer;font:inherit;font-size:13px}
+
+/* hero */
 header.hero{position:relative;overflow:hidden;border-bottom:1px solid var(--line)}
-.hero .wrap{padding-top:72px;padding-bottom:64px;position:relative;z-index:1}
+.hero .wrap{padding-top:60px;padding-bottom:52px;position:relative;z-index:2}
 .fields{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:.85}
 .hero:after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,var(--bg) 0,var(--bg) 44%,color-mix(in srgb,var(--bg) 78%,transparent) 56%,color-mix(in srgb,var(--bg) 25%,transparent) 72%,transparent 88%)}
-.hero .wrap{z-index:2}
 .eyebrow{text-transform:uppercase;letter-spacing:.14em;font-size:12px;font-weight:600;color:var(--accent)}
-.hero h1{font-size:clamp(38px,6vw,68px);max-width:760px;margin:12px 0 18px}
-.lede{font-size:19px;color:var(--ink);max-width:640px}
-.by{margin-top:18px;color:var(--ink2);font-size:15px}.by b{color:var(--ink)}
-.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-top:40px;max-width:760px}
-.stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;box-shadow:var(--shadow)}
-.stat b{display:block;font-family:Fraunces,serif;font-size:30px;font-weight:650;line-height:1.1}
+.hero h1{font-size:clamp(36px,5.6vw,64px);max-width:760px;margin:12px 0 16px}
+.lede{font-size:18.5px;color:var(--ink);max-width:620px}
+.by{color:var(--ink2);font-size:15px;margin:0}.by b{color:var(--ink)}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:28px;max-width:720px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 16px;box-shadow:var(--shadow)}
+.stat b{display:block;font-family:Fraunces,serif;font-size:28px;font-weight:650;line-height:1.1}
 .stat span{font-size:13px;color:var(--ink3)}
-.cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:30px}
+.cta{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:26px}
+.cta .jump{font-size:14.5px;color:var(--ink2);margin-left:6px}
+.cta .jump a{color:var(--ink2);border-bottom:1px solid var(--line)}
+.cta .jump a:hover{color:var(--accent);text-decoration:none}
 .btn{display:inline-flex;align-items:center;gap:8px;border-radius:10px;padding:10px 16px;font-weight:600;font-size:15px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
 .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.small{padding:6px 12px;font-size:14px}
 .btn:hover{text-decoration:none;filter:brightness(1.05)}
-section{padding:72px 0;border-bottom:1px solid var(--line)}
-.sub{color:var(--ink2);max-width:720px;margin-bottom:28px}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px}
-.scan{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;cursor:pointer;text-align:left;padding:0;color:inherit;font:inherit;box-shadow:var(--shadow);transition:transform .15s,border-color .15s}
-.scan:hover{transform:translateY(-2px)}
-.scan[aria-pressed="true"]{border-color:var(--accent);outline:2px solid var(--accent);outline-offset:-1px}
-.scan .img{aspect-ratio:2/1;background:#000;display:block;width:100%;object-fit:cover}
-.scan .meta{padding:10px 12px 12px}
-.scan .name{font-weight:600}
-.scan .small{font-size:12.5px;color:var(--ink3)}
-.detail{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:22px;margin-top:22px}
+
+/* sections */
+section{padding:60px 0;border-bottom:1px solid var(--line)}
+.sub{color:var(--ink2);max-width:760px;margin-bottom:20px}
 .panel{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);padding:18px}
-.viewer{background:#000;border-radius:10px;overflow:hidden;position:relative}
-.viewer img{display:block;width:100%;height:auto}
-.viewer .cap{position:absolute;left:10px;bottom:8px;font-size:12px;color:#e9e1d3;background:#000a;padding:2px 8px;border-radius:6px}
-.seg{display:inline-flex;border:1px solid var(--line);border-radius:9px;overflow:hidden;margin-bottom:12px}
-.seg button{border:0;background:transparent;color:var(--ink2);padding:6px 12px;cursor:pointer;font:inherit;font-size:13.5px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:9px;overflow:hidden}
+.seg button{border:0;background:transparent;color:var(--ink2);padding:6px 12px;cursor:pointer;font:inherit;font-size:13.5px;white-space:nowrap}
 .seg button[aria-pressed="true"]{background:var(--accent);color:#fff}
-dl.facts{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;margin:0;font-size:14.5px}
-dl.facts dt{color:var(--ink3)}dl.facts dd{margin:0;word-break:break-word}
-.links{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
 .codebox{position:relative;margin-top:10px}
-pre{background:var(--code);color:var(--codeink);border-radius:10px;padding:14px 16px;overflow-x:auto;overflow-y:hidden;margin:0;line-height:1.55}
+pre{background:var(--code);color:var(--codeink);border-radius:10px;padding:14px 16px;white-space:pre-wrap;overflow-wrap:anywhere;overflow-x:auto;overflow-y:hidden;margin:0;line-height:1.55}
 pre .c{color:#9a8f7e}
 .codebox pre{padding-top:34px}
 .copy{position:absolute;top:8px;right:8px;border:1px solid #ffffff22;background:#ffffff14;color:#efe6d6;border-radius:7px;padding:3px 9px;font-size:12px;cursor:pointer}
 .copy:hover{background:#ffffff26}
-.tabs{display:flex;flex-wrap:wrap;gap:4px;border-bottom:1px solid var(--line);margin-top:18px}
+.tabs{display:flex;flex-wrap:wrap;gap:4px;border-bottom:1px solid var(--line);margin-top:16px}
 .tabs button{border:0;background:none;padding:8px 12px;color:var(--ink2);cursor:pointer;font:inherit;font-size:14px;border-bottom:2px solid transparent;margin-bottom:-1px}
 .tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent);font-weight:600}
-.detail>*,.region>*,.panel,.codebox,.cards3>*{min-width:0}
-.region{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:22px}
-.mapbox{align-self:start;position:relative;background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:12px}
-svg.map{width:100%;height:auto;display:block;cursor:crosshair;touch-action:none}
-.zbar{display:flex;align-items:center;gap:10px;margin-top:10px;font-size:13.5px;color:var(--ink2)}
-.zbar input{flex:1;accent-color:var(--accent)}
-.form{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
-.form label{font-size:12.5px;color:var(--ink3);display:block;margin-bottom:3px}
-.form input,.form select{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);font:inherit;font-size:14px}
-.result{margin-top:14px;font-size:14.5px}
-.pill{display:inline-block;background:var(--sel);color:var(--accent);border-radius:999px;padding:1px 9px;font-size:12.5px;font-weight:600;margin:2px 4px 2px 0}
-.cards3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;box-shadow:var(--shadow)}
-.card .k{font-size:12px;text-transform:uppercase;letter-spacing:.12em;color:var(--accent);font-weight:600;margin-bottom:6px}
-.steps{counter-reset:s;display:grid;gap:12px}
-.step{display:grid;grid-template-columns:44px minmax(0,1fr);gap:14px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px}
-.step:before{counter-increment:s;content:counter(s);display:grid;place-items:center;width:36px;height:36px;border-radius:10px;background:var(--accent);color:#fff;font-family:Fraunces,serif;font-weight:650;font-size:18px}
 table{width:100%;border-collapse:collapse;font-size:14.5px;background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden}
 th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
 th{background:var(--bg2);font-weight:600;font-size:13px;color:var(--ink2)}
 tr:last-child td{border-bottom:0}
 .tablewrap{overflow-x:auto}
 .note{border-left:3px solid var(--accent2);background:var(--card);padding:12px 16px;border-radius:0 10px 10px 0;margin:14px 0;color:var(--ink2);font-size:15px}
-footer{padding:40px 0 60px;color:var(--ink3);font-size:14px}
-footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
-.ftools{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
-.ftools .seg{margin-bottom:0}
-.ftools .seg button{white-space:nowrap;padding:6px 11px}
-.ftools input{flex:1 1 220px;max-width:340px;padding:7px 12px;border:1px solid var(--line);border-radius:9px;background:var(--card);color:var(--ink);font:inherit;font-size:14px}
-.fcount{color:var(--ink3);font-size:13.5px}
-.fcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:16px;align-items:stretch}
-.sccard{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:var(--shadow);display:flex;flex-direction:column}
-.sccard .thumb{position:relative;aspect-ratio:2/1;background:#000;overflow:hidden}
-.sccard .thumb img{display:block;width:100%;height:100%;object-fit:cover}
-.sccard .thumb .tag{position:absolute;left:10px;bottom:8px;font-size:11.5px;color:#f1e9dc;background:#000a;padding:2px 8px;border-radius:6px}
-.sccard .hd{display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding:12px 16px 4px}
-.sccard .hd h3{font-size:21px;margin:0}
-.sccard .hd .cnt{font-size:12.5px;color:var(--ink3);white-space:nowrap}
-.sccard ul{list-style:none;margin:0;padding:4px 10px 12px}
-.sccard li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;padding:9px 6px;border-top:1px solid var(--line)}
-.sccard li:first-child{border-top:0}
-.sccard .res{font-weight:600;font-size:14.5px}
-.sccard .res .mono{font-weight:400;font-size:12px;color:var(--ink3);margin-left:6px}
-.sccard .sz{font-size:13px;color:var(--ink2);text-align:right;white-space:nowrap;align-self:center}
-.sccard .row2{grid-column:1/-1;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.sccard .row2 .flinks{margin-left:auto}
-.sccard .why{grid-column:1/-1;font-size:12.5px;color:var(--ink3);line-height:1.4}
-.vseg{margin-left:auto}
-table.flist td{vertical-align:middle}
-table.flist tbody+tbody{border-top:2px solid var(--line)}
-table.flist .sc{font-weight:600;white-space:nowrap}
-table.flist .num{white-space:nowrap}
+.dim{color:var(--ink3);font-size:13.5px}
+.pill{display:inline-block;background:var(--sel);color:var(--accent);border-radius:999px;padding:1px 9px;font-size:12.5px;font-weight:600;margin:2px 4px 2px 0}
 .mp{display:inline-block;border-radius:999px;padding:1px 9px;font-size:12.5px;font-weight:600;white-space:nowrap}
 .mp.villa{background:var(--sel);color:var(--accent)}
 .mp.lgt{background:color-mix(in srgb,var(--basil) 18%,transparent);color:var(--basil)}
 .mp.soon{background:var(--bg2);color:var(--ink3);border:1px dashed var(--ink3)}
 .fnote{display:block;font-size:12.5px;color:var(--ink3);margin-top:3px;line-height:1.4}
-.flinks{display:flex;gap:6px;flex-wrap:nowrap}
-table.flist td.mdl{max-width:300px}
+
+/* disclosure: one look for every fold on the page */
+details>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px}
+details>summary::-webkit-details-marker{display:none}
+details>summary:after{content:"";flex:none;width:7px;height:7px;margin-left:auto;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:translateY(-2px) rotate(45deg);transition:transform .15s}
+details[open]>summary:after{transform:translateY(2px) rotate(-135deg)}
+
+/* every field: tools */
+.ftools{display:flex;gap:10px 12px;flex-wrap:wrap;align-items:center;margin-bottom:16px}
+.ftools input{flex:1 1 220px;max-width:320px;padding:7px 12px;border:1px solid var(--line);border-radius:9px;background:var(--card);color:var(--ink);font:inherit;font-size:14px}
+.fcount{color:var(--ink3);font-size:13.5px}
+.vseg{margin-left:auto}
+/* every field: one card per scroll */
+.fcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;align-items:stretch}
+.sccard{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--shadow);display:flex;flex-direction:column;min-width:0}
+.sccard .thumb{position:relative;aspect-ratio:2.4/1;background:#000;overflow:hidden}
+.sccard .thumb img{display:block;width:100%;height:100%;object-fit:cover}
+.sccard .thumb .tag{position:absolute;left:8px;bottom:6px;font-size:11px;color:#f1e9dc;background:#000a;padding:1px 7px;border-radius:6px}
+.sccard .body{padding:11px 14px 0}
+.sccard .hd{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.sccard .hd h3{font-size:20px;margin:0}
+.sccard .cnt{font-size:12.5px;color:var(--ink3);white-space:nowrap}
+.sccard .sum{display:flex;flex-wrap:wrap;gap:4px 6px;align-items:center;margin:6px 0 11px}
+.sccard .sum .mp b{font-weight:700;margin-right:3px}
+.sccard .sum .dim{font-size:12.5px;flex-basis:100%}
+.sccard details.more{margin-top:auto}
+.sccard ul{list-style:none;margin:0;padding:0 14px 4px}
+.sccard li{padding:9px 0;border-top:1px solid var(--line)}
+.sccard .one li{border-top:0;padding-top:6px}
+.sccard .l1{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;font-size:14.5px}
+.sccard .l1 b{font-weight:600}
+.sccard .l1 .mono{font-size:12px;color:var(--ink3)}
+.sccard .l1 .sz{margin-left:auto;font-size:13px;color:var(--ink2);white-space:nowrap}
+.sccard .l2{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:3px}
+.sccard .l2 .fnote{margin:0}
+.sccard .why{font-size:12.5px;color:var(--ink3);line-height:1.4;margin-top:5px}
+.sccard .flinks{margin-top:7px}
+.sccard .flinks a,.sccard .flinks button{font-size:12.5px;padding:2px 7px}
+details.more{border-top:1px solid var(--line)}
+details.more>summary{padding:9px 14px;font-size:13.5px;font-weight:600;color:var(--accent)}
+details.more>summary:hover{background:var(--bg2)}
+details.more ul{padding-bottom:6px}
+.flinks{display:flex;gap:6px;flex-wrap:wrap}
 .flinks a,.flinks button{font:inherit;font-size:13px;line-height:1.5;border:1px solid var(--line);border-radius:7px;padding:2px 9px;background:var(--card);color:var(--accent);cursor:pointer;white-space:nowrap}
 .flinks a:hover,.flinks button:hover{text-decoration:none;border-color:var(--accent)}
 .fempty{color:var(--ink3);padding:14px 2px}
+/* every field: table */
+table.flist td{vertical-align:middle}
+table.flist tbody+tbody{border-top:2px solid var(--line)}
+table.flist .sc{font-weight:600;white-space:nowrap}
+table.flist .num{white-space:nowrap}
+table.flist td.mdl{max-width:300px}
+table.flist .flinks{flex-wrap:nowrap}
 #pend{margin-top:30px}
 #pend table td{color:var(--ink2)}
+
+/* use a field */
+.picker{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:8px;margin-bottom:16px}
+.scan{display:flex;align-items:center;gap:10px;min-width:0;padding:6px 10px 6px 6px;background:var(--card);border:1px solid var(--line);border-radius:11px;cursor:pointer;text-align:left;color:inherit;font:inherit;transition:border-color .15s}
+.scan:hover{border-color:var(--accent2)}
+.scan[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.scan img{flex:none;width:72px;height:36px;object-fit:cover;border-radius:6px;background:#000;display:block}
+.scan .name{font-weight:600;font-size:14px;line-height:1.25}
+.scan .small{font-size:12px;color:var(--ink3);line-height:1.3}
+.usebox{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:18px;align-items:start}
+.viewer{background:#000;border-radius:10px;overflow:hidden;position:relative}
+.viewer img{display:block;width:100%;height:auto}
+.viewer .cap{position:absolute;left:10px;bottom:8px;font-size:12px;color:#e9e1d3;background:#000a;padding:2px 8px;border-radius:6px}
+.vhead{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+dl.facts{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;margin:8px 0 0;font-size:14.5px}
+dl.facts dt{color:var(--ink3)}dl.facts dd{margin:0;overflow-wrap:anywhere}
+.links{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.howto{margin-top:18px}
+.howto>.tabs{margin-top:0;padding:0 8px}
+.howto>.tabs button{font-size:15px;padding:11px 14px}
+.upanel{padding:18px 4px 4px}
+.upanel>.lead{color:var(--ink2);max-width:820px}
+.uhead{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:baseline}
+.uhead h3{margin:0}
+.region{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:20px}
+.mapbox{align-self:start;position:relative;background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:12px}
+svg.map{width:100%;height:auto;display:block;cursor:crosshair;touch-action:none}
+.zbar{display:flex;align-items:center;gap:10px;margin-top:10px;font-size:13.5px;color:var(--ink2)}
+.zbar input{flex:1;min-width:0;accent-color:var(--accent)}
+.form{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.form label{font-size:12.5px;color:var(--ink3);display:block;margin-bottom:3px}
+.form input{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);font:inherit;font-size:14px}
+.result{margin-top:14px;font-size:14.5px}
+ol.plain{margin:0;padding-left:22px}
+ol.plain li{margin:0 0 10px;padding-left:4px}
+.usebox>*,.region>*,.panel,.codebox{min-width:0}
+
+/* about */
+.about{max-width:880px}
+details.fold{background:var(--card);border:1px solid var(--line);border-radius:12px;margin-top:12px}
+details.fold>summary{padding:13px 18px;font-weight:600;font-size:16px}
+details.fold>summary .dim{font-weight:400;font-size:13.5px}
+details.fold>.inner{padding:0 18px 16px}
+.mstep{margin:0 0 12px}
+.mstep b{display:block;font-family:Fraunces,serif;font-weight:650;font-size:16.5px;margin-bottom:2px}
+.mstep p{margin:0;color:var(--ink2);font-size:15px}
+
+footer{padding:36px 0 52px;color:var(--ink3);font-size:14px}
+footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+/* preview box over the page */
 .lbox{position:fixed;inset:0;z-index:60;background:color-mix(in srgb,#000 62%,transparent);display:grid;place-items:center;padding:16px}
 .lbox[hidden]{display:none}
 html.lbopen{overflow:hidden}
@@ -158,15 +198,14 @@ html.lbopen{overflow:hidden}
 .lbhead{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:12px 16px;border-bottom:1px solid var(--line)}
 .lbhead b{font-size:15px;margin-right:auto}
 #lbslice[hidden]{display:none}
-@media (max-width:600px){.lbhead .seg{order:3;width:100%}.lbhead .seg button{flex:1}}
 .lbx{border:1px solid var(--line);background:var(--bg2);color:var(--ink);border-radius:9px;padding:6px 12px;font:inherit;font-size:13.5px;cursor:pointer}
 #lbimg{display:block;width:100%;min-height:0;flex:1 1 auto;object-fit:contain;background:#0e1117}
 .lbfoot{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:10px 16px;font-size:13px;color:var(--ink2)}
 .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--bg);padding:8px 14px;border-radius:9px;font-size:14px;opacity:0;transition:.2s;pointer-events:none;z-index:50}
 .toast.on{opacity:1;transform:translateX(-50%)}
+
 @media (max-width:900px){
-  .detail,.region{grid-template-columns:1fr}
-  .cards3{grid-template-columns:1fr}
+  .usebox,.region{grid-template-columns:1fr}
   .hero .wrap{padding-top:250px}
   .fields{bottom:auto;height:300px;opacity:.95}
   .hero:after{background:linear-gradient(180deg,transparent 0,transparent 150px,color-mix(in srgb,var(--bg) 70%,transparent) 230px,var(--bg) 300px)}
@@ -182,47 +221,64 @@ html.lbopen{overflow:hidden}
   table.flist td[data-k]:before{content:attr(data-k);display:inline-block;min-width:86px;color:var(--ink3);font-size:12.5px}
   table.flist td.get{padding-top:6px}
   table.flist td.mdl{max-width:none}
-  .flinks{flex-wrap:wrap}
+  table.flist .flinks{flex-wrap:wrap}
+  .howto>.tabs{padding:0}
+  .howto>.tabs button{font-size:14px;padding:9px 10px}
+  .lbhead .seg{order:3;width:100%}.lbhead .seg button{flex:1}
+}
+@media (max-width:600px){
+  /* a scroll's card: picture beside the name, the fields below */
+  .sccard{display:grid;grid-template-columns:132px minmax(0,1fr);align-content:start}
+  .sccard .thumb{aspect-ratio:2/1;margin:12px 0 0 12px;border-radius:8px}
+  .sccard .thumb .tag{display:none}
+  .sccard .body{padding:10px 12px 0}
+  .sccard .hd{flex-direction:column;gap:0}
+  .sccard .foot{grid-column:1/-1}
+  .sccard .sum .dim{flex-basis:auto}
+  .sccard .one{padding-top:4px}
+  .sccard ul{padding:0 12px 4px}
+  details.more>summary{padding:9px 12px}
 }
 @media (max-width:560px){
   .wrap{padding:0 16px}
+  section{padding:44px 0}
+  .lede{font-size:17px}
+  .cta .jump{margin-left:0;flex-basis:100%}
   .form{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-  section{padding:52px 0}
-  .navlinks a:nth-child(n+2){display:none}
+  .picker{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .scan img{width:54px;height:27px}
+  .ftools input{max-width:none;flex-basis:100%}
+  .vseg{margin-left:0}
+  .panel{padding:14px}
+  .upanel{padding:14px 0 0}
+  details.fold>summary{padding:12px 14px}
+  details.fold>summary .dim{display:none}
+  .scan .gbx{display:none}
+  details.fold>.inner{padding:0 14px 14px}
 }
 </style>
 </head>
 <body>
-<nav><div class="wrap">
-  <a class="brand" href="#top"><span class="layers" aria-hidden="true"></span>Lasagna Fields</a>
-  <div class="navlinks">
-    <a href="#all">Every field</a><a href="#scans">Preview</a><a href="#connect">Connect your tool</a><a href="#region">Get a region</a><a href="#use">Use it</a><a href="#method">How it was made</a><a href="#format">Format</a><a href="#credit">Credit</a>
-  </div>
-  <button class="tbtn" id="theme" type="button" aria-label="Switch light or dark">Theme</button>
-</div></nav>
-
 <header class="hero" id="top">
   <svg class="fields" id="fields" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMax slice" aria-hidden="true"></svg>
+  <button class="tbtn" id="theme" type="button" aria-label="Switch light or dark">Theme</button>
   <div class="wrap">
     <div class="eyebrow">Vesuvius Challenge open data, made usable</div>
     <h1>Lasagna fields for <span id="nscrolls">24</span> Herculaneum scrolls</h1>
-    <p class="lede">Whole-scan lasagna fields in one list, by scroll: villa's own fields in the open data, and fields made here for scrolls that had none, with the villa lasagna model or with Lasagnetta, a faster copy of it. Download a field or stream it from a URL, then use it with the lasagna surface fit or the spiral fit.</p>
-    <p class="by">Made and shared by <b>Chase Hendrick</b>, October 2026. The villa lasagna model and code are by the authors of lasagna in ScrollPrize/villa; Lasagnetta was trained here to copy it.</p>
+    <p class="lede">Whole-scan lasagna fields in one list, by scroll: villa's own fields in the open data, and fields made here with the villa lasagna model or with Lasagnetta, a faster copy of it. Download one or stream it by URL for the lasagna surface fit or the spiral fit.</p>
+    <p class="by">Made and shared by <b>Chase Hendrick</b>, October 2026.</p>
     <div class="stats" id="stats"></div>
     <div class="cta">
       <a class="btn primary" href="#all">Browse every field</a>
-      <a class="btn primary" href="?tab=make">Make a field for any scan</a>
-      <a class="btn" href="#connect">Stream it by URL</a>
-      <a class="btn" href="#region">Download only a region</a>
-      <a class="btn" href="#method">How it was made</a>
+      <a class="btn" href="?tab=make">Make a field for any scan</a>
+      <span class="jump"><a href="#use">Stream or download</a> &middot; <a href="#method">How it was made</a></span>
     </div>
   </div>
 </header>
 
 <section id="all"><div class="wrap">
   <h2>Every field, by scroll</h2>
-  <p class="sub">One card per scroll, one line per whole-scan field. <span class="mp villa">villa predict3d</span> is the villa lasagna model itself, the reference. <span class="mp lgt">Lasagnetta 0.1.1</span> copies it and runs about 5 times faster: use its fields as a preview, and villa's where exact values matter. A field read at level 2 or 3 of a fine scan is on that level's grid, so multiply its coordinates by 4 or 8 for full resolution.</p>
+  <p class="sub">One card per scroll. <span class="mp villa">villa predict3d</span> is the villa lasagna model itself, the reference. <span class="mp lgt">Lasagnetta 0.1.1</span> copies it and runs about 5 times faster: use its fields as a preview, and villa's where exact values matter.</p>
   <div class="ftools">
     <input id="fq" type="search" placeholder="Filter by scroll or volume" aria-label="Filter by scroll or volume">
     <div class="seg" role="group" aria-label="Model">
@@ -243,128 +299,131 @@ html.lbopen{overflow:hidden}
   <div id="pend" hidden></div>
 </div></section>
 
-<section id="scans"><div class="wrap">
-  <h2>Ten fields to preview and stream</h2>
-  <p class="sub">The first ten fields made here, with the villa lasagna model, also stream from a public bucket. Pick one to see its field, its numbers and the commands to get it. Each preview is a slice of the model output: <b>cos</b> on the left, the <b>surface normals</b> as color on the right.</p>
-  <div class="grid" id="grid"></div>
-  <div class="detail">
-    <div class="panel">
-      <div class="seg" role="group" aria-label="View">
-        <button type="button" id="vxy" aria-pressed="true">Top view</button><button type="button" id="vxz" aria-pressed="false">Side view</button>
-      </div>
-      <div class="viewer"><img id="dimg" alt=""><span class="cap" id="dcap"></span></div>
-    </div>
-    <div class="panel">
-      <h3 id="dname"></h3>
-      <dl class="facts" id="dfacts"></dl>
-      <div class="links" id="dlinks"></div>
-      <div class="tabs" role="tablist">
-        <button role="tab" aria-selected="true" data-tab="get">Whole scan</button>
-        <button role="tab" aria-selected="false" data-tab="load">Load in Python</button>
-      </div>
-      <div class="codebox"><pre id="dcode"></pre><button class="copy" data-copy="dcode" type="button">Copy</button></div>
-    </div>
-  </div>
-</div></section>
-
-
-<section id="connect"><div class="wrap">
-  <h2>Connect your tool</h2>
-  <p class="sub">Every field made here is also in the public bucket <a href="https://huggingface.co/buckets/SharpMeow/lasagna-fields">SharpMeow/lasagna-fields</a>, laid out like the Vesuvius Challenge open data (<code>SCAN/representations/predictions/lasagna/RUN/</code>). Any tool that reads zarr over HTTPS can open it, with no download and no account. The commands here follow the scan you picked above. villa's fields in the open data stream the same way from their run folder: <b>Copy URL</b> in the list gives any field's folder.</p>
-  <div class="panel">
-    <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center"><h3 id="cname" style="margin:0"></h3><span style="color:var(--ink3);font-size:13px">Anonymous HTTPS, CORS open, missing chunks read as empty</span></div>
-    <div class="codebox"><pre id="curl"></pre><button class="copy" data-copy="curl" type="button">Copy</button></div>
-    <div class="tabs" role="tablist">
-      <button role="tab" aria-selected="true" data-ct="py">Python (zarr)</button>
-      <button role="tab" aria-selected="false" data-ct="ng">Neuroglancer</button>
-      <button role="tab" aria-selected="false" data-ct="villa">Local copy for lasagna</button>
-      <button role="tab" aria-selected="false" data-ct="any">Any other tool</button>
-    </div>
-    <div id="cbody"></div>
-  </div>
-</div></section>
-
-<section id="region"><div class="wrap">
-  <h2>Download only the region you need</h2>
-  <p class="sub">For the ten fields above: click the map, or type a point in full-resolution scan voxels. The first command copies from the bucket only the chunks that cover your z range. The second downloads whole parts from the dataset: each scan was computed in boxes called parts, one tar each, and a region needs only the parts it touches plus one small tar with the joined manifest. Parts you skip read as empty.</p>
-  <div class="region">
-    <div class="mapbox">
-      <svg class="map" id="map" viewBox="0 0 400 400" role="img" aria-label="Top view of the scan's parts at the chosen height"></svg>
-      <div class="zbar"><span>z</span><input type="range" id="zr" min="0" max="1000" step="1"><span class="mono" id="zv"></span></div>
-    </div>
-    <div>
-      <div class="form">
-        <div><label for="rs">Scan</label><select id="rs"></select></div>
-        <div><label for="rz">z</label><input id="rz" type="number" min="0"></div>
-        <div><label for="ry">y</label><input id="ry" type="number" min="0"></div>
-        <div><label for="rx">x</label><input id="rx" type="number" min="0"></div>
-        <div><label for="rr">Half size (voxels)</label><input id="rr" type="number" min="1" value="512"></div>
-      </div>
-      <div class="result" id="rres"></div>
-      <div class="codebox"><pre id="rsync"></pre><button class="copy" data-copy="rsync" type="button">Copy</button></div>
-      <div class="codebox"><pre id="rcode"></pre><button class="copy" data-copy="rcode" type="button">Copy</button></div>
-      <div class="codebox"><pre id="rpy"></pre><button class="copy" data-copy="rpy" type="button">Copy</button></div>
-    </div>
-  </div>
-</div></section>
-
 <section id="use"><div class="wrap">
-  <h2>Who it is for, and how to use it</h2>
-  <p class="sub">A lasagna field is the input that the lasagna surface fit in villa reads. With it ready, nobody has to spend GPU time predicting it again.</p>
-  <div class="cards3">
-    <div class="card"><div class="k">Researchers</div><h3>Read it like any OME-Zarr</h3><p>Open the arrays with <code>zarr</code>, <code>tensorstore</code> or any OME-Zarr viewer. Coordinates are the scan's own voxels, divided by 2 for cos and by 4 for the other channels. The format table below says exactly what is stored.</p></div>
-    <div class="card"><div class="k">Teams building tools</div><h3>Point lasagna at the manifest</h3><p><code>SCAN.lasagna.json</code> is the manifest that the lasagna tools read, with relative paths to the four channels. Of the ten fields above, every scan but PHerc0841 has a center line in <a href="https://huggingface.co/datasets/SharpMeow/vesuvius-center-lines">vesuvius-center-lines</a>.</p></div>
-    <div class="card"><div class="k">Everyone else, rivals included</div><h3>Same head start for all</h3><p>These fields are public so that nobody has to spend a GPU day before trying an idea on these scrolls. Use them, compare against them, and tell us if you find a problem.</p></div>
-  </div>
-  <h3 style="margin-top:34px">From download to first numbers</h3>
-  <div class="steps" style="margin-top:12px">
-    <div class="step"><div><b>Install the Hugging Face client and zarr.</b><div class="codebox"><pre id="u1">pip install -U "huggingface_hub[cli]" "zarr&lt;3" numpy</pre><button class="copy" data-copy="u1" type="button">Copy</button></div></div></div>
-    <div class="step"><div><b>Stream it (above), or download a scan or just a region, and check it.</b> <code>sha256sum -c SHA256SUMS</code> checks every file; add <code>--ignore-missing</code> after a partial download.</div></div>
-    <div class="step"><div><b>Unpack the parts, then the fix tar last.</b> The fix tar (the meta tar, for a Lasagnetta field) holds the joined manifest, so it must overwrite the per-part ones.</div></div>
-    <div class="step"><div><b>Load and decode.</b> Normals are stored as <code>uint8</code> as <code>v &times; 127 + 128</code>; <code>nz</code> is not stored, so take <code>sqrt(1 - nx&sup2; - ny&sup2;)</code>. Each card's <code>load_example.py</code> runs as is.</div></div>
+  <h2>Stream, download and load</h2>
+  <p class="sub">Every field made here is also in the public bucket <a href="https://huggingface.co/buckets/SharpMeow/lasagna-fields">SharpMeow/lasagna-fields</a>, so any tool that reads zarr over HTTPS opens it with no download and no account. Pick one of the first ten fields made here, with the villa lasagna model, to see its field, its numbers and the commands to get it; for any other field, <b>Copy URL</b> in the list gives its folder.</p>
+  <div class="picker" id="grid" role="group" aria-label="Scan"></div>
+  <div class="panel">
+    <div class="usebox" id="usebox">
+      <div>
+        <div class="vhead">
+          <div class="seg" role="group" aria-label="View">
+            <button type="button" id="vxy" aria-pressed="true">Top view</button><button type="button" id="vxz" aria-pressed="false">Side view</button>
+          </div>
+          <span class="dim">Model output: <b>cos</b> left, <b>surface normals</b> as color right</span>
+        </div>
+        <div class="viewer"><img id="dimg" alt=""><span class="cap" id="dcap"></span></div>
+      </div>
+      <div>
+        <h3 id="dname"></h3>
+        <dl class="facts" id="dfacts"></dl>
+        <div class="links" id="dlinks"></div>
+      </div>
+    </div>
+    <div class="howto">
+      <div class="tabs" role="tablist" aria-label="How to get it">
+        <button role="tab" type="button" aria-selected="true" data-ut="connect">Connect your tool</button>
+        <button role="tab" type="button" aria-selected="false" data-ut="get">Whole scan</button>
+        <button role="tab" type="button" aria-selected="false" data-ut="region">Only a region</button>
+        <button role="tab" type="button" aria-selected="false" data-ut="load">Load in Python</button>
+        <button role="tab" type="button" aria-selected="false" data-ut="format">Format</button>
+      </div>
+
+      <div class="upanel" id="u-connect" role="tabpanel">
+        <p class="lead">The bucket is laid out like the Vesuvius Challenge open data (<code>SCAN/representations/predictions/lasagna/RUN/</code>). villa's fields in the open data stream the same way from their run folder.</p>
+        <div class="uhead" id="connect"><h3 id="cname"></h3><span class="dim">Anonymous HTTPS, CORS open, missing chunks read as empty</span></div>
+        <div class="codebox"><pre id="curl"></pre><button class="copy" data-copy="curl" type="button">Copy</button></div>
+        <div class="tabs" role="tablist" aria-label="Tool">
+          <button role="tab" type="button" aria-selected="true" data-ct="py">Python (zarr)</button>
+          <button role="tab" type="button" aria-selected="false" data-ct="ng">Neuroglancer</button>
+          <button role="tab" type="button" aria-selected="false" data-ct="villa">Local copy for lasagna</button>
+          <button role="tab" type="button" aria-selected="false" data-ct="any">Any other tool</button>
+        </div>
+        <div id="cbody"></div>
+      </div>
+
+      <div class="upanel" id="u-get" role="tabpanel" hidden>
+        <ol class="plain">
+          <li><b>Install the Hugging Face client and zarr.</b><div class="codebox"><pre id="u1">pip install -U "huggingface_hub[cli]" "zarr&lt;3" numpy</pre><button class="copy" data-copy="u1" type="button">Copy</button></div></li>
+          <li><b>Download, check, unpack.</b> <code>sha256sum -c SHA256SUMS</code> checks every file. Unpack the fix tar last (the meta tar, for a Lasagnetta field): it holds the joined manifest, so it must overwrite the per-part ones.<div class="codebox"><pre id="dcode"></pre><button class="copy" data-copy="dcode" type="button">Copy</button></div></li>
+          <li><b>Load it.</b> The <b>Load in Python</b> tab reads a point; each dataset's <code>load_example.py</code> runs as is.</li>
+        </ol>
+      </div>
+
+      <div class="upanel" id="u-region" role="tabpanel" hidden>
+        <p class="lead">Click the map, or type a point in full-resolution scan voxels. The first command copies from the bucket only the chunks that cover your z range. The second downloads whole parts from the dataset: each scan was computed in boxes called parts, one tar each, and a region needs only the parts it touches plus one small tar with the joined manifest. Parts you skip read as empty; add <code>--ignore-missing</code> to the checksum check after a partial download.</p>
+        <div class="region" id="region">
+          <div class="mapbox">
+            <svg class="map" id="map" viewBox="0 0 400 400" role="img" aria-label="Top view of the scan's parts at the chosen height"></svg>
+            <div class="zbar"><span>z</span><input type="range" id="zr" min="0" max="1000" step="1" aria-label="z"><span class="mono" id="zv"></span></div>
+          </div>
+          <div>
+            <div class="form">
+              <div><label for="rz">z</label><input id="rz" type="number" min="0"></div>
+              <div><label for="ry">y</label><input id="ry" type="number" min="0"></div>
+              <div><label for="rx">x</label><input id="rx" type="number" min="0"></div>
+              <div><label for="rr">Half size (voxels)</label><input id="rr" type="number" min="1" value="512"></div>
+            </div>
+            <div class="result" id="rres"></div>
+            <div class="codebox"><pre id="rsync"></pre><button class="copy" data-copy="rsync" type="button">Copy</button></div>
+            <div class="codebox"><pre id="rcode"></pre><button class="copy" data-copy="rcode" type="button">Copy</button></div>
+            <p class="dim" style="margin-top:10px">The <b>Load in Python</b> tab reads this point.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="upanel" id="u-load" role="tabpanel" hidden>
+        <p class="lead">Open the arrays with <code>zarr</code>, <code>tensorstore</code> or any OME-Zarr viewer. Coordinates are the scan's own voxels, divided by 2 for cos and by 4 for the other channels. Normals are stored as <code>uint8</code> as <code>v &times; 127 + 128</code>; <code>nz</code> is not stored, so take <code>sqrt(1 - nx&sup2; - ny&sup2;)</code>. This reads a local copy at the point of the <b>Only a region</b> tab; <b>Connect your tool</b> reads straight from the bucket.</p>
+        <div class="codebox"><pre id="rpy"></pre><button class="copy" data-copy="rpy" type="button">Copy</button></div>
+      </div>
+
+      <div class="upanel" id="u-format" role="tabpanel" hidden>
+        <p class="lead">The same layout as the lasagna fields in the open data. Replace <code>SCAN</code> with the scan's name.</p>
+        <div class="tablewrap" id="format"><table>
+          <thead><tr><th>File</th><th>Read at</th><th>Scale</th><th>Stored as</th></tr></thead>
+          <tbody>
+            <tr><td><code>SCAN_cos.ome.zarr</code></td><td>Level <code>1</code></td><td>Every 2nd scan voxel</td><td>uint8; peaks on papyrus sheets and dips between them</td></tr>
+            <tr><td><code>SCAN_grad_mag.ome.zarr</code></td><td>Level <code>2</code></td><td>Every 4th scan voxel</td><td>uint8 gradient magnitude, encoded as the manifest says (<code>grad_mag_encode_scale</code>)</td></tr>
+            <tr><td><code>SCAN_nx.ome.zarr</code>, <code>SCAN_ny.ome.zarr</code></td><td>Level <code>2</code></td><td>Every 4th scan voxel</td><td>uint8 surface normal components, <code>v &times; 127 + 128</code>; <code>nz</code> not stored</td></tr>
+            <tr><td><code>SCAN.lasagna.json</code></td><td colspan="3">The manifest the lasagna tools read: groups, their zarr paths (relative, to the four channels) and scale-downs, <code>base_shape_zyx</code> and the boxes computed</td></tr>
+            <tr><td>Every array</td><td colspan="3">zarr v2, chunks 64 &times; 64 &times; 64, Blosc zstd level 3, fill value 0, axes z, y, x, each with coarser levels down to 4</td></tr>
+          </tbody>
+        </table></div>
+        <p style="margin-top:14px;color:var(--ink2);font-size:15px">Lasagnetta fields keep the same layout and channels. A field read at level 2 or 3 of a fine scan is on that level's grid: its levels are counted from that level, as its manifest's <code>base_shape_zyx</code> says, so multiply its coordinates by 4 or 8 for full resolution.</p>
+      </div>
+    </div>
   </div>
 </div></section>
 
-<section id="method"><div class="wrap">
-  <h2>How it was made</h2>
-  <p class="sub">Every step ran on Hugging Face Jobs from scripts, with each part's record kept. Nothing was edited by hand.</p>
-  <div class="steps">
-    <div class="step"><div><h3>Same settings as the published fields</h3><p>The lasagna code in villa at commit <code>db3dbea2</code>, <code>lasagna-preprocess predict3d --tile-size 192</code> with default chunks and levels, and the <a href="https://huggingface.co/scrollprize/lasagna">scrollprize/lasagna</a> model <code>model_current.pt</code> at revision <code>de45f011</code>. On a test crop of PHerc0343 these settings reproduce the published lasagna field to within 2 of 255 at every voxel compared. Bigger tiles and <code>torch.compile</code> ran faster in testing but changed the output, so they were not used.</p></div></div>
-    <div class="step"><div><h3>Split into parts that never share a chunk</h3><p>Each scan was cut into boxes whose edges sit on multiples of 1,024 scan voxels, each small enough to finish in one Job. Because of that alignment, every chunk of every pyramid level is written by exactly one part, so the parts join without blending. PHerc0175A, the first scan, used an earlier layout whose coarsest level was rebuilt across tile edges; its card gives the details.</p></div></div>
-    <div class="step"><div><h3>Predict on GPUs</h3><p>One Job per part on an NVIDIA RTX PRO 6000, at the scan's native resolution with no resampling: <span id="mparts"></span> parts in all.</p></div></div>
-    <div class="step"><div><h3>Join and check</h3><p>The parts were joined into one store, with a check that no chunk appears twice. A seam check then compares the step across each part edge with the steps beside it (1.0 means no step; the limit is 1.5). Finally the card's own load snippet was run on two real parts before upload.</p></div></div>
-    <div class="step"><div><h3>One flag, checked properly</h3><p>PHerc0841 flagged one edge: cos at z 1,024 stepped 1.62 times its neighbors. A single run straight across that edge gave the same field as the joined parts, byte for byte, in all 1,084 level-1 cos chunks and all 760 level-2 chunks of the four channels there. So that step is in the scan itself, not a seam.</p></div></div>
-    <div class="step"><div><h3>Seven more scrolls, 29 October 2026</h3><p>PHercMANBp and PHerc0343P got villa fields the same way from their 2.4 and 2.2 µm scans read at level 2, one 1,024-slice slab per part, with no step at any part edge (worst seam ratios 1.203 and 1.101). PHerc0009B, PHerc0172, PHerc0500P2, PHercMAN5 and PHercMANB got <a href="https://huggingface.co/SharpMeow/lasagnetta">Lasagnetta</a> 0.1.1 fields: three students averaged, cos blur 0.5, cos offset 0.04, part edges on multiples of 512 scan voxels, values kept only where the masked scan holds CT. Each card gives that scan's agreement with villa's net and what the release's self-check said there.</p></div></div>
-    <div class="step"><div><h3>Publish with checksums, and unpacked for streaming</h3><p>Each dataset carries <code>SHA256SUMS</code>, an <code>index.json</code> with every part's box and hash, the previews and the tested load example. The same parts were then unpacked into the public bucket, with the joined manifest written last, so tools can read chunks by URL.</p></div></div>
-  </div>
-</div></section>
-
-<section id="format"><div class="wrap">
-  <h2>Format</h2>
-  <p class="sub">The same layout as the lasagna fields in the open data. Replace <code>SCAN</code> with the scan's name.</p>
-  <div class="tablewrap"><table>
-    <thead><tr><th>File</th><th>Read at</th><th>Scale</th><th>Stored as</th></tr></thead>
-    <tbody>
-      <tr><td><code>SCAN_cos.ome.zarr</code></td><td>Level <code>1</code></td><td>Every 2nd scan voxel</td><td>uint8; peaks on papyrus sheets and dips between them</td></tr>
-      <tr><td><code>SCAN_grad_mag.ome.zarr</code></td><td>Level <code>2</code></td><td>Every 4th scan voxel</td><td>uint8 gradient magnitude, encoded as the manifest says (<code>grad_mag_encode_scale</code>)</td></tr>
-      <tr><td><code>SCAN_nx.ome.zarr</code>, <code>SCAN_ny.ome.zarr</code></td><td>Level <code>2</code></td><td>Every 4th scan voxel</td><td>uint8 surface normal components, <code>v &times; 127 + 128</code>; <code>nz</code> not stored</td></tr>
-      <tr><td><code>SCAN.lasagna.json</code></td><td colspan="3">The manifest: groups, their zarr paths and scale-downs, <code>base_shape_zyx</code> and the boxes computed</td></tr>
-      <tr><td>Every array</td><td colspan="3">zarr v2, chunks 64 &times; 64 &times; 64, Blosc zstd level 3, fill value 0, axes z, y, x, each with coarser levels down to 4</td></tr>
-    </tbody>
-  </table></div>
-  <p style="margin-top:14px;color:var(--ink2);font-size:15px">Lasagnetta fields keep the same layout and channels. A field read at level 2 or 3 of a fine scan has its levels counted from that level, as its manifest's <code>base_shape_zyx</code> says.</p>
+<section id="about"><div class="wrap"><div class="about">
+  <h2>About these fields</h2>
+  <p class="sub">A lasagna field is the input that the lasagna surface fit in villa reads. These are public so that nobody has to spend a GPU day before trying an idea on these scrolls: use them, compare against them, and tell us if you find a problem.</p>
   <div class="note"><b>Limits.</b> This is raw model output, and nobody has checked it by eye. Regions the masked scan leaves empty are absent (read as 0). The scan's ends include the mount, and the model produces values there too.</div>
-</div></section>
+  <p id="credit">The scans are <a href="https://scrollprize.org">Vesuvius Challenge</a> open data under CC BY-NC 4.0, and these derived fields are shared under the same terms. Model and code are <a href="https://github.com/ScrollPrize/villa">ScrollPrize/villa</a>'s lasagna; credit to its authors. The fields listed from the open data are villa's own, published there by the Vesuvius Challenge; this page only links them. The other fields were computed and shared by Chase Hendrick, some with <a href="https://huggingface.co/SharpMeow/lasagnetta">Lasagnetta</a>, which was trained here to copy villa's lasagna.</p>
 
-<section id="credit"><div class="wrap">
-  <h2>Credit and terms</h2>
-  <p class="sub">The scans are <a href="https://scrollprize.org">Vesuvius Challenge</a> open data under CC BY-NC 4.0, and these derived fields are shared under the same terms. Model and code are <a href="https://github.com/ScrollPrize/villa">ScrollPrize/villa</a>'s lasagna; credit to its authors. The fields listed from the open data are villa's own, published there by the Vesuvius Challenge; this page only links them. The other fields were computed and shared by Chase Hendrick, some with <a href="https://huggingface.co/SharpMeow/lasagnetta">Lasagnetta</a>, which copies villa's lasagna.</p>
-  <h3>Cite</h3>
-  <div class="codebox"><pre id="cite">Chase Hendrick (2026). Lasagna Fields: lasagna fields for Herculaneum scrolls.
+  <details class="fold" id="method">
+    <summary>How it was made <span class="dim">every step ran on Hugging Face Jobs from scripts, with each part's record kept; nothing was edited by hand</span></summary>
+    <div class="inner">
+      <div class="mstep"><b>Same settings as the published fields</b><p>The lasagna code in villa at commit <code>db3dbea2</code>, <code>lasagna-preprocess predict3d --tile-size 192</code> with default chunks and levels, and the <a href="https://huggingface.co/scrollprize/lasagna">scrollprize/lasagna</a> model <code>model_current.pt</code> at revision <code>de45f011</code>. On a test crop of PHerc0343 these settings reproduce the published lasagna field to within 2 of 255 at every voxel compared. Bigger tiles and <code>torch.compile</code> ran faster in testing but changed the output, so they were not used.</p></div>
+      <div class="mstep"><b>Split into parts that never share a chunk</b><p>Each scan was cut into boxes whose edges sit on multiples of 1,024 scan voxels, each small enough to finish in one Job. Because of that alignment, every chunk of every pyramid level is written by exactly one part, so the parts join without blending. PHerc0175A, the first scan, used an earlier layout whose coarsest level was rebuilt across tile edges; its card gives the details.</p></div>
+      <div class="mstep"><b>Predict on GPUs</b><p>One Job per part on an NVIDIA RTX PRO 6000, at the scan's native resolution with no resampling: <span id="mparts"></span> parts in all.</p></div>
+      <div class="mstep"><b>Join and check</b><p>The parts were joined into one store, with a check that no chunk appears twice. A seam check then compares the step across each part edge with the steps beside it (1.0 means no step; the limit is 1.5). Finally the card's own load snippet was run on two real parts before upload.</p></div>
+      <div class="mstep"><b>One flag, checked properly</b><p>PHerc0841 flagged one edge: cos at z 1,024 stepped 1.62 times its neighbors. A single run straight across that edge gave the same field as the joined parts, byte for byte, in all 1,084 level-1 cos chunks and all 760 level-2 chunks of the four channels there. So that step is in the scan itself, not a seam.</p></div>
+      <div class="mstep"><b>Seven more scrolls, 29 October 2026</b><p>PHercMANBp and PHerc0343P got villa fields the same way from their 2.4 and 2.2 µm scans read at level 2, one 1,024-slice slab per part, with no step at any part edge (worst seam ratios 1.203 and 1.101). PHerc0009B, PHerc0172, PHerc0500P2, PHercMAN5 and PHercMANB got <a href="https://huggingface.co/SharpMeow/lasagnetta">Lasagnetta</a> 0.1.1 fields: three students averaged, cos blur 0.5, cos offset 0.04, part edges on multiples of 512 scan voxels, values kept only where the masked scan holds CT. Each card gives that scan's agreement with villa's net and what the release's self-check said there.</p></div>
+      <div class="mstep"><b>Publish with checksums, and unpacked for streaming</b><p>Each dataset carries <code>SHA256SUMS</code>, an <code>index.json</code> with every part's box and hash, the previews and the tested load example. The same parts were then unpacked into the public bucket, with the joined manifest written last, so tools can read chunks by URL.</p></div>
+    </div>
+  </details>
+
+  <details class="fold">
+    <summary>Cite</summary>
+    <div class="inner">
+      <div class="codebox" style="margin-top:0"><pre id="cite">Chase Hendrick (2026). Lasagna Fields: lasagna fields for Herculaneum scrolls.
 Hugging Face. https://huggingface.co/spaces/SharpMeow/lasagna-fields
 Computed with ScrollPrize/villa lasagna (db3dbea2) and scrollprize/lasagna (de45f011),
 and with Lasagnetta 0.1.1 (SharpMeow/lasagnetta), on Vesuvius Challenge open data (CC BY-NC 4.0).</pre><button class="copy" data-copy="cite" type="button">Copy</button></div>
-</div></section>
+    </div>
+  </details>
+</div></div></section>
 
 <footer><div class="wrap">
   <span>Lasagna Fields, by Chase Hendrick &middot; <a href="https://huggingface.co/SharpMeow">huggingface.co/SharpMeow</a> &middot; <a href="https://github.com/ChaseHendrick">github.com/ChaseHendrick</a></span>
@@ -385,7 +444,7 @@ const $=id=>document.getElementById(id);
 const fmt=n=>n.toLocaleString('en-US');
 const gb=b=>(b/1e9).toFixed(1)+' GB';
 const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;');
-let cur=0,view='xy',tab='get';
+let cur=0,view='xy',ut='connect';
 
 /* theme */
 (function(){let t=null;try{t=localStorage.getItem('lf-theme')}catch(e){}
@@ -440,7 +499,9 @@ const attr=s=>esc(String(s)).replace(/"/g,'&quot;');
 const uniq=a=>a.filter((v,i)=>a.indexOf(v)===i);
 const um=v=>(+v).toLocaleString('en-US',{maximumFractionDigits:3})+' µm';
 const lvl=f=>f.read_level?'read at level '+f.read_level+', '+(f.voxel_um*Math.pow(2,f.read_level)).toFixed(1)+' µm':'read at full resolution';
+const chip=m=>'<span class="mp '+(m.indexOf('Lasagnetta')===0?'lgt':'villa')+'">'+esc(m)+'</span>';
 let fm='',fq='',fw='',fv='cards',pv=null;
+const openSc=new Set();
 function links(f){const od=f.source==='open-data';
  return '<a href="'+attr(f.browse||f.url)+'" target="_blank" rel="noopener" title="'+(od?'its run folder in the Vesuvius Challenge open data':'its Hugging Face dataset, to download')+'">Dataset</a>'+
   '<a href="'+attr(f.manifest)+'" target="_blank" rel="noopener" title="the lasagna.json the lasagna fit reads">Manifest</a>'+
@@ -451,18 +512,29 @@ function fieldRow(f,first,n){
  return '<tr>'+(first?'<td class="sc" rowspan="'+n+'">'+esc(f.scroll)+'</td>':'')+
   '<td data-k="Volume"><span class="mono">'+esc(f.volume)+'</span></td>'+
   '<td data-k="Voxel size" class="num">'+um(f.voxel_um)+'<span class="fnote">'+lvl(f)+'</span></td>'+
-  '<td data-k="Model" class="mdl"><span class="mp '+(f.model.indexOf('Lasagnetta')===0?'lgt':'villa')+'">'+esc(f.model)+'</span>'+(f.note?'<span class="fnote">'+esc(f.note)+'</span>':'')+'</td>'+
+  '<td data-k="Model" class="mdl">'+chip(f.model)+(f.note?'<span class="fnote">'+esc(f.note)+'</span>':'')+'</td>'+
   '<td data-k="Where">'+where+'</td><td data-k="Size" class="num">'+gb(f.bytes)+'</td>'+
   '<td class="get"><div class="flinks">'+links(f)+'</div></td></tr>'}
 function thumbOf(g){const f=g[0];return {src:'assets/thumbs/'+f.scroll+'-'+f.volume+'.webp',alt:f.preview_xy,vol:f.volume}}
-function cardLine(f){
- const src=f.source==='open-data'?'open data':'SharpMeow';
- return '<li><div class="res">'+um(f.voxel_um)+'<span class="mono">'+esc(f.volume)+'</span></div><div class="sz">'+gb(f.bytes)+'</div>'+
-  '<div class="row2"><span class="mp '+(f.model.indexOf('Lasagnetta')===0?'lgt':'villa')+'">'+esc(f.model)+'</span><span class="fnote" style="margin:0">'+src+(f.read_level?', level '+f.read_level:'')+'</span><div class="flinks">'+links(f)+'</div></div>'+
+const srcOf=f=>f.source==='open-data'?'open data':'SharpMeow';
+/* one field of a card: its voxel size and volume, model and source, the four links, and its note */
+function cardLine(f,size){
+ return '<li><div class="l1"><b>'+um(f.voxel_um)+'</b><span class="mono">'+esc(f.volume)+'</span>'+(size?'<span class="sz">'+gb(f.bytes)+'</span>':'')+'</div>'+
+  '<div class="l2">'+chip(f.model)+'<span class="fnote">'+srcOf(f)+(f.read_level?', level '+f.read_level:'')+'</span></div>'+
+  '<div class="flinks">'+links(f)+'</div>'+
   (f.note?'<div class="why">'+esc(f.note)+'</div>':'')+'</li>'}
-function card(g){const t=thumbOf(g),n=g.length;
- const img='<img loading="lazy" src="'+t.src+'" data-alt="'+attr(t.alt)+'" alt="'+attr(g[0].scroll)+' field preview, cos and normals" onerror="if(this.dataset.alt){this.src=this.dataset.alt;this.dataset.alt=\'\'}"><span class="tag">cos | normals · '+esc(t.vol)+'</span>';
- return '<article class="sccard"><div class="thumb">'+img+'</div><div class="hd"><h3>'+esc(g[0].scroll)+'</h3><span class="cnt">'+n+(n===1?' field':' fields')+' · '+gb(g.reduce((a,f)=>a+f.bytes,0))+'</span></div><ul>'+g.map(cardLine).join('')+'</ul></article>'}
+/* a card's summary when it holds more than one field: its models, voxel sizes and sources */
+function summary(g){
+ const ms=uniq(g.map(f=>f.model)).map(m=>{const k=g.filter(f=>f.model===m).length;return '<span class="mp '+(m.indexOf('Lasagnetta')===0?'lgt':'villa')+'"><b>'+k+'</b>'+esc(m)+'</span>'}).join('');
+ const v=uniq(g.map(f=>+f.voxel_um)).sort((a,b)=>a-b).map(x=>um(x).replace(' µm',''));
+ const vs=(v.length>2?v[0]+' to '+v[v.length-1]:v.join(' and '))+' µm';
+ return '<div class="sum">'+ms+'<span class="dim">'+vs+' &middot; '+uniq(g.map(srcOf)).join(' and ')+'</span></div>'}
+function card(g){const t=thumbOf(g),n=g.length,sc=g[0].scroll;
+ const img='<img loading="lazy" src="'+t.src+'" data-alt="'+attr(t.alt)+'" alt="'+attr(sc)+' field preview, cos and normals" onerror="if(this.dataset.alt){this.src=this.dataset.alt;this.dataset.alt=\'\'}"><span class="tag">cos | normals</span>';
+ const open=openSc.has(sc)||(fq.trim()!=='');
+ const foot=n===1?'<div class="foot one"><ul>'+cardLine(g[0],false)+'</ul></div>'
+  :'<details class="foot more" data-sc="'+attr(sc)+'"'+(open?' open':'')+'><summary>Show the '+n+' fields and their links</summary><ul>'+g.map(f=>cardLine(f,true)).join('')+'</ul></details>';
+ return '<article class="sccard"><div class="thumb">'+img+'</div><div class="body"><div class="hd"><h3>'+esc(sc)+'</h3><span class="cnt">'+n+(n===1?' field':' fields')+' &middot; '+gb(g.reduce((a,f)=>a+f.bytes,0))+'</span></div>'+(n>1?summary(g):'')+'</div>'+foot+'</article>'}
 function drawFields(){
  const t=$('flist');t.querySelectorAll('tbody').forEach(b=>b.remove());
  $('fcards').hidden=fv!=='cards';$('ftable').hidden=fv!=='table';
@@ -473,6 +545,7 @@ function drawFields(){
  const groups=uniq(rows.map(f=>f.scroll)).map(s=>rows.filter(f=>f.scroll===s));
  t.insertAdjacentHTML('beforeend',groups.length?groups.map(g=>'<tbody>'+g.map((f,i)=>fieldRow(f,i===0,g.length)).join('')+'</tbody>').join(''):'<tbody><tr><td colspan="7" class="fempty">No field matches.</td></tr></tbody>');
  $('fcards').innerHTML=groups.length?groups.map(card).join(''):'<p class="fempty">No field matches.</p>';
+ $('fcards').querySelectorAll('details.more').forEach(d=>d.addEventListener('toggle',()=>{if(d.open)openSc.add(d.dataset.sc);else openSc.delete(d.dataset.sc)}));
  $('fcount').textContent=rows.length+(rows.length===1?' field':' fields')+' on '+groups.length+(groups.length===1?' scroll':' scrolls');}
 document.querySelectorAll('[data-fw]').forEach(b=>b.onclick=()=>{fw=b.dataset.fw;document.querySelectorAll('[data-fw]').forEach(x=>x.setAttribute('aria-pressed',x===b));drawFields()});
 document.querySelectorAll('[data-fv]').forEach(b=>b.onclick=()=>{fv=b.dataset.fv;document.querySelectorAll('[data-fv]').forEach(x=>x.setAttribute('aria-pressed',x===b));drawFields()});
@@ -480,22 +553,32 @@ document.querySelectorAll('[data-fm]').forEach(b=>b.onclick=()=>{fm=b.dataset.fm
 $('fq').oninput=()=>{fq=$('fq').value;drawFields()};
 ['flist','fcards'].forEach(id=>$(id).addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
  if(b.dataset.pv){openPv(FL[+b.dataset.pv],'xy');return}
- if(b.dataset.url){const t=b.dataset.url,done=()=>{b.textContent='Copied';$('toast').classList.add('on');setTimeout(()=>{b.textContent='Copy URL';$('toast').classList.remove('on')},1200)};
+ if(b.dataset.url){const t=b.dataset.url,done=()=>{b.textContent='Copied';toastOn();setTimeout(()=>{b.textContent='Copy URL';$('toast').classList.remove('on')},1200)};
   if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(done,()=>fallback(t,done));else fallback(t,done)}}));
 /* preview: the field's two pictures in a box over the page (no scrolling of its own) */
+/* inside the Space the guide's frame is as tall as the guide and the page scrolls, so a fixed box would sit in the
+   middle of the whole frame: place the box and the toast in the part of the frame that is on screen */
+function onScreen(){let fe=null;try{fe=window.frameElement}catch(e){}
+ if(!fe)return null;const r=fe.getBoundingClientRect(),vh=parent.innerHeight,dh=document.documentElement.scrollHeight;
+ return {top:Math.max(0,Math.min(-r.top,dh-vh)),h:Math.min(vh,dh)}}
+function placeLb(){const L=$('lbox'),v=onScreen();if(!v)return;
+ L.style.position='absolute';L.style.top=v.top+'px';L.style.bottom='auto';L.style.height=v.h+'px';
+ L.querySelector('.lbpanel').style.maxHeight=(v.h-32)+'px'}
+function toastOn(){const T=$('toast'),v=onScreen();if(v){T.style.position='absolute';T.style.bottom='auto';T.style.top=(v.top+v.h-64)+'px'}T.classList.add('on')}
+try{parent.addEventListener('scroll',()=>{if(!$('lbox').hidden)placeLb()},{passive:true})}catch(e){}
 function openPv(f,view){pv=f;const L=$('lbox');
  $('lbimg').src=view==='xz'?f.preview_xz:f.preview_xy;
  $('lbimg').alt=f.scroll+' '+f.volume+' '+view+' preview, cos and normals';
  $('lbtitle').textContent=f.scroll+' · '+um(f.voxel_um)+' · '+f.volume;
  document.querySelectorAll('[data-lv]').forEach(x=>x.setAttribute('aria-pressed',x.dataset.lv===view));
  $('lbslice').hidden=!f.gallery;
- if(L.hidden){L.hidden=false;document.documentElement.classList.add('lbopen');$('lbclose').focus()}}
+ if(L.hidden){L.hidden=false;placeLb();document.documentElement.classList.add('lbopen');$('lbclose').focus({preventScroll:true})}}
 function closePv(){$('lbox').hidden=true;document.documentElement.classList.remove('lbopen');$('lbimg').removeAttribute('src');pv=null}
 document.querySelectorAll('[data-lv]').forEach(b=>b.onclick=()=>pv&&openPv(pv,b.dataset.lv));
 $('lbclose').onclick=closePv;
 $('lbox').addEventListener('click',e=>{if(e.target===$('lbox'))closePv()});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('lbox').hidden)closePv()});
-$('lbslice').onclick=()=>{const f=pv,i=D.findIndex(s=>s.id===f.scroll);closePv();if(i>=0){pick(i,false);$('scans').scrollIntoView({behavior:'smooth'})}};
+$('lbslice').onclick=()=>{const f=pv,i=D.findIndex(s=>s.id===f.scroll);closePv();if(i>=0){pick(i,false);$('use').scrollIntoView({behavior:'smooth'})}};
 /* the volumes being made: shown without any link until each is public (fields.json, pending_not_public) */
 if(FP.length){$('pend').hidden=false;
  $('pend').innerHTML='<h3>Being made now, not public yet</h3><p class="sub" style="margin-bottom:14px">Lasagnetta 0.1.1 fields for more volumes of scrolls in the list. None is public yet, so there is nothing to download or stream.</p>'+
@@ -512,9 +595,13 @@ $('stats').innerHTML=(FL.length?[[nsc,'scrolls'],[FL.length-ours.length,'villa f
 $('nscrolls').textContent=FL.length?nsc:D.length;
 $('mparts').textContent=fmt(totP);
 
-/* gallery */
-$('grid').innerHTML=D.map((s,i)=>'<button class="scan" type="button" data-i="'+i+'" aria-pressed="false"><img class="img" loading="lazy" src="assets/'+s.id+'-xy.webp" alt="'+s.id+' preview"><div class="meta"><div class="name">'+s.id+'</div><div class="small">'+s.um+' µm &middot; '+gb(s.bytes)+' &middot; '+s.parts.length+' parts</div></div></button>').join('');
+/* stream, download and load: one of the ten bucket fields drives every tab */
+$('grid').innerHTML=D.map((s,i)=>'<button class="scan" type="button" data-i="'+i+'" aria-pressed="false"><img loading="lazy" src="assets/'+s.id+'-xy.webp" alt=""><span><span class="name">'+s.id+'</span><br><span class="small">'+s.um+' µm<span class="gbx"> &middot; '+gb(s.bytes)+'</span></span></span></button>').join('');
 $('grid').onclick=e=>{const b=e.target.closest('.scan');if(b)pick(+b.dataset.i,true)};
+function showUse(n){ut=n;
+ document.querySelectorAll('[data-ut]').forEach(b=>b.setAttribute('aria-selected',b.dataset.ut===n));
+ document.querySelectorAll('.upanel').forEach(p=>p.hidden=p.id!=='u-'+n);}
+document.querySelectorAll('[data-ut]').forEach(b=>b.onclick=()=>showUse(b.dataset.ut));
 
 function dl(s){const d=s.id.toLowerCase()+'-lasagna';
  return '<span class="c"># the whole scan, '+gb(s.bytes)+'</span>\nhf download '+s.repo+' --repo-type dataset --local-dir '+d+'\ncd '+d+' && sha256sum -c SHA256SUMS\nfor f in parts/*.tar; do tar -xf "$f"; done\ntar -xf '+s.id+'-lasagna-pyramid-fix.tar   <span class="c"># last: the joined manifest</span>'}
@@ -526,21 +613,18 @@ function pick(i,scroll){cur=i;const s=D[i];
  const mm=(s.shape[0]*s.um/1000).toFixed(1);
  const facts=[['Scan',s.volume],['Voxel size',s.um+' µm'],['Scan size (z, y, x)',s.shape.map(fmt).join(' × ')+' voxels, '+mm+' mm tall'],['Download',gb(s.bytes)+' in '+s.parts.length+' parts'],['Seam check',s.seam<=1.5?'Worst edge '+s.seam.toFixed(2)+' (limit 1.5)':'One edge at '+s.seam.toFixed(2)+', cleared: a run across it matched byte for byte']];
  $('dfacts').innerHTML=facts.map(([k,v])=>'<dt>'+k+'</dt><dd>'+v+'</dd>').join('');
- $('dlinks').innerHTML='<a class="btn primary" href="https://huggingface.co/datasets/'+s.repo+'">Open dataset</a>'+(s.center?'<a class="btn" href="https://huggingface.co/datasets/SharpMeow/vesuvius-center-lines">Center line</a>':'')+(s.id==='PHerc0175A'?'<a class="btn" href="https://huggingface.co/spaces/SharpMeow/umbilici?mode=lasagna&scan=PHerc0175A&z=6400">See in 3D</a>':'');
- showView();showTab();showConnect();
- $('rs').value=i;regionReset();
- if(scroll)document.querySelector('.detail').scrollIntoView({behavior:'smooth',block:'nearest'});}
+ $('dlinks').innerHTML='<a class="btn primary small" href="https://huggingface.co/datasets/'+s.repo+'">Open dataset</a>'+(s.center?'<a class="btn small" href="https://huggingface.co/datasets/SharpMeow/vesuvius-center-lines">Center line</a>':'')+(s.id==='PHerc0175A'?'<a class="btn small" href="https://huggingface.co/spaces/SharpMeow/umbilici?mode=lasagna&scan=PHerc0175A&z=6400">See in 3D</a>':'');
+ $('dcode').innerHTML=dl(s);
+ showView();showConnect();regionReset();
+ if(scroll)$('usebox').scrollIntoView({behavior:'smooth',block:'nearest'});}
 function showView(){const s=D[cur];
  $('vxy').setAttribute('aria-pressed',view==='xy');$('vxz').setAttribute('aria-pressed',view==='xz');
  $('dimg').src='assets/'+s.id+(view==='xy'?'-xy-l':'-xz')+'.webp';
  $('dimg').alt=s.id+(view==='xy'?' top view':' side view')+': cos left, normals right';
  $('dcap').textContent=(view==='xy'?'Slice at z '+fmt(s.pz):'Cut through the middle, side on')+' · cos | normals';}
 $('vxy').onclick=()=>{view='xy';showView()};$('vxz').onclick=()=>{view='xz';showView()};
-function showTab(){document.querySelectorAll('[data-tab]').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===tab));
- const s=D[cur],c=center(s);$('dcode').innerHTML=tab==='get'?dl(s):py(s,c[0],c[1],c[2]);}
-document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{tab=b.dataset.tab;showTab()});
 
-/* connect */
+/* connect your tool */
 const BUCKET='https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/';
 let ctab='py';
 function base(s){return BUCKET+s.run}
@@ -552,34 +636,35 @@ function showConnect(){const s=D[cur],c=center(s),b=base(s);
  document.querySelectorAll('[data-ct]').forEach(t=>t.setAttribute('aria-selected',t.dataset.ct===ctab));
  let h='';
  if(ctab==='py')h='<p style="margin-top:14px">Reads only the chunks you index, over HTTPS. Tested with zarr 3.4.1, fsspec and aiohttp.</p><div class="codebox"><pre id="cpy">pip install "zarr&gt;=3" fsspec aiohttp\n\nimport zarr\n\nbase = "'+b+'"\ncos = zarr.open_array(base + "/'+s.id+'_cos.ome.zarr/1", mode="r", zarr_format=2)   <span class="c"># every 2nd scan voxel</span>\nnx = zarr.open_array(base + "/'+s.id+'_nx.ome.zarr/2", mode="r", zarr_format=2)     <span class="c"># every 4th scan voxel</span>\n\nz, y, x = '+c[0]+', '+c[1]+', '+c[2]+'   <span class="c"># full-resolution scan voxels</span>\npatch = cos[z // 2, y // 2 - 256:y // 2 + 256, x // 2 - 256:x // 2 + 256]\nprint(patch.shape, patch.mean())</pre><button class="copy" data-copy="cpy" type="button">Copy</button></div>';
- if(ctab==='ng')h='<p style="margin-top:14px">Opens the cos channel (level 1) in the public Neuroglancer viewer, streaming from the bucket. Its axes d0, d1, d2 are z, y, x in level-1 voxels, half the scan\'s.</p><div class="links"><a class="btn primary" target="_blank" rel="noopener" href="'+ngLink(s,c[0],c[1],c[2])+'">Open '+s.id+' in Neuroglancer</a></div><div class="codebox"><pre id="cng">zarr2://'+b+'/'+s.id+'_cos.ome.zarr/1</pre><button class="copy" data-copy="cng" type="button">Copy</button></div><p style="margin-top:10px;font-size:14px;color:var(--ink3)">Add the source above as an image layer in any Neuroglancer. Use a level folder (<code>/1</code>, <code>/2</code>), not the <code>.ome.zarr</code> root: villa writes the axis unit as "pixel", which Neuroglancer\'s OME reader rejects.</p>';
- if(ctab==='villa')h='<p style="margin-top:14px">The lasagna fit in villa reads a local manifest. Sync the run folder (or only the rows you need, from the region tool below) and point lasagna at <code>'+s.id+'.lasagna.json</code>. Tested anonymously with the <code>hf</code> CLI.</p><div class="codebox"><pre id="cvl">pip install -U "huggingface_hub[cli]"\nhf buckets sync hf://buckets/SharpMeow/lasagna-fields/'+s.run+' '+s.id.toLowerCase()+'-lasagna\n<span class="c"># then point lasagna at '+s.id.toLowerCase()+'-lasagna/'+s.id+'.lasagna.json</span></pre><button class="copy" data-copy="cvl" type="button">Copy</button></div>'+(s.center?'<p style="margin-top:10px;font-size:14px">The fit and the spiral fit also want a center line: '+s.id+'\'s is in <a href="https://huggingface.co/datasets/SharpMeow/vesuvius-center-lines">vesuvius-center-lines</a>.</p>':'');
+ if(ctab==='ng')h='<p style="margin-top:14px">Opens the cos channel (level 1) in the public Neuroglancer viewer, streaming from the bucket. Its axes d0, d1, d2 are z, y, x in level-1 voxels, half the scan\'s.</p><div class="links"><a class="btn primary small" target="_blank" rel="noopener" href="'+ngLink(s,c[0],c[1],c[2])+'">Open '+s.id+' in Neuroglancer</a></div><div class="codebox"><pre id="cng">zarr2://'+b+'/'+s.id+'_cos.ome.zarr/1</pre><button class="copy" data-copy="cng" type="button">Copy</button></div><p style="margin-top:10px;font-size:14px;color:var(--ink3)">Add the source above as an image layer in any Neuroglancer. Use a level folder (<code>/1</code>, <code>/2</code>), not the <code>.ome.zarr</code> root: villa writes the axis unit as "pixel", which Neuroglancer\'s OME reader rejects.</p>';
+ if(ctab==='villa')h='<p style="margin-top:14px">The lasagna fit in villa reads a local manifest. Sync the run folder (or only the rows you need, from the <a href="#use" data-go="region">region tab</a>) and point lasagna at <code>'+s.id+'.lasagna.json</code>. Tested anonymously with the <code>hf</code> CLI.</p><div class="codebox"><pre id="cvl">pip install -U "huggingface_hub[cli]"\nhf buckets sync hf://buckets/SharpMeow/lasagna-fields/'+s.run+' '+s.id.toLowerCase()+'-lasagna\n<span class="c"># then point lasagna at '+s.id.toLowerCase()+'-lasagna/'+s.id+'.lasagna.json</span></pre><button class="copy" data-copy="cvl" type="button">Copy</button></div>'+(s.center?'<p style="margin-top:10px;font-size:14px">The fit and the spiral fit also want a center line: '+s.id+'\'s is in <a href="https://huggingface.co/datasets/SharpMeow/vesuvius-center-lines">vesuvius-center-lines</a>.</p>':'');
  if(ctab==='any')h='<div class="tablewrap" style="margin-top:14px"><table><tbody><tr><th>Store</th><td>zarr v2, one array per pyramid level, chunks 64 &times; 64 &times; 64, Blosc zstd, fill 0, <code>/</code> separator</td></tr><tr><th>URL</th><td><code>'+b+'/'+s.id+'_CHANNEL.ome.zarr/LEVEL/Z/Y/X</code></td></tr><tr><th>Channels</th><td>cos (levels 1 to 4), grad_mag, nx, ny (levels 2 to 4)</td></tr><tr><th>HTTP</th><td>Anonymous; a 302 to Hugging Face\'s CDN, which allows any origin and byte ranges; a missing chunk is a 404, which zarr readers treat as empty</td></tr><tr><th>Scale</th><td>Level k is every 2<sup>k</sup>th scan voxel; the OME <code>.zattrs</code> gives the same as scale transforms</td></tr></tbody></table></div>';
  $('cbody').innerHTML=h;}
 document.querySelectorAll('[data-ct]').forEach(b=>b.onclick=()=>{ctab=b.dataset.ct;showConnect()});
+/* links that open one tab or one fold (the Space's own handler scrolls to it) */
+document.addEventListener('click',e=>{const a=e.target.closest('a[href^="#"]');if(!a)return;const d=document.getElementById(a.getAttribute('href').slice(1));if(d&&d.tagName==='DETAILS')d.open=true});
+document.addEventListener('click',e=>{const a=e.target.closest('[data-go]');if(a)showUse(a.dataset.go)});
 
 /* region picker */
-$('rs').innerHTML=D.map((s,i)=>'<option value="'+i+'">'+s.id+'</option>').join('');
 const R={z:0,y:0,x:0};
 function center(s){return [Math.round(s.pz/64)*64,Math.round(s.shape[1]/2),Math.round(s.shape[2]/2)]}
-function regionReset(){const s=D[+$('rs').value];[R.z,R.y,R.x]=center(s);$('zr').max=s.shape[0]-1;drawRegion()}
+function regionReset(){const s=D[cur];[R.z,R.y,R.x]=center(s);$('zr').max=s.shape[0]-1;drawRegion()}
 function need(s,r){const lo=[R.z-r,R.y-r,R.x-r],hi=[R.z+r,R.y+r,R.x+r];
  return s.parts.filter(p=>p[1].every((c,k)=>c[0]<hi[k]&&c[1]>lo[k]))}
-function drawRegion(){const s=D[+$('rs').value];const r=Math.max(1,+$('rr').value||512);
+function drawRegion(){const s=D[cur];const r=Math.max(1,+$('rr').value||512);
  const clamp=(v,k)=>Math.max(0,Math.min(s.shape[k]-1,Math.round(v)));R.z=clamp(R.z,0);R.y=clamp(R.y,1);R.x=clamp(R.x,2);
  $('rz').value=R.z;$('ry').value=R.y;$('rx').value=R.x;$('zr').value=R.z;$('zv').textContent=fmt(R.z);
  const W=400,sc=W/Math.max(s.shape[1],s.shape[2]),H=Math.round(s.shape[1]*sc);
  const m=$('map');m.setAttribute('viewBox','0 0 '+W+' '+H);
  const nd=new Set(need(s,r).map(p=>p[0]));
  let h='<rect x="0" y="0" width="'+(s.shape[2]*sc)+'" height="'+H+'" fill="var(--card)" stroke="var(--line)"/>';
- const css=getComputedStyle(document.documentElement);
  s.parts.filter(p=>p[1][0][0]<=R.z&&R.z<p[1][0][1]).forEach(p=>{const[ , y,x]=p[1];const on=nd.has(p[0]);
   h+='<rect x="'+(x[0]*sc+1)+'" y="'+(y[0]*sc+1)+'" width="'+((x[1]-x[0])*sc-2)+'" height="'+((y[1]-y[0])*sc-2)+'" rx="4" fill="'+(on?'var(--accent)':'var(--bg2)')+'" fill-opacity="'+(on?.28:1)+'" stroke="'+(on?'var(--accent)':'var(--ink3)')+'" stroke-opacity="'+(on?1:.5)+'"/>'+
      '<text x="'+((x[0]+x[1])/2*sc)+'" y="'+((y[0]+y[1])/2*sc+4)+'" text-anchor="middle" font-size="11" font-family="JetBrains Mono,monospace" fill="var(--ink2)">t'+p[0]+'</text>'});
  h+='<rect x="'+((R.x-r)*sc)+'" y="'+((R.y-r)*sc)+'" width="'+(2*r*sc)+'" height="'+(2*r*sc)+'" fill="none" stroke="var(--ink)" stroke-width="1.5" stroke-dasharray="4 3"/><circle cx="'+(R.x*sc)+'" cy="'+(R.y*sc)+'" r="4" fill="var(--ink)"/>';
  m.innerHTML=h;m.dataset.sc=sc;
  const parts=need(s,r),bytes=parts.reduce((a,p)=>a+p[2],0)+s.fix,d=s.id.toLowerCase()+'-'+R.z+'-'+R.y+'-'+R.x;
- $('rres').innerHTML='Your box touches <b>'+parts.length+'</b> of '+s.parts.length+' parts, <b>'+gb(bytes)+'</b> instead of '+gb(s.bytes)+'.<br>'+parts.map(p=>'<span class="pill">t'+p[0]+'</span>').join('');
+ $('rres').innerHTML=s.id+': your box touches <b>'+parts.length+'</b> of '+s.parts.length+' parts, <b>'+gb(bytes)+'</b> instead of '+gb(s.bytes)+'.<br>'+parts.map(p=>'<span class="pill">t'+p[0]+'</span>').join('');
  const lo=[R.z-r,R.y-r,R.x-r].map(v=>Math.max(0,v)),hi=[R.z+r,R.y+r,R.x+r].map((v,k)=>Math.min(s.shape[k]-1,v));
  const rows=f=>{const zs=[];for(let z=Math.floor(lo[0]/f);z<=Math.floor(hi[0]/f);z++)zs.push(z);return zs};
  const inc=['"*.json"','"*/.z*"'];
@@ -588,7 +673,6 @@ function drawRegion(){const s=D[+$('rs').value];const r=Math.max(1,+$('rr').valu
  const files=parts.map(p=>'parts/'+s.id+'-lasagna-t'+p[0]+'.tar').concat([s.id+'-lasagna-pyramid-fix.tar','SHA256SUMS','load_example.py']);
  $('rcode').innerHTML='<span class="c"># or from the dataset: whole parts for z, y, x = '+R.z+', '+R.y+', '+R.x+' ± '+r+' voxels</span>\nhf download '+s.repo+' \\\n  '+files.join(' \\\n  ')+' \\\n  --repo-type dataset --local-dir '+d+'\ncd '+d+' && sha256sum -c --ignore-missing SHA256SUMS\nfor f in parts/*.tar; do tar -xf "$f"; done\ntar -xf '+s.id+'-lasagna-pyramid-fix.tar';
  $('rpy').innerHTML=py(s,R.z,R.y,R.x);}
-$('rs').onchange=()=>{regionReset()};
 ['rz','ry','rx'].forEach((id,k)=>$(id).oninput=()=>{R['zyx'[k]]=+$(id).value||0;drawRegion()});
 $('rr').oninput=drawRegion;$('zr').oninput=()=>{R.z=+$('zr').value;drawRegion()};
 function mapAt(e){const m=$('map'),b=m.getBoundingClientRect(),vb=m.viewBox.baseVal,sc=+m.dataset.sc;
@@ -597,7 +681,7 @@ let drag=false;$('map').onpointerdown=e=>{drag=true;mapAt(e)};addEventListener('
 
 /* copy */
 document.addEventListener('click',e=>{const b=e.target.closest('.copy');if(!b)return;
- const t=$(b.dataset.copy).textContent;const done=()=>{b.textContent='Copied';$('toast').classList.add('on');setTimeout(()=>{b.textContent='Copy';$('toast').classList.remove('on')},1200)};
+ const t=$(b.dataset.copy).textContent;const done=()=>{b.textContent='Copied';toastOn();setTimeout(()=>{b.textContent='Copy';$('toast').classList.remove('on')},1200)};
  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(done,()=>fallback(t,done));else fallback(t,done)});
 function fallback(t,done){const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy');done()}catch(e){}a.remove()}
 
