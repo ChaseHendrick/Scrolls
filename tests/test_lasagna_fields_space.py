@@ -230,6 +230,18 @@ class TestFieldList(unittest.TestCase):
         for r in self.doc.get("pending_not_public", {}).get("items", []):
             self.assertNotIn(r["scroll"], self.eligible, r)
 
+    def test_every_field_has_all_four_links(self):
+        """Dataset, Manifest, Preview and Copy URL on every row (30 Oct 2026): the bucket holds every SharpMeow field."""
+        for r in self.rows:
+            self.assertTrue(r["browse"].startswith("https://"), r)
+            self.assertTrue(r["manifest"].endswith(".lasagna.json") and r["manifest"].startswith(r["stream"] + "/"), r)
+            self.assertIn(f"/{r['scroll']}/representations/predictions/lasagna/", r["stream"])
+            self.assertRegex(r["preview_xy"], r"-xy\.(png|webp)$")
+            self.assertRegex(r["preview_xz"], r"-xz\.(png|webp)$")
+            if r["source"] == "dataset":
+                self.assertTrue(r["stream"].startswith("https://huggingface.co/buckets/SharpMeow/lasagna-fields/"), r)
+                self.assertEqual(r["browse"], r["url"])
+
     def test_ten_bucket_fields_are_listed_with_their_stream(self):
         own_fields, = _constants("OWN_FIELDS")
         own = {vid: run for vid, (_, run) in own_fields.items()}
@@ -284,7 +296,7 @@ class TestFieldListOnThePage(unittest.TestCase):
 
     def test_make_a_field_names_a_listed_dataset(self):
         app = _load_app()
-        row = next(r for r in app.field_doc()["fields"] if r["dataset"] and not r.get("stream"))
+        row = next(r for r in app.field_doc()["fields"] if r["dataset"] and not r.get("gallery"))
         fake = {"volume": row["volume"], "sample": row["scroll"], "voxel_um": row["voxel_um"], "level": 0,
                 "shape_zyx": [1, 1, 1]}
         app.L.volume = lambda vid: dict(fake, volume=vid)

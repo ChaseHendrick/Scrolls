@@ -1,8 +1,11 @@
-"""Card pictures for the Every field tab: each public SharpMeow dataset's preview-xy.png (cos | normals, made with the
-field) as a small 2:1 WebP (fitted whole, on black) under assets/thumbs/DATASET.webp. The guide falls back to the dataset's own PNG when a thumb
-is missing. Like the rest of assets/, the thumbs live on the Space, not in git.
+"""Card pictures for the Every field tab: each field's xy preview (cos | normals; preview_xy in fields.json, a
+dataset's preview-xy.png or, for villa's fields in the open data, the picture make_previews.py wrote) as a small 2:1
+WebP (fitted whole, on black) under assets/thumbs/SCROLL-VOLUME.webp. The guide falls back to the preview itself when
+a thumb is missing. Like the rest of assets/, the thumbs live on the Space, not in git.
 
-  python3 spaces/lasagna-fields/make_thumbs.py OUT_DIR      (then upload OUT_DIR as the Space's assets/thumbs/)
+  python3 spaces/lasagna-fields/make_thumbs.py OUT_DIR [PREVIEWS_DIR]   (then upload OUT_DIR as assets/thumbs/)
+
+PREVIEWS_DIR, make_previews.py's output, is read before the Space has the open-data previews.
 """
 import io
 import json
@@ -37,15 +40,17 @@ def trim(im):
 
 def main(argv=None):
     from PIL import Image
-    out = Path((argv or sys.argv[1:])[0])
+    args = argv or sys.argv[1:]
+    out = Path(args[0])
+    local = Path(args[1]) if len(args) > 1 else None
     out.mkdir(parents=True, exist_ok=True)
     doc = json.loads((HERE / "fields.json").read_text())
     for f in doc["fields"]:
-        if not f.get("dataset"):
-            continue
-        name = f["dataset"].split("/")[1]
-        url = f"https://huggingface.co/datasets/{f['dataset']}/resolve/main/preview-xy.png"
-        im = trim(Image.open(io.BytesIO(urllib.request.urlopen(url, timeout=120).read())).convert("RGB"))
+        name = f"{f['scroll']}-{f['volume']}"
+        url = f["preview_xy"]
+        here = local / url.rsplit("/", 1)[1] if local else None
+        raw = here.read_bytes() if here and here.is_file() else urllib.request.urlopen(url, timeout=120).read()
+        im = trim(Image.open(io.BytesIO(raw)).convert("RGB"))
         r = min(W / im.width, H / im.height)              # contain, centered on black like the panels
         im = im.resize((round(im.width * r), round(im.height * r)), Image.LANCZOS)
         canvas = Image.new("RGB", (W, H))

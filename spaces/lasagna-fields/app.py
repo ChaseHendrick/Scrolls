@@ -209,7 +209,8 @@ def volume_text(vid):
         pub_line = "The open data has villa's field for this scan, so each box is checked against it."
     else:
         listed = [f for f in field_doc().get("fields", []) if f["volume"] == v["volume"] and f.get("dataset")]
-        pub_line = ("No lasagna field for this scan streams by URL, so there is nothing to check against."
+        pub_line = ("Boxes are checked only against the open data's fields and the ten in the Preview tab, so there is "
+                    "nothing to check against for this scan."
                     + (f" Its whole-scan field ({listed[0]['model']}) is on the Every field tab as "
                        f"{listed[0]['dataset']}." if listed else ""))
     return (f"{' × '.join(map(str, shape))} voxels (z × y × x) at {v['voxel_um']:g} um. The model reads level "
@@ -289,10 +290,12 @@ def list_fields(scroll: str = ""):
     villa's own fields in the Vesuvius Challenge open data and the public SharpMeow datasets (made with villa's
     lasagna predict3d or with Lasagnetta 0.1.1, a faster copy of it). Args: scroll, part of a scroll name to keep
     only its fields (empty for all). Returns a list of {scroll, volume, zarr, voxel_um, read_level, model, source,
-    made_by, bytes, url, dataset, manifest, stream, note}: stream is a run folder that zarr reads by URL, or null.
+    made_by, bytes, url, dataset, manifest, stream, preview_xy, preview_xz, browse, note}: stream is the run folder
+    that zarr reads by URL, manifest its lasagna.json, preview_xy and preview_xz pictures of cos and normals, and
+    browse the page to download it from (the dataset, or the open data's file browser).
     """
     keep = ("scroll", "volume", "zarr", "voxel_um", "read_level", "model", "source", "made_by", "bytes", "url",
-            "dataset", "manifest", "stream", "note")
+            "dataset", "manifest", "stream", "preview_xy", "preview_xz", "browse", "note")
     q = str(scroll or "").strip().lower()
     return [{k: f.get(k) for k in keep} for f in field_doc().get("fields", []) if q in f["scroll"].lower()]
 
