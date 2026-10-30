@@ -4,6 +4,7 @@
  "keep_score": 12,
  "bands": {"high": 60, "medium": 35},
  "check_cooldown_s": 300,
+ "people": {"Chase Hendrick": ["ChaseHendrick", "SharpMeow", "Sharpie"]},
  "core": {
   "weight": 45,
   "terms": ["vesuvius", "herculaneum", "herculanense", "papyrus", "papyri", "papyrolog", "carbonized scroll",

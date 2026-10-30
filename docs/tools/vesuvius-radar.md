@@ -18,7 +18,7 @@ A Hugging Face Space that collects new papers, repositories, models, datasets, p
 | Go-ahead | Not needed to use. Making the Space public was Chase's yes (29 Oct 2026); later redeploys from merged `main` fall under the standing yes (rule 8) |
 | Released | Public on Hugging Face since 2026-10-29; README "Released tools" entry `vesuvius-radar` |
 | License | Code Apache 2.0; item titles, summaries and links belong to their sources |
-| Checked | 2026-10-30 against commit `d0a600c` |
+| Checked | 2026-10-30 against commit `b32649f` |
 
 ## What it does
 
@@ -68,7 +68,7 @@ Claim label: Model output (relevance scores, topics by meaning and similar items
 
 ### The Space
 
-[huggingface.co/spaces/SharpMeow/vesuvius-radar](https://huggingface.co/spaces/SharpMeow/vesuvius-radar): Radar (KPIs, charts, filters and the list, newest first, in pages of 10, 20, 50 or 100; each item opens "Why this score" and "More like this"), Briefing, Sources (each source's last and next check, with Check now), API and MCP (the Connect your tool panel), How it works. Themes: Auto, Light, Dark and Vesuvius. URL parameters mirror the API filters (`since`, `by`, `view`, `q`, `sources`, `topics`, `bands`, `min`, plus `sort` and `per` for the page), so a filtered page can be shared as a link.
+[huggingface.co/spaces/SharpMeow/vesuvius-radar](https://huggingface.co/spaces/SharpMeow/vesuvius-radar): Radar (KPIs, charts, filters and the list, newest first, in pages of 10, 20, 50 or 100; each item opens "Why this score" and "More like this"), Briefing, Sources (each source's last and next check, with Check now), API and MCP (the Connect your tool panel), How it works. Themes: Auto, Light, Dark and Vesuvius. URL parameters mirror the API filters (`since`, `by`, `view`, `q`, `sources`, `topics`, `bands`, `min`, plus `sort` and `per` for the page), so a filtered page can be shared as a link. The browser keeps the filters (the minimum score among them) under `vradar.` keys in local storage. Only a link that names one of those parameters replaces them: Hugging Face opens the Space with parameters of its own (`?__theme=`, and `?__sign=` for a private Space), and those visits keep the saved filters. A link without `min` keeps the reader's saved minimum, and links the page makes always name `min`. The search box's "Match ideas, not words" switch (`by_meaning`) ranks every item in view by closeness in meaning to the words typed instead of requiring each word; it is greyed out while the box is empty. The Refresh button (Check now) wears a light accent halo in every theme.
 
 ### HTTP API
 
@@ -153,7 +153,7 @@ The public sources listed under Network, read logged out. `radar.json` holds eve
 
 ## Outputs
 
-Each item: `id` (source and its own id), `source`, `kind`, `title`, `url`, `date` (UTC), `first_seen`, `summary` (up to 900 characters), `score` (0 to 100), `band` (high 60 or more, medium 35 or more, low), `keyword`, `semantic` and `sim` (when the model is on), `rule` (the keyword and meaning score that decides whether an item is kept), `learned` (`full` or `meta` when the learned head set the score), `topics`, `topics_by_meaning`, `matched` (terms), `parts` (the keyword breakdown as label and points), `who` (the author; for a GitHub issue or pull request, who opened it), `activity` (a GitHub issue or pull request whose latest update came after its opening: `what` such as `comment`, `edited comment`, `review comment`, `review`, `approved`, `changes requested`, `closed`, `merged`, `label added` or `new commits`; `who` made it; `date`; `text`, what it said as plain text up to 600 characters with quoted text, code and images left out; `url` of the comment or review; `also`, up to three other kinds of update in the same two minutes), and per kind `code`, `pdf`, `stars`, `downloads`, `likes`, `upvotes`, `license`, `version`.
+Each item: `id` (source and its own id), `source`, `kind`, `title`, `url`, `date` (UTC), `first_seen`, `summary` (up to 900 characters), `score` (0 to 100), `band` (high 60 or more, medium 35 or more, low), `keyword`, `semantic` and `sim` (when the model is on), `rule` (the keyword and meaning score that decides whether an item is kept), `learned` (`full` or `meta` when the learned head set the score), `topics`, `topics_by_meaning`, `matched` (terms), `parts` (the keyword breakdown as label and points), `who` (the author's account as the source gives it; for a GitHub issue or pull request, who opened it), `who_name` (the person's name, only when `who` is an account or nickname listed under `people` in `radar.json`), `activity` (a GitHub issue or pull request whose latest update came after its opening: `what` such as `comment`, `edited comment`, `review comment`, `review`, `approved`, `changes requested`, `closed`, `merged`, `label added` or `new commits`; `who` made it, with `who_name` as for the item; `date`; `text`, what it said as plain text up to 600 characters with quoted text, code and images left out; `url` of the comment or review; `also`, up to three other kinds of update in the same two minutes), and per kind `code`, `pdf`, `stars`, `downloads`, `likes`, `upvotes`, `license`, `version`.
 
 ## Failure modes
 
@@ -176,7 +176,7 @@ Each item: `id` (source and its own id), `source`, `kind`, `title`, `url`, `date
 4. The meaning model (`Semantic`) embeds the title and the first 600 characters of the summary (`embed_chars`) and takes the cosine to the nearest anchor sentence; 0.70 maps to 0 and 0.80 to 100. The rule score is the higher of the keyword score and 0.55 meaning plus 0.45 keywords. A cosine of 0.76 or more adds that anchor's topic.
 5. The learned head (`Head`, `head.json`) sets the shown score: ridge coefficients on the 384-number embedding and on eight metadata features (keyword and meaning scores, stars, likes and upvotes, new repository, links code, summary length, merged pull request) plus a one-hot of source and kind, then a monotone map to 0 to 100. Items with no embedding use the metadata-only head. Without `head.json` the rule score is shown.
 6. Items whose rule score is `keep_score` (12) or more are merged into the store, which keeps `first_seen` and drops items older than 30 days.
-7. Every request filters the store, so changing the lookback is instant.
+7. Every request filters the store, so changing the lookback is instant. One person can hold several accounts: `people` in `radar.json` maps each listed account or nickname to one name (Chase Hendrick for ChaseHendrick, SharpMeow and Sharpie), which Top contributors counts as one person, search matches and the page shows, with the account in a tooltip.
 
 ## Cost and time
 
@@ -200,6 +200,7 @@ Free: a CPU Space (cpu-basic), no paid compute. The first collection after a sta
 
 - 2026-10-29: first version (1.0.0), built from `8491642`, tested in a private Space, then made public.
 - 2026-10-30: version 1.1.0 ([PR #285](https://github.com/ChaseHendrick/Scrolls/pull/285)). Villa issue and pull request cards say who made the latest update and what it said, with the opener kept as "opened by" (a card for villa #193 credited only the issue's opener for a newer comment by someone else); "Why this score" and "More like this" open separate panels (they opened the same one); long titles wrap on phones. Items gain `activity`; CSV gains `update`, `update_by`, `update_said` and `update_url`; RSS and the briefing name the update.
+- 2026-10-30: version 1.1.2 ([PR #303](https://github.com/ChaseHendrick/Scrolls/pull/303)). The minimum score no longer snaps back to 20: Hugging Face opens the Space as `?__theme=system`, which the page took for a shared link that reset every saved filter. Only filter parameters count as a link now, a link without `min` keeps the saved minimum, and the page's own links always name `min`. ChaseHendrick, SharpMeow and Sharpie count and show as one person, Chase Hendrick (`people` in `radar.json`; items gain `who_name`). The meaning switch is labeled "Match ideas, not words", explained in its tooltip and greyed out with an empty search box; the Refresh button wears a light halo in the light, dark and Vesuvius themes.
 - 2026-10-30: version 1.1.1 ([PR #287](https://github.com/ChaseHendrick/Scrolls/pull/287)). A cut-off download (`IncompleteRead`) is retried like a refused one, and a villa listing that still fails is a `partial` note that keeps the check's repository search results; the first check after the 1.1.0 redeploy had lost every GitHub item to one cut-off download.
 
 ## Related

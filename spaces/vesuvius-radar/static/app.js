@@ -10,6 +10,9 @@
   const BAND_LABEL = { high: "High", medium: "Medium", low: "Low" };
   // An issue's or pull request's author is who opened it; a later comment or review has its own author.
   const OPENED = { issue: "opened by", pr: "opened by", thread: "started by" };
+  const clip = (s, n) => (s.length > n ? s.slice(0, n - 2) + "..." : s);
+  // who with its first name replaced by the person's name (who_name), co-authors and other posters kept
+  const byline = (i) => (i.who_name ? [i.who_name].concat(i.who.split(",").slice(1).map((s) => s.trim())).join(", ") : i.who);
   const KIND = { paper: "paper", repo: "repository", pr: "pull request", issue: "issue", release: "release", model: "model",
     dataset: "dataset", space: "Space", "daily-paper": "daily paper", package: "package version", post: "blog post" };
   const LOOKBACKS = [["1m", "1 min"], ["5m", "5 min"], ["15m", "15 min"], ["30m", "30 min"], ["1h", "1 hour"], ["3h", "3 hours"],
@@ -50,8 +53,10 @@
 
   function readUrl() {
     const p = new URLSearchParams(location.search);
-    if (![...p.keys()].length) return;
-    const f = defaults();
+    // Hugging Face opens the Space with parameters of its own (__theme, and __sign on a private Space). Only a link that
+    // names a filter replaces the saved filters, and a link without "min" keeps the saved minimum score.
+    if (!["view", "since", "by", "q", "meaning", "sort", "min", "sources", "bands", "topics", "code", "per"].some((k) => p.has(k))) return;
+    const f = Object.assign(defaults(), { min: S.f.min });
     if (p.get("view")) f.view = p.get("view");
     if (p.get("since")) f.since = p.get("since");
     if (p.get("by")) f.by = p.get("by");
@@ -83,7 +88,7 @@
     const d = defaults();
     ["view", "since", "by", "q", "sort"].forEach((k) => { if (f[k] && f[k] !== d[k]) p.set(k, f[k]); });
     if (f.meaning) p.set("meaning", "1");
-    if (f.min !== d.min) p.set("min", f.min);
+    p.set("min", f.min);  // always, so a shared link shows its own minimum rather than the reader's saved one
     ["sources", "bands", "topics"].forEach((k) => { if (f[k].length) p.set(k, f[k].join(",")); });
     if (f.code) p.set("code", "1");
     if (S.per !== 10) p.set("per", S.per);
@@ -485,7 +490,7 @@
     const tg = Object.keys(TOGGLES).filter((k) => S.f[k]);
     $("#vMore").textContent = summary(tg, Object.keys(TOGGLES).length, (k) => TOGGLES[k]);
     $$("#fbar .dd").forEach((d) => d.classList.toggle("active", !!d.querySelector(".ddv") && !!d.querySelector(".ddv").textContent));
-    $("#q").value = S.f.q; $("#meaning").checked = S.f.meaning; $("#sort").value = S.f.sort; $("#min").value = S.f.min; $("#minOut").textContent = S.f.min;
+    $("#q").value = S.f.q; $("#meaning").checked = S.f.meaning; $("#meaning").disabled = !S.f.q.trim(); $("#sort").value = S.f.sort; $("#min").value = S.f.min; $("#minOut").textContent = S.f.min;
     $("#per").value = String(S.per);
     $("#sort").disabled = S.f.meaning && !!S.f.q.trim();
     renderPills();
@@ -544,7 +549,7 @@
     const d = $(".filters .dd[open]");
     if (d) { d.open = false; d.querySelector("summary").focus(); }
   });
-  $("#q").addEventListener("input", (e) => { S.f.q = e.target.value; reload(S.f.meaning ? 450 : 220); egg.typed(S.f.q); });
+  $("#q").addEventListener("input", (e) => { S.f.q = e.target.value; $("#meaning").disabled = !S.f.q.trim(); reload(S.f.meaning ? 450 : 220); egg.typed(S.f.q); });
   $("#meaning").addEventListener("change", (e) => { S.f.meaning = e.target.checked; reload(); });
   $("#sort").addEventListener("change", (e) => { S.f.sort = e.target.value; reload(); });
   $("#per").addEventListener("change", (e) => { S.per = PER.includes(+e.target.value) ? +e.target.value : 10; reload(); });
@@ -578,7 +583,7 @@
       `<span class="src"><i class="dot s-${i.source}"></i>${esc(SRC_LABEL[i.source] || i.source)}</span>`,
       `<span>${esc(KIND[i.kind] || i.kind)}${i.state ? " · " + esc(i.state) : ""}${i.category ? " · " + esc(i.category) : ""}</span>`,
       `<span title="${esc(stamp(i.date))}${i.created && i.created !== i.date ? "; opened " + esc(stamp(i.created)) : ""}${i.first_seen ? "; found " + esc(stamp(i.first_seen)) : ""}">${esc(dm(D(i.date)))} (${esc(ago(i.date))})</span>`,
-      i.who ? `<span>${OPENED[i.kind] ? OPENED[i.kind] + " " : ""}${esc(i.who.length > 80 ? i.who.slice(0, 78) + "..." : i.who)}</span>` : "",
+      i.who ? `<span${i.who_name ? ` title="${esc(i.who)}"` : ""}>${OPENED[i.kind] ? OPENED[i.kind] + " " : ""}${esc(clip(byline(i), 80))}</span>` : "",
       i.stars != null ? `<span>${fmtN(i.stars)} stars</span>` : "",
       i.likes ? `<span>${fmtN(i.likes)} likes</span>` : "",
       i.downloads ? `<span>${fmtN(i.downloads)} downloads</span>` : "",
@@ -613,7 +618,7 @@
       <div class="meta">${meta}</div>
       <div class="body">
         ${updateHTML(i)}
-        ${i.summary ? `<p class="summary" title="Click to expand">${i.activity && i.activity.who ? `<span class="slab">${esc(cap(OPENED[i.kind] || "posted by"))} ${esc(i.who || "")}:</span> ` : ""}${esc(i.summary)}</p>` : ""}
+        ${i.summary ? `<p class="summary" title="Click to expand">${i.activity && i.activity.who ? `<span class="slab">${esc(cap(OPENED[i.kind] || "posted by"))} ${esc(i.who_name || i.who || "")}:</span> ` : ""}${esc(i.summary)}</p>` : ""}
         <div class="tags">${i.topics.map((t) => `<button class="tag${byMeaning.has(t) ? " meaning" : ""}" data-topic="${esc(t)}"${byMeaning.has(t) ? ' title="Added by the meaning model"' : ""}>${esc(t)}</button>`).join("")}</div>
         <div class="links-row">
           <div class="links">${links}</div>
@@ -636,7 +641,7 @@
     const kind = /comment/.test(a.what) ? "comment" : /review|approved|changes requested/.test(a.what) ? "review" : a.what === "new commits" ? "commit" : "";
     const also = (a.also || []).length ? ` · <span class="also">also: ${esc(a.also.join(", "))}</span>` : "";
     const link = a.url ? ` · <a class="ulink" href="${esc(safe(a.url))}" target="_blank" rel="noopener">See ${SEE[kind] || "it"}</a>` : "";
-    return `<div class="update-row"><span class="ulab">Latest update</span><span class="uwho"><b>${esc(what)}</b> by <b>${esc(a.who)}</b> · <span title="${esc(stamp(a.date))}">${esc(ago(a.date))}</span>${also}${link}</span>` +
+    return `<div class="update-row"><span class="ulab">Latest update</span><span class="uwho"><b>${esc(what)}</b> by <b${a.who_name ? ` title="${esc(a.who)}"` : ""}>${esc(a.who_name || a.who)}</b> · <span title="${esc(stamp(a.date))}">${esc(ago(a.date))}</span>${also}${link}</span>` +
       (a.text ? `<p class="usaid" title="Click to expand">${esc(a.text)}</p>` : "") + `</div>`;
   }
   function whyHTML(i) {
@@ -655,7 +660,7 @@
   function renderList() {
     const items = visible();
     const hiddenHere = S.items.length - S.items.filter((i) => !S.hide.has(i.id)).length;
-    $("#count").innerHTML = `<b>${fmtN(S.matched)}</b> items match` + (S.byMeaning ? ", ranked by meaning" : "") + (hiddenHere && !S.f.showHidden ? ` · ${fmtN(hiddenHere)} hidden` : "");
+    $("#count").innerHTML = `<b>${fmtN(S.matched)}</b> items match` + (S.byMeaning ? ", closest in meaning to your words first" : "") + (hiddenHere && !S.f.showHidden ? ` · ${fmtN(hiddenHere)} hidden` : "");
     if (!items.length) {
       const short = /^(1|5|15|30)m$/.test(S.f.since);
       $("#list").innerHTML = `<div class="card emptybox"><b>Nothing here yet.</b><span>${short ? "Short windows are often empty: papers arrive once a day and the collector checks GitHub and Hugging Face every 20 minutes. Try " : "Lower the minimum score, widen the lookback or "}</span><div class="more-row">
@@ -728,7 +733,7 @@
     const topics = Object.entries(b.topics);
     $("#briefGrid").innerHTML = topics.length ? topics.map(([t, items]) => `<section class="card brief-topic"><h3>${esc(t)}<span>${fmtN((S.ov && S.ov.by_topic[t]) || items.length)} in view</span></h3>${items.map((i) => `
       <div class="bitem"><span class="sc ${i.band === "high" ? "high" : ""}">${i.score}</span><a href="${esc(safe(i.url))}" target="_blank" rel="noopener">${esc(i.title)}</a>
-      <span class="m"><i class="dot s-${esc(i.source)}"></i>${esc(SRC_LABEL[i.source] || i.source)} · ${esc(KIND[i.kind] || i.kind)} · ${esc(ago(i.date))}${i.activity && i.activity.who ? " · " + esc(i.activity.what) + " by " + esc(i.activity.who) : i.who ? " · " + esc(i.who.split(",")[0]) : ""}${i.code ? ' · <span class="badge code">code</span>' : ""}</span></div>`).join("")}</section>`).join("")
+      <span class="m"><i class="dot s-${esc(i.source)}"></i>${esc(SRC_LABEL[i.source] || i.source)} · ${esc(KIND[i.kind] || i.kind)} · ${esc(ago(i.date))}${i.activity && i.activity.who ? " · " + esc(i.activity.what) + " by " + esc(i.activity.who_name || i.activity.who) : i.who ? " · " + esc(i.who_name || i.who.split(",")[0]) : ""}${i.code ? ' · <span class="badge code">code</span>' : ""}</span></div>`).join("")}</section>`).join("")
       : `<div class="card emptybox"><b>Nothing scores 35 or more in this window.</b><span>Widen the lookback above, or switch to Everyone.</span></div>`;
   }
 

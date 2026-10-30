@@ -27,7 +27,7 @@ def bind(app_module):
 
 router = APIRouter()
 VERSIONS = ("2025-06-18", "2025-03-26", "2024-11-05")
-SERVER = {"name": "vesuvius-radar", "title": "Vesuvius Radar", "version": "1.1.1"}
+SERVER = {"name": "vesuvius-radar", "title": "Vesuvius Radar", "version": "1.1.2"}
 INSTRUCTIONS = (
     "Vesuvius Radar keeps collecting new work that could help read the Herculaneum scrolls (the Vesuvius Challenge): "
     "papers from arXiv and journals, GitHub repositories with ScrollPrize/villa pull requests, issues and releases, "
@@ -133,7 +133,8 @@ TOOLS = [
 def _compact(i: dict) -> dict:
     keep = ("id", "score", "band", "keyword", "semantic", "match", "source", "kind", "title", "url", "date", "first_seen",
             "topics", "matched", "who", "code", "stars", "likes", "upvotes", "downloads", "license", "state", "category",
-            "pdf", "hf_url", "new_repo")
+            "pdf", "hf_url", "new_repo", "who_name")
+    i = core.named(i)
     out = {k: i[k] for k in keep if k in i and i[k] not in (None, "", [])}
     if i.get("activity"):  # who made the latest update and what it said; `who` is the opener
         a = i["activity"]
