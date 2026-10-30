@@ -6782,7 +6782,7 @@
     "Kind": "data, app",
     "Area": "Data and downloads",
     "Run": "[huggingface.co/spaces/SharpMeow/lasagna-fields](https://huggingface.co/spaces/SharpMeow/lasagna-fields) (the page: Every field, Make a field, How-to guides, Agents and API), `Client(\"SharpMeow/lasagna-fields\").predict(..., api_name=\"/make_field\")` or the MCP server `https://sharpmeow-lasagna-fields.hf.space/gradio_api/mcp/` (a box), `hf download SharpMeow/SCAN-lasagna --repo-type dataset` (a whole scan), `zarr.open_array(URL)` on the bucket (stream), `python load_example.py` in a downloaded dataset",
-    "Code": "`spaces/lasagna-fields/app.py` (the page, API and MCP tools), `spaces/lasagna-fields/lasfield.py` (`main`; the box, villa's run, the check, pictures and the download), `spaces/lasagna-fields/guide/index.html` (the Every field guide), `spaces/lasagna-fields/fields.json` (the list of every whole-scan field, by scroll, that the guide and `list_fields` read). The data lives on Hugging Face (datasets SharpMeow/SCAN-lasagna and SharpMeow/SCAN-lasagnetta, and the bucket SharpMeow/lasagna-fields for ten of them) and in the open data (villa's own fields); each dataset carries its own load_example.py, index.json and SHA256SUMS",
+    "Code": "`spaces/lasagna-fields/app.py` (the page, API and MCP tools), `spaces/lasagna-fields/lasfield.py` (`main`; the box, villa's run, the check, pictures and the download), `spaces/lasagna-fields/guide/index.html` (the Every field guide), `spaces/lasagna-fields/fields.json` (the list of every whole-scan field, by scroll, that the guide and `list_fields` read). The data lives on Hugging Face (datasets SharpMeow/SCAN-lasagna and SharpMeow/SCAN-lasagnetta, and the bucket SharpMeow/lasagna-fields for every one of them, unpacked so it streams by URL) and in the open data (villa's own fields); each dataset carries its own load_example.py, index.json and SHA256SUMS",
     "Tests": "`tests/test_lasagna_fields_space.py` (the box, villa's crop, the ZeroGPU worker fix, `lasfield.py selftest`, the field list); the data is checked by sha256sum -c SHA256SUMS in each dataset, and each dataset's load_example.py was run on the real parts before upload (dataset cards)",
     "Needs": "A browser for the page. `gradio_client` to call it from Python, any MCP client for agents, and a Hugging Face token for a field (it uses the caller's ZeroGPU time). `huggingface_hub[cli]` for downloads; `zarr` and `numpy` to read; for streaming, `zarr` 3 with `fsspec`, `aiohttp` and `requests`. villa's lasagna tools read the manifest and the downloaded box as is",
     "Runs on": "Make a field: the Space's ZeroGPU slice (A10G class); a 256 box took 21 to 27 s on 25 Oct 2026, a 512 box 60 s. Downloads and streaming: any machine with a network. Streaming one 256 x 256 patch of cos at level 1 from the bucket worked from a 4-core cloud container (2026-10-24; not timed). A whole-scan field is 0.4 to 136 GB to download",
@@ -6876,13 +6876,13 @@
     {
      "name": "History",
      "start_line": 229,
-     "end_line": 236,
+     "end_line": 237,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 237,
-     "end_line": 240,
+     "start_line": 238,
+     "end_line": 241,
      "applicable": true
     }
    ]

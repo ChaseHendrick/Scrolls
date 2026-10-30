@@ -20,10 +20,13 @@
    "bytes": 7835721663,
    "dataset": "SharpMeow/pherc0009b-lasagnetta",
    "url": "https://huggingface.co/datasets/SharpMeow/pherc0009b-lasagnetta",
-   "manifest": null,
-   "stream": null,
+   "manifest": "https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHerc0009B/representations/predictions/lasagna/20250521125136-lasagnetta-0.1.1/PHerc0009B.lasagna.json",
+   "stream": "https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHerc0009B/representations/predictions/lasagna/20250521125136-lasagnetta-0.1.1",
    "gallery": false,
-   "note": "the release's self-check kept Lasagnetta on this volume"
+   "note": "the release's self-check kept Lasagnetta on this volume",
+   "preview_xy": "https://huggingface.co/datasets/SharpMeow/pherc0009b-lasagnetta/resolve/main/preview-xy.png",
+   "preview_xz": "https://huggingface.co/datasets/SharpMeow/pherc0009b-lasagnetta/resolve/main/preview-xz.png",
+   "browse": "https://huggingface.co/datasets/SharpMeow/pherc0009b-lasagnetta"
   },
   {
    "scroll": "PHerc0009B",
@@ -38,10 +41,13 @@
    "bytes": 4397390728,
    "dataset": "SharpMeow/pherc0009b-20250820154339-lasagnetta",
    "url": "https://huggingface.co/datasets/SharpMeow/pherc0009b-20250820154339-lasagnetta",
-   "manifest": null,
-   "stream": null,
+   "manifest": "https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHerc0009B/representations/predictions/lasagna/20250820154339-lasagnetta-0.1.1/PHerc0009B-20250820154339.lasagna.json",
+   "stream": "https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHerc0009B/representations/predictions/lasagna/20250820154339-lasagnetta-0.1.1",
    "gallery": false,
-   "note": "the release's self-check kept Lasagnetta on this volume"
+   "note": "the release's self-check kept Lasagnetta on this volume",
+   "preview_xy": "https://huggingface.co/datasets/SharpMeow/pherc0009b-20250820154339-lasagnetta/resolve/main/preview-xy.png",
+   "preview_xz": "https://huggingface.co/datasets/SharpMeow/pherc0009b-20250820154339-lasagnetta/resolve/main/preview-xz.png",
+   "browse": "https://huggingface.co/datasets/SharpMeow/pherc0009b-20250820154339-lasagnetta"
   },
   {
    "scroll": "PHerc0009B",
@@ -56,10 +62,13 @@
    "bytes": 4076425380,
    "dataset": "SharpMeow/pherc0009b-20260319104112-lasagnetta",
    "url": "https://huggingface.co/datasets/SharpMeow/pherc0009b-20260319104112-lasagnetta",
-   "manifest": null,
-   "stream": null,
+   "manifest": "https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHerc0009B/representations/predictions/lasagna/20260319104112-lasagnetta-0.1.1/PHerc0009B-20260319104112.lasagna.json",
+   "stream": "https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHerc0009B/representations/predictions/lasagna/20260319104112-lasagnetta-0.1.1",
    "gallery": false,
-   "note": "the release's self-check kept Lasagnetta on this volume"
+   "note": "the release's self-check kept Lasagnetta on this volume",
+   "preview_xy": "https://huggingface.co/datasets/SharpMeow/pherc0009b-20260319104112-lasagnetta/resolve/main/preview-xy.png",
+   "preview_xz": "https://huggingface.co/datasets/SharpMeow/pherc0009b-20260319104112-lasagnetta/resolve/main/preview-xz.png",
+   "browse": "https://huggingface.co/datasets/SharpMeow/pherc0009b-20260319104112-lasagnetta"
   },
   {
    "scroll": "PHerc0139",
@@ -77,7 +86,10 @@
    "manifest": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0139/representations/predictions/lasagna/20260102150214-lasagna-20260419180421-L2/PHerc0139-20260102150214-lasagna-20260724.lasagna.json",
    "stream": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0139/representations/predictions/lasagna/20260102150214-lasagna-20260419180421-L2",
    "gallery": false,
-   "note": "made on 20260102150214, which 20260930100252 replaces in the same voxel frame"
+   "note": "made on 20260102150214, which 20260930100252 replaces in the same voxel frame",
+   "preview_xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/PHerc0139-20260102150214-xy.webp",
+   "preview_xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/PHerc0139-20260102150214-xz.webp",
+   "browse": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/index.html#PHerc0139/representations/predictions/lasagna/20260102150214-lasagna-20260419180421-L2/"
   },
   {
    "scroll": "PHerc0172",
@@ -92,10 +104,13 @@
    "bytes": 136447650060,
    "dataset": "SharpMeow/pherc0172-lasagnetta",
    "url": "https://huggingface.co/datasets/SharpMeow/pherc0172-lasagnetta",
-   "manifest": null,
-   "stream": null,
+   "manifest": "https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHerc0172/representations/predictions/lasagna/20241024131838-lasagnetta-0.1.1/PHerc0172.lasagna.json",
+   "stream": "https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHerc0172/representations/predictions/lasagna/20241024131838-lasagnetta-0.1.1",
    "gallery": false,
-   "note": "the release's self-check pointed to villa's net here: a quick look; use villa's field where exact values matter"
+   "note": "the release's self-check pointed to villa's net here: a quick look; use villa's field where exact values matter",
+   "preview_xy": "https://huggingface.co/datasets/SharpMeow/pherc0172-lasagnetta/resolve/main/preview-xy.png",
+   "preview_xz": "https://huggingface.co/datasets/SharpMeow/pherc0172-lasagnetta/resolve/main/preview-xz.png",
+   "browse": "https://huggingface.co/datasets/SharpMeow/pherc0172-lasagnetta"
   },
   {
    "scroll": "PHerc0175A",
@@ -110,10 +125,13 @@
    "bytes": 48177794159,
    "dataset": "SharpMeow/pherc0175a-lasagna",
    "url": "https://huggingface.co/datasets/SharpMeow/pherc0175a-lasagna",
-   "manifest": null,
+   "manifest": "https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHerc0175A/representations/predictions/lasagna/20250521115057-lasagna-de45f011/PHerc0175A.lasagna.json",
    "stream": "https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHerc0175A/representations/predictions/lasagna/20250521115057-lasagna-de45f011",
    "gallery": true,
-   "note": null
+   "note": null,
+   "preview_xy": "https://huggingface.co/datasets/SharpMeow/pherc0175a-lasagna/resolve/main/preview-xy.png",
+   "preview_xz": "https://huggingface.co/datasets/SharpMeow/pherc0175a-lasagna/resolve/main/preview-xz.png",
+   "browse": "https://huggingface.co/datasets/SharpMeow/pherc0175a-lasagna"
   },
   {
    "scroll": "PHerc0175B",
@@ -128,10 +146,13 @@
    "bytes": 82186090388,
    "dataset": "SharpMeow/pherc0175b-lasagna",
    "url": "https://huggingface.co/datasets/SharpMeow/pherc0175b-lasagna",
-   "manifest": null,
+   "manifest": "https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHerc0175B/representations/predictions/lasagna/20250521125822-lasagna-de45f011/PHerc0175B.lasagna.json",
    "stream": "https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHerc0175B/representations/predictions/lasagna/20250521125822-lasagna-de45f011",
    "gallery": true,
-   "note": null
+   "note": null,
+   "preview_xy": "https://huggingface.co/datasets/SharpMeow/pherc0175b-lasagna/resolve/main/preview-xy.png",
+   "preview_xz": "https://huggingface.co/datasets/SharpMeow/pherc0175b-lasagna/resolve/main/preview-xz.png",
+   "browse": "https://huggingface.co/datasets/SharpMeow/pherc0175b-lasagna"
   },
   {
    "scroll": "PHerc0306B",
@@ -146,10 +167,13 @@
    "bytes": 54562105533,
    "dataset": "SharpMeow/pherc0306b-lasagna",
    "url": "https://huggingface.co/datasets/SharpMeow/pherc0306b-lasagna",
-   "manifest": null,
+   "manifest": "https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHerc0306B/representations/predictions/lasagna/20250521133212-lasagna-de45f011/PHerc0306B.lasagna.json",
    "stream": "https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHerc0306B/representations/predictions/lasagna/20250521133212-lasagna-de45f011",
    "gallery": true,
-   "note": null
+   "note": null,
+   "preview_xy": "https://huggingface.co/datasets/SharpMeow/pherc0306b-lasagna/resolve/main/preview-xy.png",
+   "preview_xz": "https://huggingface.co/datasets/SharpMeow/pherc0306b-lasagna/resolve/main/preview-xz.png",
+   "browse": "https://huggingface.co/datasets/SharpMeow/pherc0306b-lasagna"
   },
   {
    "scroll": "PHerc0332",
@@ -167,7 +191,10 @@
    "manifest": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0332/representations/predictions/lasagna/20251211183505-lasagna-20260419180421-L2/PHerc0332-20251211183505-lasagna-20260724.lasagna.json",
    "stream": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0332/representations/predictions/lasagna/20251211183505-lasagna-20260419180421-L2",
    "gallery": false,
-   "note": null
+   "note": null,
+   "preview_xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/PHerc0332-20251211183505-xy.webp",
+   "preview_xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/PHerc0332-20251211183505-xz.webp",
+   "browse": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/index.html#PHerc0332/representations/predictions/lasagna/20251211183505-lasagna-20260419180421-L2/"
   },
   {
    "scroll": "PHerc0343",
@@ -185,7 +212,10 @@
    "manifest": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0343/representations/predictions/lasagna/20250521140437-lasagna-20260419180421/PHerc0343.lasagna.json",
    "stream": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0343/representations/predictions/lasagna/20250521140437-lasagna-20260419180421",
    "gallery": false,
-   "note": null
+   "note": null,
+   "preview_xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/PHerc0343-20250521140437-xy.webp",
+   "preview_xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/PHerc0343-20250521140437-xz.webp",
+   "browse": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/index.html#PHerc0343/representations/predictions/lasagna/20250521140437-lasagna-20260419180421/"
   },
   {
    "scroll": "PHerc0343P",
@@ -200,10 +230,13 @@
    "bytes": 1849003527,
    "dataset": "SharpMeow/pherc0343p-lasagna",
    "url": "https://huggingface.co/datasets/SharpMeow/pherc0343p-lasagna",
-   "manifest": null,
-   "stream": null,
+   "manifest": "https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHerc0343P/representations/predictions/lasagna/20260304131111-lasagna/PHerc0343P.lasagna.json",
+   "stream": "https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHerc0343P/representations/predictions/lasagna/20260304131111-lasagna",
    "gallery": false,
-   "note": null
+   "note": null,
+   "preview_xy": "https://huggingface.co/datasets/SharpMeow/pherc0343p-lasagna/resolve/main/preview-xy.png",
+   "preview_xz": "https://huggingface.co/datasets/SharpMeow/pherc0343p-lasagna/resolve/main/preview-xz.png",
+   "browse": "https://huggingface.co/datasets/SharpMeow/pherc0343p-lasagna"
   },
   {
    "scroll": "PHerc0483A",
@@ -218,10 +251,13 @@
    "bytes": 47412439255,
    "dataset": "SharpMeow/pherc0483a-lasagna",
    "url": "https://huggingface.co/datasets/SharpMeow/pherc0483a-lasagna",
-   "manifest": null,
+   "manifest": "https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHerc0483A/representations/predictions/lasagna/20250521140913-lasagna-de45f011/PHerc0483A.lasagna.json",
    "stream": "https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHerc0483A/representations/predictions/lasagna/20250521140913-lasagna-de45f011",
    "gallery": true,
-   "note": null
+   "note": null,
+   "preview_xy": "https://huggingface.co/datasets/SharpMeow/pherc0483a-lasagna/resolve/main/preview-xy.png",
+   "preview_xz": "https://huggingface.co/datasets/SharpMeow/pherc0483a-lasagna/resolve/main/preview-xz.png",
+   "browse": "https://huggingface.co/datasets/SharpMeow/pherc0483a-lasagna"
   },
   {
    "scroll": "PHerc0483B",
@@ -236,10 +272,13 @@
    "bytes": 41488155807,
    "dataset": "SharpMeow/pherc0483b-lasagna",
    "url": "https://huggingface.co/datasets/SharpMeow/pherc0483b-lasagna",
-   "manifest": null,
+   "manifest": "https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHerc0483B/representations/predictions/lasagna/20251124083638-lasagna-de45f011/PHerc0483B.lasagna.json",
    "stream": "https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHerc0483B/representations/predictions/lasagna/20251124083638-lasagna-de45f011",
    "gallery": true,
-   "note": null
+   "note": null,
+   "preview_xy": "https://huggingface.co/datasets/SharpMeow/pherc0483b-lasagna/resolve/main/preview-xy.png",
+   "preview_xz": "https://huggingface.co/datasets/SharpMeow/pherc0483b-lasagna/resolve/main/preview-xz.png",
+   "browse": "https://huggingface.co/datasets/SharpMeow/pherc0483b-lasagna"
   },
   {
    "scroll": "PHerc0490A",
@@ -254,10 +293,13 @@
    "bytes": 49710518643,
    "dataset": "SharpMeow/pherc0490a-lasagna",
    "url": "https://huggingface.co/datasets/SharpMeow/pherc0490a-lasagna",
-   "manifest": null,
+   "manifest": "https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHerc0490A/representations/predictions/lasagna/20250521151210-lasagna-de45f011/PHerc0490A.lasagna.json",
    "stream": "https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHerc0490A/representations/predictions/lasagna/20250521151210-lasagna-de45f011",
    "gallery": true,
-   "note": null
+   "note": null,
+   "preview_xy": "https://huggingface.co/datasets/SharpMeow/pherc0490a-lasagna/resolve/main/preview-xy.png",
+   "preview_xz": "https://huggingface.co/datasets/SharpMeow/pherc0490a-lasagna/resolve/main/preview-xz.png",
+   "browse": "https://huggingface.co/datasets/SharpMeow/pherc0490a-lasagna"
   },
   {
    "scroll": "PHerc0490B",
@@ -272,10 +314,13 @@
    "bytes": 32900441240,
    "dataset": "SharpMeow/pherc0490b-lasagna",
    "url": "https://huggingface.co/datasets/SharpMeow/pherc0490b-lasagna",
-   "manifest": null,
+   "manifest": "https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHerc0490B/representations/predictions/lasagna/20250521151215-lasagna-de45f011/PHerc0490B.lasagna.json",
    "stream": "https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHerc0490B/representations/predictions/lasagna/20250521151215-lasagna-de45f011",
    "gallery": true,
-   "note": null
+   "note": null,
+   "preview_xy": "https://huggingface.co/datasets/SharpMeow/pherc0490b-lasagna/resolve/main/preview-xy.png",
+   "preview_xz": "https://huggingface.co/datasets/SharpMeow/pherc0490b-lasagna/resolve/main/preview-xz.png",
+   "browse": "https://huggingface.co/datasets/SharpMeow/pherc0490b-lasagna"
   },
   {
    "scroll": "PHerc0500P2",
@@ -290,10 +335,13 @@
    "bytes": 1616067316,
    "dataset": "SharpMeow/pherc0500p2-lasagnetta",
    "url": "https://huggingface.co/datasets/SharpMeow/pherc0500p2-lasagnetta",
-   "manifest": null,
-   "stream": null,
+   "manifest": "https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHerc0500P2/representations/predictions/lasagna/20250820143440-lasagnetta-0.1.1/PHerc0500P2.lasagna.json",
+   "stream": "https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHerc0500P2/representations/predictions/lasagna/20250820143440-lasagnetta-0.1.1",
    "gallery": false,
-   "note": "the release's self-check has not been run on this whole volume"
+   "note": "the release's self-check has not been run on this whole volume",
+   "preview_xy": "https://huggingface.co/datasets/SharpMeow/pherc0500p2-lasagnetta/resolve/main/preview-xy.png",
+   "preview_xz": "https://huggingface.co/datasets/SharpMeow/pherc0500p2-lasagnetta/resolve/main/preview-xz.png",
+   "browse": "https://huggingface.co/datasets/SharpMeow/pherc0500p2-lasagnetta"
   },
   {
    "scroll": "PHerc0814",
@@ -308,10 +356,13 @@
    "bytes": 33631289069,
    "dataset": "SharpMeow/pherc0814-20250804134230-lasagnetta",
    "url": "https://huggingface.co/datasets/SharpMeow/pherc0814-20250804134230-lasagnetta",
-   "manifest": null,
-   "stream": null,
+   "manifest": "https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHerc0814/representations/predictions/lasagna/20250804134230-lasagnetta-0.1.1/PHerc0814-20250804134230.lasagna.json",
+   "stream": "https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHerc0814/representations/predictions/lasagna/20250804134230-lasagnetta-0.1.1",
    "gallery": false,
-   "note": "the release's self-check kept Lasagnetta on this volume"
+   "note": "the release's self-check kept Lasagnetta on this volume",
+   "preview_xy": "https://huggingface.co/datasets/SharpMeow/pherc0814-20250804134230-lasagnetta/resolve/main/preview-xy.png",
+   "preview_xz": "https://huggingface.co/datasets/SharpMeow/pherc0814-20250804134230-lasagnetta/resolve/main/preview-xz.png",
+   "browse": "https://huggingface.co/datasets/SharpMeow/pherc0814-20250804134230-lasagnetta"
   },
   {
    "scroll": "PHerc0814",
@@ -329,7 +380,10 @@
    "manifest": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0814/representations/predictions/lasagna/20260309142202-lasagna-20260419180421-L2/PHerc0814-20260309142202-lasagna-20260724.lasagna.json",
    "stream": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0814/representations/predictions/lasagna/20260309142202-lasagna-20260419180421-L2",
    "gallery": false,
-   "note": null
+   "note": null,
+   "preview_xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/PHerc0814-20260309142202-xy.webp",
+   "preview_xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/PHerc0814-20260309142202-xz.webp",
+   "browse": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/index.html#PHerc0814/representations/predictions/lasagna/20260309142202-lasagna-20260419180421-L2/"
   },
   {
    "scroll": "PHerc0814",
@@ -344,10 +398,13 @@
    "bytes": 5145709178,
    "dataset": "SharpMeow/pherc0814-20260521123630-lasagnetta",
    "url": "https://huggingface.co/datasets/SharpMeow/pherc0814-20260521123630-lasagnetta",
-   "manifest": null,
-   "stream": null,
+   "manifest": "https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHerc0814/representations/predictions/lasagna/20260521123630-lasagnetta-0.1.1/PHerc0814-20260521123630.lasagna.json",
+   "stream": "https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHerc0814/representations/predictions/lasagna/20260521123630-lasagnetta-0.1.1",
    "gallery": false,
-   "note": "the release's self-check kept Lasagnetta on this volume"
+   "note": "the release's self-check kept Lasagnetta on this volume",
+   "preview_xy": "https://huggingface.co/datasets/SharpMeow/pherc0814-20260521123630-lasagnetta/resolve/main/preview-xy.png",
+   "preview_xz": "https://huggingface.co/datasets/SharpMeow/pherc0814-20260521123630-lasagnetta/resolve/main/preview-xz.png",
+   "browse": "https://huggingface.co/datasets/SharpMeow/pherc0814-20260521123630-lasagnetta"
   },
   {
    "scroll": "PHerc0841",
@@ -362,10 +419,13 @@
    "bytes": 45944868402,
    "dataset": "SharpMeow/pherc0841-lasagna",
    "url": "https://huggingface.co/datasets/SharpMeow/pherc0841-lasagna",
-   "manifest": null,
+   "manifest": "https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHerc0841/representations/predictions/lasagna/20250821151531-lasagna-de45f011/PHerc0841.lasagna.json",
    "stream": "https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHerc0841/representations/predictions/lasagna/20250821151531-lasagna-de45f011",
    "gallery": true,
-   "note": null
+   "note": null,
+   "preview_xy": "https://huggingface.co/datasets/SharpMeow/pherc0841-lasagna/resolve/main/preview-xy.png",
+   "preview_xz": "https://huggingface.co/datasets/SharpMeow/pherc0841-lasagna/resolve/main/preview-xz.png",
+   "browse": "https://huggingface.co/datasets/SharpMeow/pherc0841-lasagna"
   },
   {
    "scroll": "PHerc0841",
@@ -380,10 +440,13 @@
    "bytes": 8698480358,
    "dataset": "SharpMeow/pherc0841-20260319124803-lasagnetta",
    "url": "https://huggingface.co/datasets/SharpMeow/pherc0841-20260319124803-lasagnetta",
-   "manifest": null,
-   "stream": null,
+   "manifest": "https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHerc0841/representations/predictions/lasagna/20260319124803-lasagnetta-0.1.1/PHerc0841-20260319124803.lasagna.json",
+   "stream": "https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHerc0841/representations/predictions/lasagna/20260319124803-lasagnetta-0.1.1",
    "gallery": false,
-   "note": "the release's self-check kept Lasagnetta on this volume"
+   "note": "the release's self-check kept Lasagnetta on this volume",
+   "preview_xy": "https://huggingface.co/datasets/SharpMeow/pherc0841-20260319124803-lasagnetta/resolve/main/preview-xy.png",
+   "preview_xz": "https://huggingface.co/datasets/SharpMeow/pherc0841-20260319124803-lasagnetta/resolve/main/preview-xz.png",
+   "browse": "https://huggingface.co/datasets/SharpMeow/pherc0841-20260319124803-lasagnetta"
   },
   {
    "scroll": "PHerc0846A",
@@ -398,10 +461,13 @@
    "bytes": 32441070754,
    "dataset": "SharpMeow/pherc0846a-lasagna",
    "url": "https://huggingface.co/datasets/SharpMeow/pherc0846a-lasagna",
-   "manifest": null,
+   "manifest": "https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHerc0846A/representations/predictions/lasagna/20250728152254-lasagna-de45f011/PHerc0846A.lasagna.json",
    "stream": "https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHerc0846A/representations/predictions/lasagna/20250728152254-lasagna-de45f011",
    "gallery": true,
-   "note": null
+   "note": null,
+   "preview_xy": "https://huggingface.co/datasets/SharpMeow/pherc0846a-lasagna/resolve/main/preview-xy.png",
+   "preview_xz": "https://huggingface.co/datasets/SharpMeow/pherc0846a-lasagna/resolve/main/preview-xz.png",
+   "browse": "https://huggingface.co/datasets/SharpMeow/pherc0846a-lasagna"
   },
   {
    "scroll": "PHerc0846B",
@@ -416,10 +482,13 @@
    "bytes": 35033336610,
    "dataset": "SharpMeow/pherc0846b-lasagna",
    "url": "https://huggingface.co/datasets/SharpMeow/pherc0846b-lasagna",
-   "manifest": null,
+   "manifest": "https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHerc0846B/representations/predictions/lasagna/20250804142305-lasagna-de45f011/PHerc0846B.lasagna.json",
    "stream": "https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHerc0846B/representations/predictions/lasagna/20250804142305-lasagna-de45f011",
    "gallery": true,
-   "note": null
+   "note": null,
+   "preview_xy": "https://huggingface.co/datasets/SharpMeow/pherc0846b-lasagna/resolve/main/preview-xy.png",
+   "preview_xz": "https://huggingface.co/datasets/SharpMeow/pherc0846b-lasagna/resolve/main/preview-xz.png",
+   "browse": "https://huggingface.co/datasets/SharpMeow/pherc0846b-lasagna"
   },
   {
    "scroll": "PHerc1299",
@@ -437,7 +506,10 @@
    "manifest": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc1299/representations/predictions/lasagna/20260309130042-lasagna-20260419180421-L2/PHerc1299-20260309130042-lasagna-20260724.lasagna.json",
    "stream": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc1299/representations/predictions/lasagna/20260309130042-lasagna-20260419180421-L2",
    "gallery": false,
-   "note": null
+   "note": null,
+   "preview_xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/PHerc1299-20260309130042-xy.webp",
+   "preview_xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/PHerc1299-20260309130042-xz.webp",
+   "browse": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/index.html#PHerc1299/representations/predictions/lasagna/20260309130042-lasagna-20260419180421-L2/"
   },
   {
    "scroll": "PHerc1667",
@@ -455,7 +527,10 @@
    "manifest": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc1667/representations/predictions/lasagna/20251217075048-lasagna-20260419180421-L2/PHerc1667-20251217075048-lasagna-20260724.lasagna.json",
    "stream": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc1667/representations/predictions/lasagna/20251217075048-lasagna-20260419180421-L2",
    "gallery": false,
-   "note": null
+   "note": null,
+   "preview_xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/PHerc1667-20251217075048-xy.webp",
+   "preview_xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/PHerc1667-20251217075048-xz.webp",
+   "browse": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/index.html#PHerc1667/representations/predictions/lasagna/20251217075048-lasagna-20260419180421-L2/"
   },
   {
    "scroll": "PHercMAN5",
@@ -470,10 +545,13 @@
    "bytes": 4211124696,
    "dataset": "SharpMeow/phercman5-lasagnetta",
    "url": "https://huggingface.co/datasets/SharpMeow/phercman5-lasagnetta",
-   "manifest": null,
-   "stream": null,
+   "manifest": "https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHercMAN5/representations/predictions/lasagna/20260311104824-lasagnetta-0.1.1/PHercMAN5.lasagna.json",
+   "stream": "https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHercMAN5/representations/predictions/lasagna/20260311104824-lasagnetta-0.1.1",
    "gallery": false,
-   "note": "the release's self-check pointed to villa's net here: a quick look; use villa's field where exact values matter"
+   "note": "the release's self-check pointed to villa's net here: a quick look; use villa's field where exact values matter",
+   "preview_xy": "https://huggingface.co/datasets/SharpMeow/phercman5-lasagnetta/resolve/main/preview-xy.png",
+   "preview_xz": "https://huggingface.co/datasets/SharpMeow/phercman5-lasagnetta/resolve/main/preview-xz.png",
+   "browse": "https://huggingface.co/datasets/SharpMeow/phercman5-lasagnetta"
   },
   {
    "scroll": "PHercMANB",
@@ -488,10 +566,13 @@
    "bytes": 32987325501,
    "dataset": "SharpMeow/phercmanb-lasagnetta",
    "url": "https://huggingface.co/datasets/SharpMeow/phercmanb-lasagnetta",
-   "manifest": null,
-   "stream": null,
+   "manifest": "https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHercMANB/representations/predictions/lasagna/20260323091048-lasagnetta-0.1.1/PHercMANB.lasagna.json",
+   "stream": "https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHercMANB/representations/predictions/lasagna/20260323091048-lasagnetta-0.1.1",
    "gallery": false,
-   "note": "the release's self-check kept Lasagnetta on this volume"
+   "note": "the release's self-check kept Lasagnetta on this volume",
+   "preview_xy": "https://huggingface.co/datasets/SharpMeow/phercmanb-lasagnetta/resolve/main/preview-xy.png",
+   "preview_xz": "https://huggingface.co/datasets/SharpMeow/phercmanb-lasagnetta/resolve/main/preview-xz.png",
+   "browse": "https://huggingface.co/datasets/SharpMeow/phercmanb-lasagnetta"
   },
   {
    "scroll": "PHercMANBp",
@@ -506,10 +587,13 @@
    "bytes": 374924449,
    "dataset": "SharpMeow/phercmanbp-lasagna",
    "url": "https://huggingface.co/datasets/SharpMeow/phercmanbp-lasagna",
-   "manifest": null,
-   "stream": null,
+   "manifest": "https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHercMANBp/representations/predictions/lasagna/20251216152116-lasagna/PHercMANBp.lasagna.json",
+   "stream": "https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHercMANBp/representations/predictions/lasagna/20251216152116-lasagna",
    "gallery": false,
-   "note": null
+   "note": null,
+   "preview_xy": "https://huggingface.co/datasets/SharpMeow/phercmanbp-lasagna/resolve/main/preview-xy.png",
+   "preview_xz": "https://huggingface.co/datasets/SharpMeow/phercmanbp-lasagna/resolve/main/preview-xz.png",
+   "browse": "https://huggingface.co/datasets/SharpMeow/phercmanbp-lasagna"
   },
   {
    "scroll": "PHercParis3",
@@ -527,7 +611,10 @@
    "manifest": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHercParis3/representations/predictions/lasagna/20260427095331-lasagna-20260419180421-L2/PHercParis3-20260427095331-lasagna-20260724.lasagna.json",
    "stream": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHercParis3/representations/predictions/lasagna/20260427095331-lasagna-20260419180421-L2",
    "gallery": false,
-   "note": null
+   "note": null,
+   "preview_xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/PHercParis3-20260427095331-xy.webp",
+   "preview_xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/PHercParis3-20260427095331-xz.webp",
+   "browse": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/index.html#PHercParis3/representations/predictions/lasagna/20260427095331-lasagna-20260419180421-L2/"
   }
  ]
 }
