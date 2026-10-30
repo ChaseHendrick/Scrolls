@@ -8,7 +8,7 @@ Full page: [`docs/tools/parting.md`](../../docs/tools/parting.md).
 
 ## What it has shown, and what it has not
 
-Each test below was frozen before any CT value was read, on fragments Parting and base dinovol never trained on, against the Vesuvius Challenge team's traced layer segments (Model output; [log](../../docs/logs/2026-10-29-parting-fragment-contact.md)):
+Each test below was frozen before any of its 3D CT was read, on fragments Parting and base dinovol never trained on, against the Vesuvius Challenge team's traced layer segments (Model output; [log](../../docs/logs/2026-10-29-parting-fragment-contact.md)):
 
 | Fragment (scroll) | Touching sites, layer pairs | Parting AUC | Base dinovol cosine AUC | Gain (2.5 % bound) | Rule: gain at least +0.05, bound above 0 |
 | --- | --- | --- | --- | --- | --- |

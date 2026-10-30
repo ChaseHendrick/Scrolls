@@ -102,7 +102,7 @@
     "docs/tools/snapped-labels.md": "3da92dca823c53779149f1aa9f7699e0e9ee7533b5767956b1c4bae539b977ed",
     "docs/tools/windlabel-box.md": "2cbfd91604f1ea481b70e1f9a54c56392550c18f1c3c483b8d0cac9401eddfb3",
     "docs/tools/labelsuggest.md": "4d93cd8dbe31106498a16ed7b8efdab8c38e5f7fb26c0715aec8e9a5bb56709d",
-    "docs/logs/2026-10-29-parting-fragment-contact.md": "f626a616fb5e7318dd5581b450f2dcf52573d344a56aa257f03757d6fd8fdd6a"
+    "docs/logs/2026-10-29-parting-fragment-contact.md": "a7000876136eccd07dcd940ce222808d4cf9dccba74f9a4e85161aa7362e0983"
    },
    "doc": "docs/pipeline-october-2026.md"
   },
@@ -204,14 +204,14 @@
   "labelsnap-moved-published-surface-labels-closer-to-the": {
    "line": 264,
    "sources": {
-    "docs/results.json": "5ad25305ff4f8c2592077742ad10ce9b0fe11766c9fbce2988ace340b309d667",
+    "docs/results.json": "8e1f7c80e7683269f4ff6274e7951287a7c7e20a2025791d407712ed0d3fa4a5",
     "docs/tools/snapped-labels.md": "3da92dca823c53779149f1aa9f7699e0e9ee7533b5767956b1c4bae539b977ed"
    }
   },
   "labelsnap-moved-published-surface-labels-closer-to-the-2": {
    "line": 15,
    "sources": {
-    "docs/results.json": "5ad25305ff4f8c2592077742ad10ce9b0fe11766c9fbce2988ace340b309d667",
+    "docs/results.json": "8e1f7c80e7683269f4ff6274e7951287a7c7e20a2025791d407712ed0d3fa4a5",
     "docs/tools/snapped-labels.md": "3da92dca823c53779149f1aa9f7699e0e9ee7533b5767956b1c4bae539b977ed"
    },
    "doc": "docs/FINDINGS.md"
@@ -280,20 +280,20 @@
   "parting-a-contact-classifier-on-base-dinovol-features": {
    "line": 267,
    "sources": {
-    "docs/logs/2026-10-29-parting-fragment-contact.md": "f626a616fb5e7318dd5581b450f2dcf52573d344a56aa257f03757d6fd8fdd6a"
+    "docs/logs/2026-10-29-parting-fragment-contact.md": "a7000876136eccd07dcd940ce222808d4cf9dccba74f9a4e85161aa7362e0983"
    }
   },
   "parting-a-contact-classifier-on-base-dinovol-features-2": {
    "line": 17,
    "sources": {
-    "docs/logs/2026-10-29-parting-fragment-contact.md": "f626a616fb5e7318dd5581b450f2dcf52573d344a56aa257f03757d6fd8fdd6a"
+    "docs/logs/2026-10-29-parting-fragment-contact.md": "a7000876136eccd07dcd940ce222808d4cf9dccba74f9a4e85161aa7362e0983"
    },
    "doc": "docs/FINDINGS.md"
   },
   "parting-missed-its-bar-on-pherc1667cr1fr3-0-045": {
    "line": 166,
    "sources": {
-    "docs/logs/2026-10-29-parting-fragment-contact.md": "f626a616fb5e7318dd5581b450f2dcf52573d344a56aa257f03757d6fd8fdd6a"
+    "docs/logs/2026-10-29-parting-fragment-contact.md": "a7000876136eccd07dcd940ce222808d4cf9dccba74f9a4e85161aa7362e0983"
    },
    "doc": "docs/pipeline-october-2026.md"
   },

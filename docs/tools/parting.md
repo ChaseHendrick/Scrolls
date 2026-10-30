@@ -75,7 +75,7 @@ Every readout carries three checks that can fail:
 - **The pipeline check.** `dino_base` must score at least 0.85 on apart sites (both gaps 8 to 16 voxels); a broken read or a wrong frame fails it. On Frag3 it was 0.944.
 - **The permutation gate.** The mean AUC of 1,000 label permutations must sit within 0.5 plus or minus 3 standard errors; it fails on a broken AUC or permutation (0.5004 on Frag3).
 
-Measured strengths and limits (Model output, against the Vesuvius Challenge team's traced layer segments, each rule frozen before any CT value was read; [log](../logs/2026-10-29-parting-fragment-contact.md), [finding 23](../FINDINGS.md)):
+Measured strengths and limits (Model output, against the Vesuvius Challenge team's traced layer segments, each rule frozen before any of its test's 3D CT was read; [log](../logs/2026-10-29-parting-fragment-contact.md), [finding 23](../FINDINGS.md)):
 
 | Object (fragment, scroll) | Touching sites, layer pairs | Parting | `dino_base` | Gain (2.5 % bound) | Verdict |
 | --- | --- | --- | --- | --- | --- |
