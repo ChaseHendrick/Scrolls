@@ -94,9 +94,10 @@ Constants: `PLAN_VERSION = 2`; readable plan versions `(1, 2)`; `FAILURE_KINDS =
   discovery and the agent tools use only the standard library.
 - VC3D's five tools for tracing, rendering, flattening and the checks. On Linux x86_64, villa's release AppImage had
   all five until villa commit e1aa625a6 (29 October 2026 UTC) removed `vc_flatten` and `vc_tifxyz_selfcross`; its
-  `latest` AppImage is now built after that commit and its `stable` AppImage predates `vc_tifxyz_selfcross`. Until
-  those two steps are ported, use a villa source build at 7154682e1 named by `VC_BIN`. On a Mac, `VC3D.app` in
-  `/Applications` has both only if it was built from a villa commit between 6c180b1f (4 August 2026) and 7154682e1.
+  `latest` AppImage is now built after that commit and its `stable` AppImage predates `vc_tifxyz_selfcross`.
+  AutoPipeline 0.1.11 runs on those builds: its self-intersection check compiles the same census code from villa's
+  source once (`scrolls-kit selfcross build`), and its flatten stage uses villa's `flatboi`
+  ([package](https://github.com/ChaseHendrick/Scrolls/tree/submission/progress-2026-10-fix11/submissions/progress-2026-10-fix11)).
 - For ink on the same machine: a separate Python with villa's `vesuvius` package and `torch`, named by
   `KIT_INK_PYTHON`.
 
