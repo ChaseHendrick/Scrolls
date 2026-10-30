@@ -474,6 +474,30 @@ class AppTest(unittest.TestCase):
         for p in ("/", "/connect.json", "/connect.html", "/CONNECT.md", "/api/views", "/api/config", "/api/sources", "/healthz"):
             self.get(p)
 
+    def test_one_person_under_several_accounts(self):
+        # Chase Hendrick is ChaseHendrick on GitHub and SharpMeow on Hugging Face: one person in counts, names and search.
+        now = dt.datetime.now(dt.timezone.utc)
+        sc = scanner.Scorer(CFG)
+        made = []
+        for n, (src, kind, who) in enumerate((("github", "repo", "ChaseHendrick"), ("hf", "space", "SharpMeow"))):
+            it = scanner.make_item(sc, source=src, kind=kind, id=f"{src}:chase{n}", title=f"{who}/herculaneum-tool-{n}",
+                                   url=f"https://example.org/chase{n}", date=iso(now - dt.timedelta(minutes=4 + n)),
+                                   text=f"Vesuvius Challenge scroll segmentation tool number {n}", who=who)
+            scanner.finish([it], sc, None)
+            it["first_seen"] = it["date"]
+            made.append(it)
+        with app.LOCK:
+            app.STORE["items"].update({i["id"]: i for i in made})
+        for i in made:
+            self.addCleanup(app.STORE["items"].pop, i["id"])
+        people = [r["name"] for r in self.get("/api/overview?since=1h").json()["people"]]
+        self.assertIn("Chase Hendrick", people)
+        self.assertFalse({"ChaseHendrick", "SharpMeow"} & set(people))
+        got = self.get("/api/items?since=1h&q=chase+hendrick").json()["items"]
+        self.assertEqual({(i["who"], i["who_name"]) for i in got},
+                         {("ChaseHendrick", "Chase Hendrick"), ("SharpMeow", "Chase Hendrick")})
+        self.assertEqual(self.get("/api/items?since=1h&q=sharpmeow").json()["matched"], 1)   # the account still finds it
+
     def test_latest_update_reaches_search_csv_feed_and_mcp(self):
         now = dt.datetime.now(dt.timezone.utc)
         it = scanner.make_item(scanner.Scorer(CFG), source="github", kind="issue", id="github:scrollprize/villa#193",
@@ -544,6 +568,21 @@ class AppTest(unittest.TestCase):
 
 
 class PageTest(unittest.TestCase):
+    def test_saved_filters_survive_hugging_faces_own_parameters(self):
+        js, css = (HERE / "static" / "app.js").read_text(), (HERE / "static" / "style.css").read_text()
+        # Hugging Face opens the Space as ?__theme=system (and ?__sign=... when private). That once counted as a shared
+        # link and reset every filter, the minimum score snapping back to 20; now only a filter parameter does.
+        self.assertNotIn("if (![...p.keys()].length) return;", js)
+        self.assertIn('.some((k) => p.has(k))) return;', js)
+        self.assertIn("const f = Object.assign(defaults(), { min: S.f.min });", js)   # a link without min keeps the saved one
+        self.assertIn('    p.set("min", f.min);', js)                                    # a shared link always names its minimum
+        rule = re.search(r"#checkBtn \{([^}]*)\}", css).group(1)                     # Refresh wears a halo in every theme
+        self.assertIn("box-shadow", rule)
+        self.assertIn("var(--accent)", rule)
+        page = (HERE / "index.html").read_text()
+        self.assertIn("Match ideas, not words", page)
+        self.assertNotIn(">By meaning<", page)
+
     def test_each_card_button_opens_its_own_panel_and_updates_name_their_author(self):
         js, css = (HERE / "static" / "app.js").read_text(), (HERE / "static" / "style.css").read_text()
         # "Why this score" and "More like this" once opened the same panel; each now has its own.

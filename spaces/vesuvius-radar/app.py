@@ -50,7 +50,7 @@ VECS_FILE = DATA_DIR / "vectors.npz"
 COLLECT = os.environ.get("RADAR_COLLECT", "1") != "0"  # tests set 0: no background collector
 SEMANTIC = os.environ.get("RADAR_SEMANTIC", "1") != "0"
 PUBLIC_URL = "https://sharpmeow-vesuvius-radar.hf.space"
-VERSION = "1.1.1"
+VERSION = "1.1.2"
 
 CFG = scanner.load_config()
 SCORER = scanner.Scorer(CFG)
@@ -298,7 +298,7 @@ def warm_vectors():
 
 
 def public(i: dict) -> dict:
-    return {k: v for k, v in i.items() if not k.startswith("_")}
+    return named({k: v for k, v in i.items() if not k.startswith("_")})
 
 
 class Filters:
@@ -340,7 +340,8 @@ class Filters:
             act = i.get("activity") or {}
             hay = " ".join([i["title"], i.get("summary", ""), " ".join(i.get("matched", [])), i.get("who", ""),
                             " ".join(i["topics"]), i["id"], i.get("category", ""), act.get("who", ""),
-                            act.get("text", "")]).lower()
+                            act.get("text", ""), " ".join(person(w) for w in i.get("who", "").split(",")),
+                            person(act.get("who", ""))]).lower()
             if not all(w in hay for w in words):
                 return False
         return True
@@ -420,6 +421,27 @@ def timeline(f: Filters, items: list[dict]) -> dict:
 WORK_SIM = 0.80  # two items by one person whose texts are this close in meaning are one piece of work
 
 
+# One name per person: an account or nickname listed under "people" in radar.json counts and shows as that person.
+PEOPLE = {a.strip().lower(): name for name, accounts in CFG.get("people", {}).items() for a in [name, *accounts]}
+
+
+def person(name: str) -> str:
+    return PEOPLE.get(name.strip().lower(), name.strip())
+
+
+def named(i: dict) -> dict:
+    """A copy of the item with who_name (and activity.who_name) when its author is listed under another name; who
+    keeps the account as the source gave it."""
+    out = dict(i)
+    w = author(out) if "source" in out else ""
+    if w and person(w) != w:
+        out["who_name"] = person(w)
+    a = out.get("activity")
+    if a and a.get("who") and person(a["who"]) != a["who"]:
+        out["activity"] = {**a, "who_name": person(a["who"])}
+    return out
+
+
 def author(i: dict) -> str:
     return i.get("who", "").split(",")[0].strip() if i["source"] not in ("pypi", "blog") else ""
 
@@ -432,7 +454,7 @@ def top_people(items: list[dict], limit: int = 10) -> list[dict]:
     by: dict[str, list[dict]] = {}
     names: dict[str, str] = {}
     for i in items:
-        w = author(i)
+        w = person(author(i))
         if w:
             by.setdefault(w.lower(), []).append(i)
             names.setdefault(w.lower(), w)
