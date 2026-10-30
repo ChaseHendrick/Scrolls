@@ -18,7 +18,7 @@ A Hugging Face Space that collects new papers, repositories, models, datasets, p
 | Go-ahead | Not needed to use. Making the Space public was Chase's yes (29 Oct 2026); later redeploys from merged `main` fall under the standing yes (rule 8) |
 | Released | Public on Hugging Face since 2026-10-29; README "Released tools" entry `vesuvius-radar` |
 | License | Code Apache 2.0; item titles, summaries and links belong to their sources |
-| Checked | 2026-10-29 against commit `8491642` |
+| Checked | 2026-10-30 against commit `d0a600c` |
 
 ## What it does
 
@@ -27,6 +27,8 @@ Work that could help read the scrolls appears in many places: arXiv, GitHub, Hug
 Each item gets two scores. The keyword score adds points for scroll terms (Vesuvius, Herculaneum, PHerc, papyrus, Volume Cartographer and similar) and for terms in eight topics (sheets and surfaces, ink and imaging, fibers and tracing, compression and storage, registration, 3D encoders, text and reading, speed and scale), and every item shows which terms gave which points. The meaning score comes from a small sentence-embedding model run on the Space's CPU, which compares the item with sentences that describe the work the scrolls need; it catches items that use none of the keywords. A small learned model sets the final score: a ridge regression on the item's embedding plus its keyword and meaning scores, source, kind and popularity, fitted to blind ratings of what 588 collected items are worth to scroll work and calibrated so each band holds about as many items as the ratings put there. Which items are kept is still decided by keywords and meaning (the higher of the keyword score and a blend of both).
 
 The page shows the window you pick (1 minute to 30 days, default 1 day), by publish or update time or by when the radar first found the item, with charts (items over time by source, topics, the score histogram, sources, a topic by source grid and the top contributors, ranked by distinct pieces of work so many small related items count as one), a briefing of the strongest items per topic, and three reader views: researchers, the Challenge team, and contributors. The list opens on the newest items, 10 per page (10, 20, 50 or 100), with sources, topics, relevance and browser-only toggles in four dropdowns and the active filters shown as removable pills. Stars, hides and the last visit stay in your own browser.
+
+A villa issue or pull request often comes back on the radar because someone commented on it, reviewed it or closed it, long after it was opened. Its card then says who made that latest update and what it said ("Comment by X, 50 min ago" with the comment's words and a link to it), and names the original author separately as "opened by". "Why this score" opens the score's breakdown and "More like this" opens the closest items in meaning; each button opens and closes its own panel.
 
 A score is a triage aid. It says an item may be worth reading, not that it is useful or correct.
 
@@ -151,7 +153,7 @@ The public sources listed under Network, read logged out. `radar.json` holds eve
 
 ## Outputs
 
-Each item: `id` (source and its own id), `source`, `kind`, `title`, `url`, `date` (UTC), `first_seen`, `summary` (up to 900 characters), `score` (0 to 100), `band` (high 60 or more, medium 35 or more, low), `keyword`, `semantic` and `sim` (when the model is on), `rule` (the keyword and meaning score that decides whether an item is kept), `learned` (`full` or `meta` when the learned head set the score), `topics`, `topics_by_meaning`, `matched` (terms), `parts` (the keyword breakdown as label and points), `who`, and per kind `code`, `pdf`, `stars`, `downloads`, `likes`, `upvotes`, `license`, `version`.
+Each item: `id` (source and its own id), `source`, `kind`, `title`, `url`, `date` (UTC), `first_seen`, `summary` (up to 900 characters), `score` (0 to 100), `band` (high 60 or more, medium 35 or more, low), `keyword`, `semantic` and `sim` (when the model is on), `rule` (the keyword and meaning score that decides whether an item is kept), `learned` (`full` or `meta` when the learned head set the score), `topics`, `topics_by_meaning`, `matched` (terms), `parts` (the keyword breakdown as label and points), `who` (the author; for a GitHub issue or pull request, who opened it), `activity` (a GitHub issue or pull request whose latest update came after its opening: `what` such as `comment`, `edited comment`, `review comment`, `review`, `approved`, `changes requested`, `closed`, `merged`, `label added` or `new commits`; `who` made it; `date`; `text`, what it said as plain text up to 600 characters with quoted text, code and images left out; `url` of the comment or review; `also`, up to three other kinds of update in the same two minutes), and per kind `code`, `pdf`, `stars`, `downloads`, `likes`, `upvotes`, `license`, `version`.
 
 ## Failure modes
 
@@ -160,22 +162,25 @@ Each item: `id` (source and its own id), `source`, `kind`, `title`, `url`, `date
 | `lookback must be above zero` | `since` was 0 or negative | Use a positive lookback such as `15m` |
 | `lookback '...' is not like 15m, 6h, 1d or an ISO time` | `since` was not a number with m, h, d or w, nor an ISO time | Use `1m` to `30d` or an ISO time |
 | `by must be date (published or updated) or found (first seen by the radar)` | Another value of `by` | Use `date` or `found` |
+| GitHub `partial` with `network error (IncompleteRead)` | A villa listing was cut off three times in a row; the repository search results of the same check are still kept | Nothing: the next check reads it again |
 | GitHub `partial` with `HTTP 403 (rate limited)` | GitHub allows few logged-out calls per hour from one address | Nothing: the next check catches up; unchanged listings come from the ETag cache |
 | `semantic` missing on items | The model has not loaded yet, or is off | Wait for the first check; keyword scores still apply |
 | 429 from `/api/check` | A check started under 5 minutes ago | Wait `retry_after` seconds |
+| A villa item shows "opened by" but no Latest update | Nothing the radar read explains its newest update: a push the commit dates do not match, a review on a pull request past the per-check lookup budget, or a comment older than the three pages of comments the first check reads | Nothing: the card never credits an older comment for a later change; the next check that sees an explaining update fills it in |
 
 ## How it works
 
 1. A collector thread checks each source on its own schedule (`every_min` in `radar.json`: GitHub and Hugging Face 20 minutes, arXiv, PyPI and the blog 60, Zenodo 120, journals 180). Each check reads from 6 hours before the last good one; the first reads `backfill_days`.
-2. Each item is scored by keywords (`Scorer` in `scanner.py`): scroll terms add 45 plus 5 for each more (at most 15 more); in each topic a strong term counts on its own and a weak term counts half and only with a context term; negative terms take points off.
-3. The meaning model (`Semantic`) embeds the title and the first 600 characters of the summary (`embed_chars`) and takes the cosine to the nearest anchor sentence; 0.70 maps to 0 and 0.80 to 100. The rule score is the higher of the keyword score and 0.55 meaning plus 0.45 keywords. A cosine of 0.76 or more adds that anchor's topic.
-4. The learned head (`Head`, `head.json`) sets the shown score: ridge coefficients on the 384-number embedding and on eight metadata features (keyword and meaning scores, stars, likes and upvotes, new repository, links code, summary length, merged pull request) plus a one-hot of source and kind, then a monotone map to 0 to 100. Items with no embedding use the metadata-only head. Without `head.json` the rule score is shown.
-5. Items whose rule score is `keep_score` (12) or more are merged into the store, which keeps `first_seen` and drops items older than 30 days.
-6. Every request filters the store, so changing the lookback is instant.
+2. For ScrollPrize/villa, the latest update of each issue and pull request comes from three repository-wide listings since the check's start time (issue and pull request comments, review comments, up to three pages of 100 each, and the newest 100 issue events), so their cost does not grow with the number of items. An update counts as the one that moved an item when it falls within 2 minutes of the item's updated time and after its opening (30 minutes for a pull request's newest commit, whose own time can sit before the push); a comment or review is preferred to a bare event in that window. A pull request those listings do not explain gets its reviews and newest commit read one by one, at most `pr_lookups` (2) per check, and the answer is remembered until the pull request changes again. The item's own text and score still come from the issue or pull request itself.
+3. Each item is scored by keywords (`Scorer` in `scanner.py`): scroll terms add 45 plus 5 for each more (at most 15 more); in each topic a strong term counts on its own and a weak term counts half and only with a context term; negative terms take points off.
+4. The meaning model (`Semantic`) embeds the title and the first 600 characters of the summary (`embed_chars`) and takes the cosine to the nearest anchor sentence; 0.70 maps to 0 and 0.80 to 100. The rule score is the higher of the keyword score and 0.55 meaning plus 0.45 keywords. A cosine of 0.76 or more adds that anchor's topic.
+5. The learned head (`Head`, `head.json`) sets the shown score: ridge coefficients on the 384-number embedding and on eight metadata features (keyword and meaning scores, stars, likes and upvotes, new repository, links code, summary length, merged pull request) plus a one-hot of source and kind, then a monotone map to 0 to 100. Items with no embedding use the metadata-only head. Without `head.json` the rule score is shown.
+6. Items whose rule score is `keep_score` (12) or more are merged into the store, which keeps `first_seen` and drops items older than 30 days.
+7. Every request filters the store, so changing the lookback is instant.
 
 ## Cost and time
 
-Free: a CPU Space (cpu-basic), no paid compute. The first collection after a start (30 days of backfill, every item read by meaning) took about 4 minutes on the Space (29 Oct 2026, private preview): arXiv 226 s for 1,000 listings (136 kept), Hugging Face 211 s for 1,255 (223 kept), GitHub 116 s for 205 (158 kept), Zenodo 111 s, journals 43 s, PyPI and the blog under 2 s; 591 items in 30 days. Later checks embed only items they have not seen, and the vectors are kept beside the store. The page and API answer in well under a second meanwhile. In a 4-core cloud container the same model read about 2.5 texts of 600 characters per second while other sources were running.
+Free: a CPU Space (cpu-basic), no paid compute. The first collection after a start (30 days of backfill, every item read by meaning) took about 4 minutes on the Space (29 Oct 2026, private preview): arXiv 226 s for 1,000 listings (136 kept), Hugging Face 211 s for 1,255 (223 kept), GitHub 116 s for 205 (158 kept), Zenodo 111 s, journals 43 s, PyPI and the blog under 2 s; 591 items in 30 days. Later checks embed only items they have not seen, and the vectors are kept beside the store. Since 30 Oct 2026 a GitHub check reads villa's comments, review comments and issue events too: 3 more logged-out calls on a quiet check and up to 9 on a busy one (with the two pull request lookups), still within GitHub's 60 logged-out calls an hour at the 20 minute schedule. The page and API answer in well under a second meanwhile. In a 4-core cloud container the same model read about 2.5 texts of 600 characters per second while other sources were running.
 
 ## For agents
 
@@ -189,11 +194,13 @@ Free: a CPU Space (cpu-basic), no paid compute. The first collection after a sta
 
 ## Tests
 
-`python -m unittest tests.test_vesuvius_radar -v`. Covers the scorer and its breakdown, text cleaning and unsafe links, lookbacks from 1 minute to 30 days, the `found` window, views, filters and sorting, overview and briefing, CSV and RSS, merging, the check cooldown, the MCP server, the shared embedding text and the vector cache, and the public-safety scan of the Space's files. It does not fetch any source or load the model.
+`python -m unittest tests.test_vesuvius_radar -v`. Covers the scorer and its breakdown, text cleaning and unsafe links, lookbacks from 1 minute to 30 days, the `found` window, views, filters and sorting, overview and briefing, CSV and RSS, merging, the check cooldown, the MCP server, the shared embedding text and the vector cache, the villa watch's latest-update credit against a faked GitHub (the commenter and what they said, the opener kept, an approval found by the bounded lookup and remembered, an old comment never credited for a newer update), the comment-to-text cleaning, and the public-safety scan of the Space's files. It does not fetch any source or load the model.
 
 ## History
 
 - 2026-10-29: first version (1.0.0), built from `8491642`, tested in a private Space, then made public.
+- 2026-10-30: version 1.1.0 ([PR #285](https://github.com/ChaseHendrick/Scrolls/pull/285)). Villa issue and pull request cards say who made the latest update and what it said, with the opener kept as "opened by" (a card for villa #193 credited only the issue's opener for a newer comment by someone else); "Why this score" and "More like this" open separate panels (they opened the same one); long titles wrap on phones. Items gain `activity`; CSV gains `update`, `update_by`, `update_said` and `update_url`; RSS and the briefing name the update.
+- 2026-10-30: version 1.1.1 ([PR #287](https://github.com/ChaseHendrick/Scrolls/pull/287)). A cut-off download (`IncompleteRead`) is retried like a refused one, and a villa listing that still fails is a `partial` note that keeps the check's repository search results; the first check after the 1.1.0 redeploy had lost every GitHub item to one cut-off download.
 
 ## Related
 
