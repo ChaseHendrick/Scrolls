@@ -8,7 +8,7 @@ Parting reads model features of the scan; it does not read ink or text, and noth
 
 Parting is a contact classifier. Where two layers of papyrus touch, a tracer can hop from one layer to the next (a sheet switch). Parting takes a point `a` on one layer, with its sheet normal, and a candidate point, and scores how likely the candidate is to lie on `a`'s layer. It votes gradient boosting and a one-layer MLP over features of the two points: the tokens of the Vesuvius Challenge's base dinovol encoder ([`scrollprize/dinovol_ps8_9.6um_101626`](https://huggingface.co/scrollprize/dinovol_ps8_9.6um_101626), `teacher_305k.pt`) at both points and their similarity along the line between them, CT profiles along each point's normal and along that line, and base dinovol's own token cosine. It was trained on contact sites built from the published hand-traced windings of PHerc0139 and PHerc0172.
 
-Code status: Parting's code and weights are in our private repository and are not released. This page is the public record of the test; a release would get its own tool page.
+Code status (updated 30 October 2026): Parting's code is released under Apache-2.0, code only, with its own [tool page](../tools/parting.md); the trained model file stays private. This page is the public record of the test.
 
 ## The test
 
