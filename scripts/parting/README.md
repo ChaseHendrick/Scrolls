@@ -20,7 +20,7 @@ So: one pass in three fragments tried. On Frag3 the gain was positive on all fiv
 
 ## This release
 
-Code only, under the Apache License 2.0 ([LICENSE](LICENSE)). The trained model file used for the results above is not part of this release. You can fit the same recipe on your own feature runs with `fit`, and score with `--trust-model`; `frag3 --sites-only` rebuilds the published Frag3 site list from public data and checks it against its hash.
+Code under the Apache License 2.0 ([LICENSE](LICENSE)). The trained model file used for the results above, `parting-v1.joblib` (sha256 `f0684ab2...`), is on Hugging Face as [`SharpMeow/parting-v1`](https://huggingface.co/SharpMeow/parting-v1) under CC BY-NC 4.0, like the scans it was trained on; it is not stored in this repository. You can also fit the same recipe on your own feature runs with `fit`, and score with `--trust-model`; `frag3 --sites-only` rebuilds the published Frag3 site list from public data and checks it against its hash.
 
 Parting does not copy anyone else's code or weights. At run time it downloads, each pinned by sha256: the base dinovol checkpoint from Hugging Face (its model page states no license, so it is never redistributed here), and villa's dinovol model code (MIT, Vesuvius Challenge) in the copy that [hercUNet](https://github.com/jimmylomro/hercUNet) vendors (MIT, Jaime Lomeli-Rodriguez) at commit `de4acb7`. Scans and traced layers are the Vesuvius Challenge open data (CC BY-NC 4.0), read live.
 
