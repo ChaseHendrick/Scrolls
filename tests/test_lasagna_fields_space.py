@@ -26,6 +26,20 @@ def _load():
     return mod
 
 
+def _constants(*names):
+    """Literal constants of lasfield.py, read without importing it (it needs numpy, which CI's test job lacks)."""
+    import ast
+    tree = ast.parse((SPACE / "lasfield.py").read_text(encoding="utf-8"))
+    got = {}
+    for node in tree.body:
+        if isinstance(node, ast.Assign) and len(node.targets) == 1 and getattr(node.targets[0], "id", None) in names:
+            got[node.targets[0].id] = ast.literal_eval(node.value)
+    missing = set(names) - set(got)
+    if missing:
+        raise AssertionError(f"lasfield.py has no literal {sorted(missing)}")
+    return [got[n] for n in names]
+
+
 def _square(x):
     return x * x
 
@@ -195,7 +209,7 @@ class TestFieldList(unittest.TestCase):
                 self.assertIn(f"/{r['scroll']}/representations/predictions/lasagna/", r["stream"])
 
     def test_never_lists_a_scroll_the_space_refuses(self):
-        never = _load().REFUSED_SAMPLES
+        never, = _constants("REFUSED_SAMPLES")
         rows = self.rows + self.doc.get("pending_not_public", {}).get("items", [])
         self.assertTrue(never and rows)                       # the control: there is something to compare
         self.assertFalse(never & {r["scroll"].lower() for r in rows})
@@ -205,8 +219,8 @@ class TestFieldList(unittest.TestCase):
 
     def test_prize_scrolls_only_as_listed_before(self):
         """No new entry for a scroll on a prize list: only the ten SharpMeow datasets listed since 24 Oct 2026."""
-        L = _load()
-        ten = {s for s, _ in L.OWN_FIELDS.values()}
+        own, = _constants("OWN_FIELDS")
+        ten = {s for s, _ in own.values()}
         listed = {r["scroll"] for r in self.rows}
         self.assertTrue(self.eligible & listed)               # the control: the ten include prize-list scrolls
         for r in self.rows:
@@ -217,8 +231,8 @@ class TestFieldList(unittest.TestCase):
             self.assertNotIn(r["scroll"], self.eligible, r)
 
     def test_ten_bucket_fields_are_listed_with_their_stream(self):
-        L = _load()
-        own = {vid: run for vid, (_, run) in L.OWN_FIELDS.items()}
+        own_fields, = _constants("OWN_FIELDS")
+        own = {vid: run for vid, (_, run) in own_fields.items()}
         rows = {r["volume"]: r for r in self.rows if r.get("gallery")}
         self.assertEqual(set(rows), set(own))
         for vid, r in rows.items():
