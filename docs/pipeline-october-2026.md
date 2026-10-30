@@ -20,22 +20,22 @@ The center line is not on that page. The spiral fit and VC3D's winding numbers r
 
 ## The pipeline
 
-Each step is a stage of AutoPipeline 0.1.10 (`scrolls-kit stages list` in the package). A stage's choice is picked by name (`plan --use STAGE=NAME`) and recorded under the plan's digest; the repair and label stages also have an `off` choice, so their effect can be measured by swapping them out.
+Each step is a stage of AutoPipeline 0.1.11 (`scrolls-kit stages list` in the package). A stage's choice is picked by name (`plan --use STAGE=NAME`) and recorded under the plan's digest; the repair and label stages also have an `off` choice, so their effect can be measured by swapping them out.
 
 | Step | Stage | What it reads | What it writes | State |
 | --- | --- | --- | --- | --- |
 | Center line | `umbilicus`, choice `centerlines` | the scan's name | `umbilicus.json`: a published line, people's first, the Center Finder's where nobody made one | released |
 | Trace with the contact barrier | `trace`, then `repair` choice `barrier` | the center line, the surface prediction | traced tifxyz surfaces; a trace rejected for a sheet switch is cut back to its seed's sheet | released in AutoPipeline 0.1.9 |
-| Label moved onto the papyrus | `labels`, choice `snapped` (baseline `mesh`) | each accepted surface, the center line, the scan | the surface moved onto the recto face of its sheet, an abstain mask, an OME-Zarr surface label | experimental, in AutoPipeline 0.1.10 |
+| Label moved onto the papyrus | `labels`, choice `snapped` (baseline `mesh`) | each accepted surface, the center line, the scan | the surface moved onto the recto face of its sheet, an abstain mask, an OME-Zarr surface label | experimental, in AutoPipeline 0.1.10 and later |
 | Ink | `ink`, default Reader V3 | the rendered surface | an ink map with its reversed-depth and depth-shuffled controls | released |
 
 ## Run it
 
-The pipeline runs from the AutoPipeline 0.1.10 package, whose install puts its command line on the path as `scrolls-kit`:
+The pipeline runs from the AutoPipeline 0.1.11 package, whose install puts its command line on the path as `scrolls-kit`:
 
 ```bash
-git clone --branch submission/progress-2026-10-fix10 --depth 1 https://github.com/ChaseHendrick/Scrolls.git scrolls-autopipeline
-cd scrolls-autopipeline/submissions/progress-2026-10-fix10/autopipeline
+git clone --branch submission/progress-2026-10-fix11 --depth 1 https://github.com/ChaseHendrick/Scrolls.git scrolls-autopipeline
+cd scrolls-autopipeline/submissions/progress-2026-10-fix11/autopipeline
 python3 -m venv .venv && . .venv/bin/activate && python -m pip install -e '.[couple]'
 python scripts/demo_synthetic.py    # every stage on a synthetic scroll with stand-in VC3D tools; prints DEMO PASS
 ```
@@ -170,8 +170,8 @@ Every number is Model output from a rule fixed before the data was read, unless 
 - windlabel-box's split rule v1 failed its own frozen test on 18 PHerc1667 boxes: 0.9693 right, but only 68.3 % of steps kept, under the 70 % floor; the cut now used was chosen after that, on spent boxes ([windlabel-box](tools/windlabel-box.md)).
 - labelsuggest is not shown to beat simple picks: plain margin lifted at least as much on both scrolls (4.08 and 1.96) ([labelsuggest](tools/labelsuggest.md)).
 - Parting missed its bar on PHerc1667Cr1Fr3 (+0.045) and on PHercParis2Fr143 (+0.010), where base dinovol alone already scored 0.965 ([Parting log](logs/2026-10-29-parting-fragment-contact.md)).
-- Fibers along the surface are not a step of this pipeline. Weft, our fiber tracer on public fiber probabilities from Qual's AFV V2 model, ships in AutoPipeline 0.1.10 only as an experimental choice of its `fibers` stage, and no preregistered test has shown that its fibers are right.
-- Glued sheet joins (kollesis) are not a step of this pipeline either. The kollesis score ships in AutoPipeline 0.1.10 only as an experimental choice of its `joins` stage, and no preregistered test has shown that its scores are right.
+- Fibers along the surface are not a step of this pipeline. Weft, our fiber tracer on public fiber probabilities from Qual's AFV V2 model, ships in AutoPipeline 0.1.10 and 0.1.11 only as an experimental choice of its `fibers` stage, and no preregistered test has shown that its fibers are right.
+- Glued sheet joins (kollesis) are not a step of this pipeline either. The kollesis score ships in AutoPipeline 0.1.10 and 0.1.11 only as an experimental choice of its `joins` stage, and no preregistered test has shown that its scores are right.
 
 ## What it does not do
 
