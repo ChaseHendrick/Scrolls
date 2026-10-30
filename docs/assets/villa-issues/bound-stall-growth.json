@@ -1,0 +1,42 @@
+{
+  "schema": "scrolls-media/1",
+  "name": "bound-stall-growth",
+  "label": "Real data render",
+  "alt": "Line chart: valid vertices placed by generation for a fresh vc_grow_seg_from_seed trace on public PHerc0139 inside the x/y/z limits from villa #2104. Three runs on villa main stop at generation 12 or 13 with 481 to 573 vertices; three runs with the one-line fix grow until generation 58, 2,611 to 2,612 vertices.",
+  "caption": "Real data render: counts of valid vertices placed per generation by villa's vc_grow_seg_from_seed, seed 3770 3698 4608 on the public PHerc0139 surface prediction 20260413222639 (m7 L0 th0.2), villa main 8f5f0d7 against the fix, three runs each. No CT, surface or model output is shown. Data: Vesuvius Challenge open data, CC BY-NC 4.0.",
+  "license": "CC BY-NC 4.0",
+  "release_id": null,
+  "data": {
+    "scan": "PHerc0139",
+    "segment": "surface prediction 20250728140407-surface-20260413222639-surface-m7-L0-th0.2.zarr",
+    "voxel_size": "9.362 um (scan 20250728140407)",
+    "credit": "Vesuvius Challenge open data, CC BY-NC 4.0",
+    "labels": "none"
+  },
+  "sources": [
+    "villa volume-cartographer/core/src/GrowPatch.cpp at 8f5f0d7 and the fix"
+  ],
+  "outputs": [
+    {
+      "file": "bound-stall-growth.png",
+      "bytes": 95474,
+      "sha256": "eee0b873706700851dd8236df7710285edb7ccd0f4a4403f226eb05335380e79",
+      "width": 1200,
+      "height": 520,
+      "kind": "png",
+      "format": "png"
+    }
+  ],
+  "inputs": [],
+  "made": "2026-10-30",
+  "tool": {
+    "scripts": [
+      "scripts/experiments/bound-stall/chart.py",
+      "scripts/experiments/bound-stall/count.py"
+    ],
+    "scripts_sha256": "84b7a73c088811aaea5d9e7cb15a8990e86acd57e3cf8d009b307f609b4d9129",
+    "base_commit": "cbf64f0cb2c2240b51e482f08ba420fe4ff086b1"
+  },
+  "command": "python scripts/experiments/bound-stall/count.py RUN_DIR ... > counts.jsonl && python scripts/experiments/bound-stall/chart.py scripts/experiments/bound-stall/counts.jsonl docs/assets/villa-issues",
+  "note": "For a villa PR. Only counts of placed vertices are shown."
+}
