@@ -102,7 +102,7 @@
     "docs/tools/snapped-labels.md": "3da92dca823c53779149f1aa9f7699e0e9ee7533b5767956b1c4bae539b977ed",
     "docs/tools/windlabel-box.md": "2cbfd91604f1ea481b70e1f9a54c56392550c18f1c3c483b8d0cac9401eddfb3",
     "docs/tools/labelsuggest.md": "4d93cd8dbe31106498a16ed7b8efdab8c38e5f7fb26c0715aec8e9a5bb56709d",
-    "docs/logs/2026-10-29-parting-fragment-contact.md": "91bd0d7d0ac2026aecefc0cd32d6c5af3d341d105a5d20ae42236aeec3d3c3d2"
+    "docs/logs/2026-10-29-parting-fragment-contact.md": "43f809fbb25dcb0bf3defa37e9df8fe7ccf127b01d87653892a2d96580746443"
    },
    "doc": "docs/pipeline-october-2026.md"
   },
@@ -122,7 +122,7 @@
   "each-step-is-a-stage-of-autopipeline-0": {
    "line": 23,
    "sources": {
-    "docs/tools/autopipeline.md": "50f8b316df52da4e66ee373181c2db9ee7b9a9ac059611dcb09b22284da544e0"
+    "docs/tools/autopipeline.md": "39c58b68a7ee55ba62d3265ae80c7e16c5939023110aada2ab0ef72589a993ab"
    },
    "doc": "docs/pipeline-october-2026.md",
    "reasons": {
@@ -142,7 +142,7 @@
   "fibers-along-the-surface-are-not-a-step": {
    "line": 167,
    "sources": {
-    "docs/tools/autopipeline.md": "50f8b316df52da4e66ee373181c2db9ee7b9a9ac059611dcb09b22284da544e0"
+    "docs/tools/autopipeline.md": "39c58b68a7ee55ba62d3265ae80c7e16c5939023110aada2ab0ef72589a993ab"
    },
    "doc": "docs/pipeline-october-2026.md",
    "reasons": {
@@ -158,7 +158,7 @@
   "glued-sheet-joins-kollesis-are-not-a-step": {
    "line": 168,
    "sources": {
-    "docs/tools/autopipeline.md": "50f8b316df52da4e66ee373181c2db9ee7b9a9ac059611dcb09b22284da544e0"
+    "docs/tools/autopipeline.md": "39c58b68a7ee55ba62d3265ae80c7e16c5939023110aada2ab0ef72589a993ab"
    },
    "doc": "docs/pipeline-october-2026.md",
    "reasons": {
@@ -175,7 +175,7 @@
   "ink-detection-runs-inside-the-same-autopipeline-run": {
    "line": 74,
    "sources": {
-    "docs/tools/autopipeline.md": "50f8b316df52da4e66ee373181c2db9ee7b9a9ac059611dcb09b22284da544e0"
+    "docs/tools/autopipeline.md": "39c58b68a7ee55ba62d3265ae80c7e16c5939023110aada2ab0ef72589a993ab"
    },
    "doc": "docs/pipeline-october-2026.md",
    "reasons": {
@@ -204,14 +204,14 @@
   "labelsnap-moved-published-surface-labels-closer-to-the": {
    "line": 264,
    "sources": {
-    "docs/results.json": "5ad25305ff4f8c2592077742ad10ce9b0fe11766c9fbce2988ace340b309d667",
+    "docs/results.json": "3978075739235ab3e39e7a6ec38d9113ec2d70adf0940e19a0bcaf3222673d6b",
     "docs/tools/snapped-labels.md": "3da92dca823c53779149f1aa9f7699e0e9ee7533b5767956b1c4bae539b977ed"
    }
   },
   "labelsnap-moved-published-surface-labels-closer-to-the-2": {
    "line": 15,
    "sources": {
-    "docs/results.json": "5ad25305ff4f8c2592077742ad10ce9b0fe11766c9fbce2988ace340b309d667",
+    "docs/results.json": "3978075739235ab3e39e7a6ec38d9113ec2d70adf0940e19a0bcaf3222673d6b",
     "docs/tools/snapped-labels.md": "3da92dca823c53779149f1aa9f7699e0e9ee7533b5767956b1c4bae539b977ed"
    },
    "doc": "docs/FINDINGS.md"
@@ -280,20 +280,20 @@
   "parting-a-contact-classifier-on-base-dinovol-features": {
    "line": 267,
    "sources": {
-    "docs/logs/2026-10-29-parting-fragment-contact.md": "91bd0d7d0ac2026aecefc0cd32d6c5af3d341d105a5d20ae42236aeec3d3c3d2"
+    "docs/logs/2026-10-29-parting-fragment-contact.md": "43f809fbb25dcb0bf3defa37e9df8fe7ccf127b01d87653892a2d96580746443"
    }
   },
   "parting-a-contact-classifier-on-base-dinovol-features-2": {
    "line": 17,
    "sources": {
-    "docs/logs/2026-10-29-parting-fragment-contact.md": "91bd0d7d0ac2026aecefc0cd32d6c5af3d341d105a5d20ae42236aeec3d3c3d2"
+    "docs/logs/2026-10-29-parting-fragment-contact.md": "43f809fbb25dcb0bf3defa37e9df8fe7ccf127b01d87653892a2d96580746443"
    },
    "doc": "docs/FINDINGS.md"
   },
   "parting-missed-its-bar-on-pherc1667cr1fr3-0-045": {
    "line": 166,
    "sources": {
-    "docs/logs/2026-10-29-parting-fragment-contact.md": "91bd0d7d0ac2026aecefc0cd32d6c5af3d341d105a5d20ae42236aeec3d3c3d2"
+    "docs/logs/2026-10-29-parting-fragment-contact.md": "43f809fbb25dcb0bf3defa37e9df8fe7ccf127b01d87653892a2d96580746443"
    },
    "doc": "docs/pipeline-october-2026.md"
   },
@@ -340,6 +340,16 @@
     "docs/logs/2026-10-07-overlap-and-baseline.md": "4c4e5150fcabef2e452c8e6a0b9c0badaabb87c0179a4baee1e62af2e4866dae"
    },
    "doc": "docs/FINDINGS.md"
+  },
+  "real-runs-need-villa-s-vc3d-tools-python3": {
+   "line": 43,
+   "sources": {
+    "docs/releases.json": "c3e5648cea45a2870a291663c2c967a13cbbe3d9f33a5daf8922ffa4fa246f6a"
+   },
+   "doc": "docs/pipeline-october-2026.md",
+   "reasons": {
+    "0.1": "context: the version AutoPipeline 0.1.11"
+   }
   },
   "scoring-a-crop-needs-an-edge-margin": {
    "line": 294,
@@ -422,7 +432,7 @@
   "the-pipeline-runs-from-the-autopipeline-0-1": {
    "line": 34,
    "sources": {
-    "docs/tools/autopipeline.md": "50f8b316df52da4e66ee373181c2db9ee7b9a9ac059611dcb09b22284da544e0"
+    "docs/tools/autopipeline.md": "39c58b68a7ee55ba62d3265ae80c7e16c5939023110aada2ab0ef72589a993ab"
    },
    "doc": "docs/pipeline-october-2026.md",
    "reasons": {

@@ -8,29 +8,29 @@
     {
       "id": "autopipeline",
       "title": "AutoPipeline",
-      "line": "Runs villa's VC3D tools and ink detection on a released scan, from surface checks to ink maps scored with controls (package, 0.1.10).",
-      "area": "Pipeline and agents",
-      "page": "docs/tools/autopipeline.md",
-      "summary": "AutoPipeline drives villa's VC3D tools and ink detection from a released scan through surface checks, rendering and controlled scoring. Version 0.1.10 adds three steps that follow a run, each a swappable stage with an off choice: labels moves each accepted surface onto the papyrus face of its sheet (Snapped Labels' placement code), fibers traces papyrus fibers around it with Weft, our fiber tracer, from the public probabilities of Qual's AFV V2 model, and joins scores glued sheet joins at the fiber ends along it with a control point beside each score. They are experimental: a smoke run on public data shows they run, not that any label, fiber or score is right. 0.1.9 let a plan swap any stage by name and added 3D ink readers; Reader V3 stays the default reader. These are software changes, not a new ink-accuracy or scroll-reading result. The package retains its earlier evidence and limitations.",
+      "summary": "AutoPipeline drives villa's VC3D tools and ink detection from a released scan through surface checks, rendering and controlled scoring. Version 0.1.11 keeps two steps working on VC3D builds made after villa removed vc_tifxyz_selfcross and vc_flatten (villa #2358, 29 October 2026). The self-intersection check has two backends: villa's tool where the build has it, otherwise the same census kernel from villa's source, compiled on your machine by kit selfcross build; on 51 synthetic surfaces the two reports matched in every count and contact. Flattening uses vc_flatten, or villa's flatboi (SLIM) in its tifxyz mode, under the same distortion limits. 0.1.10 added the experimental labels, fibers and joins steps after a run; Reader V3 stays the default reader. These are software changes, not a new ink-accuracy or scroll-reading result. The package retains its earlier evidence and limitations.",
       "commands": [
-        "git clone --branch submission/progress-2026-10-fix10 --depth 1 https://github.com/ChaseHendrick/Scrolls.git scrolls-autopipeline",
-        "cd scrolls-autopipeline/submissions/progress-2026-10-fix10/autopipeline",
+        "git clone --branch submission/progress-2026-10-fix11 --depth 1 https://github.com/ChaseHendrick/Scrolls.git scrolls-autopipeline",
+        "cd scrolls-autopipeline/submissions/progress-2026-10-fix11/autopipeline",
         "python3 -m venv .venv && . .venv/bin/activate   # Python 3.11 or newer",
         "python -m pip install -e .",
         "python scripts/demo_synthetic.py"
       ],
-      "details": "Install, monitor and console, the coupled steps, synthetic demo and limitations: [README](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-fix10/submissions/progress-2026-10-fix10/autopipeline/README.md). [Changes since 0.1.9](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-fix10/submissions/progress-2026-10-fix10/CHANGES.md). After a run, `kit apcouple from-run` then `kit apcouple chain` runs labels, fibers and joins.",
+      "details": "Install, current VC3D builds, demo and limitations: [README](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-fix11/submissions/progress-2026-10-fix11/autopipeline/README.md). [Changes since 0.1.10](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-fix11/submissions/progress-2026-10-fix11/CHANGES.md). On a VC3D build after 29 Oct 2026, run `scrolls-kit selfcross build` once.",
       "image": {
         "src": "docs/assets/autopipeline-readme-hero.webp",
         "alt": "Concept illustration of a continuous papyrus surface traced in copper and flattened into a grid.",
         "caption": "Concept illustration: a papyrus surface traced in copper and flattened into a grid. No scan data."
       },
-      "released": "2026-10-29",
+      "line": "Runs villa's VC3D tools and ink detection on a released scan, from surface checks to ink maps scored with controls (package, 0.1.11).",
+      "released": "2026-10-30",
       "where": {
-        "branch": "submission/progress-2026-10-fix10",
-        "commit": "eea2df521d234fb2e0984b0dd79c5f2a8754eef2",
-        "path": "submissions/progress-2026-10-fix10"
-      }
+        "branch": "submission/progress-2026-10-fix11",
+        "commit": "22cecae9160ff5d69d245cc13150b26885c7b9fd",
+        "path": "submissions/progress-2026-10-fix11"
+      },
+      "area": "Pipeline and agents",
+      "page": "docs/tools/autopipeline.md"
     },
     {
       "id": "unroll",
@@ -970,16 +970,16 @@
     {
       "id": "parting",
       "title": "Parting (same layer or next layer where two papyrus layers touch)",
-      "line": "Scores whether a point at a contact of two touching papyrus layers lies on the same layer or the next, with base dinovol's cosine as control; code only.",
+      "line": "Scores whether a point where two papyrus layers touch lies on the same layer or the next, against base dinovol's cosine; code and model file.",
       "area": "Surfaces and tracing",
       "page": "docs/tools/parting.md",
       "released": "2026-10-30",
-      "summary": "Parting reads the CT window around a contact where two papyrus layers touch, takes the Vesuvius Challenge's base dinovol tokens and CT profiles at three points (a, a second point on its layer, and a point on the next layer at the same distance), and scores which pair is the same layer, with base dinovol's own token cosine as the control. In three tests frozen before any CT was read, on fragments it never trained on, it passed once: on PHercParis1Fr34 (Frag3) its touching AUC was 0.895 against 0.839 for base dinovol (gain +0.056, 2.5 % bound +0.037); on PHerc1667Cr1Fr3 it gained +0.045, short of the +0.05 bar, and on PHercParis2Fr143 +0.010. The released code reproduces the Frag3 features and readout exactly from public data. Limits: one pass in three; little gain at fused contacts or where base dinovol is already near its ceiling; flat fragment stacks only. Code only, Apache 2.0; the trained model file is not included. Model output, not a reading.",
+      "summary": "Parting reads the CT window around a contact where two papyrus layers touch, takes the Vesuvius Challenge's base dinovol tokens and CT profiles at three points (a, a second point on its layer, and a point on the next layer at the same distance), and scores which pair is the same layer, with base dinovol's own token cosine as the control. In three tests frozen before any of their 3D CT was read, on fragments it never trained on, it passed once: on PHercParis1Fr34 (Frag3) its touching AUC was 0.895 against 0.839 for base dinovol (gain +0.056, 2.5 % bound +0.037); on PHerc1667Cr1Fr3 it gained +0.045, short of the +0.05 bar, and on PHercParis2Fr143 +0.010. The released code reproduces the Frag3 features and readout exactly from public data. Limits: one pass in three; little gain at fused contacts or where base dinovol is already near its ceiling; flat fragment stacks only. Code Apache 2.0; the trained model file of every test is on Hugging Face as SharpMeow/parting-v1 (CC BY-NC 4.0, added 30 October 2026). Model output, not a reading.",
       "commands": [
-        "python3 scripts/parting/parting.py frag3 --model MODEL.joblib --out OUT --sites-only",
+        "python3 scripts/parting/parting.py frag3 --model parting-v1.joblib --out OUT --device cuda",
         "python3 scripts/parting/parting.py features --sites SITES.json --volume ZARR_LEVEL_URL --device cuda --out RUN"
       ],
-      "details": "Page: [docs/tools/parting.md](docs/tools/parting.md); evidence: [finding 23](docs/FINDINGS.md). At run time it downloads, pinned by sha256 and never copied, the base dinovol checkpoint and villa's dinovol model code (MIT) as vendored by hercUNet (MIT). Code Apache 2.0; scans and traced layers are the Vesuvius Challenge open data (CC BY-NC 4.0), read live.",
+      "details": "Page: [docs/tools/parting.md](docs/tools/parting.md); evidence: [finding 23](docs/FINDINGS.md). At run time it downloads, pinned by sha256 and never copied, the base dinovol checkpoint and villa's dinovol model code (MIT) as vendored by hercUNet (MIT). Code Apache 2.0; model file [SharpMeow/parting-v1](https://huggingface.co/SharpMeow/parting-v1) (CC BY-NC 4.0, sha256 f0684ab2...); scans and traced layers are the Vesuvius Challenge open data (CC BY-NC 4.0), read live.",
       "where": "main"
     }
   ]
