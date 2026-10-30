@@ -160,6 +160,7 @@ Each command's `--help` line, its actions, its handler and the page that documen
 | `shuffle` | none | `cmd_shuffle` | [layers](layers.md) | depth-shuffle control: copy a surface volume with its layers in a fixed random order |
 | `phantom` | none | `cmd_phantom` | [phantom](phantom.md) | synthetic carbon-ink phantoms with known truth: make, stress-test a detector, calibrate AUC noise |
 | `view` | none | `cmd_view` | [view](view.md) | one static HTML page overlaying several ink maps, their disagreement and the labels |
+| `labelsuggest` | `map` | `labelsuggest.cmd_labelsuggest` (in `kit/labelsuggest.py`) | [labelsuggest](labelsuggest.md) | where to paint ink labels next: tiles where readers' ink maps disagree, with matched random and agree tiles as controls |
 | `strokenet` | none | `cmd_strokenet` | [strokenet](strokenet.md) | learned text-likeness score of a 2D ink map (StrokeNet), with rotation and IAAFT controls |
 | `volumeview` | none | `cmd_volumeview` | [volumeview](volumeview.md) | build a local viewer link from explicit public volume metadata |
 | `segzoo` | none | `cmd_segzoo` | [segzoo](segzoo.md) | model zoo: nnU-Net, MedNeXt, Swin UNETR, Auto3DSeg, SegFormer, DINOv3, MedSAM2 and Mamba families, their licenses and fit; Auto3DSeg datalists |

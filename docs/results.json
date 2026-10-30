@@ -12344,5 +12344,86 @@
     "note": "Interpretation: base dinovol near its ceiling, so the largest possible gain was +0.035, under the +0.05 bar"
    }
   }
+ ],
+ "label_suggest_checks": [
+  {
+   "date": "2026-10-29",
+   "tool": "kit labelsuggest map, --measure vote (the default)",
+   "source": "docs/tools/labelsuggest.md",
+   "claim": "Measurement: the 20 tiles the vote measure ranked first held more of the committee's errors than random tiles, on three PHerc1667 segments; scored against the organizers' own ink label rounds in the public Scroll Prize ink dataset (the ink folder of scrollprize/datasets on Hugging Face, listed in docs/external.md): version 1 labels and supervision (7 March 2026), version 2 (24 March 2026), and the organizers' model predictions published in the same segment folders and dated between the two rounds (the committee of readers). An error is a tile pixel where the committee's call (mean probability at least 0.5) differs from the version 2 label, inside the area that version 2 newly supervised",
+   "claim_wording": "On PHerc1667 the 20 tiles the reader-disagreement pick ranked first held 3.82 times the average tile's error share (geometric mean over three segments, bar 1.5, p 0.0001 in each); a label-free ink-edge pick did as well (4.17), so the tool is not shown to beat simple picks",
+   "verdict": "PASS",
+   "rule": "fixed and frozen before any test segment was read: PASS when the vote measure's geometric-mean top-20 lift over usable segments is at least 1.5 and at least three quarters of the usable segments (3 of 3 here) have lift above 1 with p below 0.05 against 10,000 random 20-tile draws; VOID when fewer than 3 segments are usable or the pixel-shuffle control (mean lift 0.8 to 1.25) or the planted control (at least 15 of 20 found) fails; a segment is usable only when the committee's AUC drops by at least 0.10 with the labels moved 32 px; one run",
+   "segments": {
+    "usable": 3,
+    "lost_to_a_runner_fault": 1,
+    "readers_per_segment": 7,
+    "tiles": [
+     1183,
+     354,
+     431
+    ]
+   },
+   "lift_top20": {
+    "vote": 3.82,
+    "margin": 4.08,
+    "edge": 4.17,
+    "ink_density": 1.26
+   },
+   "controls": {
+    "pixel_shuffle_geomean": 0.935,
+    "pixel_shuffle_band": [
+     0.8,
+     1.25
+    ],
+    "planted_found_min": 17,
+    "planted_bar": 15,
+    "committee_auc_in_place": [
+     0.922,
+     0.943,
+     0.978
+    ],
+    "committee_auc_labels_moved_32px": [
+     0.753,
+     0.743,
+     0.767
+    ]
+   },
+   "attempt": "attempt 1 on a first scroll",
+   "limits": "one scroll; the edge and margin picks, both label-free, lifted at least as much, so the PASS is not a win over simple picks; errors are model calls against later labels, not label errors; whether labeling at these tiles saves a person's time is not tested; the organizers may have looked at these predictions while labeling version 2, and the latest predictions may have trained on interim version 2 labels (both untested); the test runner is not in this repository"
+  },
+  {
+   "date": "2026-10-29",
+   "tool": "kit labelsuggest map, --measure edge",
+   "source": "docs/tools/labelsuggest.md",
+   "claim": "Measurement: on a second scroll, PHerc0841 segment ag896 (auto_grown_20260220144552896), the 20 tiles a label-free ink-edge pick ranked first held more of the committee's errors than random tiles; scored against the organizers' own ink label rounds in the public Scroll Prize ink dataset (the ink folder of scrollprize/datasets on Hugging Face, listed in docs/external.md): version 1 labels and supervision (7 March 2026), version 2 (24 March 2026), and the organizers' model predictions published in the same segment folders and dated between the two rounds (the committee of readers). An error is a tile pixel where the committee's call (mean probability at least 0.5) differs from the version 2 label, inside the area that version 2 newly supervised",
+   "claim_wording": "On a second scroll (PHerc0841 ag896, one segment, three readers, 108 tiles), the 20 tiles a label-free ink-edge pick suggested held 1.84 times the average share of the committee's disagreements with the organizers' later labels (bar 1.5, p 0.0005 against random 20-tile picks). This was attempt 2 at a second-scroll test, and the edge pick was chosen on spent development data after a misplacement control fixed in advance failed and was made reported only once its numbers were seen. The pick is no better than margin or vote by any test we ran",
+   "verdict": "PASS",
+   "rule": "fixed and frozen before any PHerc0841 file was read: PASS when the edge pick's top-20 lift is at least the bar (1.5 for 60 to 239 eligible tiles, 2.0 from 240) with p below 0.05 against 10,000 random 20-tile draws; VOID when the segment is unusable or a control fails (planted at least 15 of 20, broken readout at most 5 of 20, random-position mean lift 0.8 to 1.25); one run",
+   "segments": {
+    "usable": 1,
+    "readers": 3,
+    "tiles": 108,
+    "average_error_share": 0.147
+   },
+   "lift_top20": {
+    "edge": 1.84,
+    "margin": 1.96,
+    "vote": 1.87,
+    "ink_density": 1.14
+   },
+   "p_random": 0.0005,
+   "controls": {
+    "planted_found": 20,
+    "planted_bar": 15,
+    "broken_readout_found": 0,
+    "broken_bar": 5,
+    "random_position_mean_lift": 1.0014,
+    "committee_auc_in_place": 0.934,
+    "committee_auc_labels_moved_32px": 0.685
+   },
+   "attempt": "attempt 2 at a second-scroll test (the first was never frozen, so no data was spent on it)",
+   "limits": "one segment of one scroll, three readers, one of them a prediction whose file name says reverse; the edge pick was chosen on PHerc1667 data already used by the first test, after a disclosed amendment; margin and vote lifted as much or more, and no comparison between picks was a preregistered claim; errors are model calls against later labels, not label errors; whether labeling at these tiles saves a person's time is not tested; the organizers may have looked at these predictions while labeling version 2, and the latest predictions may have trained on interim version 2 labels (both untested); the test runner is not in this repository"
+  }
  ]
 }

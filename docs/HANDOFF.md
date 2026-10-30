@@ -2,6 +2,12 @@
 
 **This file is the one handoff for this repository.** Every agent (Claude, Codex, Grok, ChatGPT or any other) reads it first and updates it before stopping: change the open-items table when you start or finish something, link longer notes from their row, and merge the handoff change into `main` at once rather than leaving it on a work branch. Private work has its own single handoff in Scrolls-private's `docs/HANDOFF.md`; nothing private goes here. Read [AGENTS.md](../AGENTS.md), [the workflow](WORKFLOW.md) and the current Git/PR state before continuing. Use plain sentences and preserve historical evidence bytes and hashes. Older dated sections are in [HANDOFF-archive.md](HANDOFF-archive.md), newest first; when this file grows long, move its oldest dated sections there, unchanged (`tests/test_repo.py` fails past 40 KB).
 
+## Continuation, 30 October 2026
+
+| Item | State | Next step |
+| --- | --- | --- |
+| Label suggestions from reader disagreement: `kit labelsuggest map` (30 Oct) | New kit command ([page](tools/labelsuggest.md)): ranks a segment's tiles by how much two or more readers' ink maps disagree and writes the top tiles as a mask to label first, with matched random and agree tiles and a pixel-shuffle control; numpy only, 13 tests. Two preregistered tests on the organizers' own label rounds (`label_suggest_checks` in [results.json](results.json)): lift 3.82 on PHerc1667 and 1.84 on PHerc0841 ag896 (bar 1.5); not shown to beat simple picks. Line `labelsuggest` in the Scrolls kit release entry | None; a timed test with people (does labeling at suggested tiles save time) is untested |
+
 ## Continuation, 29 October 2026
 
 | Item | State | Next step |
