@@ -100,7 +100,7 @@
     "docs/tools/umbilicus.md": "005ddbc3d549ec37c4362fa2069c93174cffa593e8a7349be7cd905ef6a270b6",
     "docs/tools/contact-barrier.md": "1f7409ebb26b4f34af7cb8dc15175f8440b9b68d80c65424c1351bba4f23cca4",
     "docs/tools/snapped-labels.md": "3da92dca823c53779149f1aa9f7699e0e9ee7533b5767956b1c4bae539b977ed",
-    "docs/tools/windlabel-box.md": "5a5e8b8baa079013560c11ca254915dfeb75291126366f8b85f8118db7c7d17b",
+    "docs/tools/windlabel-box.md": "2cbfd91604f1ea481b70e1f9a54c56392550c18f1c3c483b8d0cac9401eddfb3",
     "docs/tools/labelsuggest.md": "4d93cd8dbe31106498a16ed7b8efdab8c38e5f7fb26c0715aec8e9a5bb56709d",
     "docs/logs/2026-10-29-parting-fragment-contact.md": "a225a5fd26484ae2442c1de5f92ee273d88efb8c9666e47ead31aded3d6c6098"
    },
@@ -179,7 +179,7 @@
    },
    "doc": "docs/pipeline-october-2026.md",
    "reasons": {
-    "255": "context: villa's uint8 encoding of a probability, clipped to 0 to 1 and times 255 (scripts/vc3d/ink.py in the AutoPipeline 0.1.10 package, branch submission/progress-2026-10-fix10)"
+    "255": "context: villa's uint8 encoding of a probability, clipped to 0 to 1 and times 255 (submissions/progress-2026-10-fix10/autopipeline/scripts/vc3d/ink.py, the AutoPipeline 0.1.10 package on branch submission/progress-2026-10-fix10)"
    }
   },
   "ink-map-agreement-decreases-with-sampled-point-distance": {
@@ -490,7 +490,7 @@
   "windlabel-box-needs-a-published-surface-prediction-lasagna": {
    "line": 176,
    "sources": {
-    "docs/tools/windlabel-box.md": "5a5e8b8baa079013560c11ca254915dfeb75291126366f8b85f8118db7c7d17b"
+    "docs/tools/windlabel-box.md": "2cbfd91604f1ea481b70e1f9a54c56392550c18f1c3c483b8d0cac9401eddfb3"
    },
    "doc": "docs/pipeline-october-2026.md"
   },
@@ -513,7 +513,7 @@
   "windlabel-box-s-split-rule-v1-failed-its": {
    "line": 164,
    "sources": {
-    "docs/tools/windlabel-box.md": "5a5e8b8baa079013560c11ca254915dfeb75291126366f8b85f8118db7c7d17b"
+    "docs/tools/windlabel-box.md": "2cbfd91604f1ea481b70e1f9a54c56392550c18f1c3c483b8d0cac9401eddfb3"
    },
    "doc": "docs/pipeline-october-2026.md"
   }
