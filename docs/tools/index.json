@@ -6789,7 +6789,7 @@
     "Network": "`huggingface.co` and `sharpmeow-lasagna-fields.hf.space` (datasets, bucket, Space); the Space itself reads `vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com`",
     "Writes": "Downloads write where you point `--local-dir`; streaming writes nothing; a made field comes back as one zip (gradio_client saves it in its temp folder)",
     "Go-ahead": "Not needed to use. Making the datasets and Space public was Chase's yes (24 Oct 2026); turning the Space into the Make a field app was his yes on 25 Oct 2026; other changes to their cards or files need his yes per change, except redeploys under the standing yes (rule 8)",
-    "Released": "Public on Hugging Face since 2026-10-24 (datasets, bucket and Space); Make a field since 2026-10-25 (Space 2.0.0); the list of every field drafted 2026-10-30 (Space 2.1.0, not deployed); README \"Released tools\" entry `lasagna-fields`",
+    "Released": "Public on Hugging Face since 2026-10-24 (datasets, bucket and Space); Make a field since 2026-10-25 (Space 2.0.0); the list of every field since 2026-10-30 (Space 2.1.0); README \"Released tools\" entry `lasagna-fields`",
     "License": "CC BY-NC 4.0, the same as the scans they derive from; model and code are ScrollPrize/villa's lasagna, credit to its authors",
     "Checked": "2026-10-24 against commit `76beeba`"
    },
