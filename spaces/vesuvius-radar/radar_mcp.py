@@ -27,7 +27,7 @@ def bind(app_module):
 
 router = APIRouter()
 VERSIONS = ("2025-06-18", "2025-03-26", "2024-11-05")
-SERVER = {"name": "vesuvius-radar", "title": "Vesuvius Radar", "version": "1.0.0"}
+SERVER = {"name": "vesuvius-radar", "title": "Vesuvius Radar", "version": "1.1.0"}
 INSTRUCTIONS = (
     "Vesuvius Radar keeps collecting new work that could help read the Herculaneum scrolls (the Vesuvius Challenge): "
     "papers from arXiv and journals, GitHub repositories with ScrollPrize/villa pull requests, issues and releases, "
@@ -55,7 +55,10 @@ TOOLS = [
      "description": "Items in the lookback window, filtered and sorted. With by_meaning true, query is a phrase and items "
                     "are ranked by how close they are in meaning (each gets a match value); otherwise every word of "
                     "query must appear. Each item has id, score, band, keyword and semantic scores, source, kind, "
-                    "title, url, date, first_seen, topics, matched terms, who, code links and a summary.",
+                    "title, url, date, first_seen, topics, matched terms, who (the author, for an issue or pull request "
+                    "who opened it), code links and a summary; a GitHub issue or pull request whose latest update "
+                    "came after its opening also has activity: what (comment, review, approved, closed...), who made "
+                    "it, date, text (what it said) and url.",
      "inputSchema": {"type": "object", "properties": {
          "since": SINCE, "by": BY, "view": VIEW,
          "query": {"type": "string", "description": "Words, or a phrase with by_meaning."},
@@ -132,6 +135,9 @@ def _compact(i: dict) -> dict:
             "topics", "matched", "who", "code", "stars", "likes", "upvotes", "downloads", "license", "state", "category",
             "pdf", "hf_url", "new_repo")
     out = {k: i[k] for k in keep if k in i and i[k] not in (None, "", [])}
+    if i.get("activity"):  # who made the latest update and what it said; `who` is the opener
+        a = i["activity"]
+        out["activity"] = {**a, "text": a["text"] if len(a.get("text", "")) <= 320 else a["text"][:317] + "..."}
     s = i.get("summary", "")
     out["summary"] = s if len(s) <= 320 else s[:317] + "..."
     return out

@@ -50,7 +50,7 @@ VECS_FILE = DATA_DIR / "vectors.npz"
 COLLECT = os.environ.get("RADAR_COLLECT", "1") != "0"  # tests set 0: no background collector
 SEMANTIC = os.environ.get("RADAR_SEMANTIC", "1") != "0"
 PUBLIC_URL = "https://sharpmeow-vesuvius-radar.hf.space"
-VERSION = "1.0.0"
+VERSION = "1.1.0"
 
 CFG = scanner.load_config()
 SCORER = scanner.Scorer(CFG)
@@ -337,8 +337,10 @@ class Filters:
         if self.has_code and not i.get("code"):
             return False
         if words:
+            act = i.get("activity") or {}
             hay = " ".join([i["title"], i.get("summary", ""), " ".join(i.get("matched", [])), i.get("who", ""),
-                            " ".join(i["topics"]), i["id"], i.get("category", "")]).lower()
+                            " ".join(i["topics"]), i["id"], i.get("category", ""), act.get("who", ""),
+                            act.get("text", "")]).lower()
             if not all(w in hay for w in words):
                 return False
         return True
@@ -496,6 +498,16 @@ def overview(f: Filters) -> dict:
             "store": {"items": len(STORE["items"]), "saved": STORE.get("saved"), "booted": BOOT}}
 
 
+def update_line(i: dict) -> str:
+    """The latest update in words, for text outputs: 'Comment by X: what it said. Opened by Y. ' or ''."""
+    a = i.get("activity") or {}
+    if not a.get("who"):
+        return ""
+    said = f": {a['text']}" if a.get("text") else ""
+    end = "" if said[-1:] in (".", "!", "?") else "."
+    return f"{a['what'][:1].upper()}{a['what'][1:]} by {a['who']}{said}{end} Opened by {i.get('who') or 'unknown'}. "
+
+
 def briefing(f: Filters, per_topic: int = 3) -> dict:
     items = query(f)
     used, topics = set(), {}
@@ -503,7 +515,7 @@ def briefing(f: Filters, per_topic: int = 3) -> dict:
         pick = [i for i in items if t in i["topics"] and i["id"] not in used][:per_topic]
         if pick:
             topics[t] = [{k: i.get(k) for k in ("id", "title", "url", "source", "kind", "date", "score", "band", "who",
-                                                 "summary", "code", "keyword", "semantic") if i.get(k) not in (None, "", [])}
+                                                 "activity", "summary", "code", "keyword", "semantic") if i.get(k) not in (None, "", [])}
                          for i in pick]
             used.update(i["id"] for i in pick)
     return {"since": scanner.iso(f.start), "view": f.view, "label": VIEWS[f.view]["label"], "about": VIEWS[f.view]["about"],
@@ -655,10 +667,13 @@ def export_csv(f: Filters = Depends(filters), sort: str = Query("score", pattern
     items = query(f, sort)
     buf = io.StringIO()
     cols = ["score", "band", "keyword", "semantic", "rule", "source", "kind", "date", "first_seen", "title", "url", "who", "topics",
-            "matched", "code", "summary"]
+            "matched", "code", "summary", "update", "update_by", "update_said", "update_url"]
     w = csv.writer(buf)
     w.writerow(cols)
     for i in items:
+        a = i.get("activity") or {}
+        i = {**i, "update": a.get("what", ""), "update_by": a.get("who", ""), "update_said": a.get("text", ""),
+             "update_url": a.get("url", "")}
         w.writerow([("; ".join(i.get(c) or []) if c in ("topics", "matched", "code") else i.get(c, "")) for c in cols])
     name = f"vesuvius-radar-{f.view}-{re.sub(r'[^0-9a-z]', '', f.since.lower())[:12]}-{scanner.iso(scanner.utcnow())[:10]}.csv"
     return Response(buf.getvalue(), media_type="text/csv", headers={"Content-Disposition": f'attachment; filename="{name}"'})
@@ -672,7 +687,7 @@ def feed(f: Filters = Depends(filters)):
     rows = []
     for i in items[:200]:
         d = scanner.parse_time(f.when(i)) or scanner.utcnow()
-        desc = f"Score {i['score']} ({i['band']}), {scanner.LABELS.get(i['source'], i['source'])} {i['kind']}. " + i.get("summary", "")
+        desc = f"Score {i['score']} ({i['band']}), {scanner.LABELS.get(i['source'], i['source'])} {i['kind']}. " + update_line(i) + i.get("summary", "")
         rows.append(f"<item><title>{xml_escape(i['title'])}</title><link>{xml_escape(i['url'])}</link>"
                     f'<guid isPermaLink="false">{xml_escape(i["id"])}</guid>'
                     f"<pubDate>{d.strftime('%a, %d %b %Y %H:%M:%S +0000')}</pubDate>"

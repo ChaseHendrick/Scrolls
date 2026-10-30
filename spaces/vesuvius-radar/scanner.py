@@ -550,6 +550,135 @@ def _gh_get(url):
     return FETCH.json(url, {"Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28"}, etag=True)
 
 
+# ---------------------------------------------------------------- GitHub: who made the latest update
+
+SLACK_S = 120          # an update this close to an item's updated time is the one that moved it
+PUSH_SLACK_S = 1800    # a commit's own time can sit well before the push that updated a pull request
+ACT_TEXT = 600         # characters kept of what a comment or review said
+EVENT_WHAT = {"closed": "closed", "reopened": "reopened", "merged": "merged", "labeled": "label added",
+              "unlabeled": "label removed", "renamed": "renamed", "assigned": "assigned", "unassigned": "unassigned",
+              "milestoned": "milestone set", "demilestoned": "milestone removed", "review_requested": "review requested",
+              "review_request_removed": "review request removed", "ready_for_review": "marked ready for review",
+              "convert_to_draft": "converted to draft", "locked": "locked", "unlocked": "unlocked",
+              "head_ref_force_pushed": "force-pushed", "head_ref_deleted": "branch deleted",
+              "head_ref_restored": "branch restored", "referenced": "referenced in a commit", "pinned": "pinned",
+              "unpinned": "unpinned", "transferred": "transferred", "marked_as_duplicate": "marked as duplicate"}
+REVIEW_WHAT = {"APPROVED": "approved", "CHANGES_REQUESTED": "changes requested", "COMMENTED": "review",
+               "DISMISSED": "review dismissed"}
+MD_DROP = [(re.compile(r"<!--.*?-->", re.S), " "), (re.compile(r"```.*?(?:```|\Z)", re.S), " [code] "),
+           (re.compile(r"^[ \t]*>.*$", re.M), " "), (re.compile(r"!\[[^\]]*\]\([^)]*\)"), " [image] "),
+           (re.compile(r"<img\b[^>]*>", re.I), " [image] "), (re.compile(r"\[([^\]]*)\]\([^)]*\)"), r"\1"),
+           (re.compile(r"^[ \t]{0,3}#{1,6}[ \t]+", re.M), ""), (re.compile(r"\*\*|__|`"), "")]
+
+
+def said(body, n: int = ACT_TEXT) -> str:
+    """What a comment or review said, as plain text for a card: HTML comments, code blocks, quoted earlier text and
+    image markup dropped (a placeholder says code or an image was there), links kept as their words, cut at a word."""
+    s = str(body or "")
+    for rx, to in MD_DROP:
+        s = rx.sub(to, s)
+    s = re.sub(r"(\[(code|image)\])( \[\2\])+", r"\1", clean(s))
+    if len(s) > n:
+        s = s[:n].rsplit(" ", 1)[0].rstrip(",;:") + "..."
+    return s
+
+
+def _act(what, who, when, text="", url="") -> dict:
+    return {"what": what, "who": clean(who)[:80], "date": when, "text": text, "url": safe_url(url)}
+
+
+def _num(url) -> int | None:
+    m = re.search(r"/(?:issues|pulls)/(\d+)$", url or "")
+    return int(m.group(1)) if m else None
+
+
+def gh_updates(repo: str, since: dt.datetime, notes: list, pages: int = 3) -> tuple[dict, int]:
+    """Comments, review comments and issue events on a repository since a time, by issue or pull request number.
+    Three repository-wide listings (comments page up to `pages` times), so the cost does not grow with the items."""
+    base, out, calls = f"https://api.github.com/repos/{repo}", {}, 0
+    for path, kind in (("issues/comments", "comment"), ("pulls/comments", "review comment")):
+        try:
+            for page in range(1, pages + 1):
+                rows = _gh_get(f"{base}/{path}?" + urllib.parse.urlencode(
+                    {"since": iso(since), "sort": "updated", "direction": "desc", "per_page": 100, "page": page}))
+                calls += 1
+                for c in rows:
+                    n = _num(c.get("issue_url") or c.get("pull_request_url"))
+                    made, changed = parse_time(c.get("created_at")), parse_time(c.get("updated_at"))
+                    if not n or not made:
+                        continue
+                    edited = bool(changed and (changed - made).total_seconds() > 60)
+                    text = said(c.get("body"))
+                    if c.get("path"):
+                        text = f"On {clean(c['path'])[:120]}: {text}"
+                    out.setdefault(n, []).append(_act(("edited " if edited else "") + kind, (c.get("user") or {}).get("login"),
+                                                      c["updated_at"] if edited else c["created_at"], text, c.get("html_url")))
+                if len(rows) < 100:
+                    break
+        except urllib.error.HTTPError as e:
+            notes.append(f"{repo} {path}: HTTP {e.code}")
+    try:
+        calls += 1
+        for e in _gh_get(f"{base}/issues/events?per_page=100"):
+            what, n = EVENT_WHAT.get(e.get("event")), (e.get("issue") or {}).get("number")
+            if not what or not n or not e.get("created_at"):
+                continue
+            text = ((e.get("label") or {}).get("name") or (e.get("rename") or {}).get("to")
+                    or (e.get("assignee") or {}).get("login") or (e.get("requested_reviewer") or {}).get("login")
+                    or (e.get("milestone") or {}).get("title") or "")
+            out.setdefault(n, []).append(_act(what, (e.get("actor") or {}).get("login"), e["created_at"], clean(text)[:200],
+                                              (e.get("issue") or {}).get("html_url")))
+    except urllib.error.HTTPError as e:
+        notes.append(f"{repo} issues/events: HTTP {e.code}")
+    return out, calls
+
+
+def gh_pr_latest(repo: str, n: int) -> list[dict]:
+    """The reviews and newest commit of one pull request (two calls), for an update the repository-wide listings do
+    not explain: an approval without a comment, or a push."""
+    base, acts = f"https://api.github.com/repos/{repo}/pulls/{n}", []
+    for r in _gh_get(f"{base}/reviews?per_page=100"):
+        if r.get("submitted_at"):
+            acts.append(_act(REVIEW_WHAT.get(r.get("state"), "review"), (r.get("user") or {}).get("login"),
+                             r["submitted_at"], said(r.get("body")), r.get("html_url")))
+    commits = _gh_get(f"{base}/commits?per_page=100")
+    if commits:
+        c = commits[-1]
+        cm = c.get("commit") or {}
+        when = (cm.get("committer") or {}).get("date") or (cm.get("author") or {}).get("date")
+        if when:
+            acts.append(_act("new commits", (c.get("author") or {}).get("login") or (cm.get("author") or {}).get("name"),
+                             when, said((cm.get("message") or "").split("\n", 1)[0], 200), c.get("html_url")))
+    return acts
+
+
+def latest_update(acts: list[dict], created, updated) -> dict | None:
+    """The update that moved an item: among the updates close to its updated time (and after its opening), one that
+    says something (a comment or review) before a bare event, the newest first; the other updates in that window are
+    listed under `also`. None when the item was only opened, or when no known update comes close enough, so a card
+    never credits an older comment for a later change."""
+    u, c = parse_time(updated), parse_time(created)
+    if not u or (c and (u - c).total_seconds() < SLACK_S):
+        return None
+    near = []
+    for a in acts:
+        t = parse_time(a["date"])
+        slack = PUSH_SLACK_S if a["what"] == "new commits" else SLACK_S
+        if t and (u - t).total_seconds() <= slack and (t - u).total_seconds() <= SLACK_S and not (c and t <= c):
+            near.append((bool(a.get("text")) and a["what"] not in EVENT_WHAT.values(), t, a))
+    if not near:
+        return None
+    near.sort(key=lambda x: (x[0], x[1]), reverse=True)
+    best = dict(near[0][2])
+    also = []
+    for _, _, a in near[1:]:
+        if a["what"] != best["what"] and a["what"] not in also:
+            also.append(a["what"])
+    if also:
+        best["also"] = also[:3]
+    return best
+
+
 def c_github(sc, ctx):
     scorer, since, prog = ctx["scorer"], ctx["since"], ctx["progress"]
     out, read, notes = {}, 0, []
@@ -583,34 +712,19 @@ def c_github(sc, ctx):
                                  license=(r.get("license") or {}).get("spdx_id"), language=r.get("language"),
                                  repo_topics=(r.get("topics") or [])[:8])
         time.sleep(2.5)  # logged-out search allows 10 calls a minute
+    lookups = ctx.get("state", {}).setdefault("pr_lookups", {})
     for repo in sc.get("watch_repos", []):
         prog(f"pull requests, issues and releases of {repo}")
+        prs, issues = [], []
         try:
             for p in _gh_get(f"https://api.github.com/repos/{repo}/pulls?state=all&sort=updated&direction=desc&per_page=60"):
                 t = parse_time(p.get("updated_at"))
-                if not t or t < since:
-                    continue
-                read += 1
-                state = "merged" if p.get("merged_at") else ("draft" if p.get("draft") and p["state"] == "open" else p["state"])
-                key = f"github:{repo.lower()}#{p['number']}"
-                out[key] = make_item(scorer, source="github", kind="pr", id=key, title=f"{repo} #{p['number']}: {p['title']}",
-                                     url=p["html_url"], date=t, text=(p.get("body") or "")[:1500], base=30,
-                                     base_label=f"{repo} pull request", core_terms=False, who=p["user"]["login"], state=state,
-                                     created=p.get("created_at"), labels=[x["name"] for x in p.get("labels") or []][:6],
-                                     topics_extra=["Scroll work"])
+                if t and t >= since:
+                    prs.append((t, p))
             for p in _gh_get(f"https://api.github.com/repos/{repo}/issues?state=all&sort=updated&direction=desc&per_page=60&since={iso(since)}"):
-                if p.get("pull_request"):
-                    continue
                 t = parse_time(p.get("updated_at"))
-                if not t or t < since:
-                    continue
-                read += 1
-                key = f"github:{repo.lower()}#{p['number']}"
-                out[key] = make_item(scorer, source="github", kind="issue", id=key, title=f"{repo} #{p['number']}: {p['title']}",
-                                     url=p["html_url"], date=t, text=(p.get("body") or "")[:1500], base=22,
-                                     base_label=f"{repo} issue", core_terms=False, who=p["user"]["login"], state=p["state"],
-                                     created=p.get("created_at"), comments=p.get("comments"),
-                                     labels=[x["name"] for x in p.get("labels") or []][:6], topics_extra=["Scroll work"])
+                if not p.get("pull_request") and t and t >= since:
+                    issues.append((t, p))
             for r in _gh_get(f"https://api.github.com/repos/{repo}/releases?per_page=10"):
                 t = parse_time(r.get("published_at"))
                 if not t or t < since:
@@ -623,6 +737,40 @@ def c_github(sc, ctx):
                                      topics_extra=["Scroll work"])
         except urllib.error.HTTPError as e:
             notes.append(f"{repo}: HTTP {e.code}")
+        # Who made each item's latest update, and what it said: the item's own author is only who opened it.
+        acts = {}
+        if prs or issues:
+            prog(f"comments, reviews and events of {repo}")
+            acts, _ = gh_updates(repo, since, notes)
+        budget = int(sc.get("pr_lookups", 2))
+        for is_pr, (t, p) in [(True, x) for x in prs] + [(False, x) for x in issues]:
+            read += 1
+            n, key = p["number"], f"github:{repo.lower()}#{p['number']}"
+            act = latest_update(acts.get(n, []), p.get("created_at"), p.get("updated_at"))
+            moved = (t - (parse_time(p.get("created_at")) or t)).total_seconds() >= SLACK_S
+            if act is None and is_pr and moved:
+                memo = lookups.get(key)
+                if memo and memo.get("updated") == p.get("updated_at"):
+                    act = memo.get("act")
+                elif budget > 0:
+                    budget -= 1
+                    try:
+                        act = latest_update(acts.get(n, []) + gh_pr_latest(repo, n), p.get("created_at"), p.get("updated_at"))
+                        lookups[key] = {"updated": p.get("updated_at"), "act": act}
+                    except urllib.error.HTTPError as e:
+                        notes.append(f"{repo} #{n} reviews and commits: HTTP {e.code}")
+            common = dict(url=p["html_url"], date=t, text=(p.get("body") or "")[:1500], core_terms=False,
+                          title=f"{repo} #{n}: {p['title']}", who=p["user"]["login"], created=p.get("created_at"),
+                          labels=[x["name"] for x in p.get("labels") or []][:6], topics_extra=["Scroll work"], activity=act)
+            if is_pr:
+                state = "merged" if p.get("merged_at") else ("draft" if p.get("draft") and p["state"] == "open" else p["state"])
+                out[key] = make_item(scorer, source="github", kind="pr", id=key, base=30, base_label=f"{repo} pull request",
+                                     state=state, **common)
+            else:
+                out[key] = make_item(scorer, source="github", kind="issue", id=key, base=22, base_label=f"{repo} issue",
+                                     state=p["state"], comments=p.get("comments"), **common)
+    for k in sorted(lookups, key=lambda k: lookups[k].get("updated") or "")[:-400]:
+        del lookups[k]  # one remembered lookup per recently updated pull request is enough
     notes.append("logged out; unchanged listings are answered from cache (ETag)")
     return list(out.values()), {"read": read, "notes": notes}
 

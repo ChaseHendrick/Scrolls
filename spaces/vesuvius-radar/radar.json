@@ -129,7 +129,7 @@
   "github": {"label": "GitHub", "every_min": 20, "backfill_days": 30,
    "queries": ["vesuvius challenge", "herculaneum", "vesuvius scroll", "scrollprize", "volume-cartographer",
                "papyrus ct", "topic:vesuvius-challenge"],
-   "watch_repos": ["ScrollPrize/villa"]},
+   "watch_repos": ["ScrollPrize/villa"], "pr_lookups": 2},
   "hf": {"label": "Hugging Face", "every_min": 20, "backfill_days": 30,
    "search": ["vesuvius", "herculaneum", "papyrus", "scroll-prize", "dinovol"],
    "authors": ["scrollprize"],
