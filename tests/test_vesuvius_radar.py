@@ -360,7 +360,6 @@ class GitHubActivityTest(unittest.TestCase):
         self.assertFalse(any("HTTP" in n for n in info["notes"]))
 
 
-@unittest.skipIf(app is None, "fastapi is not installed")
 class NewsFeedTest(unittest.TestCase):
     """News searches go through the scorer, a story found by several searches is kept once, Bing's click counter is
     unwrapped to the article, Google's outlet suffix comes off the title, and a feed that fails is a note while the
@@ -433,6 +432,7 @@ class NewsFeedTest(unittest.TestCase):
         self.assertIn("org:ScrollPrize", CFG["sources"]["github"]["queries"])
 
 
+@unittest.skipIf(app is None, "fastapi is not installed")
 class AppTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
