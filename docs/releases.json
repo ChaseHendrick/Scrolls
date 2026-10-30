@@ -966,6 +966,21 @@
       "summary": "[Vesuvius Radar](https://huggingface.co/spaces/SharpMeow/vesuvius-radar) reads arXiv, GitHub (including ScrollPrize/villa pull requests, issues and releases), Hugging Face, PyPI, Zenodo, Crossref journals and the Vesuvius Challenge blog on a schedule, keeps 30 days, and scores every item from 0 to 100 by keywords, with a term-by-term breakdown, and by meaning, with a small sentence-embedding model (BAAI/bge-small-en-v1.5) on CPU. Status: released. Version: 1.1.1. Pick any lookback from 1 minute to 30 days, by publish date or by when the radar found an item, and a view for researchers, the Challenge team, or contributors; the page has charts, a per-topic briefing, search by meaning and \"more like this\"; a villa issue or pull request card names who made its latest comment, review or change and what it said, beside who opened it. Everything is open as JSON, CSV, RSS and an MCP server with nine tools, with no key or login, and it uses no GPU quota. License: Apache 2.0 for the code; item text and links belong to their sources. A score is a triage aid, not a judgment of the work.",
       "details": "Opens at [huggingface.co/spaces/SharpMeow/vesuvius-radar](https://huggingface.co/spaces/SharpMeow/vesuvius-radar). Source: [`spaces/vesuvius-radar/`](spaces/vesuvius-radar/); page: [`docs/tools/vesuvius-radar.md`](docs/tools/vesuvius-radar.md). API: `https://sharpmeow-vesuvius-radar.hf.space/api/items?since=1d`; MCP: `https://sharpmeow-vesuvius-radar.hf.space/mcp`.",
       "where": "main"
+    },
+    {
+      "id": "parting",
+      "title": "Parting (same layer or next layer where two papyrus layers touch)",
+      "line": "Scores whether a point at a contact of two touching papyrus layers lies on the same layer or the next, with base dinovol's cosine as control; code only.",
+      "area": "Surfaces and tracing",
+      "page": "docs/tools/parting.md",
+      "released": "2026-10-30",
+      "summary": "Parting reads the CT window around a contact where two papyrus layers touch, takes the Vesuvius Challenge's base dinovol tokens and CT profiles at three points (a, a second point on its layer, and a point on the next layer at the same distance), and scores which pair is the same layer, with base dinovol's own token cosine as the control. In three tests frozen before any CT was read, on fragments it never trained on, it passed once: on PHercParis1Fr34 (Frag3) its touching AUC was 0.895 against 0.839 for base dinovol (gain +0.056, 2.5 % bound +0.037); on PHerc1667Cr1Fr3 it gained +0.045, short of the +0.05 bar, and on PHercParis2Fr143 +0.010. The released code reproduces the Frag3 features and readout exactly from public data. Limits: one pass in three; little gain at fused contacts or where base dinovol is already near its ceiling; flat fragment stacks only. Code only, Apache 2.0; the trained model file is not included. Model output, not a reading.",
+      "commands": [
+        "python3 scripts/parting/parting.py frag3 --model MODEL.joblib --out OUT --sites-only",
+        "python3 scripts/parting/parting.py features --sites SITES.json --volume ZARR_LEVEL_URL --device cuda --out RUN"
+      ],
+      "details": "Page: [docs/tools/parting.md](docs/tools/parting.md); evidence: [finding 23](docs/FINDINGS.md). At run time it downloads, pinned by sha256 and never copied, the base dinovol checkpoint and villa's dinovol model code (MIT) as vendored by hercUNet (MIT). Code Apache 2.0; scans and traced layers are the Vesuvius Challenge open data (CC BY-NC 4.0), read live.",
+      "where": "main"
     }
   ]
 }
