@@ -1,0 +1,42 @@
+{
+  "schema": "scrolls-media/1",
+  "name": "fiber-v4-endpoints",
+  "label": "Real data render",
+  "alt": "Bar chart: of the 78 kollesis_termination end tags in the public PHerc0139 annotator fibers, villa's load_fibers returns 4 as known ends today (all from version 3 files) and 78 with the one-line fix (4 from version 3 files, 74 from version 4 files).",
+  "caption": "Real data render: counts of tagged fiber ends returned by villa's load_fibers on the 620 public PHerc0139 annotator fiber files (615 load), villa main 8f5f0d7 against the fix. No CT, trace or model output is shown. Data: Vesuvius Challenge open data, CC BY-NC 4.0.",
+  "license": "CC BY-NC 4.0",
+  "release_id": null,
+  "data": {
+    "scan": "PHerc0139",
+    "segment": "annotator fibers, https://dl.ash2txt.org/other/annotators/0139_fibers/",
+    "voxel_size": "2.399 um (scan 20260102150214)",
+    "credit": "Vesuvius Challenge open data, CC BY-NC 4.0",
+    "labels": "none"
+  },
+  "sources": [
+    "villa vesuvius/src/vesuvius/neural_tracing/tracers/shared/annotations/vc3d.py at 8f5f0d7 and the fix"
+  ],
+  "outputs": [
+    {
+      "file": "fiber-v4-endpoints.png",
+      "bytes": 57489,
+      "sha256": "e4434ce92fe223b7babc01d2599fc1c3a108f6e3a4fd1e2ed90b425454d699a3",
+      "width": 1200,
+      "height": 460,
+      "kind": "png",
+      "format": "png"
+    }
+  ],
+  "inputs": [],
+  "made": "2026-10-30",
+  "tool": {
+    "scripts": [
+      "scripts/experiments/fiber-v4-endpoints/chart.py",
+      "scripts/experiments/fiber-v4-endpoints/count.py"
+    ],
+    "scripts_sha256": "2021ce9202958bf6ff67d792b9b30addf549d7bc21574daa4eb4dc4727d58aad",
+    "base_commit": "493cdcc89dc58ba23f533e6cfc1dc39bb9920547"
+  },
+  "command": "python scripts/experiments/fiber-v4-endpoints/count.py VILLA/vesuvius/src 0139_fibers && python scripts/experiments/fiber-v4-endpoints/chart.py docs/assets/villa-issues",
+  "note": "For a villa PR. Only counts of end tags are shown."
+}
