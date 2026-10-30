@@ -165,6 +165,120 @@ class TestOneScrollBar(unittest.TestCase):
         self.assertRegex(app.CSS, r"#lf-receipt\s*\{[^}]*max-height:none !important;[^}]*overflow:visible")
 
 
+class TestFieldList(unittest.TestCase):
+    """fields.json: every whole-scan field the first tab lists, by scroll (30 Oct 2026)."""
+
+    @classmethod
+    def setUpClass(cls):
+        import json
+        cls.doc = json.loads((SPACE / "fields.json").read_text(encoding="utf-8"))
+        cls.rows = cls.doc["fields"]
+        prizes = json.loads((ROOT / "kit" / "data" / "prizes-2026-10-11.json").read_text(encoding="utf-8"))
+        cls.eligible = {e["scroll"] for p in prizes["prizes"] for e in (p.get("eligible") or [])}
+
+    def test_rows_are_complete_and_sorted(self):
+        self.assertGreater(len(self.rows), 10)                # the control: more than the ten of 24 Oct
+        keys = [(r["scroll"].lower(), r["volume"], r["model"]) for r in self.rows]
+        self.assertEqual(keys, sorted(keys))
+        self.assertEqual(len(keys), len(set(keys)))
+        for r in self.rows:
+            self.assertRegex(r["volume"], r"^\d{14}$")
+            self.assertTrue(r["zarr"].startswith(r["volume"] + "-"), r)
+            self.assertIn(r["model"], ("villa predict3d", "Lasagnetta 0.1.1"))
+            self.assertIn(r["source"], ("open-data", "dataset"))
+            self.assertGreater(r["bytes"], 0)
+            self.assertTrue(r["url"].startswith("https://"), r)
+            if r["source"] == "dataset":
+                self.assertEqual(r["url"], "https://huggingface.co/datasets/" + r["dataset"])
+            else:
+                self.assertTrue(r["manifest"].endswith(".lasagna.json"), r)
+                self.assertIn(f"/{r['scroll']}/representations/predictions/lasagna/", r["stream"])
+
+    def test_never_lists_a_scroll_the_space_refuses(self):
+        never = _load().REFUSED_SAMPLES
+        rows = self.rows + self.doc.get("pending_not_public", {}).get("items", [])
+        self.assertTrue(never and rows)                       # the control: there is something to compare
+        self.assertFalse(never & {r["scroll"].lower() for r in rows})
+        text = (SPACE / "fields.json").read_text(encoding="utf-8").lower()
+        for s in never:
+            self.assertNotIn(s, text)
+
+    def test_prize_scrolls_only_as_listed_before(self):
+        """No new entry for a scroll on a prize list: only the ten SharpMeow datasets listed since 24 Oct 2026."""
+        L = _load()
+        ten = {s for s, _ in L.OWN_FIELDS.values()}
+        listed = {r["scroll"] for r in self.rows}
+        self.assertTrue(self.eligible & listed)               # the control: the ten include prize-list scrolls
+        for r in self.rows:
+            if r["scroll"] in self.eligible:
+                self.assertIn(r["scroll"], ten, r)
+                self.assertEqual((r["source"], r["model"]), ("dataset", "villa predict3d"), r)
+        for r in self.doc.get("pending_not_public", {}).get("items", []):
+            self.assertNotIn(r["scroll"], self.eligible, r)
+
+    def test_ten_bucket_fields_are_listed_with_their_stream(self):
+        L = _load()
+        own = {vid: run for vid, (_, run) in L.OWN_FIELDS.items()}
+        rows = {r["volume"]: r for r in self.rows if r.get("gallery")}
+        self.assertEqual(set(rows), set(own))
+        for vid, r in rows.items():
+            self.assertTrue(r["stream"].endswith("/" + own[vid]), r)
+
+    def test_card_names_every_dataset(self):
+        card = (SPACE / "README.md").read_text(encoding="utf-8")
+        for r in self.rows:
+            if r["dataset"]:
+                self.assertIn("- " + r["dataset"] + "\n", card)
+
+    def test_pending_are_never_links(self):
+        pend = self.doc.get("pending_not_public")
+        if not pend:
+            self.skipTest("no fields waiting")
+        for r in pend["items"]:
+            self.assertFalse({"url", "dataset", "stream", "manifest"} & set(r), r)
+        live = {(r["scroll"], r["volume"]) for r in self.rows}
+        self.assertFalse(live & {(r["scroll"], r["volume"]) for r in pend["items"]})
+
+
+@unittest.skipUnless(HAVE_NUMPY, "needs numpy")
+class TestFieldListOnThePage(unittest.TestCase):
+    def test_guide_ids_are_unique(self):
+        """The list's data block once took the hero drawing's id, so the page read the drawing instead."""
+        import collections
+        import re
+        raw = (SPACE / "guide" / "index.html").read_text(encoding="utf-8")
+        ids = collections.Counter(re.findall(r'\sid="([^"]+)"', raw))
+        self.assertIn("fieldlist", ids)                       # the control: the ids are found
+        self.assertEqual([k for k, n in ids.items() if n > 1], [])
+
+    def test_guide_gets_the_list_and_the_api_leaves_pending_out(self):
+        import html
+        import json
+        app = _load_app()
+        raw = (SPACE / "guide" / "index.html").read_text(encoding="utf-8")
+        self.assertIn('<script id="fieldlist" type="application/json">null</script>', raw)   # the control
+        page = html.unescape(app.guide_html())
+        got = json.loads(page.split('<script id="fieldlist" type="application/json">', 1)[1].split("</script>", 1)[0])
+        self.assertEqual(got, app.field_doc())
+        rows = app.list_fields()
+        self.assertEqual(len(rows), len(app.field_doc()["fields"]))
+        pend = {(r["scroll"], r["volume"]) for r in app.field_doc().get("pending_not_public", {}).get("items", [])}
+        self.assertFalse(pend & {(r["scroll"], r["volume"]) for r in rows})
+        self.assertTrue(all("139" in r["scroll"] for r in app.list_fields("pherc0139")))
+        self.assertTrue(app.list_fields("pherc0139"))
+        self.assertIn(f'{app.field_counts()["scrolls"]} Herculaneum scrolls', app.HEAD)
+
+    def test_make_a_field_names_a_listed_dataset(self):
+        app = _load_app()
+        row = next(r for r in app.field_doc()["fields"] if r["dataset"] and not r.get("stream"))
+        fake = {"volume": row["volume"], "sample": row["scroll"], "voxel_um": row["voxel_um"], "level": 0,
+                "shape_zyx": [1, 1, 1]}
+        app.L.volume = lambda vid: dict(fake, volume=vid)
+        app.L.published_field = lambda v: None
+        self.assertIn(row["dataset"], app.volume_text(row["volume"]))
+        self.assertNotIn("SharpMeow/", app.volume_text("20000101000000"))   # the control: a volume not listed
+
+
 @unittest.skipUnless(HAVE_NUMPY and "fork" in mp.get_all_start_methods(), "needs numpy and fork")
 class TestZeroGpuWorker(unittest.TestCase):
     def test_pool_starts_inside_a_daemon_process(self):
