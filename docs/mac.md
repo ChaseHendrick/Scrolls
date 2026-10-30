@@ -33,7 +33,7 @@ Several people have written this patch already. Do not write another one. Update
 
 For the tutorial's `python -m vesuvius.ink_detection.inference.infer`, the relevant PR is **#1865**. It is a four-line change in `inference_runtime.py` that calls villa's existing `get_accelerator()` (CUDA first, then MPS, then CPU), so CUDA machines behave as before. On a Mac it uses MPS automatically. Since it merged, villa `main` does the same, so `main` no longer gives a CPU reference by itself: the runbook below and [`scripts/mac-verify.sh`](../scripts/mac-verify.sh) force the CPU run.
 
-Related open work: training on MPS ([#1927](https://github.com/ScrollPrize/villa/pull/1927)), `vesuvius.predict` on MPS ([#1988](https://github.com/ScrollPrize/villa/pull/1988)), spiral fitting on MPS and CPU ([#1925](https://github.com/ScrollPrize/villa/pull/1925)).
+Related work: `vesuvius.predict` on MPS ([#1988](https://github.com/ScrollPrize/villa/pull/1988)) merged into villa `main` on 2026-10-30 (commit `27a2fe3d8`): it now picks CUDA, then MPS, then the CPU instead of failing at model load without CUDA, and off CUDA it runs the 8 mirroring flips one at a time. The same day [#1989](https://github.com/ScrollPrize/villa/pull/1989) (commit `6ae6eaadb`) made its `--overlap` the overlap rather than the stride; the two agree only at 0.5, and an overlap of 1 or more is now refused. Training on MPS ([#1927](https://github.com/ScrollPrize/villa/pull/1927)) and spiral fitting on MPS and CPU ([#1925](https://github.com/ScrollPrize/villa/pull/1925)) were open on 2026-10-07.
 
 Any villa `main` from 2026-10-08 on has it. The scripts here pin the merge commit of #1865, whose ink inference code matches the PR's final head:
 
