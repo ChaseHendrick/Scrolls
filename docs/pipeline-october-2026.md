@@ -40,7 +40,7 @@ python3 -m venv .venv && . .venv/bin/activate && python -m pip install -e '.[cou
 python scripts/demo_synthetic.py    # every stage on a synthetic scroll with stand-in VC3D tools; prints DEMO PASS
 ```
 
-Real runs need villa's VC3D tools (`python3 scripts/get_vc3d.py` fetches and checks villa's AppImage) and, for ink, a Python with villa's `vesuvius` package and torch named by `KIT_INK_PYTHON`; without it a run stops at ink and writes the ink job to a file ([autopipeline](tools/autopipeline.md)).
+Real runs need villa's VC3D tools (`python3 scripts/get_vc3d.py` fetches and checks villa's AppImage) and, for ink, a Python with villa's `vesuvius` package and torch named by `KIT_INK_PYTHON`; without it a run stops at ink and writes the ink job to a file ([autopipeline](tools/autopipeline.md)). Since villa commit e1aa625a6 (29 October 2026 UTC), villa builds no longer include `vc_flatten` or `vc_tifxyz_selfcross`, which AutoPipeline's flatten stage and its qa self-intersection check call; villa's `latest` AppImage is now built after that commit, and its `stable` AppImage predates `vc_tifxyz_selfcross`. Until those two steps are ported, build villa at 7154682e1, the commit before, and set `VC_BIN` to its `build/bin`.
 
 ### 1. Center line
 
