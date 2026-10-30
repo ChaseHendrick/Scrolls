@@ -1,6 +1,6 @@
-# lasagna-fields: villa's lasagna field for ten whole scans, and for any box of any public scan on demand
+# lasagna-fields: whole-scan lasagna fields for 24 scrolls, listed by scroll, and villa's field for any box on demand
 
-villa's lasagna field for ten whole scans that had none, as public datasets and a bucket, and a Space that runs villa's own lasagna on ZeroGPU for any box of any public scan, checked against a published field, from its page, API or MCP server.
+Whole-scan lasagna fields for 24 scrolls, listed by scroll (villa's own in the open data and 22 public datasets made with villa's lasagna or Lasagnetta 0.1.1), and a Space that runs villa's lasagna on ZeroGPU for any box of any public scan, from its page, API or MCP server.
 
 | Field | Value |
 | --- | --- |
@@ -8,15 +8,15 @@ villa's lasagna field for ten whole scans that had none, as public datasets and 
 | Status | Current |
 | Kind | data, app |
 | Area | Data and downloads |
-| Run | [huggingface.co/spaces/SharpMeow/lasagna-fields](https://huggingface.co/spaces/SharpMeow/lasagna-fields) (the page: Ten whole scans, Make a field, How-to guides, Agents and API), `Client("SharpMeow/lasagna-fields").predict(..., api_name="/make_field")` or the MCP server `https://sharpmeow-lasagna-fields.hf.space/gradio_api/mcp/` (a box), `hf download SharpMeow/SCAN-lasagna --repo-type dataset` (a whole scan), `zarr.open_array(URL)` on the bucket (stream), `python load_example.py` in a downloaded dataset |
-| Code | `spaces/lasagna-fields/app.py` (the page, API and MCP tools), `spaces/lasagna-fields/lasfield.py` (`main`; the box, villa's run, the check, pictures and the download), `spaces/lasagna-fields/guide/index.html` (the Ten whole scans guide). The data lives on Hugging Face (ten datasets SharpMeow/SCAN-lasagna and the bucket SharpMeow/lasagna-fields); each dataset carries its own load_example.py, index.json and SHA256SUMS |
-| Tests | `tests/test_lasagna_fields_space.py` (the box, villa's crop, the ZeroGPU worker fix, `lasfield.py selftest`); the data is checked by sha256sum -c SHA256SUMS in each dataset, and each dataset's load_example.py was run on the real parts before upload (dataset cards) |
+| Run | [huggingface.co/spaces/SharpMeow/lasagna-fields](https://huggingface.co/spaces/SharpMeow/lasagna-fields) (the page: Every field, Make a field, How-to guides, Agents and API), `Client("SharpMeow/lasagna-fields").predict(..., api_name="/make_field")` or the MCP server `https://sharpmeow-lasagna-fields.hf.space/gradio_api/mcp/` (a box), `hf download SharpMeow/SCAN-lasagna --repo-type dataset` (a whole scan), `zarr.open_array(URL)` on the bucket (stream), `python load_example.py` in a downloaded dataset |
+| Code | `spaces/lasagna-fields/app.py` (the page, API and MCP tools), `spaces/lasagna-fields/lasfield.py` (`main`; the box, villa's run, the check, pictures and the download), `spaces/lasagna-fields/guide/index.html` (the Every field guide), `spaces/lasagna-fields/fields.json` (the list of every whole-scan field, by scroll, that the guide and `list_fields` read). The data lives on Hugging Face (datasets SharpMeow/SCAN-lasagna and SharpMeow/SCAN-lasagnetta, and the bucket SharpMeow/lasagna-fields for ten of them) and in the open data (villa's own fields); each dataset carries its own load_example.py, index.json and SHA256SUMS |
+| Tests | `tests/test_lasagna_fields_space.py` (the box, villa's crop, the ZeroGPU worker fix, `lasfield.py selftest`, the field list); the data is checked by sha256sum -c SHA256SUMS in each dataset, and each dataset's load_example.py was run on the real parts before upload (dataset cards) |
 | Needs | A browser for the page. `gradio_client` to call it from Python, any MCP client for agents, and a Hugging Face token for a field (it uses the caller's ZeroGPU time). `huggingface_hub[cli]` for downloads; `zarr` and `numpy` to read; for streaming, `zarr` 3 with `fsspec`, `aiohttp` and `requests`. villa's lasagna tools read the manifest and the downloaded box as is |
-| Runs on | Make a field: the Space's ZeroGPU slice (A10G class); a 256 box took 21 to 27 s on 25 Oct 2026, a 512 box 60 s. Downloads and streaming: any machine with a network. Streaming one 256 x 256 patch of cos at level 1 from the bucket worked from a 4-core cloud container (2026-10-24; not timed). A whole scan is 32 to 82 GB to download |
+| Runs on | Make a field: the Space's ZeroGPU slice (A10G class); a 256 box took 21 to 27 s on 25 Oct 2026, a 512 box 60 s. Downloads and streaming: any machine with a network. Streaming one 256 x 256 patch of cos at level 1 from the bucket worked from a 4-core cloud container (2026-10-24; not timed). A whole-scan field is 0.4 to 136 GB to download |
 | Network | `huggingface.co` and `sharpmeow-lasagna-fields.hf.space` (datasets, bucket, Space); the Space itself reads `vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` |
 | Writes | Downloads write where you point `--local-dir`; streaming writes nothing; a made field comes back as one zip (gradio_client saves it in its temp folder) |
 | Go-ahead | Not needed to use. Making the datasets and Space public was Chase's yes (24 Oct 2026); turning the Space into the Make a field app was his yes on 25 Oct 2026; other changes to their cards or files need his yes per change, except redeploys under the standing yes (rule 8) |
-| Released | Public on Hugging Face since 2026-10-24 (datasets, bucket and Space); Make a field since 2026-10-25 (Space 2.0.0); README "Released tools" entry `lasagna-fields` |
+| Released | Public on Hugging Face since 2026-10-24 (datasets, bucket and Space); Make a field since 2026-10-25 (Space 2.0.0); the list of every field since 2026-10-30 (Space 2.1.0); README "Released tools" entry `lasagna-fields` |
 | License | CC BY-NC 4.0, the same as the scans they derive from; model and code are ScrollPrize/villa's lasagna, credit to its authors |
 | Checked | 2026-10-24 against commit `76beeba` |
 
@@ -24,7 +24,9 @@ villa's lasagna field for ten whole scans that had none, as public datasets and 
 
 villa's lasagna surface fitting, and the spiral fit that builds on it, read a lasagna field: the output of villa's lasagna model over a scan, with a cos channel (a signal that repeats once per papyrus layer), its gradient size (grad_mag) and the surface normals (nx, ny). The open data has such fields for only some scans. Predicting one for a whole scan takes a GPU for hours.
 
-These datasets hold that field for ten whole scans that had none: PHerc0175A, PHerc0175B, PHerc0306B, PHerc0483A, PHerc0483B, PHerc0490A, PHerc0490B, PHerc0841, PHerc0846A and PHerc0846B. Each is in villa's own layout (`SCAN.lasagna.json` and four `SCAN_{cos,grad_mag,nx,ny}.ome.zarr` channels), so lasagna's tools open it without changes. The same fields sit unpacked in the public bucket SharpMeow/lasagna-fields, laid out like the open data (`SCAN/representations/predictions/lasagna/RUN/`), so any zarr reader can open them by URL.
+The Space's first tab, **Every field**, lists every whole-scan field it knows for 24 scrolls, one row per field, with the volume, voxel size, the level the model read, the model, where it lives, its size and a link: villa's own fields in the open data for seven scrolls on no prize list (linked, not copied), and 22 public datasets made here for scans that had none. Twelve of those were made with villa's lasagna model and ten with [Lasagnetta](lasagnetta.md) 0.1.1, a faster copy of it, whose fields are previews where exact values matter. The list is `spaces/lasagna-fields/fields.json`; `list_fields` returns it.
+
+The first ten datasets hold villa's field for ten whole scans that had none: PHerc0175A, PHerc0175B, PHerc0306B, PHerc0483A, PHerc0483B, PHerc0490A, PHerc0490B, PHerc0841, PHerc0846A and PHerc0846B. Each is in villa's own layout (`SCAN.lasagna.json` and four `SCAN_{cos,grad_mag,nx,ny}.ome.zarr` channels), so lasagna's tools open it without changes. The same fields sit unpacked in the public bucket SharpMeow/lasagna-fields, laid out like the open data (`SCAN/representations/predictions/lasagna/RUN/`), so any zarr reader can open them by URL.
 
 They are raw model output that nobody has checked by eye. They are geometry inputs, not a reading of any text.
 
@@ -38,14 +40,15 @@ The pictures show PHerc0139, which is on no prize list; they live on the Space, 
 
 ## When to use it
 
-- To run villa's lasagna fit or the spiral fit on one of these ten scans without predicting the field yourself.
+- To find whether a scroll already has a lasagna field, which model made it and where to get it: the Every field tab or `list_fields`.
+- To run villa's lasagna fit or the spiral fit on one of these scans without predicting the field yourself.
 - To read surface normals or the layer signal at any point of these scans, by URL, without a download.
 - To get villa's field for one box of any other public scan without installing villa or renting a GPU: Make a field, on the page or from code.
 - With a center line from [SharpMeow/vesuvius-center-lines](https://huggingface.co/datasets/SharpMeow/vesuvius-center-lines) (every scan here but PHerc0841 has one; [centerline](centerline.md) gets it).
 
 Do not use it:
 
-- For a whole scan not in the list: run villa's lasagna yourself (How-to guides, section 6); the Space makes boxes of at most 512 voxels a side.
+- For a whole scan not in the list: run villa's lasagna (or Lasagnetta) yourself (How-to guides, section 6); the Space makes boxes of at most 512 voxels a side.
 - As a check of the model: it is the model's output, not ground truth.
 
 ## Quick start
@@ -131,6 +134,7 @@ Claim label: Model output (the fields); Measurement (the seam ratios, hashes and
 
 | Call | Arguments | Returns |
 | --- | --- | --- |
+| `/list_fields` | `scroll=""` (part of a scroll name, or empty for all) | every whole-scan field the first tab lists: scroll, volume, zarr, voxel_um, read_level, model, source, made_by, bytes, url, dataset, manifest, stream (a run folder zarr reads by URL, or null), note |
 | `/list_scans` | none | every open-data volume it can read, with the level the model reads |
 | `/list_models` | none | the model slot: models, which are offered, what they were tested on |
 | `/example_points` | none | ready points inside the papyrus of scans on no prize list |
@@ -144,6 +148,7 @@ Claim label: Model output (the fields); Measurement (the seam ratios, hashes and
 | Function | Returns | Raises | Notes |
 | --- | --- | --- | --- |
 | None for the data | | | Read the arrays with `zarr` or any OME-Zarr reader |
+| `app.list_fields(scroll="")` | list of dicts, one per field | never | In `spaces/lasagna-fields/`; reads `fields.json` |
 | `lasfield.plan(vid, z, y, x, size=256)` | dict: the box, reads, tiles, GPU ask | `FieldError` for a point outside the scan, a size not offered or an unknown volume | In `spaces/lasagna-fields/`; reads the open data's metadata |
 | `lasfield.make(plan, device=None, work=None, out_root=None)` | dict: pictures, receipt, zip path | `FieldError` when villa fails or the field is empty | Runs villa's `predict3d` in this process |
 | `lasfield.agreement(p, arrays, boxes)` | dict: `same_box`, `control_shifted` | never: errors are reported in the dict | The check above |
@@ -206,6 +211,7 @@ Downloads are free to use: users rent nothing. A whole scan is 32 to 82 GB (abou
 
 ## For agents
 
+- **List the fields:** `Client("SharpMeow/lasagna-fields").predict("PHerc0139", api_name="/list_fields")`, or the MCP tool `list_fields`.
 - **Make a field:** `Client("SharpMeow/lasagna-fields", token=TOKEN).predict(VOLUME, Z, Y, X, 256, "lasagna", api_name="/make_field")`, or the MCP tool `make_field`. Call `plan_field` first to see the box and GPU ask for free.
 - **Parse it:** `receipt["agreement"]["same_box"]` and `["control_shifted"]`; success is cos r near 1.0 and a control far lower. The zip's `field.npz` holds the arrays.
 - **Command:** `hf download SharpMeow/SCAN-lasagna --repo-type dataset --local-dir DIR`, then `sha256sum -c SHA256SUMS`; or open the bucket URL with `zarr.open_array`.
@@ -218,10 +224,11 @@ Downloads are free to use: users rent nothing. A whole scan is 32 to 82 GB (abou
 
 ## Tests
 
-`tests/test_lasagna_fields_space.py`: the box holds the point on whole 256-voxel blocks, villa's `--crop` is level-0 x y z, sizes and points outside are refused, the plan names the point `center_level0_zyx`, the ten own fields match the card, the page carries the one-scroll fragment (`onescroll.html` in its head), the guide's frame has no fixed height and its code blocks grow instead of scrolling, the receipt and the download's file row grow after a run, `lasfield.py selftest` passes, and a worker pool starts inside a daemon process only with the ZeroGPU fix (the control: without it, the pool is refused). For the data, none in this repository: The datasets' `SHA256SUMS` and `load_example.py` are the checks; the streaming snippet above was run on 2026-10-24.
+`tests/test_lasagna_fields_space.py`: the box holds the point on whole 256-voxel blocks, villa's `--crop` is level-0 x y z, sizes and points outside are refused, the plan names the point `center_level0_zyx`, the ten own fields match the card, the field list (`fields.json`) is complete and sorted, links every dataset the card names, never names a held or target scroll, adds no scroll on a prize list beyond the ten listed since 24 Oct 2026, shows the fields being made without any link, reaches the guide whole with every element id used once, `list_fields` leaves the pending ones out, and Make a field names the listed dataset of a scan with no field to check against, the page carries the one-scroll fragment (`onescroll.html` in its head), the guide's frame has no fixed height and its code blocks grow instead of scrolling, the receipt and the download's file row grow after a run, `lasfield.py selftest` passes, and a worker pool starts inside a daemon process only with the ZeroGPU fix (the control: without it, the pool is refused). For the data, none in this repository: The datasets' `SHA256SUMS` and `load_example.py` are the checks; the streaming snippet above was run on 2026-10-24.
 
 ## History
 
+- 2026-10-30: Space 2.1.0 (`5c4ac6f`), approved by Chase on 30 Oct. The first tab becomes **Every field**: one row per whole-scan field for 24 scrolls, with volume, voxel size, read level, model, where, size and links, filterable by scroll and by model, from the new `fields.json` (villa's own fields in the open data for seven scrolls on no prize list, and the 22 public SharpMeow datasets, adding PHercMANBp, PHerc0343P, the five Lasagnetta 0.1.1 fields of 29 Oct and five of 30 Oct: PHerc0009B scans 20250820154339 and 20260319104112, PHerc0814 scans 20250804134230 (9.362 um) and 20260521123630 (1.129 um, read at level 3) and PHerc0841 scan 20260319124803, each kept by the release's self-check on its whole scan). Fields still being made are listed in one separate key, shown without links. A `list_fields` API and MCP tool returns the list, and Make a field names a scan's listed dataset when no field streams by URL to check against. The ten bucket fields keep their preview, streaming and region tools.
 - 2026-10-27: one scroll bar (user decision, 27 October 2026): the page carries `onescroll.html`, which fits the guide's frame to the guide, so the page scrolls and the frame does not; the guide's code blocks grow instead of scrolling (wide lines still scroll sideways) and its tab buttons wrap on a phone; after a run, the receipt (Gradio's JSON stopped at 500 px) and the download's file row grow too. American spelling throughout: `plan_field`'s JSON and the receipt now name the point `center_level0_zyx` (receipts made before 27 Oct 2026 spell it the British way). Not deployed yet; made [PR #253](https://github.com/ChaseHendrick/Scrolls/pull/253).
 - 2026-10-25: the page uses the window's width (up to 1600 px) and the ten scan previews load again; they had 404ed since 2.0.0 (`63a2d05`).
 - 2026-10-25: Space 2.0.0 (Space commit `0640a74`), a Gradio app on ZeroGPU: Make a field for any box of any public scan with villa's own lasagna, checked against published fields; How-to guides with pictures; API, MCP server and Connect your tool panel (Chase's yes, 25 Oct 2026).

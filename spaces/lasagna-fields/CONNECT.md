@@ -1,6 +1,6 @@
 # Connect your tool: Lasagna Fields
 
-The ten whole-scan fields read straight from the public bucket by URL, logged out, with no download step; the scans they came from are open data. The page is also an API and an MCP server that makes a field for any box of any public scan.
+The ten whole-scan fields in the public bucket read straight by URL, logged out, with no download step; villa's fields in the open data stream the same way from the run folders the Every field tab lists, and the other datasets download whole. The scans they came from are open data. The page is also an API and an MCP server that lists every field and makes a field for any box of any public scan.
 
 Checked 2026-10-25. Generated from `connect.json` by `kit spaceconnect` in [ChaseHendrick/Scrolls](https://github.com/ChaseHendrick/Scrolls).
 
@@ -8,7 +8,7 @@ Checked 2026-10-25. Generated from `connect.json` by `kit spaceconnect` in [Chas
 
 `https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHerc0175A/representations/predictions/lasagna/20250521115057-lasagna-de45f011/PHerc0175A_cos.ome.zarr`
 
-License: CC BY-NC 4.0 (derived from Vesuvius Challenge open data). Model output (villa lasagna at db3dbea2, scrollprize/lasagna at de45f011). grad_mag, nx and ny sit beside it, from level 2; PHerc0175A.lasagna.json in the same folder is villa's manifest. The other nine scans: replace the scan and run folder as listed on the Ten whole scans tab.
+License: CC BY-NC 4.0 (derived from Vesuvius Challenge open data). Model output (villa lasagna at db3dbea2, scrollprize/lasagna at de45f011). grad_mag, nx and ny sit beside it, from level 2; PHerc0175A.lasagna.json in the same folder is villa's manifest. The other nine bucket scans: replace the scan and run folder as listed on the Every field tab.
 
 ### Python (zarr) (tested 2026-10-24)
 
