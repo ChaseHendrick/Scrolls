@@ -59,6 +59,13 @@
     "docs/logs/2026-10-12-upstream-reports.md": "57f81a96d5871d496ef9d88b97192cc53d5a99f383f5bf97e4e7e69f0bebe5f2"
    }
   },
+  "against-the-1-129-m-scan-alone-the": {
+   "line": 163,
+   "sources": {
+    "docs/tools/snapped-labels.md": "3da92dca823c53779149f1aa9f7699e0e9ee7533b5767956b1c4bae539b977ed"
+   },
+   "doc": "docs/pipeline-october-2026.md"
+  },
   "averaging-depth-windows-matches-the-best-window-chosen": {
    "line": 292,
    "sources": {
@@ -80,12 +87,22 @@
     "docs/tools/umbilicus.md": "005ddbc3d549ec37c4362fa2069c93174cffa593e8a7349be7cd905ef6a270b6"
    }
   },
-  "claim-label-rule-and-control-data-record-with": {
-   "line": 129,
+  "chart-mean-distance-gained-toward-a-finer-scan": {
+   "line": 136,
    "sources": {
-    "docs/tools/windlabel-box.md": "5a5e8b8baa079013560c11ca254915dfeb75291126366f8b85f8118db7c7d17b",
+    "docs/media/label-snap-community.json": "3206bfa20b0e1e67a534335396e12ee116deed31fb137d4e7c35fce7c34a9a22"
+   },
+   "doc": "docs/pipeline-october-2026.md"
+  },
+  "claim-label-rule-and-control-data-record-on": {
+   "line": 148,
+   "sources": {
+    "docs/tools/umbilicus.md": "005ddbc3d549ec37c4362fa2069c93174cffa593e8a7349be7cd905ef6a270b6",
     "docs/tools/contact-barrier.md": "1f7409ebb26b4f34af7cb8dc15175f8440b9b68d80c65424c1351bba4f23cca4",
-    "docs/tools/snapped-labels.md": "3da92dca823c53779149f1aa9f7699e0e9ee7533b5767956b1c4bae539b977ed"
+    "docs/tools/snapped-labels.md": "3da92dca823c53779149f1aa9f7699e0e9ee7533b5767956b1c4bae539b977ed",
+    "docs/tools/windlabel-box.md": "5a5e8b8baa079013560c11ca254915dfeb75291126366f8b85f8118db7c7d17b",
+    "docs/tools/labelsuggest.md": "4d93cd8dbe31106498a16ed7b8efdab8c38e5f7fb26c0715aec8e9a5bb56709d",
+    "docs/logs/2026-10-29-parting-fragment-contact.md": "a225a5fd26484ae2442c1de5f92ee273d88efb8c9666e47ead31aded3d6c6098"
    },
    "doc": "docs/pipeline-october-2026.md"
   },
@@ -102,6 +119,16 @@
    },
    "doc": "docs/FINDINGS.md"
   },
+  "each-step-is-a-stage-of-autopipeline-0": {
+   "line": 23,
+   "sources": {
+    "docs/tools/autopipeline.md": "ab96e1236e64c50ce914ef155b2484389e1e95dc487b18a9e5a006952889615c"
+   },
+   "doc": "docs/pipeline-october-2026.md",
+   "reasons": {
+    "0.1": "context: the version AutoPipeline 0.1.10"
+   }
+  },
   "every-published-surface-volume-now-matches-a-published": {
    "line": 298,
    "sources": {
@@ -112,20 +139,54 @@
     "216": "derived: the largest CT offset in the second source, 215.9 um, rounded"
    }
   },
+  "fibers-along-the-surface-are-not-a-step": {
+   "line": 167,
+   "sources": {
+    "docs/tools/autopipeline.md": "ab96e1236e64c50ce914ef155b2484389e1e95dc487b18a9e5a006952889615c"
+   },
+   "doc": "docs/pipeline-october-2026.md",
+   "reasons": {
+    "0.1": "context: the version AutoPipeline 0.1.10"
+   }
+  },
   "further-cpu-scaling-checks-make-full-map-row": {
    "line": 309,
    "sources": {
     "docs/logs/2026-10-07-production-scaling.md": "bbd9350716d177616ee8b3e86788a27cb91df8688b9abbd8bd68ccfc48a1f73b"
    }
   },
-  "in-the-autopipeline-0-1-9-package-folder": {
-   "line": 52,
+  "glued-sheet-joins-kollesis-are-not-a-step": {
+   "line": 168,
    "sources": {
-    "docs/tools/contact-barrier.md": "1f7409ebb26b4f34af7cb8dc15175f8440b9b68d80c65424c1351bba4f23cca4"
+    "docs/tools/autopipeline.md": "ab96e1236e64c50ce914ef155b2484389e1e95dc487b18a9e5a006952889615c"
    },
    "doc": "docs/pipeline-october-2026.md",
    "reasons": {
-    "0.1": "context: the version AutoPipeline 0.1.9"
+    "0.1": "context: the version AutoPipeline 0.1.10"
+   }
+  },
+  "horizontal-bars-kit-labelsnap-is-2-15-voxels": {
+   "line": 134,
+   "sources": {
+    "docs/media/label-snap-community.json": "3206bfa20b0e1e67a534335396e12ee116deed31fb137d4e7c35fce7c34a9a22"
+   },
+   "doc": "docs/pipeline-october-2026.md"
+  },
+  "include-only-if-chase-says-yes-parting-missed": {
+   "line": 166,
+   "sources": {
+    "docs/logs/2026-10-29-parting-fragment-contact.md": "a225a5fd26484ae2442c1de5f92ee273d88efb8c9666e47ead31aded3d6c6098"
+   },
+   "doc": "docs/pipeline-october-2026.md"
+  },
+  "ink-detection-runs-inside-the-same-autopipeline-run": {
+   "line": 74,
+   "sources": {
+    "docs/tools/autopipeline.md": "ab96e1236e64c50ce914ef155b2484389e1e95dc487b18a9e5a006952889615c"
+   },
+   "doc": "docs/pipeline-october-2026.md",
+   "reasons": {
+    "255": "context: villa's uint8 encoding of a probability, clipped to 0 to 1 and times 255 (scripts/vc3d/ink.py in the AutoPipeline 0.1.10 package, branch submission/progress-2026-10-fix10)"
    }
   },
   "ink-map-agreement-decreases-with-sampled-point-distance": {
@@ -162,6 +223,13 @@
    },
    "doc": "docs/FINDINGS.md"
   },
+  "labelsuggest-is-not-shown-to-beat-simple-picks": {
+   "line": 165,
+   "sources": {
+    "docs/tools/labelsuggest.md": "4d93cd8dbe31106498a16ed7b8efdab8c38e5f7fb26c0715aec8e9a5bb56709d"
+   },
+   "doc": "docs/pipeline-october-2026.md"
+  },
   "measured-cpu-optimizations-make-the-complete-surface-correction": {
    "line": 307,
    "sources": {
@@ -187,6 +255,13 @@
     "r:results/3": "3f48361fb2b15ae982f21b19b5294cc1cd813d341a8bd01e60931544126f9abb",
     "docs/logs/2026-10-08-w045-not-held-out.md": "c89c8cc963eaa8bea9045faa4b7f332daaf927971d33d09951c6ecabc0e2ce3a"
    }
+  },
+  "on-pherc0814-finesnap-which-places-the-dataset-s": {
+   "line": 162,
+   "sources": {
+    "docs/tools/snapped-labels.md": "3da92dca823c53779149f1aa9f7699e0e9ee7533b5767956b1c4bae539b977ed"
+   },
+   "doc": "docs/pipeline-october-2026.md"
   },
   "our-letter-classifier-trained-on-hell-char-only": {
    "line": 348,
@@ -266,16 +341,6 @@
    },
    "doc": "docs/FINDINGS.md"
   },
-  "scores-each-horizontal-fiber-end-on-the-surface": {
-   "line": 86,
-   "sources": {
-    "docs/tools/autopipeline.md": "ab96e1236e64c50ce914ef155b2484389e1e95dc487b18a9e5a006952889615c"
-   },
-   "doc": "docs/pipeline-october-2026.md",
-   "reasons": {
-    "3": "context: the control point's fixed offset, 3 cm, a setting of the joins step"
-   }
-  },
   "scoring-a-crop-needs-an-edge-margin": {
    "line": 294,
    "sources": {
@@ -300,25 +365,13 @@
    }
   },
   "step-stage-what-it-reads-what-it-writes": {
-   "line": 27,
+   "line": 25,
    "sources": {
     "docs/tools/contact-barrier.md": "1f7409ebb26b4f34af7cb8dc15175f8440b9b68d80c65424c1351bba4f23cca4"
    },
    "doc": "docs/pipeline-october-2026.md",
    "reasons": {
-    "0.1": "context: the version AutoPipeline 0.1.9"
-   }
-  },
-  "steps-3-to-5-run-from-the-autopipeline": {
-   "line": 56,
-   "sources": {
-    "docs/tools/autopipeline.md": "ab96e1236e64c50ce914ef155b2484389e1e95dc487b18a9e5a006952889615c"
-   },
-   "doc": "docs/pipeline-october-2026.md",
-   "reasons": {
-    "3": "context: step number",
-    "5": "context: step number",
-    "0.1": "context: the version AutoPipeline 0.1.10"
+    "0.1": "context: the versions AutoPipeline 0.1.9 and 0.1.10"
    }
   },
   "strokenet-s-two-density-score-which-needs-no": {
@@ -349,20 +402,10 @@
    },
    "doc": "docs/FINDINGS.md"
   },
-  "synthetic-demo-a-score-at-each-fiber-end": {
-   "line": 119,
+  "synthetic-demo-made-up-ct-and-surface-the": {
+   "line": 132,
    "sources": {
-    "docs/tools/autopipeline.md": "ab96e1236e64c50ce914ef155b2484389e1e95dc487b18a9e5a006952889615c"
-   },
-   "doc": "docs/pipeline-october-2026.md",
-   "reasons": {
-    "3": "context: the control point's fixed offset, 3 cm, a setting of the joins step"
-   }
-  },
-  "synthetic-demo-made-up-ct-probabilities-and-surfaces": {
-   "line": 123,
-   "sources": {
-    "docs/tools/autopipeline.md": "ab96e1236e64c50ce914ef155b2484389e1e95dc487b18a9e5a006952889615c"
+    "docs/assets/autopipeline-couple/labels-still.json": "eea43109cad6bd478a76ed5c2169aa928f1072161c14e7bc8b543561b8cac4d0"
    },
    "doc": "docs/pipeline-october-2026.md",
    "reasons": {
@@ -375,6 +418,23 @@
     "docs/tools/umbilicus.md": "005ddbc3d549ec37c4362fa2069c93174cffa593e8a7349be7cd905ef6a270b6"
    },
    "doc": "docs/FINDINGS.md"
+  },
+  "the-pipeline-runs-from-the-autopipeline-0-1": {
+   "line": 34,
+   "sources": {
+    "docs/tools/autopipeline.md": "ab96e1236e64c50ce914ef155b2484389e1e95dc487b18a9e5a006952889615c"
+   },
+   "doc": "docs/pipeline-october-2026.md",
+   "reasons": {
+    "0.1": "context: the version AutoPipeline 0.1.10"
+   }
+  },
+  "the-two-scan-result-holds-on-the-share": {
+   "line": 175,
+   "sources": {
+    "docs/tools/snapped-labels.md": "3da92dca823c53779149f1aa9f7699e0e9ee7533b5767956b1c4bae539b977ed"
+   },
+   "doc": "docs/pipeline-october-2026.md"
   },
   "three-hosted-text-models-restored-hidden-greek-letters": {
    "line": 285,
@@ -391,6 +451,13 @@
    },
    "doc": "docs/FINDINGS.md"
   },
+  "two-grouped-bar-charts-left-area-on-the": {
+   "line": 124,
+   "sources": {
+    "docs/media/contact-barrier-a15.json": "078b2e18af0412d4a9f67e3ba9c15d6446726534f6a260b452835b13e05d44cc"
+   },
+   "doc": "docs/pipeline-october-2026.md"
+  },
   "two-of-pherc0841-s-three-labeled-segments-are": {
    "line": 293,
    "sources": {
@@ -399,6 +466,13 @@
    "reasons": {
     "39": "derived: the source's 38.7 vox (w00 to ag405), rounded"
    }
+  },
+  "two-panel-chart-windlabel-box-s-step-accuracy": {
+   "line": 138,
+   "sources": {
+    "docs/media/windlabel-box-heldout.json": "e9586e3bd1af816ee6a7c6ecff564463ed7b9683655cb0c1d6ac5c2ac9cc1d52"
+   },
+   "doc": "docs/pipeline-october-2026.md"
   },
   "villa-s-tracer-does-not-hold-an-explicit": {
    "line": 283,
@@ -412,6 +486,13 @@
     "docs/logs/2026-10-12-upstream-reports.md": "57f81a96d5871d496ef9d88b97192cc53d5a99f383f5bf97e4e7e69f0bebe5f2"
    },
    "doc": "docs/FINDINGS.md"
+  },
+  "windlabel-box-needs-a-published-surface-prediction-lasagna": {
+   "line": 176,
+   "sources": {
+    "docs/tools/windlabel-box.md": "5a5e8b8baa079013560c11ca254915dfeb75291126366f8b85f8118db7c7d17b"
+   },
+   "doc": "docs/pipeline-october-2026.md"
   },
   "windlabel-box-s-automatic-relative-windings-passed-a": {
    "line": 263,
@@ -428,6 +509,13 @@
    "reasons": {
     "97": "setting: the random control's 97.5th percentile, the rule's quantile"
    }
+  },
+  "windlabel-box-s-split-rule-v1-failed-its": {
+   "line": 164,
+   "sources": {
+    "docs/tools/windlabel-box.md": "5a5e8b8baa079013560c11ca254915dfeb75291126366f8b85f8118db7c7d17b"
+   },
+   "doc": "docs/pipeline-october-2026.md"
   }
  },
  "results_baseline": [
