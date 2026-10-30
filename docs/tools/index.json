@@ -17119,7 +17119,7 @@
    },
    "checked": {
     "date": "2026-10-30",
-    "commit": "b32649f"
+    "commit": "fef7793"
    },
    "license": "Code Apache 2.0; item titles, summaries and links belong to their sources",
    "fields": {
@@ -17137,7 +17137,7 @@
     "Go-ahead": "Not needed to use. Making the Space public was Chase's yes (29 Oct 2026); later redeploys from merged `main` fall under the standing yes (rule 8)",
     "Released": "Public on Hugging Face since 2026-10-29; README \"Released tools\" entry `vesuvius-radar`",
     "License": "Code Apache 2.0; item titles, summaries and links belong to their sources",
-    "Checked": "2026-10-30 against commit `b32649f`"
+    "Checked": "2026-10-30 against commit `fef7793`"
    },
    "page": "docs/tools/vesuvius-radar.md",
    "sections": [
