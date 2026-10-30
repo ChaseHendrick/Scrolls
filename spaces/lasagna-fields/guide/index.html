@@ -42,8 +42,8 @@ nav .wrap{display:flex;align-items:center;gap:22px;height:56px}
 .tbtn{border:1px solid var(--line);background:var(--card);color:var(--ink2);border-radius:8px;padding:5px 10px;cursor:pointer;font:inherit;font-size:13px}
 header.hero{position:relative;overflow:hidden;border-bottom:1px solid var(--line)}
 .hero .wrap{padding-top:72px;padding-bottom:64px;position:relative;z-index:1}
-.fields{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:.55}
-.hero:after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,var(--bg) 0,var(--bg) 52%,color-mix(in srgb,var(--bg) 80%,transparent) 66%,color-mix(in srgb,var(--bg) 30%,transparent) 84%,transparent 100%)}
+.fields{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:.85}
+.hero:after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,var(--bg) 0,var(--bg) 44%,color-mix(in srgb,var(--bg) 78%,transparent) 56%,color-mix(in srgb,var(--bg) 25%,transparent) 72%,transparent 88%)}
 .hero .wrap{z-index:2}
 .eyebrow{text-transform:uppercase;letter-spacing:.14em;font-size:12px;font-weight:600;color:var(--accent)}
 .hero h1{font-size:clamp(38px,6vw,68px);max-width:760px;margin:12px 0 18px}
@@ -117,6 +117,27 @@ footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
 .ftools .seg button{white-space:nowrap;padding:6px 11px}
 .ftools input{flex:1 1 220px;max-width:340px;padding:7px 12px;border:1px solid var(--line);border-radius:9px;background:var(--card);color:var(--ink);font:inherit;font-size:14px}
 .fcount{color:var(--ink3);font-size:13.5px}
+.fcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:16px;align-items:stretch}
+.sccard{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:var(--shadow);display:flex;flex-direction:column}
+.sccard .thumb{position:relative;aspect-ratio:2/1;background:#000;overflow:hidden}
+.sccard .thumb img{display:block;width:100%;height:100%;object-fit:cover}
+.sccard .thumb .ph{position:absolute;inset:0;display:grid;place-items:center;background:radial-gradient(circle at 50% 45%,color-mix(in srgb,var(--accent2) 22%,var(--bg2)) 0,var(--bg2) 70%)}
+.sccard .thumb .ph i{display:block;width:92px;height:62px;border-radius:10px;box-shadow:var(--shadow);background:repeating-linear-gradient(180deg,#c2462b 0 8px,#e07a3f 8px 13px,#f3e2bf 13px 18px,#d9aa4f 18px 21px,#f3e2bf 21px 24px)}
+.sccard .thumb .ph span{position:absolute;left:10px;bottom:8px;font-size:11.5px;color:var(--ink2);background:color-mix(in srgb,var(--card) 85%,transparent);padding:2px 8px;border-radius:6px}
+.sccard .thumb .tag{position:absolute;left:10px;bottom:8px;font-size:11.5px;color:#f1e9dc;background:#000a;padding:2px 8px;border-radius:6px}
+.sccard .hd{display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding:12px 16px 4px}
+.sccard .hd h3{font-size:21px;margin:0}
+.sccard .hd .cnt{font-size:12.5px;color:var(--ink3);white-space:nowrap}
+.sccard ul{list-style:none;margin:0;padding:4px 10px 12px}
+.sccard li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;padding:9px 6px;border-top:1px solid var(--line)}
+.sccard li:first-child{border-top:0}
+.sccard .res{font-weight:600;font-size:14.5px}
+.sccard .res .mono{font-weight:400;font-size:12px;color:var(--ink3);margin-left:6px}
+.sccard .sz{font-size:13px;color:var(--ink2);text-align:right;white-space:nowrap;align-self:center}
+.sccard .row2{grid-column:1/-1;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.sccard .row2 .flinks{margin-left:auto}
+.sccard .why{grid-column:1/-1;font-size:12.5px;color:var(--ink3);line-height:1.4}
+.vseg{margin-left:auto}
 table.flist td{vertical-align:middle}
 table.flist tbody+tbody{border-top:2px solid var(--line)}
 table.flist .sc{font-weight:600;white-space:nowrap}
@@ -138,8 +159,9 @@ table.flist td.mdl{max-width:300px}
 @media (max-width:900px){
   .detail,.region{grid-template-columns:1fr}
   .cards3{grid-template-columns:1fr}
-  .hero:after{background:color-mix(in srgb,var(--bg) 92%,transparent)}
-  .fields{opacity:.35}
+  .hero .wrap{padding-top:250px}
+  .fields{bottom:auto;height:300px;opacity:.95}
+  .hero:after{background:linear-gradient(180deg,transparent 0,transparent 150px,color-mix(in srgb,var(--bg) 70%,transparent) 230px,var(--bg) 300px)}
   .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 @media (max-width:760px){
@@ -159,7 +181,7 @@ table.flist td.mdl{max-width:300px}
   .form{grid-template-columns:repeat(2,minmax(0,1fr))}
   .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
   section{padding:52px 0}
-  .navlinks{display:none}
+  .navlinks a:nth-child(n+2){display:none}
 }
 </style>
 </head>
@@ -192,15 +214,22 @@ table.flist td.mdl{max-width:300px}
 
 <section id="all"><div class="wrap">
   <h2>Every field, by scroll</h2>
-  <p class="sub">One row per whole-scan field. <span class="mp villa">villa predict3d</span> is the villa lasagna model itself, the reference. <span class="mp lgt">Lasagnetta 0.1.1</span> copies it and runs about 5 times faster: use its fields as a preview, and villa's where exact values matter. A field read at level 2 or 3 of a fine scan is on that level's grid, so multiply its coordinates by 4 or 8 for full resolution.</p>
+  <p class="sub">One card per scroll, one line per whole-scan field. <span class="mp villa">villa predict3d</span> is the villa lasagna model itself, the reference. <span class="mp lgt">Lasagnetta 0.1.1</span> copies it and runs about 5 times faster: use its fields as a preview, and villa's where exact values matter. A field read at level 2 or 3 of a fine scan is on that level's grid, so multiply its coordinates by 4 or 8 for full resolution.</p>
   <div class="ftools">
     <input id="fq" type="search" placeholder="Filter by scroll or volume" aria-label="Filter by scroll or volume">
     <div class="seg" role="group" aria-label="Model">
       <button type="button" data-fm="" aria-pressed="true">All</button><button type="button" data-fm="villa predict3d" aria-pressed="false">villa predict3d</button><button type="button" data-fm="Lasagnetta 0.1.1" aria-pressed="false">Lasagnetta 0.1.1</button>
     </div>
+    <div class="seg" role="group" aria-label="Where">
+      <button type="button" data-fw="" aria-pressed="true">Any source</button><button type="button" data-fw="dl" aria-pressed="false">Download</button><button type="button" data-fw="url" aria-pressed="false">Streams by URL</button>
+    </div>
     <span class="fcount" id="fcount"></span>
+    <div class="seg vseg" role="group" aria-label="Layout">
+      <button type="button" data-fv="cards" aria-pressed="true">Cards</button><button type="button" data-fv="table" aria-pressed="false">Table</button>
+    </div>
   </div>
-  <div class="tablewrap"><table class="flist" id="flist">
+  <div class="fcards" id="fcards"></div>
+  <div class="tablewrap" id="ftable" hidden><table class="flist" id="flist">
     <thead><tr><th>Scroll</th><th>Volume</th><th>Voxel size</th><th>Model</th><th>Where</th><th>Size</th><th>Get it</th></tr></thead>
   </table></div>
   <div id="pend" hidden></div>
@@ -398,7 +427,7 @@ const attr=s=>esc(String(s)).replace(/"/g,'&quot;');
 const uniq=a=>a.filter((v,i)=>a.indexOf(v)===i);
 const um=v=>(+v).toLocaleString('en-US',{maximumFractionDigits:3})+' µm';
 const lvl=f=>f.read_level?'read at level '+f.read_level+', '+(f.voxel_um*Math.pow(2,f.read_level)).toFixed(1)+' µm':'read at full resolution';
-let fm='',fq='';
+let fm='',fq='',fw='',fv='cards';
 function fieldRow(f,first,n){
  const L=[];
  if(f.dataset)L.push('<a href="'+attr(f.url)+'">Dataset</a>');
@@ -412,20 +441,41 @@ function fieldRow(f,first,n){
   '<td data-k="Model" class="mdl"><span class="mp '+(f.model.indexOf('Lasagnetta')===0?'lgt':'villa')+'">'+esc(f.model)+'</span>'+(f.note?'<span class="fnote">'+esc(f.note)+'</span>':'')+'</td>'+
   '<td data-k="Where">'+where+'</td><td data-k="Size" class="num">'+gb(f.bytes)+'</td>'+
   '<td class="get"><div class="flinks">'+L.join('')+'</div></td></tr>'}
+const hasDl=f=>!!(f.dataset||f.manifest),hasUrl=f=>!!f.stream;
+function thumbOf(g){const f=g.find(x=>x.dataset);if(!f)return null;const n=f.dataset.split('/')[1];
+ return {src:'assets/thumbs/'+n+'.webp',alt:'https://huggingface.co/datasets/'+f.dataset+'/resolve/main/preview-xy.png',vol:f.volume}}
+function cardLine(f){const L=[];
+ if(f.dataset)L.push('<a href="'+attr(f.url)+'">Dataset</a>');
+ if(f.manifest)L.push('<a href="'+attr(f.manifest)+'">Manifest</a>');
+ if(f.gallery)L.push('<button type="button" data-show="'+attr(f.scroll)+'">Preview</button>');
+ if(f.stream)L.push('<button type="button" data-url="'+attr(f.stream)+'">Copy URL</button>');
+ const src=f.source==='open-data'?'open data':'SharpMeow';
+ return '<li><div class="res">'+um(f.voxel_um)+'<span class="mono">'+esc(f.volume)+'</span></div><div class="sz">'+gb(f.bytes)+'</div>'+
+  '<div class="row2"><span class="mp '+(f.model.indexOf('Lasagnetta')===0?'lgt':'villa')+'">'+esc(f.model)+'</span><span class="fnote" style="margin:0">'+src+(f.read_level?', level '+f.read_level:'')+'</span><div class="flinks">'+L.join('')+'</div></div>'+
+  (f.note?'<div class="why">'+esc(f.note)+'</div>':'')+'</li>'}
+function card(g){const t=thumbOf(g),n=g.length;
+ const img=t?'<img loading="lazy" src="'+t.src+'" data-alt="'+attr(t.alt)+'" alt="'+attr(g[0].scroll)+' field preview, cos and normals" onerror="if(this.dataset.alt){this.src=this.dataset.alt;this.dataset.alt=\'\'}"><span class="tag">cos | normals · '+esc(t.vol)+'</span>'
+  :'<div class="ph"><i></i><span>villa field in the open data · stream it by URL</span></div>';
+ return '<article class="sccard"><div class="thumb">'+img+'</div><div class="hd"><h3>'+esc(g[0].scroll)+'</h3><span class="cnt">'+n+(n===1?' field':' fields')+' · '+gb(g.reduce((a,f)=>a+f.bytes,0))+'</span></div><ul>'+g.map(cardLine).join('')+'</ul></article>'}
 function drawFields(){
  const t=$('flist');t.querySelectorAll('tbody').forEach(b=>b.remove());
- if(!F){t.insertAdjacentHTML('beforeend','<tbody><tr><td colspan="7" class="fempty">The list is filled in on the Space: <a href="https://huggingface.co/spaces/SharpMeow/lasagna-fields">huggingface.co/spaces/SharpMeow/lasagna-fields</a>.</td></tr></tbody>');return}
+ $('fcards').hidden=fv!=='cards';$('ftable').hidden=fv!=='table';
+ if(!F){t.insertAdjacentHTML('beforeend','<tbody><tr><td colspan="7" class="fempty">The list is filled in on the Space: <a href="https://huggingface.co/spaces/SharpMeow/lasagna-fields">huggingface.co/spaces/SharpMeow/lasagna-fields</a>.</td></tr></tbody>');
+  $('fcards').innerHTML='<p class="fempty">The list is filled in on the Space: <a href="https://huggingface.co/spaces/SharpMeow/lasagna-fields">huggingface.co/spaces/SharpMeow/lasagna-fields</a>.</p>';return}
  const q=fq.trim().toLowerCase();
- const rows=FL.filter(f=>(!fm||f.model===fm)&&(!q||f.scroll.toLowerCase().indexOf(q)>=0||f.volume.indexOf(q)>=0));
+ const rows=FL.filter(f=>(!fm||f.model===fm)&&(!fw||(fw==='dl'?hasDl(f):hasUrl(f)))&&(!q||f.scroll.toLowerCase().indexOf(q)>=0||f.volume.indexOf(q)>=0));
  const groups=uniq(rows.map(f=>f.scroll)).map(s=>rows.filter(f=>f.scroll===s));
  t.insertAdjacentHTML('beforeend',groups.length?groups.map(g=>'<tbody>'+g.map((f,i)=>fieldRow(f,i===0,g.length)).join('')+'</tbody>').join(''):'<tbody><tr><td colspan="7" class="fempty">No field matches.</td></tr></tbody>');
+ $('fcards').innerHTML=groups.length?groups.map(card).join(''):'<p class="fempty">No field matches.</p>';
  $('fcount').textContent=rows.length+(rows.length===1?' field':' fields')+' on '+groups.length+(groups.length===1?' scroll':' scrolls');}
+document.querySelectorAll('[data-fw]').forEach(b=>b.onclick=()=>{fw=b.dataset.fw;document.querySelectorAll('[data-fw]').forEach(x=>x.setAttribute('aria-pressed',x===b));drawFields()});
+document.querySelectorAll('[data-fv]').forEach(b=>b.onclick=()=>{fv=b.dataset.fv;document.querySelectorAll('[data-fv]').forEach(x=>x.setAttribute('aria-pressed',x===b));drawFields()});
 document.querySelectorAll('[data-fm]').forEach(b=>b.onclick=()=>{fm=b.dataset.fm;document.querySelectorAll('[data-fm]').forEach(x=>x.setAttribute('aria-pressed',x===b));drawFields()});
 $('fq').oninput=()=>{fq=$('fq').value;drawFields()};
-$('flist').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+['flist','fcards'].forEach(id=>$(id).addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
  if(b.dataset.show){const i=D.findIndex(s=>s.id===b.dataset.show);if(i>=0){pick(i,false);$('scans').scrollIntoView({behavior:'smooth'})}}
  if(b.dataset.url){const t=b.dataset.url,done=()=>{b.textContent='Copied';$('toast').classList.add('on');setTimeout(()=>{b.textContent='Copy URL';$('toast').classList.remove('on')},1200)};
-  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(done,()=>fallback(t,done));else fallback(t,done)}});
+  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(done,()=>fallback(t,done));else fallback(t,done)}}));
 /* the volumes being made: shown without any link until each is public (fields.json, pending_not_public) */
 if(FP.length){$('pend').hidden=false;
  $('pend').innerHTML='<h3>Being made now, not public yet</h3><p class="sub" style="margin-bottom:14px">Lasagnetta 0.1.1 fields for more volumes of scrolls in the list. None is public yet, so there is nothing to download or stream.</p>'+
