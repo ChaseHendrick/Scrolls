@@ -280,7 +280,7 @@ Measured 2026-10-30: `features` on 283 Frag3 sites took about 4 minutes on one R
 
 ## History
 
-- 2026-10-30: first public release, code only, Apache-2.0 (Parting 1.0.0).
+- 2026-10-30: first public release, code only, Apache-2.0 (Parting 1.0.0; [#292](https://github.com/ChaseHendrick/Scrolls/pull/292)).
 
 ## Related
 
