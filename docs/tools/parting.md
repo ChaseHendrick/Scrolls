@@ -16,8 +16,8 @@ Parting scores, at a contact between two touching papyrus layers in a CT scan, w
 | Network | The scan's zarr chunks over HTTPS (any public uint8 128^3 zarr v2 level, such as `dl.ash2txt.org` or the open-data bucket); the base dinovol checkpoint from Hugging Face (`scrollprize/dinovol_ps8_9.6um_101626`, pinned revision); nine pinned source files from `raw.githubusercontent.com/jimmylomro/hercUNet` (MIT); for `frag3`, the six Frag3 layer pointsets (about 1 GB) from `dl.ash2txt.org` |
 | Writes | `sites`: the site JSON at `--out`. `features`: a run folder (`results.jsonl`, `features.npz`, `run.json`). `score`: the readout JSON at `--out`. `fit`: a joblib model at `--out`. `frag3`: `OUT/pointsets/`, `OUT/frag3_sites.json`, `OUT/run/`, `OUT/readout.json`, `OUT/frag3.json`. A download cache in `PARTING_CACHE` (default `~/.cache/parting`) and the Hugging Face cache |
 | Go-ahead | Not needed |
-| Released | Public `main` from 2026-10-30 (code only, Apache-2.0) |
-| License | Apache License 2.0 ([`scripts/parting/LICENSE`](../../scripts/parting/LICENSE)). It fetches, never copies: villa's dinovol model code (MIT) in the copy hercUNet vendors (MIT), and the base dinovol checkpoint, whose model page states no license |
+| Released | Public `main` from 2026-10-30 (code, Apache-2.0); model file [`SharpMeow/parting-v1`](https://huggingface.co/SharpMeow/parting-v1) on Hugging Face from 2026-10-30 (CC BY-NC 4.0) |
+| License | Code: Apache License 2.0 ([`scripts/parting/LICENSE`](../../scripts/parting/LICENSE)); model file: CC BY-NC 4.0. It fetches, never copies: villa's dinovol model code (MIT) in the copy hercUNet vendors (MIT), and the base dinovol checkpoint, whose model page states no license |
 | Checked | 2026-10-30 against commit `4966bc6` |
 
 ## What it does
@@ -75,7 +75,7 @@ Every readout carries three checks that can fail:
 - **The pipeline check.** `dino_base` must score at least 0.85 on apart sites (both gaps 8 to 16 voxels); a broken read or a wrong frame fails it. On Frag3 it was 0.944.
 - **The permutation gate.** The mean AUC of 1,000 label permutations must sit within 0.5 plus or minus 3 standard errors; it fails on a broken AUC or permutation (0.5004 on Frag3).
 
-Measured strengths and limits (Model output, against the Vesuvius Challenge team's traced layer segments, each rule frozen before any CT value was read; [log](../logs/2026-10-29-parting-fragment-contact.md), [finding 23](../FINDINGS.md)):
+Measured strengths and limits (Model output, against the Vesuvius Challenge team's traced layer segments, each rule frozen before any of its test's 3D CT was read; [log](../logs/2026-10-29-parting-fragment-contact.md), [finding 23](../FINDINGS.md)):
 
 | Object (fragment, scroll) | Touching sites, layer pairs | Parting | `dino_base` | Gain (2.5 % bound) | Verdict |
 | --- | --- | --- | --- | --- | --- |
@@ -281,6 +281,7 @@ Measured 2026-10-30: `features` on 283 Frag3 sites took about 4 minutes on one R
 ## History
 
 - 2026-10-30: first public release, code only, Apache-2.0 (Parting 1.0.0; [#292](https://github.com/ChaseHendrick/Scrolls/pull/292)).
+- 2026-10-30: the trained model file, `parting-v1.joblib`, published on Hugging Face as [`SharpMeow/parting-v1`](https://huggingface.co/SharpMeow/parting-v1) (CC BY-NC 4.0).
 
 ## Related
 

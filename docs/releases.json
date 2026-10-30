@@ -970,16 +970,16 @@
     {
       "id": "parting",
       "title": "Parting (same layer or next layer where two papyrus layers touch)",
-      "line": "Scores whether a point at a contact of two touching papyrus layers lies on the same layer or the next, with base dinovol's cosine as control; code only.",
+      "line": "Scores whether a point where two papyrus layers touch lies on the same layer or the next, against base dinovol's cosine; code and model file.",
       "area": "Surfaces and tracing",
       "page": "docs/tools/parting.md",
       "released": "2026-10-30",
-      "summary": "Parting reads the CT window around a contact where two papyrus layers touch, takes the Vesuvius Challenge's base dinovol tokens and CT profiles at three points (a, a second point on its layer, and a point on the next layer at the same distance), and scores which pair is the same layer, with base dinovol's own token cosine as the control. In three tests frozen before any CT was read, on fragments it never trained on, it passed once: on PHercParis1Fr34 (Frag3) its touching AUC was 0.895 against 0.839 for base dinovol (gain +0.056, 2.5 % bound +0.037); on PHerc1667Cr1Fr3 it gained +0.045, short of the +0.05 bar, and on PHercParis2Fr143 +0.010. The released code reproduces the Frag3 features and readout exactly from public data. Limits: one pass in three; little gain at fused contacts or where base dinovol is already near its ceiling; flat fragment stacks only. Code only, Apache 2.0; the trained model file is not included. Model output, not a reading.",
+      "summary": "Parting reads the CT window around a contact where two papyrus layers touch, takes the Vesuvius Challenge's base dinovol tokens and CT profiles at three points (a, a second point on its layer, and a point on the next layer at the same distance), and scores which pair is the same layer, with base dinovol's own token cosine as the control. In three tests frozen before any of their 3D CT was read, on fragments it never trained on, it passed once: on PHercParis1Fr34 (Frag3) its touching AUC was 0.895 against 0.839 for base dinovol (gain +0.056, 2.5 % bound +0.037); on PHerc1667Cr1Fr3 it gained +0.045, short of the +0.05 bar, and on PHercParis2Fr143 +0.010. The released code reproduces the Frag3 features and readout exactly from public data. Limits: one pass in three; little gain at fused contacts or where base dinovol is already near its ceiling; flat fragment stacks only. Code Apache 2.0; the trained model file of every test is on Hugging Face as SharpMeow/parting-v1 (CC BY-NC 4.0, added 30 October 2026). Model output, not a reading.",
       "commands": [
-        "python3 scripts/parting/parting.py frag3 --model MODEL.joblib --out OUT --sites-only",
+        "python3 scripts/parting/parting.py frag3 --model parting-v1.joblib --out OUT --device cuda",
         "python3 scripts/parting/parting.py features --sites SITES.json --volume ZARR_LEVEL_URL --device cuda --out RUN"
       ],
-      "details": "Page: [docs/tools/parting.md](docs/tools/parting.md); evidence: [finding 23](docs/FINDINGS.md). At run time it downloads, pinned by sha256 and never copied, the base dinovol checkpoint and villa's dinovol model code (MIT) as vendored by hercUNet (MIT). Code Apache 2.0; scans and traced layers are the Vesuvius Challenge open data (CC BY-NC 4.0), read live.",
+      "details": "Page: [docs/tools/parting.md](docs/tools/parting.md); evidence: [finding 23](docs/FINDINGS.md). At run time it downloads, pinned by sha256 and never copied, the base dinovol checkpoint and villa's dinovol model code (MIT) as vendored by hercUNet (MIT). Code Apache 2.0; model file [SharpMeow/parting-v1](https://huggingface.co/SharpMeow/parting-v1) (CC BY-NC 4.0, sha256 f0684ab2...); scans and traced layers are the Vesuvius Challenge open data (CC BY-NC 4.0), read live.",
       "where": "main"
     }
   ]
