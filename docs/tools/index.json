@@ -9287,6 +9287,154 @@
    ]
   },
   {
+   "id": "parting",
+   "name": "parting",
+   "tagline": "tell the same papyrus layer from the next one where two layers touch",
+   "summary": "Parting scores, at a contact between two touching papyrus layers in a CT scan, whether a second point lies on the first point's layer or on the next one, from base dinovol tokens and CT profiles; for tracers that must not switch sheets.",
+   "status": "Current",
+   "kind": [
+    "script folder"
+   ],
+   "area": "Surfaces and tracing",
+   "commands": [
+    "python3 scripts/parting/parting.py sites",
+    "features",
+    "score",
+    "fit",
+    "compare",
+    "frag3"
+   ],
+   "imports": [],
+   "code": [
+    {
+     "path": "scripts/parting",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_parting.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed"
+   },
+   "checked": {
+    "date": "2026-10-30",
+    "commit": "4966bc6"
+   },
+   "license": "Apache License 2.0 ([`scripts/parting/LICENSE`](../../scripts/parting/LICENSE)). It fetches, never copies: villa's dinovol model code (MIT) in the copy hercUNet vendors (MIT), and the base dinovol checkpoint, whose model page states no license",
+   "fields": {
+    "Id": "`parting`",
+    "Status": "Current",
+    "Kind": "script folder",
+    "Area": "Surfaces and tracing",
+    "Run": "`python3 scripts/parting/parting.py sites`, `features`, `score`, `fit`, `compare`, `frag3`",
+    "Code": "`scripts/parting`",
+    "Tests": "`tests/test_parting.py` (synthetic data only)",
+    "Needs": "Python 3.10 or newer; numpy, scipy, scikit-learn 1.9 (the released model file was written with 1.9.1) and joblib; for `features` also torch 2.x, timm 1.x, einops and huggingface_hub; numcodecs only for compressed arrays; tifffile only for tifxyz input",
+    "Runs on": "`features`: any CUDA GPU (283 Frag3 sites in about 4 minutes on one RTX PRO 6000, measured 2026-10-30) or CPU (slow: one site plus model load took 13 s on a 1-CPU smoke, measured 2026-10-30). `sites`, `score`, `fit` and `compare`: CPU, seconds to a few minutes (the Frag3 site rebuild took 4 minutes on a 4-core cloud container, 2026-10-30)",
+    "Network": "The scan's zarr chunks over HTTPS (any public uint8 128^3 zarr v2 level, such as `dl.ash2txt.org` or the open-data bucket); the base dinovol checkpoint from Hugging Face (`scrollprize/dinovol_ps8_9.6um_101626`, pinned revision); nine pinned source files from `raw.githubusercontent.com/jimmylomro/hercUNet` (MIT); for `frag3`, the six Frag3 layer pointsets (about 1 GB) from `dl.ash2txt.org`",
+    "Writes": "`sites`: the site JSON at `--out`. `features`: a run folder (`results.jsonl`, `features.npz`, `run.json`). `score`: the readout JSON at `--out`. `fit`: a joblib model at `--out`. `frag3`: `OUT/pointsets/`, `OUT/frag3_sites.json`, `OUT/run/`, `OUT/readout.json`, `OUT/frag3.json`. A download cache in `PARTING_CACHE` (default `~/.cache/parting`) and the Hugging Face cache",
+    "Go-ahead": "Not needed",
+    "Released": "Public `main` from 2026-10-30 (code only, Apache-2.0)",
+    "License": "Apache License 2.0 ([`scripts/parting/LICENSE`](../../scripts/parting/LICENSE)). It fetches, never copies: villa's dinovol model code (MIT) in the copy hercUNet vendors (MIT), and the base dinovol checkpoint, whose model page states no license",
+    "Checked": "2026-10-30 against commit `4966bc6`"
+   },
+   "page": "docs/tools/parting.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 23,
+     "end_line": 30,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 31,
+     "end_line": 42,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 43,
+     "end_line": 69,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 70,
+     "end_line": 89,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 90,
+     "end_line": 175,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 176,
+     "end_line": 188,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 189,
+     "end_line": 195,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 196,
+     "end_line": 217,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 218,
+     "end_line": 249,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 250,
+     "end_line": 262,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 263,
+     "end_line": 266,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 267,
+     "end_line": 276,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 277,
+     "end_line": 280,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 281,
+     "end_line": 284,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 285,
+     "end_line": 289,
+     "applicable": true
+    }
+   ]
+  },
+  {
    "id": "phantom",
    "name": "phantom",
    "tagline": "synthetic carbon-ink volumes with known truth, to test detectors and AUC noise",
