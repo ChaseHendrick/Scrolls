@@ -53,11 +53,11 @@ python -m kit windlabel-box \
 - `UMB.json`: PHerc0139's umbilicus (`PHerc0139/representations/umbilicus/20260102150214-umbilicus-20260826112529.json` in the bucket) moved into the m7 scan's voxels with the inverse of that matrix, as villa's umbilicus JSON or a `[[z, y, x], ...]` list.
 - `RUN`: a new folder.
 
-On 2026-10-24 (4-core cloud container) a box like this, with 200 seeds, took 13 s and printed (excerpt):
+On 2026-10-30 (4-core cloud container, commit `bdea79f`, Python 3.14) this exact command took 13 s and printed (excerpt). The excerpt shown here before 30 October (211 collections, 696 points, 142 cut steps) could not be reproduced with this command; three reruns all gave the numbers below, and `--split-rule v1` gives 193 collections, 751 points and 47 cut steps:
 
 ```
-"ok": true, "collections": 211, "points": 696, "pieces": 211, "steps": 485, "split_steps": 142,
-"flags": {"cut": 0, "contact": 0, "spacing": 179, "split": 142},
+"ok": true, "collections": 186, "points": 765, "pieces": 186, "steps": 579, "split_steps": 26,
+"flags": {"cut": 0, "contact": 0, "spacing": 134, "split": 26},
 "checks": {"relative_windings.json": {"ok": true, "issues": []}, "flags.json": {"ok": true, "issues": []}}
 ```
 
