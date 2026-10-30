@@ -31,6 +31,7 @@ Every released tool, one line each; each name opens its guide. Generated from [`
 | --- | --- |
 | [AutoPipeline](docs/tools/autopipeline.md) | Runs villa's VC3D tools and ink detection on a released scan, from surface checks to ink maps scored with controls (package, 0.1.10). |
 | [Unroll (interactive 3D scroll viewer)](docs/tools/unroll.md) | Virtually unrolls scroll scans in 3D in your browser, with ink layers, CT tools and an Ink Bench for comparing ink models (Space). |
+| [Parting (same layer or next layer where two papyrus layers touch)](docs/tools/parting.md) | Scores whether a point at a contact of two touching papyrus layers lies on the same layer or the next, with base dinovol's cosine as control; code only. |
 | [Vesuvius Radar (new papers, code and data for the scrolls)](docs/tools/vesuvius-radar.md) | New papers, code, models and data that could help read the scrolls, from public sources around the clock, scored, with an API and MCP (Space). |
 | [Crackle Check (is there ink crackle in this patch?)](docs/tools/crackle-check.md) | Asks one ink model whether a small patch of a segment shows ink crackle, with the reversed layer order as its control (Space, API and MCP). |
 | [Snapped Labels (published surface labels moved onto the papyrus)](docs/tools/snapped-labels.md) | Every published surface label of PHerc0139, PHerc0814, PHerc0841 and PHerc0172, moved onto the papyrus recto face, as tifxyz meshes with a viewer on live CT. |
@@ -39,7 +40,7 @@ Every released tool, one line each; each name opens its guide. Generated from [`
 | [Lasagnetta (fast preview of villa's lasagna field)](docs/tools/lasagnetta.md) | A fast preview of villa's lasagna field, about 5 times faster than villa predict3d (6.6 times with larger tiles), with a built-in self-check against villa. |
 | [Umbilici (center lines of 35 Herculaneum scans)](docs/tools/umbilici.md) | Every public center line (umbilicus) we know of for 35 scans, 57 lines from six sources, in 3D over the CT (Space). |
 | [Fiber Checker (are papyrus fibers visible on a traced surface?)](docs/tools/fibercheck.md) | A free per-patch fiber map of any traced segment or your own tifxyz, with a self-check on every run, as a Space and a command line tool. |
-| [Lasagna Fields (villa lasagna fields for ten scans)](docs/tools/lasagna-fields.md) | villa's lasagna fields for ten whole scans that had none in the open data, one dataset each, with a Space to view and make them. |
+| [Lasagna Fields (lasagna fields for 24 scrolls)](docs/tools/lasagna-fields.md) | Whole-scan lasagna fields for 24 scrolls, by scroll: villa's own and 22 datasets made with villa's lasagna or Lasagnetta, with a Space to find and make them. |
 | [Segment Lens (published segment geometry viewer)](docs/tools/segment-lens.md) | Shows published segment meshes with geometry warnings and the Segment Atlas table, with an API and MCP server for agents (Space). |
 | [dinovol embeddings of PHerc0841](docs/tools/dinovol-embeddings.md) | Precomputed dinovol embeddings of the whole PHerc0841 scan, to search, cluster or segment by feature similarity without a GPU. |
 | [Headless VC3D for agents](docs/tools/vc3d-agent.md) | An MCP server and shell command that let an AI agent run villa's VC3D tools with no display, checks built in (package, 1.1.1). |

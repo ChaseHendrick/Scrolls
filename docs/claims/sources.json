@@ -497,13 +497,13 @@
   "windlabel-box-s-automatic-relative-windings-passed-a": {
    "line": 263,
    "sources": {
-    "docs/tools/windlabel-box.md": "5a5e8b8baa079013560c11ca254915dfeb75291126366f8b85f8118db7c7d17b"
+    "docs/tools/windlabel-box.md": "2cbfd91604f1ea481b70e1f9a54c56392550c18f1c3c483b8d0cac9401eddfb3"
    }
   },
   "windlabel-box-s-automatic-relative-windings-passed-a-2": {
    "line": 15,
    "sources": {
-    "docs/tools/windlabel-box.md": "5a5e8b8baa079013560c11ca254915dfeb75291126366f8b85f8118db7c7d17b"
+    "docs/tools/windlabel-box.md": "2cbfd91604f1ea481b70e1f9a54c56392550c18f1c3c483b8d0cac9401eddfb3"
    },
    "doc": "docs/FINDINGS.md",
    "reasons": {

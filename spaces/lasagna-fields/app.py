@@ -1,6 +1,7 @@
-"""Lasagna Fields: download villa's lasagna field for ten whole scans, or make it for any box of a public scan.
+"""Lasagna Fields: every whole-scan lasagna field, listed by scroll, or villa's field made for any box of a public scan.
 
-The web page and the API. The guide to the ten ready-made scans is guide/index.html, shown in the first tab; making
+The web page and the API. The guide to the whole-scan fields is guide/index.html, shown in the first tab, with its
+list read from fields.json (villa's fields in the open data and the public SharpMeow datasets); making
 a field (reading the CT, villa's predict3d, the check against the published field, pictures and the download) is
 lasfield.py. On a ZeroGPU Space the GPU is attached only to `gpu_run`, for the model call alone: the CT is read
 before it and the field is read back after it, so a visitor's GPU time goes to the model.
@@ -26,11 +27,12 @@ if str(HERE) not in sys.path:
 import lasfield as L  # noqa: E402
 from lasfield import FieldError  # noqa: E402
 
-VERSION = "2.0.0"
+VERSION = "2.1.0"
 ON_ZERO_GPU = bool(spaces) and os.environ.get("SPACES_ZERO_GPU", "").lower() in ("1", "true")
 WORK = Path(tempfile.gettempdir()) / "lasagna-fields-work"
 OUT = Path(tempfile.gettempdir()) / "lasagna-fields-out"
 GUIDE = HERE / "guide" / "index.html"
+FIELDS = HERE / "fields.json"        # every whole-scan field the first tab lists, by scroll
 MEDIA = HERE / "media"
 CONNECT_HTML = HERE / "connect.html"
 MAX_GPU_S = 240                     # the longest call this Space asks ZeroGPU for (a 512 box asks about 150 s)
@@ -206,7 +208,11 @@ def volume_text(vid):
     elif pub:
         pub_line = "The open data has villa's field for this scan, so each box is checked against it."
     else:
-        pub_line = "No lasagna field has been published for this scan, so there is nothing to check against."
+        listed = [f for f in field_doc().get("fields", []) if f["volume"] == v["volume"] and f.get("dataset")]
+        pub_line = ("Boxes are checked only against the open data's fields and the ten in the Preview tab, so there is "
+                    "nothing to check against for this scan."
+                    + (f" Its whole-scan field ({listed[0]['model']}) is on the Every field tab as "
+                       f"{listed[0]['dataset']}." if listed else ""))
     return (f"{' × '.join(map(str, shape))} voxels (z × y × x) at {v['voxel_um']:g} um. The model reads level "
             f"{v['level']} ({v['voxel_um'] * f:.2f} um), nearest to the 9.4 um it was trained at. {pub_line}")
 
@@ -266,6 +272,38 @@ def list_scans():
     """
     return [{k: v[k] for k in ("volume", "sample", "voxel_um", "shape_zyx", "level", "url")}
             for v in sorted(L.catalog().values(), key=lambda v: (v["sample"], v["volume"]))]
+
+
+@functools.lru_cache(maxsize=1)
+def field_doc():
+    """fields.json: the whole-scan fields the first tab lists ({"fields": [...]}, and any not public yet)."""
+    try:
+        return json.loads(FIELDS.read_text(encoding="utf-8"))
+    except (OSError, ValueError) as exc:
+        log(f"fields.json not read: {exc}")
+        return {"fields": []}
+
+
+def list_fields(scroll: str = ""):
+    """List every whole-scan lasagna field this Space lists, one row per field, sorted by scroll.
+
+    villa's own fields in the Vesuvius Challenge open data and the public SharpMeow datasets (made with villa's
+    lasagna predict3d or with Lasagnetta 0.1.1, a faster copy of it). Args: scroll, part of a scroll name to keep
+    only its fields (empty for all). Returns a list of {scroll, volume, zarr, voxel_um, read_level, model, source,
+    made_by, bytes, url, dataset, manifest, stream, preview_xy, preview_xz, browse, note}: stream is the run folder
+    that zarr reads by URL, manifest its lasagna.json, preview_xy and preview_xz pictures of cos and normals, and
+    browse the page to download it from (the dataset, or the open data's file browser).
+    """
+    keep = ("scroll", "volume", "zarr", "voxel_um", "read_level", "model", "source", "made_by", "bytes", "url",
+            "dataset", "manifest", "stream", "preview_xy", "preview_xz", "browse", "note")
+    q = str(scroll or "").strip().lower()
+    return [{k: f.get(k) for k in keep} for f in field_doc().get("fields", []) if q in f["scroll"].lower()]
+
+
+def field_counts():
+    rows = field_doc().get("fields", [])
+    return {"scrolls": len({f["scroll"] for f in rows}), "fields": len(rows),
+            "made_here": sum(f["source"] == "dataset" for f in rows)}
 
 
 def list_models():
@@ -386,8 +424,8 @@ through z. Model output: geometry, not a reading of any text.*
   near 0 for the control.
 - **Normals** are compared where the layer signal is strong; where it is weak the normal is barely defined. On the
   open data's fields they can differ in parts of a box, because villa changed how lasagna estimates normals after
-  those fields were made (April 2026, by their run names). This Space runs the later code, the same as its ten
-  whole-scan fields; on PHerc0175A it matched that field on 99.9% of voxels, with a median normal angle of 0°.
+  those fields were made (April 2026, by their run names). This Space runs the later code, the same as the ten
+  whole-scan fields in its bucket; on PHerc0175A it matched that field on 99.9% of voxels, with a median normal angle of 0°.
 
 ![The check under a result](/gradio_api/file=media/howto-check.png)
 
@@ -464,6 +502,7 @@ add this Space too. A field uses the caller's ZeroGPU time, so pass your Hugging
 
 | Call | What it returns |
 | --- | --- |
+| `/list_fields` | every whole-scan field the first tab lists, by scroll: volume, voxel size, model, size and links |
 | `/list_scans` | every open-data volume it can read, with the level the model reads |
 | `/list_models` | the model slot: which models exist and which are offered |
 | `/example_points` | ready points inside the papyrus of scans on no prize list |
@@ -519,14 +558,14 @@ CSS = """
 """
 
 HEAD = """
-<meta name="description" content="Lasagna Fields: download villa's lasagna field for ten whole Herculaneum scroll scans,
-or make it for any box of a public scan on ZeroGPU. API and MCP server for agents.">
+<meta name="description" content="Lasagna Fields: whole-scan lasagna fields for {scrolls} Herculaneum scrolls, listed by
+scroll, or villa's field made for any box of a public scan on ZeroGPU. API and MCP server for agents.">
 <meta property="og:title" content="Lasagna Fields">
-<meta property="og:description" content="villa's lasagna field (cos, grad_mag, normals) for Herculaneum scroll CT:
-ten whole scans to download, and any box made on demand. Model output, not a reading.">
+<meta property="og:description" content="Lasagna fields (cos, grad_mag, normals) for Herculaneum scroll CT:
+{scrolls} scrolls listed by scroll, and any box made on demand. Model output, not a reading.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,650&display=swap" rel="stylesheet">
-"""
+""".format(scrolls=field_counts()["scrolls"])
 # one page scroll bar: fits the guide's frame to its content (written by python -m kit spaceconnect render)
 ONESCROLL = HERE / "onescroll.html"
 HEAD += ONESCROLL.read_text() if ONESCROLL.is_file() else ""
@@ -548,7 +587,7 @@ def theme():
 
 
 def guide_html():
-    """The guide to the ten ready-made scans, its pictures read from this Space's assets/ folder."""
+    """The guide to the whole-scan fields, with its list from fields.json and its pictures from assets/."""
     if not GUIDE.is_file():
         return "<p>The guide is missing from this copy.</p>"
     import html
@@ -564,7 +603,11 @@ def guide_html():
            'else if(h.indexOf("?tab=")===0){e.preventDefault();window.parent.postMessage({lfTab:h.slice(5)},"*");}'
            'else if(/^https?:/.test(h)){a.target="_blank";a.rel="noopener";}},true);</script>')
     page = page.replace("<head>", "<head>" + fix, 1)
-    return f'<iframe title="Ten whole scans" srcdoc="{html.escape(page, quote=True)}"></iframe>'
+    # the list of every field (fields.json), as JSON a <script> cannot end early
+    data = json.dumps(field_doc(), ensure_ascii=False).replace("</", "<\\/")
+    page = page.replace('<script id="fieldlist" type="application/json">null</script>',
+                        f'<script id="fieldlist" type="application/json">{data}</script>', 1)
+    return f'<iframe title="Every lasagna field" srcdoc="{html.escape(page, quote=True)}"></iframe>'
 
 
 TAB_JS = """
@@ -614,11 +657,12 @@ def build_demo():
         return e["volume"], e["z"], e["y"], e["x"]
 
     with gr.Blocks(title="Lasagna Fields", delete_cache=(1800, 3600)) as demo:
-        gr.HTML('<div class="lf-head"><div class="layers"></div><h1>Lasagna Fields</h1><span>villa’s lasagna '
-                'field for Herculaneum scroll CT: ten whole scans to download, and any box made on demand.</span>'
-                '</div>')
+        n = field_counts()
+        gr.HTML('<div class="lf-head"><div class="layers"></div><h1>Lasagna Fields</h1><span>Lasagna fields for '
+                f'{n["scrolls"]} Herculaneum scrolls, listed by scroll, and villa’s field made for any box on demand.'
+                '</span></div>')
         with gr.Tabs(elem_id="lf-tabs"):
-            with gr.Tab("Ten whole scans", id="scans"):
+            with gr.Tab("Every field", id="scans"):
                 gr.HTML(guide_html(), elem_classes="lf-guide")
             with gr.Tab("Make a field", id="make"):
                 gr.Markdown(INTRO)
@@ -673,7 +717,8 @@ def build_demo():
             a_z, a_y, a_x = (gr.Number(0, precision=0, label=k) for k in "zyx")
             a_size = gr.Number(256, precision=0, label="size")
             a_json, a_img, a_file = gr.JSON(), gr.Image(type="numpy", format="png"), gr.File()
-            a_btns = [gr.Button() for _ in range(5)]
+            a_scroll = gr.Textbox("", label="scroll")
+            a_btns = [gr.Button() for _ in range(6)]
 
         hidden = dict(api_visibility="private")
         vid.change(volume_text, vid, vinfo, **hidden)
@@ -687,7 +732,8 @@ def build_demo():
                                     (a_btns[1], list_models, [], a_json, "list_models"),
                                     (a_btns[2], example_points, [], a_json, "example_points"),
                                     (a_btns[3], plan_field, ins, a_json, "plan_field"),
-                                    (a_btns[4], make_field, ins, [a_img, a_json, a_file], "make_field")):
+                                    (a_btns[4], make_field, ins, [a_img, a_json, a_file], "make_field"),
+                                    (a_btns[5], list_fields, [a_scroll], a_json, "list_fields")):
             heavy = name == "make_field"
             btn.click(guard(fn), i, o, api_name=name, api_description=fn.__doc__.split("\n\n")[0],
                       concurrency_id="model" if heavy else None, concurrency_limit=2 if heavy else 8)

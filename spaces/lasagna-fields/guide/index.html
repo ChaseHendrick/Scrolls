@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Lasagna Fields</title>
-<meta name="description" content="Lasagna fields from the villa lasagna model for ten Herculaneum scroll scans, free to download. Made by Chase Hendrick.">
+<meta name="description" content="Whole-scan lasagna fields for Herculaneum scrolls, listed by scroll: villa's own fields in the open data, and more made with the villa lasagna model and with Lasagnetta, free to download. Made by Chase Hendrick.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -42,8 +42,8 @@ nav .wrap{display:flex;align-items:center;gap:22px;height:56px}
 .tbtn{border:1px solid var(--line);background:var(--card);color:var(--ink2);border-radius:8px;padding:5px 10px;cursor:pointer;font:inherit;font-size:13px}
 header.hero{position:relative;overflow:hidden;border-bottom:1px solid var(--line)}
 .hero .wrap{padding-top:72px;padding-bottom:64px;position:relative;z-index:1}
-.fields{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:.55}
-.hero:after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,var(--bg) 0,var(--bg) 52%,color-mix(in srgb,var(--bg) 80%,transparent) 66%,color-mix(in srgb,var(--bg) 30%,transparent) 84%,transparent 100%)}
+.fields{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:.85}
+.hero:after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,var(--bg) 0,var(--bg) 44%,color-mix(in srgb,var(--bg) 78%,transparent) 56%,color-mix(in srgb,var(--bg) 25%,transparent) 72%,transparent 88%)}
 .hero .wrap{z-index:2}
 .eyebrow{text-transform:uppercase;letter-spacing:.14em;font-size:12px;font-weight:600;color:var(--accent)}
 .hero h1{font-size:clamp(38px,6vw,68px);max-width:760px;margin:12px 0 18px}
@@ -112,21 +112,84 @@ tr:last-child td{border-bottom:0}
 .note{border-left:3px solid var(--accent2);background:var(--card);padding:12px 16px;border-radius:0 10px 10px 0;margin:14px 0;color:var(--ink2);font-size:15px}
 footer{padding:40px 0 60px;color:var(--ink3);font-size:14px}
 footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+.ftools{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+.ftools .seg{margin-bottom:0}
+.ftools .seg button{white-space:nowrap;padding:6px 11px}
+.ftools input{flex:1 1 220px;max-width:340px;padding:7px 12px;border:1px solid var(--line);border-radius:9px;background:var(--card);color:var(--ink);font:inherit;font-size:14px}
+.fcount{color:var(--ink3);font-size:13.5px}
+.fcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:16px;align-items:stretch}
+.sccard{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:var(--shadow);display:flex;flex-direction:column}
+.sccard .thumb{position:relative;aspect-ratio:2/1;background:#000;overflow:hidden}
+.sccard .thumb img{display:block;width:100%;height:100%;object-fit:cover}
+.sccard .thumb .tag{position:absolute;left:10px;bottom:8px;font-size:11.5px;color:#f1e9dc;background:#000a;padding:2px 8px;border-radius:6px}
+.sccard .hd{display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding:12px 16px 4px}
+.sccard .hd h3{font-size:21px;margin:0}
+.sccard .hd .cnt{font-size:12.5px;color:var(--ink3);white-space:nowrap}
+.sccard ul{list-style:none;margin:0;padding:4px 10px 12px}
+.sccard li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;padding:9px 6px;border-top:1px solid var(--line)}
+.sccard li:first-child{border-top:0}
+.sccard .res{font-weight:600;font-size:14.5px}
+.sccard .res .mono{font-weight:400;font-size:12px;color:var(--ink3);margin-left:6px}
+.sccard .sz{font-size:13px;color:var(--ink2);text-align:right;white-space:nowrap;align-self:center}
+.sccard .row2{grid-column:1/-1;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.sccard .row2 .flinks{margin-left:auto}
+.sccard .why{grid-column:1/-1;font-size:12.5px;color:var(--ink3);line-height:1.4}
+.vseg{margin-left:auto}
+table.flist td{vertical-align:middle}
+table.flist tbody+tbody{border-top:2px solid var(--line)}
+table.flist .sc{font-weight:600;white-space:nowrap}
+table.flist .num{white-space:nowrap}
+.mp{display:inline-block;border-radius:999px;padding:1px 9px;font-size:12.5px;font-weight:600;white-space:nowrap}
+.mp.villa{background:var(--sel);color:var(--accent)}
+.mp.lgt{background:color-mix(in srgb,var(--basil) 18%,transparent);color:var(--basil)}
+.mp.soon{background:var(--bg2);color:var(--ink3);border:1px dashed var(--ink3)}
+.fnote{display:block;font-size:12.5px;color:var(--ink3);margin-top:3px;line-height:1.4}
+.flinks{display:flex;gap:6px;flex-wrap:nowrap}
+table.flist td.mdl{max-width:300px}
+.flinks a,.flinks button{font:inherit;font-size:13px;line-height:1.5;border:1px solid var(--line);border-radius:7px;padding:2px 9px;background:var(--card);color:var(--accent);cursor:pointer;white-space:nowrap}
+.flinks a:hover,.flinks button:hover{text-decoration:none;border-color:var(--accent)}
+.fempty{color:var(--ink3);padding:14px 2px}
+#pend{margin-top:30px}
+#pend table td{color:var(--ink2)}
+.lbox{position:fixed;inset:0;z-index:60;background:color-mix(in srgb,#000 62%,transparent);display:grid;place-items:center;padding:16px}
+.lbox[hidden]{display:none}
+html.lbopen{overflow:hidden}
+.lbpanel{background:var(--card);color:var(--ink);border-radius:16px;box-shadow:var(--shadow);width:min(1100px,100%);max-height:calc(100vh - 32px);display:flex;flex-direction:column;overflow:hidden}
+.lbhead{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:12px 16px;border-bottom:1px solid var(--line)}
+.lbhead b{font-size:15px;margin-right:auto}
+#lbslice[hidden]{display:none}
+@media (max-width:600px){.lbhead .seg{order:3;width:100%}.lbhead .seg button{flex:1}}
+.lbx{border:1px solid var(--line);background:var(--bg2);color:var(--ink);border-radius:9px;padding:6px 12px;font:inherit;font-size:13.5px;cursor:pointer}
+#lbimg{display:block;width:100%;min-height:0;flex:1 1 auto;object-fit:contain;background:#0e1117}
+.lbfoot{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:10px 16px;font-size:13px;color:var(--ink2)}
 .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--bg);padding:8px 14px;border-radius:9px;font-size:14px;opacity:0;transition:.2s;pointer-events:none;z-index:50}
 .toast.on{opacity:1;transform:translateX(-50%)}
 @media (max-width:900px){
   .detail,.region{grid-template-columns:1fr}
   .cards3{grid-template-columns:1fr}
-  .hero:after{background:color-mix(in srgb,var(--bg) 92%,transparent)}
-  .fields{opacity:.35}
+  .hero .wrap{padding-top:250px}
+  .fields{bottom:auto;height:300px;opacity:.95}
+  .hero:after{background:linear-gradient(180deg,transparent 0,transparent 150px,color-mix(in srgb,var(--bg) 70%,transparent) 230px,var(--bg) 300px)}
   .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:760px){
+  table.flist,table.flist tbody,table.flist tr,table.flist td{display:block;width:100%}
+  table.flist thead{display:none}
+  table.flist tr{padding:10px 14px;border-bottom:1px solid var(--line)}
+  table.flist tbody tr:last-child{border-bottom:0}
+  table.flist td{border:0;padding:2px 0}
+  table.flist td.sc{font-size:17px;padding-bottom:4px}
+  table.flist td[data-k]:before{content:attr(data-k);display:inline-block;min-width:86px;color:var(--ink3);font-size:12.5px}
+  table.flist td.get{padding-top:6px}
+  table.flist td.mdl{max-width:none}
+  .flinks{flex-wrap:wrap}
 }
 @media (max-width:560px){
   .wrap{padding:0 16px}
   .form{grid-template-columns:repeat(2,minmax(0,1fr))}
   .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
   section{padding:52px 0}
-  .navlinks{display:none}
+  .navlinks a:nth-child(n+2){display:none}
 }
 </style>
 </head>
@@ -134,7 +197,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
 <nav><div class="wrap">
   <a class="brand" href="#top"><span class="layers" aria-hidden="true"></span>Lasagna Fields</a>
   <div class="navlinks">
-    <a href="#scans">Scans</a><a href="#connect">Connect your tool</a><a href="#region">Get a region</a><a href="#use">Use it</a><a href="#method">How it was made</a><a href="#format">Format</a><a href="#credit">Credit</a>
+    <a href="#all">Every field</a><a href="#scans">Preview</a><a href="#connect">Connect your tool</a><a href="#region">Get a region</a><a href="#use">Use it</a><a href="#method">How it was made</a><a href="#format">Format</a><a href="#credit">Credit</a>
   </div>
   <button class="tbtn" id="theme" type="button" aria-label="Switch light or dark">Theme</button>
 </div></nav>
@@ -143,12 +206,12 @@ footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
   <svg class="fields" id="fields" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMax slice" aria-hidden="true"></svg>
   <div class="wrap">
     <div class="eyebrow">Vesuvius Challenge open data, made usable</div>
-    <h1>Lasagna fields for ten Herculaneum scrolls</h1>
-    <p class="lede">The villa lasagna model, run on ten whole scroll scans that had no lasagna field in the open data. Download a scan or stream it from a URL, then use it with the lasagna surface fit or the spiral fit. Every field is checked for seams.</p>
-    <p class="by">Made and shared by <b>Chase Hendrick</b>, October 2026. Model and code by the authors of lasagna in ScrollPrize/villa.</p>
+    <h1>Lasagna fields for <span id="nscrolls">24</span> Herculaneum scrolls</h1>
+    <p class="lede">Whole-scan lasagna fields in one list, by scroll: villa's own fields in the open data, and fields made here for scrolls that had none, with the villa lasagna model or with Lasagnetta, a faster copy of it. Download a field or stream it from a URL, then use it with the lasagna surface fit or the spiral fit.</p>
+    <p class="by">Made and shared by <b>Chase Hendrick</b>, October 2026. The villa lasagna model and code are by the authors of lasagna in ScrollPrize/villa; Lasagnetta was trained here to copy it.</p>
     <div class="stats" id="stats"></div>
     <div class="cta">
-      <a class="btn primary" href="#scans">Browse the scans</a>
+      <a class="btn primary" href="#all">Browse every field</a>
       <a class="btn primary" href="?tab=make">Make a field for any scan</a>
       <a class="btn" href="#connect">Stream it by URL</a>
       <a class="btn" href="#region">Download only a region</a>
@@ -157,9 +220,32 @@ footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
   </div>
 </header>
 
+<section id="all"><div class="wrap">
+  <h2>Every field, by scroll</h2>
+  <p class="sub">One card per scroll, one line per whole-scan field. <span class="mp villa">villa predict3d</span> is the villa lasagna model itself, the reference. <span class="mp lgt">Lasagnetta 0.1.1</span> copies it and runs about 5 times faster: use its fields as a preview, and villa's where exact values matter. A field read at level 2 or 3 of a fine scan is on that level's grid, so multiply its coordinates by 4 or 8 for full resolution.</p>
+  <div class="ftools">
+    <input id="fq" type="search" placeholder="Filter by scroll or volume" aria-label="Filter by scroll or volume">
+    <div class="seg" role="group" aria-label="Model">
+      <button type="button" data-fm="" aria-pressed="true">All</button><button type="button" data-fm="villa predict3d" aria-pressed="false">villa predict3d</button><button type="button" data-fm="Lasagnetta 0.1.1" aria-pressed="false">Lasagnetta 0.1.1</button>
+    </div>
+    <div class="seg" role="group" aria-label="Where">
+      <button type="button" data-fw="" aria-pressed="true">Any source</button><button type="button" data-fw="open-data" aria-pressed="false">Open data</button><button type="button" data-fw="dataset" aria-pressed="false">Made here</button>
+    </div>
+    <span class="fcount" id="fcount"></span>
+    <div class="seg vseg" role="group" aria-label="Layout">
+      <button type="button" data-fv="cards" aria-pressed="true">Cards</button><button type="button" data-fv="table" aria-pressed="false">Table</button>
+    </div>
+  </div>
+  <div class="fcards" id="fcards"></div>
+  <div class="tablewrap" id="ftable" hidden><table class="flist" id="flist">
+    <thead><tr><th>Scroll</th><th>Volume</th><th>Voxel size</th><th>Model</th><th>Where</th><th>Size</th><th>Get it</th></tr></thead>
+  </table></div>
+  <div id="pend" hidden></div>
+</div></section>
+
 <section id="scans"><div class="wrap">
-  <h2>The ten scans</h2>
-  <p class="sub">Pick a scan to see its field, its numbers and the commands to get it. Each preview is a slice of the model output: <b>cos</b> on the left, the <b>surface normals</b> as color on the right.</p>
+  <h2>Ten fields to preview and stream</h2>
+  <p class="sub">The first ten fields made here, with the villa lasagna model, also stream from a public bucket. Pick one to see its field, its numbers and the commands to get it. Each preview is a slice of the model output: <b>cos</b> on the left, the <b>surface normals</b> as color on the right.</p>
   <div class="grid" id="grid"></div>
   <div class="detail">
     <div class="panel">
@@ -184,7 +270,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
 
 <section id="connect"><div class="wrap">
   <h2>Connect your tool</h2>
-  <p class="sub">Every field is also in the public bucket <a href="https://huggingface.co/buckets/SharpMeow/lasagna-fields">SharpMeow/lasagna-fields</a>, laid out like the Vesuvius Challenge open data (<code>SCAN/representations/predictions/lasagna/RUN/</code>). Any tool that reads zarr over HTTPS can open it, with no download and no account. The commands here follow the scan you picked above.</p>
+  <p class="sub">Every field made here is also in the public bucket <a href="https://huggingface.co/buckets/SharpMeow/lasagna-fields">SharpMeow/lasagna-fields</a>, laid out like the Vesuvius Challenge open data (<code>SCAN/representations/predictions/lasagna/RUN/</code>). Any tool that reads zarr over HTTPS can open it, with no download and no account. The commands here follow the scan you picked above. villa's fields in the open data stream the same way from their run folder: <b>Copy URL</b> in the list gives any field's folder.</p>
   <div class="panel">
     <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center"><h3 id="cname" style="margin:0"></h3><span style="color:var(--ink3);font-size:13px">Anonymous HTTPS, CORS open, missing chunks read as empty</span></div>
     <div class="codebox"><pre id="curl"></pre><button class="copy" data-copy="curl" type="button">Copy</button></div>
@@ -200,7 +286,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
 
 <section id="region"><div class="wrap">
   <h2>Download only the region you need</h2>
-  <p class="sub">Click the map, or type a point in full-resolution scan voxels. The first command copies from the bucket only the chunks that cover your z range. The second downloads whole parts from the dataset: each scan was computed in boxes called parts, one tar each, and a region needs only the parts it touches plus one small tar with the joined manifest. Parts you skip read as empty.</p>
+  <p class="sub">For the ten fields above: click the map, or type a point in full-resolution scan voxels. The first command copies from the bucket only the chunks that cover your z range. The second downloads whole parts from the dataset: each scan was computed in boxes called parts, one tar each, and a region needs only the parts it touches plus one small tar with the joined manifest. Parts you skip read as empty.</p>
   <div class="region">
     <div class="mapbox">
       <svg class="map" id="map" viewBox="0 0 400 400" role="img" aria-label="Top view of the scan's parts at the chosen height"></svg>
@@ -227,14 +313,14 @@ footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
   <p class="sub">A lasagna field is the input that the lasagna surface fit in villa reads. With it ready, nobody has to spend GPU time predicting it again.</p>
   <div class="cards3">
     <div class="card"><div class="k">Researchers</div><h3>Read it like any OME-Zarr</h3><p>Open the arrays with <code>zarr</code>, <code>tensorstore</code> or any OME-Zarr viewer. Coordinates are the scan's own voxels, divided by 2 for cos and by 4 for the other channels. The format table below says exactly what is stored.</p></div>
-    <div class="card"><div class="k">Teams building tools</div><h3>Point lasagna at the manifest</h3><p><code>SCAN.lasagna.json</code> is the manifest that the lasagna tools read, with relative paths to the four channels. A center line for every scan except PHerc0841 is in <a href="https://huggingface.co/datasets/SharpMeow/vesuvius-center-lines">vesuvius-center-lines</a>.</p></div>
+    <div class="card"><div class="k">Teams building tools</div><h3>Point lasagna at the manifest</h3><p><code>SCAN.lasagna.json</code> is the manifest that the lasagna tools read, with relative paths to the four channels. Of the ten fields above, every scan but PHerc0841 has a center line in <a href="https://huggingface.co/datasets/SharpMeow/vesuvius-center-lines">vesuvius-center-lines</a>.</p></div>
     <div class="card"><div class="k">Everyone else, rivals included</div><h3>Same head start for all</h3><p>These fields are public so that nobody has to spend a GPU day before trying an idea on these scrolls. Use them, compare against them, and tell us if you find a problem.</p></div>
   </div>
   <h3 style="margin-top:34px">From download to first numbers</h3>
   <div class="steps" style="margin-top:12px">
     <div class="step"><div><b>Install the Hugging Face client and zarr.</b><div class="codebox"><pre id="u1">pip install -U "huggingface_hub[cli]" "zarr&lt;3" numpy</pre><button class="copy" data-copy="u1" type="button">Copy</button></div></div></div>
     <div class="step"><div><b>Stream it (above), or download a scan or just a region, and check it.</b> <code>sha256sum -c SHA256SUMS</code> checks every file; add <code>--ignore-missing</code> after a partial download.</div></div>
-    <div class="step"><div><b>Unpack the parts, then the fix tar last.</b> The fix tar holds the joined manifest, so it must overwrite the per-part ones.</div></div>
+    <div class="step"><div><b>Unpack the parts, then the fix tar last.</b> The fix tar (the meta tar, for a Lasagnetta field) holds the joined manifest, so it must overwrite the per-part ones.</div></div>
     <div class="step"><div><b>Load and decode.</b> Normals are stored as <code>uint8</code> as <code>v &times; 127 + 128</code>; <code>nz</code> is not stored, so take <code>sqrt(1 - nx&sup2; - ny&sup2;)</code>. Each card's <code>load_example.py</code> runs as is.</div></div>
   </div>
 </div></section>
@@ -248,6 +334,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
     <div class="step"><div><h3>Predict on GPUs</h3><p>One Job per part on an NVIDIA RTX PRO 6000, at the scan's native resolution with no resampling: <span id="mparts"></span> parts in all.</p></div></div>
     <div class="step"><div><h3>Join and check</h3><p>The parts were joined into one store, with a check that no chunk appears twice. A seam check then compares the step across each part edge with the steps beside it (1.0 means no step; the limit is 1.5). Finally the card's own load snippet was run on two real parts before upload.</p></div></div>
     <div class="step"><div><h3>One flag, checked properly</h3><p>PHerc0841 flagged one edge: cos at z 1,024 stepped 1.62 times its neighbors. A single run straight across that edge gave the same field as the joined parts, byte for byte, in all 1,084 level-1 cos chunks and all 760 level-2 chunks of the four channels there. So that step is in the scan itself, not a seam.</p></div></div>
+    <div class="step"><div><h3>Seven more scrolls, 29 October 2026</h3><p>PHercMANBp and PHerc0343P got villa fields the same way from their 2.4 and 2.2 µm scans read at level 2, one 1,024-slice slab per part, with no step at any part edge (worst seam ratios 1.203 and 1.101). PHerc0009B, PHerc0172, PHerc0500P2, PHercMAN5 and PHercMANB got <a href="https://huggingface.co/SharpMeow/lasagnetta">Lasagnetta</a> 0.1.1 fields: three students averaged, cos blur 0.5, cos offset 0.04, part edges on multiples of 512 scan voxels, values kept only where the masked scan holds CT. Each card gives that scan's agreement with villa's net and what the release's self-check said there.</p></div></div>
     <div class="step"><div><h3>Publish with checksums, and unpacked for streaming</h3><p>Each dataset carries <code>SHA256SUMS</code>, an <code>index.json</code> with every part's box and hash, the previews and the tested load example. The same parts were then unpacked into the public bucket, with the joined manifest written last, so tools can read chunks by URL.</p></div></div>
   </div>
 </div></section>
@@ -265,17 +352,18 @@ footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
       <tr><td>Every array</td><td colspan="3">zarr v2, chunks 64 &times; 64 &times; 64, Blosc zstd level 3, fill value 0, axes z, y, x, each with coarser levels down to 4</td></tr>
     </tbody>
   </table></div>
+  <p style="margin-top:14px;color:var(--ink2);font-size:15px">Lasagnetta fields keep the same layout and channels. A field read at level 2 or 3 of a fine scan has its levels counted from that level, as its manifest's <code>base_shape_zyx</code> says.</p>
   <div class="note"><b>Limits.</b> This is raw model output, and nobody has checked it by eye. Regions the masked scan leaves empty are absent (read as 0). The scan's ends include the mount, and the model produces values there too.</div>
 </div></section>
 
 <section id="credit"><div class="wrap">
   <h2>Credit and terms</h2>
-  <p class="sub">The scans are <a href="https://scrollprize.org">Vesuvius Challenge</a> open data under CC BY-NC 4.0, and these derived fields are shared under the same terms. Model and code are <a href="https://github.com/ScrollPrize/villa">ScrollPrize/villa</a>'s lasagna; credit to its authors. The fields were computed and shared by Chase Hendrick.</p>
+  <p class="sub">The scans are <a href="https://scrollprize.org">Vesuvius Challenge</a> open data under CC BY-NC 4.0, and these derived fields are shared under the same terms. Model and code are <a href="https://github.com/ScrollPrize/villa">ScrollPrize/villa</a>'s lasagna; credit to its authors. The fields listed from the open data are villa's own, published there by the Vesuvius Challenge; this page only links them. The other fields were computed and shared by Chase Hendrick, some with <a href="https://huggingface.co/SharpMeow/lasagnetta">Lasagnetta</a>, which copies villa's lasagna.</p>
   <h3>Cite</h3>
-  <div class="codebox"><pre id="cite">Chase Hendrick (2026). Lasagna fields for ten Herculaneum scrolls.
+  <div class="codebox"><pre id="cite">Chase Hendrick (2026). Lasagna Fields: lasagna fields for Herculaneum scrolls.
 Hugging Face. https://huggingface.co/spaces/SharpMeow/lasagna-fields
-Computed with ScrollPrize/villa lasagna (db3dbea2) and scrollprize/lasagna (de45f011)
-on Vesuvius Challenge open data (CC BY-NC 4.0).</pre><button class="copy" data-copy="cite" type="button">Copy</button></div>
+Computed with ScrollPrize/villa lasagna (db3dbea2) and scrollprize/lasagna (de45f011),
+and with Lasagnetta 0.1.1 (SharpMeow/lasagnetta), on Vesuvius Challenge open data (CC BY-NC 4.0).</pre><button class="copy" data-copy="cite" type="button">Copy</button></div>
 </div></section>
 
 <footer><div class="wrap">
@@ -283,8 +371,14 @@ on Vesuvius Challenge open data (CC BY-NC 4.0).</pre><button class="copy" data-c
   <span>Also: <a href="https://huggingface.co/datasets/SharpMeow/vesuvius-center-lines">center lines</a> &middot; <a href="https://huggingface.co/spaces/SharpMeow/umbilici?mode=lasagna&scan=PHerc0175A&z=6400">PHerc0175A in 3D</a></span>
 </div></footer>
 <div class="toast" id="toast">Copied</div>
+<div class="lbox" id="lbox" hidden role="dialog" aria-modal="true" aria-labelledby="lbtitle"><div class="lbpanel">
+  <div class="lbhead"><b id="lbtitle"></b><div class="seg"><button type="button" data-lv="xy" aria-pressed="true">Through the middle</button><button type="button" data-lv="xz" aria-pressed="false">Along the scroll</button></div><button type="button" class="lbx" id="lbclose" aria-label="Close">Close</button></div>
+  <img id="lbimg" alt="">
+  <div class="lbfoot"><span>Model output: cos (one band per papyrus layer) beside the surface normals as color.</span><button type="button" class="btn" id="lbslice">Open in the slice viewer</button></div>
+</div></div>
 
 <script id="data" type="application/json">[{"id":"PHerc0175A","repo":"SharpMeow/pherc0175a-lasagna","volume":"20250521115057-8.640um-1.2m-116keV-masked.zarr","um":8.64,"shape":[12748,9363,9363],"bytes":48177793405,"fix":256972800,"seam":1.26,"pz":6372,"center":true,"parts":[["000",[[1024,2048],[0,4608],[0,9363]],569692160],["001",[[1024,2048],[4608,9363],[0,4608]],496906240],["002",[[1024,2048],[4608,9363],[4608,9363]],1085020160],["003",[[2048,3072],[0,4608],[0,9363]],1038991360],["004",[[2048,3072],[4608,7168],[0,4608]],1268101120],["005",[[2048,3072],[4608,7168],[4608,9363]],1239439360],["006",[[2048,3072],[7168,9363],[0,4608]],309596160],["007",[[2048,3072],[7168,9363],[4608,9363]],333393920],["008",[[3072,4096],[0,4608],[0,9363]],1165516800],["009",[[3072,4096],[4608,7168],[0,2048]],198952960],["010",[[3072,4096],[4608,7168],[2048,4608]],1121945600],["011",[[3072,4096],[4608,7168],[4608,9363]],1206630400],["012",[[3072,4096],[7168,9363],[0,4608]],477286400],["013",[[3072,4096],[7168,9363],[4608,9363]],298577920],["014",[[4096,5120],[0,4608],[0,9363]],1303111680],["015",[[4096,5120],[4608,7168],[0,2048]],213565440],["016",[[4096,5120],[4608,7168],[2048,4608]],1113907200],["017",[[4096,5120],[4608,7168],[4608,9363]],1252628480],["018",[[4096,5120],[7168,9363],[0,4608]],409507840],["019",[[4096,5120],[7168,9363],[4608,9363]],269250560],["020",[[5120,6144],[0,4608],[0,4608]],1032652800],["021",[[5120,6144],[0,4608],[4608,9363]],387000320],["022",[[5120,6144],[4608,7168],[0,2048]],237475840],["023",[[5120,6144],[4608,7168],[2048,4608]],1103083520],["024",[[5120,6144],[4608,7168],[4608,7168]],1101475840],["025",[[5120,6144],[4608,7168],[7168,9363]],227850240],["026",[[5120,6144],[7168,9363],[0,4608]],326850560],["027",[[5120,6144],[7168,9363],[4608,9363]],253163520],["028",[[6144,7168],[0,4608],[0,4608]],1004503040],["029",[[6144,7168],[0,4608],[4608,9363]],526776320],["030",[[6144,7168],[4608,7168],[0,2048]],200007680],["031",[[6144,7168],[4608,7168],[2048,4608]],1079756800],["032",[[6144,7168],[4608,7168],[4608,7168]],1095782400],["033",[[6144,7168],[4608,7168],[7168,9363]],264478720],["034",[[6144,7168],[7168,9363],[0,4608]],280637440],["035",[[6144,7168],[7168,9363],[4608,9363]],251627520],["036",[[7168,8192],[0,4608],[0,4608]],1008650240],["037",[[7168,8192],[0,4608],[4608,9363]],652462080],["038",[[7168,8192],[4608,7168],[0,2048]],176281600],["039",[[7168,8192],[4608,7168],[2048,4608]],1071370240],["040",[[7168,8192],[4608,7168],[4608,7168]],1079173120],["041",[[7168,8192],[4608,7168],[7168,9363]],290242560],["042",[[7168,8192],[7168,9363],[0,4608]],219996160],["043",[[7168,8192],[7168,9363],[4608,9363]],244940800],["044",[[8192,9216],[0,4608],[0,4608]],1032304640],["045",[[8192,9216],[0,4608],[4608,9363]],867645440],["046",[[8192,9216],[4608,7168],[0,4608]],1188648960],["047",[[8192,9216],[4608,7168],[4608,7168]],1085102080],["048",[[8192,9216],[4608,7168],[7168,9363]],379729920],["049",[[8192,9216],[7168,9363],[0,4608]],170926080],["050",[[8192,9216],[7168,9363],[4608,9363]],239185920],["051",[[9216,10240],[0,4608],[0,4608]],1050480640],["052",[[9216,10240],[0,4608],[4608,9363]],1185935360],["053",[[9216,10240],[4608,7168],[4608,7168]],1115289600],["054",[[9216,10240],[4608,7168],[7168,9363]],585236480],["055",[[9216,10240],[4608,9363],[0,4608]],1247825920],["056",[[9216,10240],[7168,9363],[4608,9363]],255498240],["057",[[10240,11264],[0,4608],[0,4608]],1034823680],["058",[[10240,11264],[0,4608],[4608,9363]],915281920],["059",[[10240,11264],[4608,9363],[0,4608]],1213378560],["060",[[10240,11264],[4608,9363],[4608,9363]],1442519040],["00",[[0,1024],[0,9363],[0,9363]],885186560],["11",[[11264,12288],[0,9363],[0,9363]],1106769920],["12",[[12288,12748],[0,9363],[0,9363]],1427712000]],"run":"PHerc0175A/representations/predictions/lasagna/20250521115057-lasagna-de45f011"},{"id":"PHerc0175B","repo":"SharpMeow/pherc0175b-lasagna","volume":"20250521125822-8.640um-1.2m-116keV-masked.zarr","um":8.64,"shape":[15897,9613,9613],"bytes":82186089634,"fix":10240,"seam":1.345,"pz":7948,"center":true,"parts":[["000",[[0,1024],[0,9613],[0,9613]],1514383360],["001",[[1024,2048],[0,5120],[0,9613]],1407938560],["002",[[1024,2048],[5120,9613],[0,9613]],3160821760],["003",[[2048,3072],[0,5120],[0,5120]],2000721920],["004",[[2048,3072],[0,5120],[5120,9613]],2044180480],["005",[[2048,3072],[5120,9613],[0,5120]],1640591360],["006",[[2048,3072],[5120,9613],[5120,9613]],1497559040],["007",[[3072,4096],[0,5120],[0,5120]],2237388800],["008",[[3072,4096],[0,5120],[5120,9613]],2131998720],["009",[[3072,4096],[5120,9613],[0,9613]],2935080960],["010",[[4096,5120],[0,5120],[0,5120]],2153451520],["011",[[4096,5120],[0,5120],[5120,9613]],1844142080],["012",[[4096,5120],[5120,9613],[0,9613]],2714398720],["013",[[5120,6144],[0,5120],[0,5120]],2108313600],["014",[[5120,6144],[0,5120],[5120,9613]],1906216960],["015",[[5120,6144],[5120,9613],[0,9613]],2691891200],["016",[[6144,7168],[0,5120],[0,5120]],2061670400],["017",[[6144,7168],[0,5120],[5120,9613]],1911951360],["018",[[6144,7168],[5120,9613],[0,9613]],2576302080],["019",[[7168,8192],[0,5120],[0,5120]],1851371520],["020",[[7168,8192],[0,5120],[5120,9613]],1717555200],["021",[[7168,8192],[5120,9613],[0,9613]],2700554240],["022",[[8192,9216],[0,5120],[0,5120]],1822607360],["023",[[8192,9216],[0,5120],[5120,9613]],1616537600],["024",[[8192,9216],[5120,9613],[0,5120]],1389537280],["025",[[8192,9216],[5120,9613],[5120,9613]],1553776640],["026",[[9216,10240],[0,5120],[0,5120]],1848739840],["027",[[9216,10240],[0,5120],[5120,9613]],1431142400],["028",[[9216,10240],[5120,9613],[0,5120]],1497989120],["029",[[9216,10240],[5120,9613],[5120,9613]],1644605440],["030",[[10240,11264],[0,5120],[0,5120]],1843128320],["031",[[10240,11264],[0,5120],[5120,9613]],1212149760],["032",[[10240,11264],[5120,9613],[0,5120]],1812940800],["033",[[10240,11264],[5120,9613],[5120,9613]],1621381120],["034",[[11264,12288],[0,5120],[0,9613]],2792785920],["035",[[11264,12288],[5120,9613],[0,5120]],1752053760],["036",[[11264,12288],[5120,9613],[5120,9613]],1498009600],["037",[[12288,13312],[0,5120],[0,9613]],2421299200],["038",[[12288,13312],[5120,9613],[0,9613]],2411141120],["039",[[13312,14336],[0,9613],[0,9613]],2876979200],["040",[[14336,15360],[0,9613],[0,9613]],816035840],["041",[[15360,15897],[0,9613],[0,9613]],1510348800]],"run":"PHerc0175B/representations/predictions/lasagna/20250521125822-lasagna-de45f011"},{"id":"PHerc0306B","repo":"SharpMeow/pherc0306b-lasagna","volume":"20250521133212-8.640um-1.2m-116keV-masked.zarr","um":8.64,"shape":[15898,8849,8849],"bytes":54562104779,"fix":10240,"seam":1.123,"pz":7948,"center":true,"parts":[["000",[[0,1024],[0,8849],[0,8849]],868341760],["001",[[1024,2048],[0,8849],[0,8849]],1625139200],["002",[[2048,3072],[0,8849],[0,8849]],3220418560],["003",[[3072,4096],[0,4096],[0,8849]],1915596800],["004",[[3072,4096],[4096,8849],[0,8849]],2842306560],["005",[[4096,5120],[0,4096],[0,8849]],2505390080],["006",[[4096,5120],[4096,8849],[0,8849]],2990786560],["007",[[5120,6144],[0,4096],[0,8849]],2537093120],["008",[[5120,6144],[4096,8849],[0,8849]],2867517440],["009",[[6144,7168],[0,4096],[0,8849]],2207866880],["010",[[6144,7168],[4096,8849],[0,8849]],2478387200],["011",[[7168,8192],[0,4096],[0,8849]],1837332480],["012",[[7168,8192],[4096,8849],[0,8849]],2307379200],["013",[[8192,9216],[0,4096],[0,8849]],1822986240],["014",[[8192,9216],[4096,8849],[0,8849]],2176440320],["015",[[9216,10240],[0,4096],[0,8849]],1844285440],["016",[[9216,10240],[4096,8849],[0,8849]],2145331200],["017",[[10240,11264],[0,4096],[0,8849]],1904312320],["018",[[10240,11264],[4096,8849],[0,8849]],2072791040],["019",[[11264,12288],[0,4096],[0,8849]],1891225600],["020",[[11264,12288],[4096,8849],[0,8849]],1812705280],["021",[[12288,13312],[0,4096],[0,8849]],2163097600],["022",[[12288,13312],[4096,8849],[0,8849]],1357107200],["023",[[13312,14336],[0,8849],[0,8849]],2441410560],["024",[[14336,15360],[0,8849],[0,8849]],1459896320],["025",[[15360,15898],[0,8849],[0,8849]],1263534080]],"run":"PHerc0306B/representations/predictions/lasagna/20250521133212-lasagna-de45f011"},{"id":"PHerc0483A","repo":"SharpMeow/pherc0483a-lasagna","volume":"20250521140913-8.640um-1.2m-116keV-masked.zarr","um":8.64,"shape":[15898,8849,8849],"bytes":47412438501,"fix":10240,"seam":1.162,"pz":7948,"center":true,"parts":[["000",[[0,1024],[0,8849],[0,8849]],953948160],["001",[[1024,2048],[0,8849],[0,8849]],2872115200],["002",[[2048,3072],[0,4096],[0,8849]],846182400],["003",[[2048,3072],[4096,8849],[0,8849]],2758737920],["004",[[3072,4096],[0,4096],[0,8849]],1158533120],["005",[[3072,4096],[4096,8849],[0,8849]],2182359040],["006",[[4096,5120],[0,4096],[0,8849]],1438115840],["007",[[4096,5120],[4096,8849],[0,8849]],2021847040],["008",[[5120,6144],[0,4096],[0,8849]],1460674560],["009",[[5120,6144],[4096,8849],[0,8849]],1818675200],["010",[[6144,7168],[0,8849],[0,8849]],2900961280],["011",[[7168,8192],[0,8849],[0,8849]],2810716160],["012",[[8192,9216],[0,8849],[0,8849]],3019837440],["013",[[9216,10240],[0,4096],[0,8849]],1343682560],["014",[[9216,10240],[4096,8849],[0,8849]],2060544000],["015",[[10240,11264],[0,4096],[0,8849]],1397544960],["016",[[10240,11264],[4096,8849],[0,8849]],2733813760],["017",[[11264,12288],[0,4096],[0,8849]],1278771200],["018",[[11264,12288],[4096,8849],[0,4096]],1464422400],["019",[[11264,12288],[4096,8849],[4096,8849]],1550018560],["020",[[12288,13312],[0,4096],[0,8849]],1111787520],["021",[[12288,13312],[4096,8849],[0,4096]],1561292800],["022",[[12288,13312],[4096,8849],[4096,8849]],1478133760],["023",[[13312,14336],[0,8849],[0,8849]],2452049920],["024",[[14336,15360],[0,8849],[0,8849]],1035386880],["025",[[15360,15898],[0,8849],[0,8849]],1698887680]],"run":"PHerc0483A/representations/predictions/lasagna/20250521140913-lasagna-de45f011"},{"id":"PHerc0483B","repo":"SharpMeow/pherc0483b-lasagna","volume":"20251124083638-8.640um-1.2m-116keV-masked.zarr","um":8.64,"shape":[11880,8343,8343],"bytes":41488155053,"fix":10240,"seam":1.106,"pz":5940,"center":true,"parts":[["000",[[0,1024],[0,8343],[0,8343]],176138240],["001",[[1024,2048],[0,8343],[0,8343]],1620623360],["002",[[2048,3072],[0,4096],[0,8343]],1205012480],["003",[[2048,3072],[4096,8343],[0,8343]],2147061760],["004",[[3072,4096],[0,4096],[0,8343]],1296189440],["005",[[3072,4096],[4096,8343],[0,8343]],2460006400],["006",[[4096,5120],[0,4096],[0,8343]],1599467520],["007",[[4096,5120],[4096,8343],[0,8343]],2541731840],["008",[[5120,6144],[0,4096],[0,8343]],1956659200],["009",[[5120,6144],[4096,8343],[0,8343]],2760755200],["010",[[6144,7168],[0,4096],[0,8343]],2275471360],["011",[[6144,7168],[4096,8343],[0,8343]],2689259520],["012",[[7168,8192],[0,4096],[0,8343]],2534461440],["013",[[7168,8192],[4096,8343],[0,8343]],2701701120],["014",[[8192,9216],[0,4096],[0,8343]],2829107200],["015",[[8192,9216],[4096,8343],[0,8343]],2989660160],["016",[[9216,10240],[0,4096],[0,8343]],2140211200],["017",[[9216,10240],[4096,8343],[0,8343]],2483568640],["018",[[10240,11264],[0,8343],[0,8343]],2567260160],["019",[[11264,11880],[0,8343],[0,8343]],510801920]],"run":"PHerc0483B/representations/predictions/lasagna/20251124083638-lasagna-de45f011"},{"id":"PHerc0490A","repo":"SharpMeow/pherc0490a-lasagna","volume":"20250521151210-8.640um-1.2m-116keV-masked.zarr","um":8.64,"shape":[11698,9101,9101],"bytes":49710517889,"fix":10240,"seam":1.184,"pz":5848,"center":true,"parts":[["000",[[0,1024],[0,9101],[0,9101]],1930536960],["001",[[1024,2048],[0,9101],[0,9101]],1422868480],["002",[[2048,3072],[0,4096],[0,9101]],2111375360],["003",[[2048,3072],[4096,9101],[0,9101]],2413690880],["004",[[3072,4096],[0,4096],[0,9101]],2379786240],["005",[[3072,4096],[4096,9101],[0,4096]],1359073280],["006",[[3072,4096],[4096,9101],[4096,9101]],1717237760],["007",[[4096,5120],[0,4096],[0,9101]],2506946560],["008",[[4096,5120],[4096,9101],[0,9101]],2644244480],["009",[[5120,6144],[0,4096],[0,9101]],2550620160],["010",[[5120,6144],[4096,9101],[0,9101]],2524825600],["011",[[6144,7168],[0,4096],[0,9101]],2422814720],["012",[[6144,7168],[4096,9101],[0,4096]],1422325760],["013",[[6144,7168],[4096,9101],[4096,9101]],1651210240],["014",[[7168,8192],[0,4096],[0,9101]],2114242560],["015",[[7168,8192],[4096,9101],[0,4096]],1600624640],["016",[[7168,8192],[4096,9101],[4096,9101]],2081792000],["017",[[8192,9216],[0,4096],[0,9101]],1961154560],["018",[[8192,9216],[4096,9101],[0,4096]],1693204480],["019",[[8192,9216],[4096,9101],[4096,9101]],2359152640],["020",[[9216,10240],[0,4096],[0,9101]],1631877120],["021",[[9216,10240],[4096,9101],[0,4096]],1850408960],["022",[[9216,10240],[4096,9101],[4096,9101]],2133708800],["023",[[10240,11264],[0,9101],[0,9101]],1912156160],["024",[[11264,11698],[0,9101],[0,9101]],1311467520]],"run":"PHerc0490A/representations/predictions/lasagna/20250521151210-lasagna-de45f011"},{"id":"PHerc0490B","repo":"SharpMeow/pherc0490b-lasagna","volume":"20250521151215-8.640um-1.2m-116keV-masked.zarr","um":8.64,"shape":[10648,8343,8343],"bytes":32900440486,"fix":10240,"seam":1.123,"pz":5324,"center":true,"parts":[["000",[[0,1024],[0,8343],[0,8343]],2058895360],["001",[[1024,2048],[0,8343],[0,8343]],822784000],["002",[[2048,3072],[0,8343],[0,8343]],2714982400],["003",[[3072,4096],[0,4096],[0,8343]],1944125440],["004",[[3072,4096],[4096,8343],[0,8343]],2514268160],["005",[[4096,5120],[0,4096],[0,8343]],2359951360],["006",[[4096,5120],[4096,8343],[0,8343]],2827724800],["007",[[5120,6144],[0,4096],[0,8343]],2485729280],["008",[[5120,6144],[4096,8343],[0,8343]],2586828800],["009",[[6144,7168],[0,4096],[0,8343]],2359173120],["010",[[6144,7168],[4096,8343],[0,8343]],2469836800],["011",[[7168,8192],[0,4096],[0,8343]],1728665600],["012",[[7168,8192],[4096,8343],[0,8343]],2325022720],["013",[[8192,9216],[0,8343],[0,8343]],2124062720],["014",[[9216,10240],[0,8343],[0,8343]],537180160],["015",[[10240,10648],[0,8343],[0,8343]],1038735360]],"run":"PHerc0490B/representations/predictions/lasagna/20250521151215-lasagna-de45f011"},{"id":"PHerc0841","repo":"SharpMeow/pherc0841-lasagna","volume":"20250821151531-9.366um-1.2m-113keV-masked.zarr","um":9.366,"shape":[19400,7703,7703],"bytes":45944867652,"fix":10240,"seam":1.622,"pz":9700,"center":false,"parts":[["000",[[0,1024],[0,7703],[0,7703]],1157713920],["001",[[1024,2048],[0,7703],[0,7703]],1659146240],["002",[[2048,3072],[0,4096],[0,7703]],2530775040],["003",[[2048,3072],[4096,7703],[0,7703]],1158072320],["004",[[3072,4096],[0,4096],[0,7703]],2732318720],["005",[[3072,4096],[4096,7703],[0,7703]],1305569280],["006",[[4096,5120],[0,4096],[0,7703]],2477383680],["007",[[4096,5120],[4096,7703],[0,7703]],1224796160],["008",[[5120,6144],[0,7703],[0,7703]],3200819200],["009",[[6144,7168],[0,7703],[0,7703]],2484510720],["010",[[7168,8192],[0,7703],[0,7703]],2356346880],["011",[[8192,9216],[0,7703],[0,7703]],2220840960],["012",[[9216,10240],[0,7703],[0,7703]],2199930880],["013",[[10240,11264],[0,7703],[0,7703]],2256486400],["014",[[11264,12288],[0,7703],[0,7703]],2268364800],["015",[[12288,13312],[0,7703],[0,7703]],2323046400],["016",[[13312,14336],[0,7703],[0,7703]],2426265600],["017",[[14336,15360],[0,7703],[0,7703]],2492456960],["018",[[15360,16384],[0,7703],[0,7703]],2691143680],["019",[[16384,17408],[0,7703],[0,7703]],2651279360],["020",[[17408,18432],[0,7703],[0,7703]],1724067840],["021",[[18432,19400],[0,7703],[0,7703]],400711680]],"run":"PHerc0841/representations/predictions/lasagna/20250821151531-lasagna-de45f011"},{"id":"PHerc0846A","repo":"SharpMeow/pherc0846a-lasagna","volume":"20250728152254-9.362um-1.2m-113keV-masked.zarr","um":9.362,"shape":[14019,7726,7726],"bytes":32441070000,"fix":10240,"seam":1.108,"pz":7008,"center":true,"parts":[["000",[[0,1024],[0,4096],[0,7726]],2497198080],["001",[[0,1024],[4096,7726],[0,7726]],2297927680],["002",[[1024,2048],[0,7726],[0,7726]],658155520],["003",[[2048,3072],[0,7726],[0,7726]],2689873920],["004",[[3072,4096],[0,4096],[0,7726]],2094336000],["005",[[3072,4096],[4096,7726],[0,7726]],1497937920],["006",[[4096,5120],[0,4096],[0,7726]],1887641600],["007",[[4096,5120],[4096,7726],[0,7726]],1414348800],["008",[[5120,6144],[0,7726],[0,7726]],2803722240],["009",[[6144,7168],[0,7726],[0,7726]],2204078080],["010",[[7168,8192],[0,7726],[0,7726]],1953495040],["011",[[8192,9216],[0,7726],[0,7726]],1988648960],["012",[[9216,10240],[0,7726],[0,7726]],2122731520],["013",[[10240,11264],[0,7726],[0,7726]],2195148800],["014",[[11264,12288],[0,7726],[0,7726]],1854883840],["015",[[12288,13312],[0,7726],[0,7726]],1597736960],["016",[[13312,14019],[0,7726],[0,7726]],680857600]],"run":"PHerc0846A/representations/predictions/lasagna/20250728152254-lasagna-de45f011"},{"id":"PHerc0846B","repo":"SharpMeow/pherc0846b-lasagna","volume":"20250804142305-9.362um-1.2m-113keV-masked.zarr","um":9.362,"shape":[13926,7859,7859],"bytes":35033335856,"fix":10240,"seam":1.36,"pz":6964,"center":true,"parts":[["000",[[0,1024],[0,7859],[0,7859]],188262400],["001",[[1024,2048],[0,7859],[0,7859]],1207982080],["002",[[2048,3072],[0,7859],[0,7859]],1744916480],["003",[[3072,4096],[0,7859],[0,7859]],1853480960],["004",[[4096,5120],[0,7859],[0,7859]],1885081600],["005",[[5120,6144],[0,7859],[0,7859]],1954447360],["006",[[6144,7168],[0,7859],[0,7859]],2012354560],["007",[[7168,8192],[0,7859],[0,7859]],2397071360],["008",[[8192,9216],[0,4096],[0,7859]],1862440960],["009",[[8192,9216],[4096,7859],[0,7859]],1379829760],["010",[[9216,10240],[0,4096],[0,7859]],2212546560],["011",[[9216,10240],[4096,7859],[0,7859]],1635399680],["012",[[10240,11264],[0,4096],[0,7859]],2502000640],["013",[[10240,11264],[4096,7859],[0,7859]],2152806400],["014",[[11264,12288],[0,4096],[0,7859]],2383554560],["015",[[11264,12288],[4096,7859],[0,7859]],2498549760],["016",[[12288,13312],[0,4096],[0,7859]],2026168320],["017",[[12288,13312],[4096,7859],[0,7859]],2171258880],["018",[[13312,13926],[0,7859],[0,7859]],962652160]],"run":"PHerc0846B/representations/predictions/lasagna/20250804142305-lasagna-de45f011"}]</script>
+<script id="fieldlist" type="application/json">null</script>
 <script>
 const D=JSON.parse(document.getElementById('data').textContent);
 const $=id=>document.getElementById(id);
@@ -339,10 +433,83 @@ let cur=0,view='xy',tab='get';
   svg.innerHTML=h}
  draw();matchMedia('(prefers-color-scheme: dark)').addEventListener('change',draw);$('theme').addEventListener('click',()=>setTimeout(draw,0));})();
 
+/* every field, by scroll: the list is written into the page from fields.json by the Space (null on its own) */
+let F=null;try{F=JSON.parse($('fieldlist').textContent)}catch(e){}
+const FL=(F&&F.fields)||[],FP=(F&&F.pending_not_public&&F.pending_not_public.items)||[];
+const attr=s=>esc(String(s)).replace(/"/g,'&quot;');
+const uniq=a=>a.filter((v,i)=>a.indexOf(v)===i);
+const um=v=>(+v).toLocaleString('en-US',{maximumFractionDigits:3})+' µm';
+const lvl=f=>f.read_level?'read at level '+f.read_level+', '+(f.voxel_um*Math.pow(2,f.read_level)).toFixed(1)+' µm':'read at full resolution';
+let fm='',fq='',fw='',fv='cards',pv=null;
+function links(f){const od=f.source==='open-data';
+ return '<a href="'+attr(f.browse||f.url)+'" target="_blank" rel="noopener" title="'+(od?'its run folder in the Vesuvius Challenge open data':'its Hugging Face dataset, to download')+'">Dataset</a>'+
+  '<a href="'+attr(f.manifest)+'" target="_blank" rel="noopener" title="the lasagna.json the lasagna fit reads">Manifest</a>'+
+  '<button type="button" data-pv="'+FL.indexOf(f)+'" title="cos and normals, through the middle and along the scroll">Preview</button>'+
+  '<button type="button" data-url="'+attr(f.stream)+'" title="the run folder, which zarr reads by URL">Copy URL</button>'}
+function fieldRow(f,first,n){
+ const where=f.source==='open-data'?'Open data<span class="fnote">villa\'s run</span>':'SharpMeow dataset<span class="fnote">also in the public bucket</span>';
+ return '<tr>'+(first?'<td class="sc" rowspan="'+n+'">'+esc(f.scroll)+'</td>':'')+
+  '<td data-k="Volume"><span class="mono">'+esc(f.volume)+'</span></td>'+
+  '<td data-k="Voxel size" class="num">'+um(f.voxel_um)+'<span class="fnote">'+lvl(f)+'</span></td>'+
+  '<td data-k="Model" class="mdl"><span class="mp '+(f.model.indexOf('Lasagnetta')===0?'lgt':'villa')+'">'+esc(f.model)+'</span>'+(f.note?'<span class="fnote">'+esc(f.note)+'</span>':'')+'</td>'+
+  '<td data-k="Where">'+where+'</td><td data-k="Size" class="num">'+gb(f.bytes)+'</td>'+
+  '<td class="get"><div class="flinks">'+links(f)+'</div></td></tr>'}
+function thumbOf(g){const f=g[0];return {src:'assets/thumbs/'+f.scroll+'-'+f.volume+'.webp',alt:f.preview_xy,vol:f.volume}}
+function cardLine(f){
+ const src=f.source==='open-data'?'open data':'SharpMeow';
+ return '<li><div class="res">'+um(f.voxel_um)+'<span class="mono">'+esc(f.volume)+'</span></div><div class="sz">'+gb(f.bytes)+'</div>'+
+  '<div class="row2"><span class="mp '+(f.model.indexOf('Lasagnetta')===0?'lgt':'villa')+'">'+esc(f.model)+'</span><span class="fnote" style="margin:0">'+src+(f.read_level?', level '+f.read_level:'')+'</span><div class="flinks">'+links(f)+'</div></div>'+
+  (f.note?'<div class="why">'+esc(f.note)+'</div>':'')+'</li>'}
+function card(g){const t=thumbOf(g),n=g.length;
+ const img='<img loading="lazy" src="'+t.src+'" data-alt="'+attr(t.alt)+'" alt="'+attr(g[0].scroll)+' field preview, cos and normals" onerror="if(this.dataset.alt){this.src=this.dataset.alt;this.dataset.alt=\'\'}"><span class="tag">cos | normals · '+esc(t.vol)+'</span>';
+ return '<article class="sccard"><div class="thumb">'+img+'</div><div class="hd"><h3>'+esc(g[0].scroll)+'</h3><span class="cnt">'+n+(n===1?' field':' fields')+' · '+gb(g.reduce((a,f)=>a+f.bytes,0))+'</span></div><ul>'+g.map(cardLine).join('')+'</ul></article>'}
+function drawFields(){
+ const t=$('flist');t.querySelectorAll('tbody').forEach(b=>b.remove());
+ $('fcards').hidden=fv!=='cards';$('ftable').hidden=fv!=='table';
+ if(!F){t.insertAdjacentHTML('beforeend','<tbody><tr><td colspan="7" class="fempty">The list is filled in on the Space: <a href="https://huggingface.co/spaces/SharpMeow/lasagna-fields">huggingface.co/spaces/SharpMeow/lasagna-fields</a>.</td></tr></tbody>');
+  $('fcards').innerHTML='<p class="fempty">The list is filled in on the Space: <a href="https://huggingface.co/spaces/SharpMeow/lasagna-fields">huggingface.co/spaces/SharpMeow/lasagna-fields</a>.</p>';return}
+ const q=fq.trim().toLowerCase();
+ const rows=FL.filter(f=>(!fm||f.model===fm)&&(!fw||f.source===fw)&&(!q||f.scroll.toLowerCase().indexOf(q)>=0||f.volume.indexOf(q)>=0));
+ const groups=uniq(rows.map(f=>f.scroll)).map(s=>rows.filter(f=>f.scroll===s));
+ t.insertAdjacentHTML('beforeend',groups.length?groups.map(g=>'<tbody>'+g.map((f,i)=>fieldRow(f,i===0,g.length)).join('')+'</tbody>').join(''):'<tbody><tr><td colspan="7" class="fempty">No field matches.</td></tr></tbody>');
+ $('fcards').innerHTML=groups.length?groups.map(card).join(''):'<p class="fempty">No field matches.</p>';
+ $('fcount').textContent=rows.length+(rows.length===1?' field':' fields')+' on '+groups.length+(groups.length===1?' scroll':' scrolls');}
+document.querySelectorAll('[data-fw]').forEach(b=>b.onclick=()=>{fw=b.dataset.fw;document.querySelectorAll('[data-fw]').forEach(x=>x.setAttribute('aria-pressed',x===b));drawFields()});
+document.querySelectorAll('[data-fv]').forEach(b=>b.onclick=()=>{fv=b.dataset.fv;document.querySelectorAll('[data-fv]').forEach(x=>x.setAttribute('aria-pressed',x===b));drawFields()});
+document.querySelectorAll('[data-fm]').forEach(b=>b.onclick=()=>{fm=b.dataset.fm;document.querySelectorAll('[data-fm]').forEach(x=>x.setAttribute('aria-pressed',x===b));drawFields()});
+$('fq').oninput=()=>{fq=$('fq').value;drawFields()};
+['flist','fcards'].forEach(id=>$(id).addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+ if(b.dataset.pv){openPv(FL[+b.dataset.pv],'xy');return}
+ if(b.dataset.url){const t=b.dataset.url,done=()=>{b.textContent='Copied';$('toast').classList.add('on');setTimeout(()=>{b.textContent='Copy URL';$('toast').classList.remove('on')},1200)};
+  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(done,()=>fallback(t,done));else fallback(t,done)}}));
+/* preview: the field's two pictures in a box over the page (no scrolling of its own) */
+function openPv(f,view){pv=f;const L=$('lbox');
+ $('lbimg').src=view==='xz'?f.preview_xz:f.preview_xy;
+ $('lbimg').alt=f.scroll+' '+f.volume+' '+view+' preview, cos and normals';
+ $('lbtitle').textContent=f.scroll+' · '+um(f.voxel_um)+' · '+f.volume;
+ document.querySelectorAll('[data-lv]').forEach(x=>x.setAttribute('aria-pressed',x.dataset.lv===view));
+ $('lbslice').hidden=!f.gallery;
+ if(L.hidden){L.hidden=false;document.documentElement.classList.add('lbopen');$('lbclose').focus()}}
+function closePv(){$('lbox').hidden=true;document.documentElement.classList.remove('lbopen');$('lbimg').removeAttribute('src');pv=null}
+document.querySelectorAll('[data-lv]').forEach(b=>b.onclick=()=>pv&&openPv(pv,b.dataset.lv));
+$('lbclose').onclick=closePv;
+$('lbox').addEventListener('click',e=>{if(e.target===$('lbox'))closePv()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('lbox').hidden)closePv()});
+$('lbslice').onclick=()=>{const f=pv,i=D.findIndex(s=>s.id===f.scroll);closePv();if(i>=0){pick(i,false);$('scans').scrollIntoView({behavior:'smooth'})}};
+/* the volumes being made: shown without any link until each is public (fields.json, pending_not_public) */
+if(FP.length){$('pend').hidden=false;
+ $('pend').innerHTML='<h3>Being made now, not public yet</h3><p class="sub" style="margin-bottom:14px">Lasagnetta 0.1.1 fields for more volumes of scrolls in the list. None is public yet, so there is nothing to download or stream.</p>'+
+  '<div class="tablewrap"><table class="flist"><thead><tr><th>Scroll</th><th>Volume</th><th>Voxel size</th><th>Model</th><th>Status</th></tr></thead><tbody>'+
+  FP.map(f=>'<tr><td class="sc">'+esc(f.scroll)+'</td><td data-k="Volume"><span class="mono">'+esc(f.volume)+'</span></td><td data-k="Voxel size" class="num">'+um(f.voxel_um)+'<span class="fnote">'+lvl(f)+'</span></td><td data-k="Model"><span class="mp lgt">'+esc(f.model)+'</span></td><td data-k="Status"><span class="mp soon">not public yet</span></td></tr>').join('')+'</tbody></table></div>';}
+drawFields();
+
 /* stats */
 const totB=D.reduce((a,s)=>a+s.bytes,0),totP=D.reduce((a,s)=>a+s.parts.length,0);
-$('stats').innerHTML=[[D.length,'scans'],[Math.round(totB/1e9)+' GB','to download'],[fmt(totP),'GPU parts'],['4','channels each']]
+const ours=FL.filter(f=>f.source==='dataset'),nsc=uniq(FL.map(f=>f.scroll)).length;
+$('stats').innerHTML=(FL.length?[[nsc,'scrolls'],[FL.length-ours.length,'villa fields in the open data'],[ours.length,'fields made here'],[Math.round(ours.reduce((a,f)=>a+f.bytes,0)/1e9)+' GB','to download here']]
+ :[[D.length,'scans'],[Math.round(totB/1e9)+' GB','to download'],[fmt(totP),'GPU parts'],['4','channels each']])
  .map(([b,s])=>'<div class="stat"><b>'+b+'</b><span>'+s+'</span></div>').join('');
+$('nscrolls').textContent=FL.length?nsc:D.length;
 $('mparts').textContent=fmt(totP);
 
 /* gallery */

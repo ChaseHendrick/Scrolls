@@ -6725,8 +6725,8 @@
   {
    "id": "lasagna-fields",
    "name": "lasagna-fields",
-   "tagline": "villa's lasagna field for ten whole scans, and for any box of any public scan on demand",
-   "summary": "villa's lasagna field for ten whole scans that had none, as public datasets and a bucket, and a Space that runs villa's own lasagna on ZeroGPU for any box of any public scan, checked against a published field, from its page, API or MCP server.",
+   "tagline": "whole-scan lasagna fields for 24 scrolls, listed by scroll, and villa's field for any box on demand",
+   "summary": "Whole-scan lasagna fields for 24 scrolls, listed by scroll (villa's own in the open data and 22 public datasets made with villa's lasagna or Lasagnetta 0.1.1), and a Space that runs villa's lasagna on ZeroGPU for any box of any public scan, from its page, API or MCP server.",
    "status": "Current",
    "kind": [
     "data",
@@ -6755,6 +6755,12 @@
     {
      "path": "spaces/lasagna-fields/guide/index.html",
      "symbols": []
+    },
+    {
+     "path": "spaces/lasagna-fields/fields.json",
+     "symbols": [
+      "list_fields"
+     ]
     }
    ],
    "tests": [
@@ -6774,15 +6780,15 @@
     "Status": "Current",
     "Kind": "data, app",
     "Area": "Data and downloads",
-    "Run": "[huggingface.co/spaces/SharpMeow/lasagna-fields](https://huggingface.co/spaces/SharpMeow/lasagna-fields) (the page: Ten whole scans, Make a field, How-to guides, Agents and API), `Client(\"SharpMeow/lasagna-fields\").predict(..., api_name=\"/make_field\")` or the MCP server `https://sharpmeow-lasagna-fields.hf.space/gradio_api/mcp/` (a box), `hf download SharpMeow/SCAN-lasagna --repo-type dataset` (a whole scan), `zarr.open_array(URL)` on the bucket (stream), `python load_example.py` in a downloaded dataset",
-    "Code": "`spaces/lasagna-fields/app.py` (the page, API and MCP tools), `spaces/lasagna-fields/lasfield.py` (`main`; the box, villa's run, the check, pictures and the download), `spaces/lasagna-fields/guide/index.html` (the Ten whole scans guide). The data lives on Hugging Face (ten datasets SharpMeow/SCAN-lasagna and the bucket SharpMeow/lasagna-fields); each dataset carries its own load_example.py, index.json and SHA256SUMS",
-    "Tests": "`tests/test_lasagna_fields_space.py` (the box, villa's crop, the ZeroGPU worker fix, `lasfield.py selftest`); the data is checked by sha256sum -c SHA256SUMS in each dataset, and each dataset's load_example.py was run on the real parts before upload (dataset cards)",
+    "Run": "[huggingface.co/spaces/SharpMeow/lasagna-fields](https://huggingface.co/spaces/SharpMeow/lasagna-fields) (the page: Every field, Make a field, How-to guides, Agents and API), `Client(\"SharpMeow/lasagna-fields\").predict(..., api_name=\"/make_field\")` or the MCP server `https://sharpmeow-lasagna-fields.hf.space/gradio_api/mcp/` (a box), `hf download SharpMeow/SCAN-lasagna --repo-type dataset` (a whole scan), `zarr.open_array(URL)` on the bucket (stream), `python load_example.py` in a downloaded dataset",
+    "Code": "`spaces/lasagna-fields/app.py` (the page, API and MCP tools), `spaces/lasagna-fields/lasfield.py` (`main`; the box, villa's run, the check, pictures and the download), `spaces/lasagna-fields/guide/index.html` (the Every field guide), `spaces/lasagna-fields/fields.json` (the list of every whole-scan field, by scroll, that the guide and `list_fields` read). The data lives on Hugging Face (datasets SharpMeow/SCAN-lasagna and SharpMeow/SCAN-lasagnetta, and the bucket SharpMeow/lasagna-fields for every one of them, unpacked so it streams by URL) and in the open data (villa's own fields); each dataset carries its own load_example.py, index.json and SHA256SUMS",
+    "Tests": "`tests/test_lasagna_fields_space.py` (the box, villa's crop, the ZeroGPU worker fix, `lasfield.py selftest`, the field list); the data is checked by sha256sum -c SHA256SUMS in each dataset, and each dataset's load_example.py was run on the real parts before upload (dataset cards)",
     "Needs": "A browser for the page. `gradio_client` to call it from Python, any MCP client for agents, and a Hugging Face token for a field (it uses the caller's ZeroGPU time). `huggingface_hub[cli]` for downloads; `zarr` and `numpy` to read; for streaming, `zarr` 3 with `fsspec`, `aiohttp` and `requests`. villa's lasagna tools read the manifest and the downloaded box as is",
-    "Runs on": "Make a field: the Space's ZeroGPU slice (A10G class); a 256 box took 21 to 27 s on 25 Oct 2026, a 512 box 60 s. Downloads and streaming: any machine with a network. Streaming one 256 x 256 patch of cos at level 1 from the bucket worked from a 4-core cloud container (2026-10-24; not timed). A whole scan is 32 to 82 GB to download",
+    "Runs on": "Make a field: the Space's ZeroGPU slice (A10G class); a 256 box took 21 to 27 s on 25 Oct 2026, a 512 box 60 s. Downloads and streaming: any machine with a network. Streaming one 256 x 256 patch of cos at level 1 from the bucket worked from a 4-core cloud container (2026-10-24; not timed). A whole-scan field is 0.4 to 136 GB to download",
     "Network": "`huggingface.co` and `sharpmeow-lasagna-fields.hf.space` (datasets, bucket, Space); the Space itself reads `vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com`",
     "Writes": "Downloads write where you point `--local-dir`; streaming writes nothing; a made field comes back as one zip (gradio_client saves it in its temp folder)",
     "Go-ahead": "Not needed to use. Making the datasets and Space public was Chase's yes (24 Oct 2026); turning the Space into the Make a field app was his yes on 25 Oct 2026; other changes to their cards or files need his yes per change, except redeploys under the standing yes (rule 8)",
-    "Released": "Public on Hugging Face since 2026-10-24 (datasets, bucket and Space); Make a field since 2026-10-25 (Space 2.0.0); README \"Released tools\" entry `lasagna-fields`",
+    "Released": "Public on Hugging Face since 2026-10-24 (datasets, bucket and Space); Make a field since 2026-10-25 (Space 2.0.0); the list of every field since 2026-10-30 (Space 2.1.0); README \"Released tools\" entry `lasagna-fields`",
     "License": "CC BY-NC 4.0, the same as the scans they derive from; model and code are ScrollPrize/villa's lasagna, credit to its authors",
     "Checked": "2026-10-24 against commit `76beeba`"
    },
@@ -6791,91 +6797,91 @@
     {
      "name": "What it does",
      "start_line": 23,
-     "end_line": 38,
+     "end_line": 40,
      "applicable": true
     },
     {
      "name": "When to use it",
-     "start_line": 39,
-     "end_line": 50,
+     "start_line": 41,
+     "end_line": 53,
      "applicable": true
     },
     {
      "name": "Quick start",
-     "start_line": 51,
-     "end_line": 98,
+     "start_line": 54,
+     "end_line": 101,
      "applicable": true
     },
     {
      "name": "Checks and controls",
-     "start_line": 99,
-     "end_line": 119,
+     "start_line": 102,
+     "end_line": 122,
      "applicable": true
     },
     {
      "name": "Commands and options",
-     "start_line": 120,
-     "end_line": 141,
+     "start_line": 123,
+     "end_line": 145,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 142,
-     "end_line": 150,
+     "start_line": 146,
+     "end_line": 155,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 151,
-     "end_line": 154,
+     "start_line": 156,
+     "end_line": 159,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 155,
-     "end_line": 182,
+     "start_line": 160,
+     "end_line": 187,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 183,
-     "end_line": 196,
+     "start_line": 188,
+     "end_line": 201,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 197,
-     "end_line": 200,
+     "start_line": 202,
+     "end_line": 205,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 201,
-     "end_line": 206,
+     "start_line": 206,
+     "end_line": 211,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 207,
-     "end_line": 218,
+     "start_line": 212,
+     "end_line": 224,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 219,
-     "end_line": 222,
+     "start_line": 225,
+     "end_line": 228,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 223,
-     "end_line": 229,
+     "start_line": 229,
+     "end_line": 237,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 230,
-     "end_line": 233,
+     "start_line": 238,
+     "end_line": 241,
      "applicable": true
     }
    ]
@@ -9275,6 +9281,154 @@
      "name": "Related",
      "start_line": 294,
      "end_line": 305,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "parting",
+   "name": "parting",
+   "tagline": "tell the same papyrus layer from the next one where two layers touch",
+   "summary": "Parting scores, at a contact between two touching papyrus layers in a CT scan, whether a second point lies on the first point's layer or on the next one, from base dinovol tokens and CT profiles; for tracers that must not switch sheets.",
+   "status": "Current",
+   "kind": [
+    "script folder"
+   ],
+   "area": "Surfaces and tracing",
+   "commands": [
+    "python3 scripts/parting/parting.py sites",
+    "features",
+    "score",
+    "fit",
+    "compare",
+    "frag3"
+   ],
+   "imports": [],
+   "code": [
+    {
+     "path": "scripts/parting",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_parting.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed"
+   },
+   "checked": {
+    "date": "2026-10-30",
+    "commit": "4966bc6"
+   },
+   "license": "Apache License 2.0 ([`scripts/parting/LICENSE`](../../scripts/parting/LICENSE)). It fetches, never copies: villa's dinovol model code (MIT) in the copy hercUNet vendors (MIT), and the base dinovol checkpoint, whose model page states no license",
+   "fields": {
+    "Id": "`parting`",
+    "Status": "Current",
+    "Kind": "script folder",
+    "Area": "Surfaces and tracing",
+    "Run": "`python3 scripts/parting/parting.py sites`, `features`, `score`, `fit`, `compare`, `frag3`",
+    "Code": "`scripts/parting`",
+    "Tests": "`tests/test_parting.py` (synthetic data only)",
+    "Needs": "Python 3.10 or newer; numpy, scipy, scikit-learn 1.9 (the released model file was written with 1.9.1) and joblib; for `features` also torch 2.x, timm 1.x, einops and huggingface_hub; numcodecs only for compressed arrays; tifffile only for tifxyz input",
+    "Runs on": "`features`: any CUDA GPU (283 Frag3 sites in about 4 minutes on one RTX PRO 6000, measured 2026-10-30) or CPU (slow: one site plus model load took 13 s on a 1-CPU smoke, measured 2026-10-30). `sites`, `score`, `fit` and `compare`: CPU, seconds to a few minutes (the Frag3 site rebuild took 4 minutes on a 4-core cloud container, 2026-10-30)",
+    "Network": "The scan's zarr chunks over HTTPS (any public uint8 128^3 zarr v2 level, such as `dl.ash2txt.org` or the open-data bucket); the base dinovol checkpoint from Hugging Face (`scrollprize/dinovol_ps8_9.6um_101626`, pinned revision); nine pinned source files from `raw.githubusercontent.com/jimmylomro/hercUNet` (MIT); for `frag3`, the six Frag3 layer pointsets (about 1 GB) from `dl.ash2txt.org`",
+    "Writes": "`sites`: the site JSON at `--out`. `features`: a run folder (`results.jsonl`, `features.npz`, `run.json`). `score`: the readout JSON at `--out`. `fit`: a joblib model at `--out`. `frag3`: `OUT/pointsets/`, `OUT/frag3_sites.json`, `OUT/run/`, `OUT/readout.json`, `OUT/frag3.json`. A download cache in `PARTING_CACHE` (default `~/.cache/parting`) and the Hugging Face cache",
+    "Go-ahead": "Not needed",
+    "Released": "Public `main` from 2026-10-30 (code only, Apache-2.0)",
+    "License": "Apache License 2.0 ([`scripts/parting/LICENSE`](../../scripts/parting/LICENSE)). It fetches, never copies: villa's dinovol model code (MIT) in the copy hercUNet vendors (MIT), and the base dinovol checkpoint, whose model page states no license",
+    "Checked": "2026-10-30 against commit `4966bc6`"
+   },
+   "page": "docs/tools/parting.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 23,
+     "end_line": 30,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 31,
+     "end_line": 42,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 43,
+     "end_line": 69,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 70,
+     "end_line": 89,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 90,
+     "end_line": 175,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 176,
+     "end_line": 188,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 189,
+     "end_line": 195,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 196,
+     "end_line": 217,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 218,
+     "end_line": 249,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 250,
+     "end_line": 262,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 263,
+     "end_line": 266,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 267,
+     "end_line": 276,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 277,
+     "end_line": 280,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 281,
+     "end_line": 284,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 285,
+     "end_line": 289,
      "applicable": true
     }
    ]
@@ -16965,7 +17119,7 @@
    },
    "checked": {
     "date": "2026-10-30",
-    "commit": "b803ece"
+    "commit": "d0a600c"
    },
    "license": "Code Apache 2.0; item titles, summaries and links belong to their sources",
    "fields": {
@@ -16983,7 +17137,7 @@
     "Go-ahead": "Not needed to use. Making the Space public was Chase's yes (29 Oct 2026); later redeploys from merged `main` fall under the standing yes (rule 8)",
     "Released": "Public on Hugging Face since 2026-10-29; README \"Released tools\" entry `vesuvius-radar`",
     "License": "Code Apache 2.0; item titles, summaries and links belong to their sources",
-    "Checked": "2026-10-30 against commit `b803ece`"
+    "Checked": "2026-10-30 against commit `d0a600c`"
    },
    "page": "docs/tools/vesuvius-radar.md",
    "sections": [
@@ -17038,43 +17192,43 @@
     {
      "name": "Failure modes",
      "start_line": 158,
-     "end_line": 169,
+     "end_line": 170,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 170,
-     "end_line": 179,
+     "start_line": 171,
+     "end_line": 180,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 180,
-     "end_line": 183,
+     "start_line": 181,
+     "end_line": 184,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 184,
-     "end_line": 193,
+     "start_line": 185,
+     "end_line": 194,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 194,
-     "end_line": 197,
+     "start_line": 195,
+     "end_line": 198,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 198,
-     "end_line": 202,
+     "start_line": 199,
+     "end_line": 204,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 203,
-     "end_line": 206,
+     "start_line": 205,
+     "end_line": 208,
      "applicable": true
     }
    ]

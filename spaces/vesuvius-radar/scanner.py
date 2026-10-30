@@ -17,6 +17,7 @@ import datetime as dt
 import email.utils
 import hashlib
 import html
+import http.client
 import json
 import math
 import os
@@ -93,8 +94,8 @@ class Fetcher:
                 err = e
                 if e.code not in (429, 500, 502, 503, 504):
                     raise
-            except (urllib.error.URLError, TimeoutError, ConnectionError) as e:
-                err = e
+            except (urllib.error.URLError, http.client.HTTPException, TimeoutError, ConnectionError) as e:
+                err = e  # a dropped or cut-off download (IncompleteRead) is tried again like a refused one
             time.sleep(2 * (i + 1))
         raise err  # type: ignore[misc]
 
@@ -550,6 +551,14 @@ def _gh_get(url):
     return FETCH.json(url, {"Accept": "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28"}, etag=True)
 
 
+# A failed villa listing costs only its own items: the repository search results of the same check are kept.
+GH_ERRORS = (urllib.error.URLError, http.client.HTTPException, TimeoutError, ConnectionError, ValueError)
+
+
+def _why(e) -> str:
+    return f"HTTP {e.code}" if isinstance(e, urllib.error.HTTPError) else f"network error ({type(e).__name__})"
+
+
 # ---------------------------------------------------------------- GitHub: who made the latest update
 
 SLACK_S = 120          # an update this close to an item's updated time is the one that moved it
@@ -615,8 +624,8 @@ def gh_updates(repo: str, since: dt.datetime, notes: list, pages: int = 3) -> tu
                                                       c["updated_at"] if edited else c["created_at"], text, c.get("html_url")))
                 if len(rows) < 100:
                     break
-        except urllib.error.HTTPError as e:
-            notes.append(f"{repo} {path}: HTTP {e.code}")
+        except GH_ERRORS as e:
+            notes.append(f"{repo} {path}: {_why(e)}")
     try:
         calls += 1
         for e in _gh_get(f"{base}/issues/events?per_page=100"):
@@ -628,8 +637,8 @@ def gh_updates(repo: str, since: dt.datetime, notes: list, pages: int = 3) -> tu
                     or (e.get("milestone") or {}).get("title") or "")
             out.setdefault(n, []).append(_act(what, (e.get("actor") or {}).get("login"), e["created_at"], clean(text)[:200],
                                               (e.get("issue") or {}).get("html_url")))
-    except urllib.error.HTTPError as e:
-        notes.append(f"{repo} issues/events: HTTP {e.code}")
+    except GH_ERRORS as e:
+        notes.append(f"{repo} issues/events: {_why(e)}")
     return out, calls
 
 
@@ -735,8 +744,8 @@ def c_github(sc, ctx):
                                      url=r["html_url"], date=t, text=(r.get("body") or "")[:1500], base=50,
                                      base_label=f"{repo} release", core_terms=False, who=repo.split("/")[0],
                                      topics_extra=["Scroll work"])
-        except urllib.error.HTTPError as e:
-            notes.append(f"{repo}: HTTP {e.code}")
+        except GH_ERRORS as e:
+            notes.append(f"{repo}: {_why(e)}")
         # Who made each item's latest update, and what it said: the item's own author is only who opened it.
         acts = {}
         if prs or issues:
@@ -757,8 +766,8 @@ def c_github(sc, ctx):
                     try:
                         act = latest_update(acts.get(n, []) + gh_pr_latest(repo, n), p.get("created_at"), p.get("updated_at"))
                         lookups[key] = {"updated": p.get("updated_at"), "act": act}
-                    except urllib.error.HTTPError as e:
-                        notes.append(f"{repo} #{n} reviews and commits: HTTP {e.code}")
+                    except GH_ERRORS as e:
+                        notes.append(f"{repo} #{n} reviews and commits: {_why(e)}")
             common = dict(url=p["html_url"], date=t, text=(p.get("body") or "")[:1500], core_terms=False,
                           title=f"{repo} #{n}: {p['title']}", who=p["user"]["login"], created=p.get("created_at"),
                           labels=[x["name"] for x in p.get("labels") or []][:6], topics_extra=["Scroll work"], activity=act)
@@ -983,7 +992,7 @@ def collect(source: str, since: dt.datetime, cfg: dict | None = None, scorer: Sc
         prog(f"scoring {len(items)} items")
         finish(items, scorer, sem, prog, head)
         items = [i for i in items if i["rule"] >= cfg["keep_score"]]
-        bad = any(re.search(r"HTTP \d|Error|rate limited|skipped|timed out", n) for n in info["notes"])
+        bad = any(re.search(r"HTTP \d|Error|rate limited|skipped|timed out|network error", n) for n in info["notes"])
         row.update(state="partial" if bad else "ok", read=info["read"], kept=len(items), notes=info["notes"])
     except Exception as e:  # noqa: BLE001
         items = []
