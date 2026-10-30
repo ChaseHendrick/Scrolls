@@ -261,6 +261,24 @@
   },
   {
    "scroll": "PHerc0814",
+   "volume": "20250804134230",
+   "zarr": "20250804134230-9.362um-1.2m-113keV-masked.zarr",
+   "voxel_um": 9.362,
+   "read_level": 0,
+   "model": "Lasagnetta 0.1.1",
+   "source": "dataset",
+   "made_by": "Chase Hendrick",
+   "run": null,
+   "bytes": 33631289069,
+   "dataset": "SharpMeow/pherc0814-20250804134230-lasagnetta",
+   "url": "https://huggingface.co/datasets/SharpMeow/pherc0814-20250804134230-lasagnetta",
+   "manifest": null,
+   "stream": null,
+   "gallery": false,
+   "note": "the release's self-check kept Lasagnetta on this volume"
+  },
+  {
+   "scroll": "PHerc0814",
    "volume": "20260309142202",
    "zarr": "20260309142202-2.399um-0.2m-78keV-masked.zarr",
    "voxel_um": 2.399,
@@ -276,6 +294,24 @@
    "stream": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0814/representations/predictions/lasagna/20260309142202-lasagna-20260419180421-L2",
    "gallery": false,
    "note": null
+  },
+  {
+   "scroll": "PHerc0814",
+   "volume": "20260521123630",
+   "zarr": "20260521123630-1.129um-0.2m-59keV-masked.zarr",
+   "voxel_um": 1.129,
+   "read_level": 3,
+   "model": "Lasagnetta 0.1.1",
+   "source": "dataset",
+   "made_by": "Chase Hendrick",
+   "run": null,
+   "bytes": 5145709178,
+   "dataset": "SharpMeow/pherc0814-20260521123630-lasagnetta",
+   "url": "https://huggingface.co/datasets/SharpMeow/pherc0814-20260521123630-lasagnetta",
+   "manifest": null,
+   "stream": null,
+   "gallery": false,
+   "note": "the release's self-check kept Lasagnetta on this volume"
   },
   {
    "scroll": "PHerc0841",
@@ -294,6 +330,24 @@
    "stream": "https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHerc0841/representations/predictions/lasagna/20250821151531-lasagna-de45f011",
    "gallery": true,
    "note": null
+  },
+  {
+   "scroll": "PHerc0841",
+   "volume": "20260319124803",
+   "zarr": "20260319124803-2.403um-0.2m-77keV-masked.zarr",
+   "voxel_um": 2.403,
+   "read_level": 2,
+   "model": "Lasagnetta 0.1.1",
+   "source": "dataset",
+   "made_by": "Chase Hendrick",
+   "run": null,
+   "bytes": 8698480358,
+   "dataset": "SharpMeow/pherc0841-20260319124803-lasagnetta",
+   "url": "https://huggingface.co/datasets/SharpMeow/pherc0841-20260319124803-lasagnetta",
+   "manifest": null,
+   "stream": null,
+   "gallery": false,
+   "note": "the release's self-check kept Lasagnetta on this volume"
   },
   {
    "scroll": "PHerc0846A",
@@ -460,33 +514,6 @@
     "read_level": 2,
     "model": "Lasagnetta 0.1.1",
     "planned_dataset": "SharpMeow/pherc0009b-20260319104112-lasagnetta"
-   },
-   {
-    "scroll": "PHerc0814",
-    "volume": "20250804134230",
-    "zarr": "20250804134230-9.362um-1.2m-113keV-masked.zarr",
-    "voxel_um": 9.362,
-    "read_level": 0,
-    "model": "Lasagnetta 0.1.1",
-    "planned_dataset": "SharpMeow/pherc0814-20250804134230-lasagnetta"
-   },
-   {
-    "scroll": "PHerc0814",
-    "volume": "20260521123630",
-    "zarr": "20260521123630-1.129um-0.2m-59keV-masked.zarr",
-    "voxel_um": 1.129,
-    "read_level": 3,
-    "model": "Lasagnetta 0.1.1",
-    "planned_dataset": "SharpMeow/pherc0814-20260521123630-lasagnetta"
-   },
-   {
-    "scroll": "PHerc0841",
-    "volume": "20260319124803",
-    "zarr": "20260319124803-2.403um-0.2m-77keV-masked.zarr",
-    "voxel_um": 2.403,
-    "read_level": 2,
-    "model": "Lasagnetta 0.1.1",
-    "planned_dataset": "SharpMeow/pherc0841-20260319124803-lasagnetta"
    }
   ]
  }

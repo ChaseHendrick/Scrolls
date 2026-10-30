@@ -32,6 +32,9 @@ datasets:
 - SharpMeow/pherc0500p2-lasagnetta
 - SharpMeow/phercman5-lasagnetta
 - SharpMeow/phercmanb-lasagnetta
+- SharpMeow/pherc0814-20250804134230-lasagnetta
+- SharpMeow/pherc0814-20260521123630-lasagnetta
+- SharpMeow/pherc0841-20260319124803-lasagnetta
 - SharpMeow/vesuvius-center-lines
 tags:
 - vesuvius-challenge
@@ -48,10 +51,10 @@ tags:
 The **lasagna field** for Herculaneum scroll CT, two ways:
 
 - **Every field, by scroll**: whole-scan fields for 24 scrolls in one list, each with its volume, voxel size,
-  model, size and link (`fields.json`). Seven are villa's own fields in the Vesuvius Challenge open data. Seventeen
-  are public datasets made here for scrolls that had none: twelve with villa's lasagna model, among them ten that
+  model, size and link (`fields.json`). Seven are villa's own fields in the Vesuvius Challenge open data. Twenty
+  are public datasets made here for scans that had none: twelve with villa's lasagna model, among them ten that
   also stream from a bucket (PHerc0175A, PHerc0175B, PHerc0306B, PHerc0483A, PHerc0483B, PHerc0490A, PHerc0490B,
-  PHerc0841, PHerc0846A and PHerc0846B), and five with [Lasagnetta](https://huggingface.co/SharpMeow/lasagnetta)
+  PHerc0841, PHerc0846A and PHerc0846B), and eight with [Lasagnetta](https://huggingface.co/SharpMeow/lasagnetta)
   0.1.1, a faster copy of it.
 - **Make a field** for any box of any public scan: pick a scan and a point, and the Space runs villa's own lasagna
   model there on ZeroGPU, checks the result against the field the open data already publishes for that scan, and
