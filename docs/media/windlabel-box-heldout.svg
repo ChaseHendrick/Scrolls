@@ -1,0 +1,123 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 520" width="960" height="520" role="img" aria-labelledby="t d">
+<title id="t">windlabel-box relative windings under frozen tests</title>
+<desc id="d">Left: windlabel-box's split-chain step accuracy and its one-sided 95 % lower bound in six frozen tests on three scrolls, five passing the 0.92 lower-bound bar and one failing its 70 % keep floor. Right: on the 29 October boxes, windlabel-box against constraint-gauge's E1 on the same steps and against winding-phase at matched coverage; windlabel-box is ahead in every comparable pair, by 0.011 to 0.048.</desc>
+<style>svg{font-family:system-ui,-apple-system,'Segoe UI',sans-serif}.bg{fill:#fcfcfb}.t1{fill:#0b0b0b}.t2{fill:#52514e}.grid{stroke:#e4e3df}.axis{stroke:#9c9a94}.s0{fill:#2a78d6}.s1{fill:#eb6834}.s2{fill:#1baf7a}.dot{fill:#0b0b0b;stroke:#fcfcfb;stroke-width:2}@media (prefers-color-scheme:dark){.bg{fill:#1a1a19}.t1{fill:#f0efec}.t2{fill:#c3c2b7}.grid{stroke:#383835}.axis{stroke:#6b6a64}.s0{fill:#3987e5}.s1{fill:#d95926}.s2{fill:#199e70}.dot{fill:#f0efec;stroke:#1a1a19}}.ring{fill:#fcfcfb;stroke:#2a78d6;stroke-width:2}.wh{stroke:#2a78d6;stroke-width:2}.link{stroke:#9c9a94;stroke-width:2}.barl{stroke:#52514e;stroke-width:1.5;stroke-dasharray:5 4}@media (prefers-color-scheme:dark){.ring{fill:#1a1a19;stroke:#3987e5}.wh{stroke:#3987e5}.link{stroke:#6b6a64}.barl{stroke:#c3c2b7}}</style>
+<rect class="bg" width="960" height="520" rx="8"/>
+<text class="t1" x="24" y="34" font-size="18" font-weight="600">windlabel-box relative windings under frozen tests</text>
+<text class="t2" x="24" y="56" font-size="13">Step accuracy against the published hand windings; every rule and bar fixed before any box had a prediction</text>
+<circle class="s0" cx="30" cy="78" r="6"/>
+<text class="t2" x="41" y="82" font-size="12">windlabel-box</text>
+<circle class="s1" cx="143" cy="78" r="6"/>
+<text class="t2" x="154" y="82" font-size="12">E1 (constraint-gauge), same steps</text>
+<circle class="s2" cx="384" cy="78" r="6"/>
+<text class="t2" x="395" y="82" font-size="12">winding-phase, matched coverage</text>
+<circle class="ring" cx="612" cy="78" r="5"/>
+<text class="t2" x="623" y="82" font-size="12">failed its own bar</text>
+<text class="t1" x="24" y="118" font-size="15" font-weight="600">Six frozen tests, three scrolls</text>
+<text class="t2" x="24" y="134" font-size="12">step accuracy (dot) and its lower bound (whisker)</text>
+<line class="grid" x1="64" x2="464" y1="420.0" y2="420.0"/>
+<text class="t2" x="58" y="424.0" font-size="11" text-anchor="end">0.88</text>
+<line class="grid" x1="64" x2="464" y1="373.3" y2="373.3"/>
+<text class="t2" x="58" y="377.3" font-size="11" text-anchor="end">0.90</text>
+<line class="grid" x1="64" x2="464" y1="326.7" y2="326.7"/>
+<text class="t2" x="58" y="330.7" font-size="11" text-anchor="end">0.92</text>
+<line class="grid" x1="64" x2="464" y1="280.0" y2="280.0"/>
+<text class="t2" x="58" y="284.0" font-size="11" text-anchor="end">0.94</text>
+<line class="grid" x1="64" x2="464" y1="233.3" y2="233.3"/>
+<text class="t2" x="58" y="237.3" font-size="11" text-anchor="end">0.96</text>
+<line class="grid" x1="64" x2="464" y1="186.7" y2="186.7"/>
+<text class="t2" x="58" y="190.7" font-size="11" text-anchor="end">0.98</text>
+<line class="grid" x1="64" x2="464" y1="140.0" y2="140.0"/>
+<text class="t2" x="58" y="144.0" font-size="11" text-anchor="end">1.00</text>
+<line class="barl" x1="64" x2="464" y1="326.7" y2="326.7"/>
+<text class="t2" x="464" y="341.7" font-size="11" text-anchor="end">bar: lower bound above 0.92</text>
+<line class="wh" x1="104.7" x2="104.7" y1="196.5" y2="214.0"/>
+<line class="wh" x1="98.7" x2="110.7" y1="214.0" y2="214.0"/>
+<circle class="s0" cx="104.7" cy="196.5" r="6"><title>PHerc0139, 24 Oct, rule v1: 0.9758 of 13,969 judged steps, lower bound 0.9683, PASS</title></circle>
+<text class="t1" x="104.7" y="184.5" font-size="11" text-anchor="middle">0.9758</text>
+<text class="t1" x="104.7" y="438" font-size="11" text-anchor="middle">PHerc0139</text>
+<text class="t2" x="104.7" y="452" font-size="10" text-anchor="middle">24 Oct</text>
+<text class="t2" x="104.7" y="465" font-size="10" text-anchor="middle">rule v1</text>
+<line class="wh" x1="170.0" x2="170.0" y1="211.6" y2="254.8"/>
+<line class="wh" x1="164.0" x2="176.0" y1="254.8" y2="254.8"/>
+<circle class="ring" cx="170.0" cy="211.6" r="6"><title>PHerc1667, 24 Oct, rule v1: 0.9693 of 4,362 judged steps, lower bound 0.9508, FAIL (68 % kept)</title></circle>
+<text class="t1" x="170.0" y="199.6" font-size="11" text-anchor="middle">0.9693</text>
+<text class="t2" x="170.0" y="270.8" font-size="10" text-anchor="middle">FAIL: 68 % kept</text>
+<text class="t1" x="170.0" y="438" font-size="11" text-anchor="middle">PHerc1667</text>
+<text class="t2" x="170.0" y="452" font-size="10" text-anchor="middle">24 Oct</text>
+<text class="t2" x="170.0" y="465" font-size="10" text-anchor="middle">rule v1</text>
+<line class="wh" x1="235.3" x2="235.3" y1="189.9" y2="216.8"/>
+<line class="wh" x1="229.3" x2="241.3" y1="216.8" y2="216.8"/>
+<circle class="s0" cx="235.3" cy="189.9" r="6"><title>PHerc1667, 24 Oct, rule v2: 0.9786 of 5,938 judged steps, lower bound 0.9671, PASS</title></circle>
+<text class="t1" x="235.3" y="177.9" font-size="11" text-anchor="middle">0.9786</text>
+<text class="t1" x="235.3" y="438" font-size="11" text-anchor="middle">PHerc1667</text>
+<text class="t2" x="235.3" y="452" font-size="10" text-anchor="middle">24 Oct</text>
+<text class="t2" x="235.3" y="465" font-size="10" text-anchor="middle">rule v2</text>
+<line class="wh" x1="300.7" x2="300.7" y1="208.6" y2="239.2"/>
+<line class="wh" x1="294.7" x2="306.7" y1="239.2" y2="239.2"/>
+<circle class="s0" cx="300.7" cy="208.6" r="6"><title>PHerc1667, 29 Oct, rule v2: 0.9706 of 7,937 judged steps, lower bound 0.9575, PASS</title></circle>
+<text class="t1" x="300.7" y="196.6" font-size="11" text-anchor="middle">0.9706</text>
+<text class="t1" x="300.7" y="438" font-size="11" text-anchor="middle">PHerc1667</text>
+<text class="t2" x="300.7" y="452" font-size="10" text-anchor="middle">29 Oct</text>
+<text class="t2" x="300.7" y="465" font-size="10" text-anchor="middle">rule v2</text>
+<line class="wh" x1="366.0" x2="366.0" y1="253.2" y2="278.1"/>
+<line class="wh" x1="360.0" x2="372.0" y1="278.1" y2="278.1"/>
+<circle class="s0" cx="366.0" cy="253.2" r="6"><title>PHerc0172, 29 Oct, band 1: 0.9515 of 16,599 judged steps, lower bound 0.9408, PASS</title></circle>
+<text class="t1" x="366.0" y="241.2" font-size="11" text-anchor="middle">0.9515</text>
+<text class="t1" x="366.0" y="438" font-size="11" text-anchor="middle">PHerc0172</text>
+<text class="t2" x="366.0" y="452" font-size="10" text-anchor="middle">29 Oct</text>
+<text class="t2" x="366.0" y="465" font-size="10" text-anchor="middle">band 1</text>
+<line class="wh" x1="431.3" x2="431.3" y1="245.0" y2="263.4"/>
+<line class="wh" x1="425.3" x2="437.3" y1="263.4" y2="263.4"/>
+<circle class="s0" cx="431.3" cy="245.0" r="6"><title>PHerc0172, 29 Oct, band 2: 0.9550 of 32,411 judged steps, lower bound 0.9471, PASS</title></circle>
+<text class="t1" x="431.3" y="233.0" font-size="11" text-anchor="middle">0.955</text>
+<text class="t1" x="431.3" y="438" font-size="11" text-anchor="middle">PHerc0172</text>
+<text class="t2" x="431.3" y="452" font-size="10" text-anchor="middle">29 Oct</text>
+<text class="t2" x="431.3" y="465" font-size="10" text-anchor="middle">band 2</text>
+<text class="t1" x="500" y="118" font-size="15" font-weight="600">Against community tools, same boxes (29 Oct)</text>
+<text class="t2" x="500" y="134" font-size="12">step accuracy on the items both judged</text>
+<line class="grid" x1="604.0" x2="604.0" y1="140" y2="420"/>
+<text class="t2" x="604.0" y="436" font-size="11" text-anchor="middle">0.88</text>
+<line class="grid" x1="714.7" x2="714.7" y1="140" y2="420"/>
+<text class="t2" x="714.7" y="436" font-size="11" text-anchor="middle">0.92</text>
+<line class="grid" x1="825.3" x2="825.3" y1="140" y2="420"/>
+<text class="t2" x="825.3" y="436" font-size="11" text-anchor="middle">0.96</text>
+<line class="grid" x1="936.0" x2="936.0" y1="140" y2="420"/>
+<text class="t2" x="936.0" y="436" font-size="11" text-anchor="middle">1.00</text>
+<text class="t1" x="500" y="162.0" font-size="12" font-weight="600">PHerc1667</text>
+<text class="t2" x="596" y="178.3" font-size="11" text-anchor="end">vs E1</text>
+<line class="link" x1="792.1" x2="855.8" y1="174.3" y2="174.3"/>
+<circle class="s1" cx="792.1" cy="174.3" r="6"><title>PHerc1667: windlabel-box 0.971 against E1 (constraint-gauge), same steps 0.948, lower bound of the lead +0.017</title></circle>
+<circle class="s0" cx="855.8" cy="174.3" r="6"><title>PHerc1667: windlabel-box 0.971 against E1 (constraint-gauge), same steps 0.948, lower bound of the lead +0.017</title></circle>
+<text class="t2" x="782.1" y="178.3" font-size="10" text-anchor="end">0.948</text>
+<text class="t1" x="865.8" y="178.3" font-size="10">0.971</text>
+<text class="t2" x="596" y="223.0" font-size="11" text-anchor="end">vs winding-phase</text>
+<line class="link" x1="775.5" x2="875.1" y1="219.0" y2="219.0"/>
+<circle class="s2" cx="775.5" cy="219.0" r="6"><title>PHerc1667: windlabel-box 0.978 against winding-phase, matched coverage 0.942, lower bound of the lead +0.029</title></circle>
+<circle class="s0" cx="875.1" cy="219.0" r="6"><title>PHerc1667: windlabel-box 0.978 against winding-phase, matched coverage 0.942, lower bound of the lead +0.029</title></circle>
+<text class="t2" x="765.5" y="223.0" font-size="10" text-anchor="end">0.942</text>
+<text class="t1" x="885.1" y="223.0" font-size="10">0.978</text>
+<text class="t1" x="500" y="251.3" font-size="12" font-weight="600">PHerc0172 band 1</text>
+<text class="t2" x="596" y="267.7" font-size="11" text-anchor="end">vs E1</text>
+<text class="t2" x="610" y="267.7" font-size="11" font-style="italic">E1 not comparable (units check failed on our input)</text>
+<text class="t2" x="596" y="312.3" font-size="11" text-anchor="end">vs winding-phase</text>
+<line class="link" x1="675.9" x2="808.7" y1="308.3" y2="308.3"/>
+<circle class="s2" cx="675.9" cy="308.3" r="6"><title>PHerc0172 band 1: windlabel-box 0.954 against winding-phase, matched coverage 0.906, lower bound of the lead +0.028</title></circle>
+<circle class="s0" cx="808.7" cy="308.3" r="6"><title>PHerc0172 band 1: windlabel-box 0.954 against winding-phase, matched coverage 0.906, lower bound of the lead +0.028</title></circle>
+<text class="t2" x="665.9" y="312.3" font-size="10" text-anchor="end">0.906</text>
+<text class="t1" x="818.7" y="312.3" font-size="10">0.954</text>
+<text class="t1" x="500" y="340.7" font-size="12" font-weight="600">PHerc0172 band 2</text>
+<text class="t2" x="596" y="357.0" font-size="11" text-anchor="end">vs E1</text>
+<line class="link" x1="781.1" x2="811.5" y1="353.0" y2="353.0"/>
+<circle class="s1" cx="781.1" cy="353.0" r="6"><title>PHerc0172 band 2: windlabel-box 0.955 against E1 (constraint-gauge), same steps 0.944, lower bound of the lead +0.009</title></circle>
+<circle class="s0" cx="811.5" cy="353.0" r="6"><title>PHerc0172 band 2: windlabel-box 0.955 against E1 (constraint-gauge), same steps 0.944, lower bound of the lead +0.009</title></circle>
+<text class="t2" x="771.1" y="357.0" font-size="10" text-anchor="end">0.944</text>
+<text class="t1" x="821.5" y="357.0" font-size="10">0.955</text>
+<text class="t2" x="596" y="401.7" font-size="11" text-anchor="end">vs winding-phase</text>
+<line class="link" x1="753.4" x2="803.2" y1="397.7" y2="397.7"/>
+<circle class="s2" cx="753.4" cy="397.7" r="6"><title>PHerc0172 band 2: windlabel-box 0.952 against winding-phase, matched coverage 0.934, lower bound of the lead +0.005</title></circle>
+<circle class="s0" cx="803.2" cy="397.7" r="6"><title>PHerc0172 band 2: windlabel-box 0.952 against winding-phase, matched coverage 0.934, lower bound of the lead +0.005</title></circle>
+<text class="t2" x="743.4" y="401.7" font-size="10" text-anchor="end">0.934</text>
+<text class="t1" x="813.2" y="401.7" font-size="10">0.952</text>
+<text class="t2" x="24" y="506" font-size="11">Whisker: one-sided 95 % block bootstrap lower bound. Axis starts at 0.88. Leads on the right are small; PHerc1667 is held out by position, not by scroll.</text>
+</svg>

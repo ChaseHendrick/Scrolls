@@ -8,7 +8,7 @@
 | Status | Current |
 | Kind | script folder |
 | Area | Releases and repository |
-| Run | `python scripts/media/hero.py`, `python scripts/media/encode.py`, `python scripts/media/capture_web.py`, `python scripts/media/record_ap_monitor.py`, `python scripts/media/sweep.py`, `python scripts/media/tifxyz_stills.py`, `python scripts/media/isometry_media.py`, `python scripts/media/coverage_still.py`, `python scripts/media/vc3d_agent_session.py`, `python scripts/media/hfrows_demo.py`, `python scripts/media/snap_media.py`, `python scripts/media/barrier_demo.py`, `python scripts/media/barrier_chart.py` |
+| Run | `python scripts/media/hero.py`, `python scripts/media/encode.py`, `python scripts/media/capture_web.py`, `python scripts/media/record_ap_monitor.py`, `python scripts/media/sweep.py`, `python scripts/media/tifxyz_stills.py`, `python scripts/media/isometry_media.py`, `python scripts/media/coverage_still.py`, `python scripts/media/vc3d_agent_session.py`, `python scripts/media/hfrows_demo.py`, `python scripts/media/snap_media.py`, `python scripts/media/barrier_demo.py`, `python scripts/media/barrier_chart.py`, `python scripts/media/windings_chart.py`, `python scripts/media/labelsnap_demo.py`, `python scripts/media/labelsnap_chart.py` |
 | Code | `scripts/media/` |
 | Tests | `tests/test_media.py`, `tests/test_repo.py` (`test_assets_are_listed_labeled_and_within_limits`) |
 | Needs | Python 3.10 or newer. `hero.py` and `sweep.py`: numpy and Pillow, and the Inter font for social cards. `encode.py`: ffmpeg (libx264) and gifsicle. `capture_web.py`: the `playwright` package and a Chromium it can start (it never downloads one). `common.py` is standard library only |
@@ -267,6 +267,33 @@ The chart on the [contact-barrier](contact-barrier.md) page: two small multiples
 | `data` | required | The chart's numbers (JSON) |
 | `out` | required | The SVG to write; its sidecar `NAME.json` goes beside it |
 
+### `python scripts/media/windings_chart.py`
+
+The chart on the [windlabel-box](windlabel-box.md) page: step accuracy and lower bound in six frozen tests on three scrolls, and windlabel-box against E1 and winding-phase on the 29 October boxes, an SVG with no raster in it and a sidecar, from the numbers in `docs/media/windlabel-box-heldout-data.json` (copied from `windlabel_box_checks` in `docs/results.json`). It reuses `barrier_chart.py`'s style. Standard library only.
+
+| Option | Default | Meaning |
+| --- | --- | --- |
+| `data` | required | The chart's numbers (JSON) |
+| `out` | required | The SVG to write; its sidecar `NAME.json` goes beside it |
+
+### `python scripts/media/labelsnap_demo.py`
+
+The slow GIF and still on the [labelsnap](labelsnap.md) page: it builds the gap ladder of `tests/test_snap_face.py` (three blurred sheets, the recto-side gap stepping 4, 2, 1, 0.5 and 0 voxels), runs `python -m kit labelsnap snap` on a flat label twice (the default, then `--merged`) and draws one cross section of each run, the label moving from where it was traced to where the snap put it with `snap_media.py`'s motion and colors, abstaining vertices in gray. Writes `NAME.gif` (about 7.5 s), `NAME.png` (the last frame) and one sidecar, Synthetic demo. Needs numpy, tifffile, zarr and Pillow.
+
+| Option | Default | Meaning |
+| --- | --- | --- |
+| `--out-dir` | required | Where the GIF, the still and the sidecar go |
+| `--name` | `labelsnap-ladder` | The file name stem |
+
+### `python scripts/media/labelsnap_chart.py`
+
+The two charts on the [labelsnap](labelsnap.md) and [finesnap](finesnap.md) pages, SVGs with no raster in them, each with a sidecar, from `docs/media/label-snap-data.json` (the numbers of `label_snap_checks` in `docs/results.json`): `label-snap-within1.svg`, the share of label vertices within 1 voxel of a finer scan's recto face per test, and `label-snap-community.svg`, the pooled gain over the published label of labelsnap and seven community snaps with 95 % intervals. Standard library only.
+
+| Option | Default | Meaning |
+| --- | --- | --- |
+| `data` | required | The charts' numbers (JSON) |
+| `out_dir` | required | The folder for both SVGs; each sidecar `NAME.json` goes beside its SVG |
+
 ### `python scripts/media/snap_media.py`
 
 Stills and slow GIFs of a snap for the [snapped-labels](snapped-labels.md) Space, with the motion of its Animate snap button: 1.2 s on the published line, 2.4 s to the snapped line, 1.6 s held, 2.4 s back (needs numpy and Pillow). `concept` draws a made-up cross section (two papyrus wraps, a published label snapped onto the recto face, then a dashed truth face and its one-voxel band): a Concept illustration that may go under `docs/assets/`. `real` draws a dataset segment on its own CT, read live from the open data: the lines are geometry from a band finder, so it is Model output, refused under `docs/assets/` by `common.write_guard`, and refused anywhere for a prize-eligible scroll or held-out labels (`common.real_data_problems`). It goes on the Hugging Face dataset only after Chase's yes.
@@ -346,7 +373,7 @@ The sidecar (`common.write_sidecar`, schema `scrolls-media/1`):
 | `PATH: no kit/switchfix.py; give the AutoPipeline package folder` | `barrier_demo.py --package` points somewhere else | Give the package folder of branch `submission/progress-2026-10-fix9` |
 | `the barrier did not cut the hop and keep the control; no media written` | The barrier kept or cut differently on the made-up cases | Check the package version; do not publish pictures of a barrier that fails its own tests |
 | `PATH was over the public size limit and was removed` | `barrier_demo.py`'s GIF or MP4 came out over 1920 px or 4 MB under `docs/assets/` | Shorten the clip or lower its width |
-| `long dash in the chart text` | `barrier_chart.py`'s data holds U+2014 or U+2013 | Rewrite the text without long dashes |
+| `long dash in the chart text` | `barrier_chart.py`'s or `labelsnap_chart.py`'s data holds U+2014 or U+2013 | Rewrite the text without long dashes |
 | `the chart embeds a raster picture` | The written SVG links or embeds a raster image | Draw it from shapes only |
 | `snap_media.py: refused under the public media rule: ...`, exit code 2 | `snap_media.py real` on a prize-eligible scroll or held-out labels, or any Model output aimed at `docs/assets/` | Use a scan on no prize list and an output folder outside `docs/assets/` |
 | `compressed scan: this script reads uncompressed chunks only` | `snap_media.py real` on a dataset whose volume is compressed | Use the dataset's own volumes, which are uncompressed |
@@ -458,7 +485,9 @@ Peak memory of a hero render was 1,687 MB (maximum resident set, the earlier len
 - 2026-10-18: added `hero.py`, `scene.py`, `scenes.py`, `encode.py`, `capture_web.py`, `sweep.py` and `common.py`, with heroes and clips for every released tool and the `image` field of `kit/releases.py` (branch `claude/release-media`, `4a970bd` is the base commit).
 - 2026-10-18: after review of `c33e159`, the guards check sources and clips, not only labels (`common.input_guard`, `--meta` required under `docs/assets/`, no raw frames there, panels always a Synthetic demo), and `tests/test_repo.py` allows only Concept illustration and Synthetic demo there and requires a sidecar for every file. The heroes were remade with the reference's warm key light, low cameras and diagonal subjects, fibrous papyrus, spiral cross-sections and cards with a solid text band; the Scroll Text Reader hero no longer draws letters, boxes or bars, and StrokeNet's hero is withdrawn until its rework. The AutoPipeline clip was recaptured at 12 fps from the first stage with a pointer (`cursor`, `point`, `tap`, `glide`, `scrollto`, wall-clock `frames`), the umbilicus sweep redrawn in the scanner's fixed frame, and `encode.py` gained `--dither` and `--made-with`.
 - 2026-10-18: the public media rule ([`docs/media/README.md`](../media/README.md), set on Chase's delegation) replaced "only Concept illustrations and Synthetic demos": `common.write_guard` now also allows a Real data render of a public scan that is not prize-eligible and shows no held-out labels (`real_data_problems`, `prize_scrolls`, `eligible_prizes`), `common.size_guard` and `encode.py` hold every file there to 1920 px and 4 MB, `common.public_problems` checks every committed sidecar, `common.media_size` reads MP4 sizes too, the credit became "Vesuvius Challenge open data, CC BY-NC 4.0", `data.labels` is required and `data.segment` optional, and `hero.py` checks the rule before importing Pillow. The audit found every existing file conforming.
+- 2026-10-29: added `labelsnap_demo.py` and `labelsnap_chart.py` for the [labelsnap](labelsnap.md) and [finesnap](finesnap.md) pages.
 - 2026-10-28: added `barrier_demo.py` and `barrier_chart.py` for the contact barrier's page (`6bf0b4a`).
+- 2026-10-29: added `windings_chart.py` for the windlabel-box page's frozen test chart (on top of `afcc05a`).
 - 2026-10-28: added `snap_media.py`: the concept still and slow GIF of a snap (`docs/assets/snapped-labels/`) and the real-data snap GIF for the Snapped Labels dataset, which waits for Chase's yes ([PR #255](https://github.com/ChaseHendrick/Scrolls/pull/255), draft).
 - 2026-10-24: added `vc3d_agent_session.py`: a captioned replay of recorded Headless VC3D for agents sessions on PHerc0139 w035, and its two stills (`docs/assets/vc3d-agent/`, [#201](https://github.com/ChaseHendrick/Scrolls/pull/201)).
 

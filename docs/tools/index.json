@@ -1413,67 +1413,67 @@
     {
      "name": "Commands and options",
      "start_line": 85,
-     "end_line": 203,
+     "end_line": 207,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 204,
-     "end_line": 232,
-     "applicable": true
-    },
-    {
-     "name": "Inputs",
-     "start_line": 233,
+     "start_line": 208,
      "end_line": 236,
      "applicable": true
     },
     {
-     "name": "Outputs",
+     "name": "Inputs",
      "start_line": 237,
-     "end_line": 247,
+     "end_line": 240,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 241,
+     "end_line": 251,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 248,
-     "end_line": 261,
+     "start_line": 252,
+     "end_line": 265,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 262,
-     "end_line": 271,
-     "applicable": true
-    },
-    {
-     "name": "Cost and time",
-     "start_line": 272,
+     "start_line": 266,
      "end_line": 275,
      "applicable": true
     },
     {
-     "name": "For agents",
+     "name": "Cost and time",
      "start_line": 276,
-     "end_line": 285,
+     "end_line": 279,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 280,
+     "end_line": 289,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 286,
-     "end_line": 293,
+     "start_line": 290,
+     "end_line": 297,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 294,
-     "end_line": 305,
+     "start_line": 298,
+     "end_line": 309,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 306,
-     "end_line": 312,
+     "start_line": 310,
+     "end_line": 316,
      "applicable": true
     }
    ]
@@ -3912,6 +3912,171 @@
    ]
   },
   {
+   "id": "finesnap",
+   "name": "finesnap",
+   "tagline": "snap a coarse-scan label on a finer registered scan, and resolve abstaining vertices",
+   "summary": "`python -m kit finesnap` snaps a surface label traced on a coarse scan onto the recto face seen in a finer scan of the same scroll, registered per vertex along the normal; `kit.snapresolve` gives a face to vertices the face snap abstained on.",
+   "status": "Current",
+   "kind": [
+    "kit command",
+    "kit module"
+   ],
+   "area": "Surfaces and tracing",
+   "commands": [
+    "python -m kit finesnap snap",
+    "python -m kit finesnap check"
+   ],
+   "imports": [
+    "from kit import finesnap",
+    "from kit import snapresolve"
+   ],
+   "code": [
+    {
+     "path": "kit/finesnap.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/snapresolve.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/cli.py",
+     "symbols": [
+      "build_parser"
+     ]
+    },
+    {
+     "path": "kit/vc3d_landmarks.py",
+     "symbols": [
+      "as_matrix",
+      "invert"
+     ]
+    }
+   ],
+   "tests": [
+    "tests/test_finesnap.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed for local runs on public data"
+   },
+   "checked": {
+    "date": "2026-10-29",
+    "commit": "afcc05a"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`finesnap`",
+    "Status": "Current",
+    "Kind": "kit command, kit module",
+    "Area": "Surfaces and tracing",
+    "Run": "`python -m kit finesnap snap`, `python -m kit finesnap check`, `from kit import finesnap`, `from kit import snapresolve`",
+    "Code": "`kit/finesnap.py`, `kit/snapresolve.py`, `kit/cli.py` (`build_parser`), `kit/vc3d_landmarks.py` (`as_matrix`, `invert`)",
+    "Tests": "`tests/test_finesnap.py`",
+    "Needs": "Python 3.10 or newer (run here on 3.13), numpy; kit's `labelsnap`, `snap`, `snaptruth`. Data: the label's own scan and a finer scan of the same scroll with a matrix from the label scan's level-0 voxels to the finer scan's, such as the open-data catalog's volume transforms",
+    "Runs on": "CPU. PHerc0139 development crops (13 x 13 vertices, remote chunk reads included): about 54 s per crop on 4 workers for three snap arms with their planted reruns (measured 2026-10-27, 4-core cloud container). The synthetic quick start (720 vertices) took about 3 s (2026-10-29)",
+    "Network": "Whatever the samplers read: anonymous HTTPS chunk reads of the open-data bucket for remote volumes, none for local ones",
+    "Writes": "`python -m kit finesnap snap`: the OUT folder (kit labelsnap's products plus `source.tif`); the functions write nothing",
+    "Go-ahead": "Not needed for local runs on public data",
+    "Released": "Public `main` from the pull request that adds this page (October 2026). The Snapped Labels dataset (snapped-labels) placed PHerc0139, PHerc0814 and PHerc0841 with it",
+    "Guide": "[labelsnap](labelsnap.md) (the products and the coarse snap), [snapped-labels](snapped-labels.md) (the released dataset)",
+    "Checked": "2026-10-29 against commit `afcc05a`"
+   },
+   "page": "docs/tools/finesnap.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 23,
+     "end_line": 32,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 33,
+     "end_line": 44,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 45,
+     "end_line": 77,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 78,
+     "end_line": 91,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 92,
+     "end_line": 111,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 112,
+     "end_line": 183,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 184,
+     "end_line": 191,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 192,
+     "end_line": 212,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 213,
+     "end_line": 230,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 231,
+     "end_line": 240,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 241,
+     "end_line": 244,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 245,
+     "end_line": 254,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 255,
+     "end_line": 258,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 259,
+     "end_line": 263,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 264,
+     "end_line": 269,
+     "applicable": true
+    }
+   ]
+  },
+  {
    "id": "gate",
    "name": "gate",
    "tagline": "rank released ink readers on PHerc0841 by the Gate A rule",
@@ -6247,6 +6412,318 @@
    ]
   },
   {
+   "id": "labelsnap",
+   "name": "labelsnap",
+   "tagline": "move a surface label onto the papyrus recto face, with an abstain mask",
+   "summary": "`python -m kit labelsnap` snaps one tifxyz surface label onto the recto face of the nearest CT band and writes the snapped tifxyz, a per-vertex abstain mask and confidence, an OME-Zarr surface label (1 surface, 2 ignore) and a VC3D review queue of abstaining regions.",
+   "status": "Current",
+   "kind": [
+    "kit command",
+    "kit module"
+   ],
+   "area": "Surfaces and tracing",
+   "commands": [
+    "python -m kit labelsnap snap",
+    "python -m kit labelsnap check"
+   ],
+   "imports": [
+    "from kit import labelsnap"
+   ],
+   "code": [
+    {
+     "path": "kit/labelsnap.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/cli.py",
+     "symbols": [
+      "build_parser"
+     ]
+    },
+    {
+     "path": "kit/villafmt.py",
+     "symbols": [
+      "vc3d_points"
+     ]
+    }
+   ],
+   "tests": [
+    "tests/test_labelsnap.py",
+    "tests/test_snap_face.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed for a local run or reads of the public open-data bucket"
+   },
+   "checked": {
+    "date": "2026-10-29",
+    "commit": "afcc05a"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`labelsnap`",
+    "Status": "Current",
+    "Kind": "kit command, kit module",
+    "Area": "Surfaces and tracing",
+    "Run": "`python -m kit labelsnap snap`, `python -m kit labelsnap check`, `from kit import labelsnap`",
+    "Code": "`kit/labelsnap.py`, `kit/cli.py` (`build_parser`), `kit/villafmt.py` (`vc3d_points`)",
+    "Tests": "`tests/test_labelsnap.py`, and `tests/test_snap_face.py` for the snap underneath",
+    "Needs": "Python 3.10 or newer (run here on 3.13) and numpy; kit's `snap`, `snaptruth`, `vc3d_region`, `vc3d_audit`, `vc3d_io` and `villafmt`. Optional: tifffile (mesh TIFFs; without it kit's own reader), numcodecs (blosc or zstd chunks). No scipy, no zarr package",
+    "Runs on": "Any CPU. The synthetic quick start (720 vertices) took about 3 s with `--self-check` on a shared 4-core cloud container (measured 2026-10-29). On real meshes the snap reads a profile of 97 samples per vertex; about 1 s per 1,000 vertices on a local zarr is expected from kit snap's face mode (Interpretation; not measured on a whole segment)",
+    "Network": "None for a local `--volume`. An `https://` or `s3://` volume is read anonymously over HTTPS, chunk by chunk, with kit's chunk cache in memory; nothing of it is written to disk",
+    "Writes": "`OUT/snapped.tifxyz/` (x, y, z.tif, meta.json), `OUT/abstain.tif`, `OUT/reason.tif`, `OUT/confidence.tif`, `OUT/surface_label.zarr/` (unless `--no-label`), `OUT/review.json`, `OUT/review.tsv`, `OUT/labelsnap.json`. It refuses an `OUT` that is not empty. `check` writes nothing",
+    "Go-ahead": "Not needed for a local run or reads of the public open-data bucket",
+    "Released": "Public `main` from the pull request that adds this page (October 2026); the same code shipped earlier inside AutoPipeline 0.1.10 (branch `submission/progress-2026-10-fix10`, 29 October 2026). The Snapped Labels dataset (snapped-labels) was made with it and with finesnap",
+    "Guide": "[snapped-labels](snapped-labels.md) (the released dataset and its viewer), [snap](snap.md) (the snap underneath), [finesnap](finesnap.md) (the same snap on a finer scan)",
+    "Checked": "2026-10-29 against commit `afcc05a`"
+   },
+   "page": "docs/tools/labelsnap.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 23,
+     "end_line": 36,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 37,
+     "end_line": 50,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 51,
+     "end_line": 72,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 73,
+     "end_line": 88,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 89,
+     "end_line": 146,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 147,
+     "end_line": 169,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 170,
+     "end_line": 175,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 176,
+     "end_line": 198,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 199,
+     "end_line": 215,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 216,
+     "end_line": 227,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 228,
+     "end_line": 231,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 232,
+     "end_line": 241,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 242,
+     "end_line": 245,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 246,
+     "end_line": 251,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 252,
+     "end_line": 257,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "labelsuggest",
+   "name": "labelsuggest",
+   "tagline": "where to paint ink labels next, from where readers' ink maps disagree",
+   "summary": "`python -m kit labelsuggest map` ranks the tiles of a segment by how much two or more readers' ink maps disagree there and writes the top tiles as a mask to label first, beside matched random and agree tiles and a shuffle control. It reads no label.",
+   "status": "Experimental",
+   "kind": [
+    "kit command",
+    "kit module"
+   ],
+   "area": "Training",
+   "commands": [
+    "python -m kit labelsuggest map"
+   ],
+   "imports": [
+    "from kit import labelsuggest"
+   ],
+   "code": [
+    {
+     "path": "kit/labelsuggest.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/cli.py",
+     "symbols": [
+      "build_parser"
+     ]
+    }
+   ],
+   "tests": [
+    "tests/test_labelsuggest.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed: local CPU only, nothing is posted or uploaded"
+   },
+   "checked": {
+    "date": "2026-10-29",
+    "commit": "5ad1fa6"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`labelsuggest`",
+    "Status": "Experimental",
+    "Kind": "kit command, kit module",
+    "Area": "Training",
+    "Run": "`python -m kit labelsuggest map`, `from kit import labelsuggest`",
+    "Code": "`kit/labelsuggest.py`, `kit/cli.py` (`build_parser`)",
+    "Tests": "`tests/test_labelsuggest.py`",
+    "Needs": "Python 3.10 or newer (run here on 3.13) and numpy; tifffile for TIFF maps. PNG and .npy maps need nothing more (PNG through kit's `vc3d_io`). No villa, no VC3D, no GPU",
+    "Runs on": "Any CPU. The quick start (five 256 x 256 maps) takes under 1 s; three 2048 x 2048 maps took 1.2 s with `vote` and 0.6 s with `edge`; three 4096 x 4096 maps 5.5 s and 3.3 s, with 1.3 GB peak memory (in memory, 5 shuffles; measured 2026-10-29, shared 4-core cloud container, Python 3.13, numpy 2.5)",
+    "Network": "None",
+    "Writes": "OUT/suggest.json, OUT/label-suggestions.png, OUT/disagreement.png, OUT/random-tiles.png and OUT/agree-tiles.png; nothing else",
+    "Go-ahead": "Not needed: local CPU only, nothing is posted or uploaded",
+    "Released": "Public `main` from the pull request that adds this page (October 2026). The test runners and a VC3D export are not in this repository",
+    "Release id": "`scrolls-kit`",
+    "Checked": "2026-10-29 against commit `5ad1fa6`"
+   },
+   "page": "docs/tools/labelsuggest.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 23,
+     "end_line": 34,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 35,
+     "end_line": 49,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 50,
+     "end_line": 81,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 82,
+     "end_line": 111,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 112,
+     "end_line": 140,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 141,
+     "end_line": 160,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 161,
+     "end_line": 167,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 168,
+     "end_line": 200,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 201,
+     "end_line": 221,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 222,
+     "end_line": 230,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 231,
+     "end_line": 234,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 235,
+     "end_line": 244,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 245,
+     "end_line": 248,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 249,
+     "end_line": 252,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 253,
+     "end_line": 259,
+     "applicable": true
+    }
+   ]
+  },
+  {
    "id": "lasagna-fields",
    "name": "lasagna-fields",
    "tagline": "villa's lasagna field for ten whole scans, and for any box of any public scan on demand",
@@ -8185,7 +8662,10 @@
     "python scripts/media/hfrows_demo.py",
     "python scripts/media/snap_media.py",
     "python scripts/media/barrier_demo.py",
-    "python scripts/media/barrier_chart.py"
+    "python scripts/media/barrier_chart.py",
+    "python scripts/media/windings_chart.py",
+    "python scripts/media/labelsnap_demo.py",
+    "python scripts/media/labelsnap_chart.py"
    ],
    "imports": [],
    "code": [
@@ -8212,7 +8692,7 @@
     "Status": "Current",
     "Kind": "script folder",
     "Area": "Releases and repository",
-    "Run": "`python scripts/media/hero.py`, `python scripts/media/encode.py`, `python scripts/media/capture_web.py`, `python scripts/media/record_ap_monitor.py`, `python scripts/media/sweep.py`, `python scripts/media/tifxyz_stills.py`, `python scripts/media/isometry_media.py`, `python scripts/media/coverage_still.py`, `python scripts/media/vc3d_agent_session.py`, `python scripts/media/hfrows_demo.py`, `python scripts/media/snap_media.py`, `python scripts/media/barrier_demo.py`, `python scripts/media/barrier_chart.py`",
+    "Run": "`python scripts/media/hero.py`, `python scripts/media/encode.py`, `python scripts/media/capture_web.py`, `python scripts/media/record_ap_monitor.py`, `python scripts/media/sweep.py`, `python scripts/media/tifxyz_stills.py`, `python scripts/media/isometry_media.py`, `python scripts/media/coverage_still.py`, `python scripts/media/vc3d_agent_session.py`, `python scripts/media/hfrows_demo.py`, `python scripts/media/snap_media.py`, `python scripts/media/barrier_demo.py`, `python scripts/media/barrier_chart.py`, `python scripts/media/windings_chart.py`, `python scripts/media/labelsnap_demo.py`, `python scripts/media/labelsnap_chart.py`",
     "Code": "`scripts/media/`",
     "Tests": "`tests/test_media.py`, `tests/test_repo.py` (`test_assets_are_listed_labeled_and_within_limits`)",
     "Needs": "Python 3.10 or newer. `hero.py` and `sweep.py`: numpy and Pillow, and the Inter font for social cards. `encode.py`: ffmpeg (libx264) and gifsicle. `capture_web.py`: the `playwright` package and a Chromium it can start (it never downloads one). `common.py` is standard library only",
@@ -8254,67 +8734,67 @@
     {
      "name": "Commands and options",
      "start_line": 85,
-     "end_line": 292,
+     "end_line": 319,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 293,
-     "end_line": 296,
+     "start_line": 320,
+     "end_line": 323,
      "applicable": false
     },
     {
      "name": "Inputs",
-     "start_line": 297,
-     "end_line": 303,
+     "start_line": 324,
+     "end_line": 330,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 304,
-     "end_line": 340,
+     "start_line": 331,
+     "end_line": 367,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 341,
-     "end_line": 402,
+     "start_line": 368,
+     "end_line": 429,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 403,
-     "end_line": 425,
+     "start_line": 430,
+     "end_line": 452,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 426,
-     "end_line": 441,
+     "start_line": 453,
+     "end_line": 468,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 442,
-     "end_line": 451,
+     "start_line": 469,
+     "end_line": 478,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 452,
-     "end_line": 455,
+     "start_line": 479,
+     "end_line": 482,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 456,
-     "end_line": 464,
+     "start_line": 483,
+     "end_line": 493,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 465,
-     "end_line": 470,
+     "start_line": 494,
+     "end_line": 499,
      "applicable": true
     }
    ]
@@ -11579,6 +12059,151 @@
    ]
   },
   {
+   "id": "seamswitch",
+   "name": "seamswitch",
+   "tagline": "count seam-aware winding switches of a spiral fit",
+   "summary": "Counts how often a spiral fit puts neighboring vertices of one sheet on different windings, after allowing for the fit's own seam: switches per 1000 neighbor pairs and the seam wrong area, on labeled or unlabeled sheet grids.",
+   "status": "Experimental",
+   "kind": [
+    "kit module",
+    "kit entry point"
+   ],
+   "area": "Scoring and controls",
+   "commands": [
+    "python -m kit.seamswitch"
+   ],
+   "imports": [
+    "from kit.seamswitch import seam_switches, sheet_switches, pool"
+   ],
+   "code": [
+    {
+     "path": "kit/seamswitch.py",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_seamswitch.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed"
+   },
+   "checked": {
+    "date": "2026-10-29",
+    "commit": "afcc05a"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`seamswitch`",
+    "Status": "Experimental",
+    "Kind": "kit module, kit entry point",
+    "Area": "Scoring and controls",
+    "Run": "`python -m kit.seamswitch`, `from kit.seamswitch import seam_switches, sheet_switches, pool`",
+    "Code": "`kit/seamswitch.py`",
+    "Tests": "`tests/test_seamswitch.py`",
+    "Needs": "Python 3.10 or newer, numpy; the caller supplies the fit's coordinates or windings on each sheet grid",
+    "Runs on": "Any CPU. A 60 by 20,000 grid (1.2 million vertices) takes about 3.3 s in `sheet_switches` (measured 2026-10-29, 4-core cloud container, synthetic grid)",
+    "Network": "None",
+    "Writes": "Nothing (prints a summary line, or JSON with `--json`)",
+    "Go-ahead": "Not needed",
+    "Released": "Public `main` from this release; a line of the Scrolls kit entry in the README's \"Released tools\", id `seamswitch`",
+    "Checked": "2026-10-29 against commit `afcc05a`"
+   },
+   "page": "docs/tools/seamswitch.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 22,
+     "end_line": 31,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 32,
+     "end_line": 44,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 45,
+     "end_line": 64,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 65,
+     "end_line": 74,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 75,
+     "end_line": 126,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 127,
+     "end_line": 138,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 139,
+     "end_line": 149,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 150,
+     "end_line": 171,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 172,
+     "end_line": 181,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 182,
+     "end_line": 191,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 192,
+     "end_line": 195,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 196,
+     "end_line": 205,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 206,
+     "end_line": 213,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 214,
+     "end_line": 217,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 218,
+     "end_line": 222,
+     "applicable": true
+    }
+   ]
+  },
+  {
    "id": "segment-lens",
    "name": "segment-lens",
    "tagline": "turn published segments in 3D with their holes, folds and stretched edges painted on",
@@ -12219,6 +12844,166 @@
      "name": "Related",
      "start_line": 271,
      "end_line": 277,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "snap",
+   "name": "snap",
+   "tagline": "move a tifxyz mesh along its normals onto a predicted sheet, the CT sheet midline or a band face",
+   "summary": "`python -m kit snap` moves each vertex of a tifxyz mesh along its normal onto the nearest predicted sheet (the PHerc. 343 winner's snap), the CT band midline (RectoRefine) or a CT band face such as the recto, with a self-check and a sham; `kit.snaptruth` scores snaps against a second scan.",
+   "status": "Experimental",
+   "kind": [
+    "kit command",
+    "kit module"
+   ],
+   "area": "Surfaces and tracing",
+   "commands": [
+    "python -m kit snap"
+   ],
+   "imports": [
+    "from kit import snap",
+    "from kit import snaptruth"
+   ],
+   "code": [
+    {
+     "path": "kit/snap.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/snaptruth.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/cli.py",
+     "symbols": [
+      "build_parser"
+     ]
+    }
+   ],
+   "tests": [
+    "tests/test_snap.py",
+    "tests/test_snap_face.py",
+    "tests/test_snaptruth.py",
+    "tests/test_snap_support.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed for a local run or a read of the public open-data bucket"
+   },
+   "checked": {
+    "date": "2026-10-29",
+    "commit": "afcc05a"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`snap`",
+    "Status": "Experimental",
+    "Kind": "kit command, kit module",
+    "Area": "Surfaces and tracing",
+    "Run": "`python -m kit snap`, `from kit import snap`, `from kit import snaptruth`",
+    "Code": "`kit/snap.py`, `kit/snaptruth.py`, `kit/cli.py` (`build_parser`)",
+    "Tests": "`tests/test_snap.py`, `tests/test_snap_face.py`, `tests/test_snaptruth.py`, `tests/test_snap_support.py`",
+    "Needs": "Python 3 (run here on 3.13) and numpy. Optional: tifffile (reads the mesh TIFFs; without it kit's own reader in `kit/vc3d_io.py`), numcodecs (for blosc, zstd or lz4 zarr chunks), scipy (only for the tests' cross-checks). No zarr package: zarr v2 and v3 stores are read by `kit/vc3d_region.py`. Data: a tifxyz mesh and a surface prediction or CT zarr on the same level-0 voxel grid",
+    "Runs on": "Any CPU. A 62,500-vertex synthetic mesh took 4.2 s of CPU to snap onto a prediction, 7.5 to 11.7 s for `--check`, and 36 s in CT midline mode (measured 2026-10-16, 4-core Intel Xeon cloud container). On the published PHerc0841 w00 and ag896 meshes one `--check` took 88 to 182 s and 0.7 to 1.7 GB (9 Oct 2026, 4 shared cloud cores)",
+    "Network": "None for a local `--volume`. An `https://` or `s3://` volume (`s3://BUCKET/KEY` is read as `https://BUCKET.s3.amazonaws.com/KEY`) is read anonymously over HTTPS from that host, chunk by chunk, retried on errors, with a 192-chunk cache",
+    "Writes": "With `--out OUT`: `OUT/<mesh>/x.tif`, `y.tif`, `z.tif` and `meta.json` per mesh (replaced), `OUT/snap_report.tsv` (appended) and `OUT/snap_report.json` (replaced). With `--check`: no meshes, and `OUT/snap_check.json` only when `--out` is given. It never changes its inputs",
+    "Go-ahead": "Not needed for a local run or a read of the public open-data bucket",
+    "Released": "Public `main` from the pull request that adds this page (October 2026); `kit/snap.py` shipped earlier inside the AutoPipeline package since 2026-10-14 (branch `submission/progress-2026-10` and its fix releases, the latest `submission/progress-2026-10-fix10`)",
+    "Guide": "[labelsnap](labelsnap.md) and [finesnap](finesnap.md), the label snaps built on the band face snap",
+    "Checked": "2026-10-29 against commit `afcc05a`"
+   },
+   "page": "docs/tools/snap.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 23,
+     "end_line": 34,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 35,
+     "end_line": 47,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 48,
+     "end_line": 82,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 83,
+     "end_line": 113,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 114,
+     "end_line": 254,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 255,
+     "end_line": 317,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 318,
+     "end_line": 329,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 330,
+     "end_line": 380,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 381,
+     "end_line": 424,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 425,
+     "end_line": 467,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 468,
+     "end_line": 484,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 485,
+     "end_line": 494,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 495,
+     "end_line": 502,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 503,
+     "end_line": 511,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 512,
+     "end_line": 518,
      "applicable": true
     }
    ]
@@ -12991,13 +13776,13 @@
     {
      "name": "History",
      "start_line": 169,
-     "end_line": 172,
+     "end_line": 173,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 173,
-     "end_line": 176,
+     "start_line": 174,
+     "end_line": 177,
      "applicable": true
     }
    ]
@@ -14372,10 +15157,10 @@
     "Tests": "`tests/test_umbilici.py`, 18 tests, standard library (2 more need numpy, numcodecs and Pillow and skip without them)",
     "Needs": "In the browser: WebGL 2 (3D textures), ES modules and import maps, three.js 0.160.0 from cdn.jsdelivr.net. `build_lines.py`: Python 3.10 or newer, standard library. `build_lasagna.py`: numpy, numcodecs (Blosc), Pillow",
     "Runs on": "The visitor's browser. A whole-scan radiograph of PHerc0191 (119 heights, about 1,070 range reads of 16 KB) loaded in under 25 s in headless, software-rendered Chromium on a 4-core cloud container (2026-10-23); a GPU and a home connection are faster. `build_lasagna.py` read the 64 PHerc0175A parts (about 48 GB) in about 4 minutes with three downloads at once, about 12 s per part (cloud container, 2026-10-23)",
-    "Network": "The visitor's browser: `vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` (CT chunks by HTTP range request; the bucket allows any origin and the Range header), `cdn.jsdelivr.net` (three.js), `fonts.googleapis.com` and `fonts.gstatic.com` (fonts), the Space itself. `build_lines.py`: the same bucket (each scan's `.zattrs` and the `.zarray` of all six levels). `build_lasagna.py`: none (reads a local copy)",
+    "Network": "The visitor's browser: `vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` (CT chunks by HTTP range request; the bucket allows any origin and the Range header), `cdn.jsdelivr.net` (three.js), `fonts.googleapis.com` and `fonts.gstatic.com` (fonts), `huggingface.co` (the center-lines dataset's newest revision, its `index.json` and line files, read on load), the Space itself. `build_lines.py`: the same bucket (each scan's `.zattrs` and the `.zarray` of all six levels). `build_lasagna.py`: none (reads a local copy)",
     "Writes": "The page: nothing on any server (the URL bar holds the view; downloads are made in the browser; two `localStorage` keys: `umbilici.seen` hides the first-visit hint, `umbilici.settings` keeps the viewer settings). `build_lines.py`: `OUT.json`. `build_lasagna.py`: `OUT_DIR/cos_Z.webp` and `ori_Z.webp` for nine heights, `needles.bin`, `meta.json`",
     "Go-ahead": "Needed to make the Space public: Chase's yes, given 2026-10-23. Later redeploys from merged `main` with public data fall under the standing yes (rule 8). Not needed to use the page or run the builds",
-    "Released": "Space [`SharpMeow/umbilici`](https://huggingface.co/spaces/SharpMeow/umbilici) 1.11.1 (Space commit `08497deb`, deployed 2026-10-28 from `30e0308` on the branch of [PR #254](https://github.com/ChaseHendrick/Scrolls/pull/254), under the standing yes for approved Spaces, rule 8); 1.11.0 was Space commit `ef8c85d3` (from `main` at `8250b23`); 1.10.0 was Space commit `3def64b4` (from `50020b3`, lines from dataset revision `51603382`, v2.6.1); 1.9.0 was Space commit `97e602a7` (from `2b5c820`, lines from `1b866db0`, v2.5), 1.8.0 Space commit `01ea09fd`. Public since 2026-10-23 (Chase switched it public); README \"Released tools\" entry `umbilici`",
+    "Released": "Space [`SharpMeow/umbilici`](https://huggingface.co/spaces/SharpMeow/umbilici) 1.12.0 (Space commit `998873d4`, deployed 2026-10-29 from `10c7ad0` on the branch of [PR #277](https://github.com/ChaseHendrick/Scrolls/pull/277), on Chase's ask; live recheck: RUNNING, read dataset revision `fdfb6103` (v2.8, 91 lines), glow 0.25, no card and control overlap at four widths); 1.11.1 was Space commit `08497deb` (from `30e0308` on the branch of [PR #254](https://github.com/ChaseHendrick/Scrolls/pull/254)); 1.11.0 was Space commit `ef8c85d3` (from `main` at `8250b23`); 1.10.0 was Space commit `3def64b4` (from `50020b3`, lines from dataset revision `51603382`, v2.6.1); 1.9.0 was Space commit `97e602a7` (from `2b5c820`, lines from `1b866db0`, v2.5), 1.8.0 Space commit `01ea09fd`. Public since 2026-10-23 (Chase switched it public); README \"Released tools\" entry `umbilici`",
     "License": "Apache 2.0 for the page and tools ([`spaces/umbilici/LICENSE`](../../spaces/umbilici/LICENSE), [`NOTICE`](../../spaces/umbilici/NOTICE)); each line keeps its own license (MIT, CC BY 4.0, CC BY-NC 4.0), the lasagna derivative and the scans are CC BY-NC 4.0",
     "Checked": "2026-10-27 against commit `45836d9`"
    },
@@ -14462,13 +15247,13 @@
     {
      "name": "History",
      "start_line": 185,
-     "end_line": 205,
+     "end_line": 206,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 206,
-     "end_line": 210,
+     "start_line": 207,
+     "end_line": 211,
      "applicable": true
     }
    ]
@@ -16120,6 +16905,182 @@
    ]
   },
   {
+   "id": "vesuvius-radar",
+   "name": "vesuvius-radar",
+   "tagline": "new papers, code, models and data for the Herculaneum scrolls, scored and searchable",
+   "summary": "A Hugging Face Space that collects new papers, repositories, models, datasets, package versions and posts from public sources around the clock, scores each for relevance to reading the Herculaneum scrolls, and serves them as a page, a JSON API, CSV, RSS and an MCP server.",
+   "status": "Current",
+   "kind": [
+    "app"
+   ],
+   "area": "Viewers and apps",
+   "commands": [
+    "https://sharpmeow-vesuvius-radar.hf.space/api/items?since=1d",
+    "/mcp",
+    "uvicorn app:app --port 7860",
+    "spaces/vesuvius-radar",
+    "python scanner.py --days 3 --out scan.json",
+    "window.vesuviusRadar"
+   ],
+   "imports": [],
+   "code": [
+    {
+     "path": "spaces/vesuvius-radar/app.py",
+     "symbols": []
+    },
+    {
+     "path": "spaces/vesuvius-radar/scanner.py",
+     "symbols": []
+    },
+    {
+     "path": "spaces/vesuvius-radar/radar_mcp.py",
+     "symbols": []
+    },
+    {
+     "path": "spaces/vesuvius-radar/radar.json",
+     "symbols": []
+    },
+    {
+     "path": "spaces/vesuvius-radar/index.html",
+     "symbols": []
+    },
+    {
+     "path": "spaces/vesuvius-radar/static/app.js",
+     "symbols": []
+    },
+    {
+     "path": "spaces/vesuvius-radar/static/style.css",
+     "symbols": []
+    },
+    {
+     "path": "spaces/vesuvius-radar/connect.json",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_vesuvius_radar.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed to use. Making the Space public was Chase's yes (29 Oct 2026); later redeploys from merged `main` fall under the standing yes (rule 8)"
+   },
+   "checked": {
+    "date": "2026-10-30",
+    "commit": "b803ece"
+   },
+   "license": "Code Apache 2.0; item titles, summaries and links belong to their sources",
+   "fields": {
+    "Id": "`vesuvius-radar`",
+    "Status": "Current",
+    "Kind": "app",
+    "Area": "Viewers and apps",
+    "Run": "[huggingface.co/spaces/SharpMeow/vesuvius-radar](https://huggingface.co/spaces/SharpMeow/vesuvius-radar) (page); `https://sharpmeow-vesuvius-radar.hf.space/api/items?since=1d` (JSON); `/mcp` (MCP, Streamable HTTP); locally `uvicorn app:app --port 7860` in `spaces/vesuvius-radar`; `python scanner.py --days 3 --out scan.json` (one scan, no server); in the page, `window.vesuviusRadar`",
+    "Code": "`spaces/vesuvius-radar/app.py`, `spaces/vesuvius-radar/scanner.py`, `spaces/vesuvius-radar/radar_mcp.py`, `spaces/vesuvius-radar/radar.json`, `spaces/vesuvius-radar/index.html`, `spaces/vesuvius-radar/static/app.js`, `spaces/vesuvius-radar/static/style.css`, `spaces/vesuvius-radar/connect.json`",
+    "Tests": "`tests/test_vesuvius_radar.py` (scoring, lookbacks, views, filters, API, CSV, RSS, MCP, the vector cache, and that no key or private material is in the Space's files); `python -m kit spaceconnect check` checks its Connect panel",
+    "Needs": "A browser, or any HTTP client. To run it yourself: Python 3.10+, `fastapi` 0.115.6, `uvicorn` 0.34.0, `fastembed` 0.9.1 and `numpy` (`requirements.txt`); the model BAAI/bge-small-en-v1.5 (MIT, about 130 MB) downloads on first use",
+    "Runs on": "A free Hugging Face CPU Space (2 vCPU, 16 GB); no GPU and no GPU quota. The page and API answer at once; see Cost and time for the collector",
+    "Network": "`rss.arxiv.org`, `arxiv.org`, `export.arxiv.org` (papers), `api.github.com` (repositories, ScrollPrize/villa), `huggingface.co` (models, datasets, Spaces, daily papers, the embedding model), `pypi.org`, `zenodo.org`, `api.crossref.org`, `scrollprize.substack.com` (the Challenge blog); all read logged out",
+    "Writes": "In the Space: `/data/radar` with persistent storage, else `/tmp/radar` (`store.json`, `vectors.npz`); `RADAR_DATA` moves it. `scanner.py --out` writes the file you name",
+    "Go-ahead": "Not needed to use. Making the Space public was Chase's yes (29 Oct 2026); later redeploys from merged `main` fall under the standing yes (rule 8)",
+    "Released": "Public on Hugging Face since 2026-10-29; README \"Released tools\" entry `vesuvius-radar`",
+    "License": "Code Apache 2.0; item titles, summaries and links belong to their sources",
+    "Checked": "2026-10-30 against commit `b803ece`"
+   },
+   "page": "docs/tools/vesuvius-radar.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 23,
+     "end_line": 34,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 35,
+     "end_line": 46,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 47,
+     "end_line": 56,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 57,
+     "end_line": 66,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 67,
+     "end_line": 137,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 138,
+     "end_line": 149,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 150,
+     "end_line": 153,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 154,
+     "end_line": 157,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 158,
+     "end_line": 169,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 170,
+     "end_line": 179,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 180,
+     "end_line": 183,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 184,
+     "end_line": 193,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 194,
+     "end_line": 197,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 198,
+     "end_line": 202,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 203,
+     "end_line": 206,
+     "applicable": true
+    }
+   ]
+  },
+  {
    "id": "view",
    "name": "view",
    "tagline": "one offline HTML page that overlays several ink maps and the labels",
@@ -16976,67 +17937,67 @@
     {
      "name": "Checks and controls",
      "start_line": 66,
-     "end_line": 80,
+     "end_line": 84,
      "applicable": true
     },
     {
      "name": "Commands and options",
-     "start_line": 81,
-     "end_line": 114,
+     "start_line": 85,
+     "end_line": 118,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 115,
-     "end_line": 122,
+     "start_line": 119,
+     "end_line": 126,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 123,
-     "end_line": 156,
+     "start_line": 127,
+     "end_line": 160,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 157,
-     "end_line": 214,
+     "start_line": 161,
+     "end_line": 218,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 215,
-     "end_line": 225,
-     "applicable": true
-    },
-    {
-     "name": "Cost and time",
-     "start_line": 226,
+     "start_line": 219,
      "end_line": 229,
      "applicable": true
     },
     {
-     "name": "For agents",
+     "name": "Cost and time",
      "start_line": 230,
-     "end_line": 239,
+     "end_line": 233,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 234,
+     "end_line": 243,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 240,
-     "end_line": 247,
-     "applicable": true
-    },
-    {
-     "name": "History",
-     "start_line": 248,
+     "start_line": 244,
      "end_line": 251,
      "applicable": true
     },
     {
-     "name": "Related",
+     "name": "History",
      "start_line": 252,
-     "end_line": 257,
+     "end_line": 256,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 257,
+     "end_line": 263,
      "applicable": true
     }
    ]

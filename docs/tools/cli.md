@@ -147,6 +147,9 @@ Each command's `--help` line, its actions, its handler and the page that documen
 | `windconsistency` | none | `cmd_windconsistency` (in `kit/windconsistency.py`) | [windconsistency](windconsistency.md) | check that relative winding counts (a to b is k windings) can all hold at once, around every closed path |
 | `axispolish` | none | `cmd_axispolish` (in `kit/axispolish.py`) | [axispolish](axispolish.md) | polish a center line (umbilicus) to the deepest point of the traced sheet on the scan's published normal grids |
 | `windlabel-box` | none | `windlabel_box.cmd_windlabel_box` (in `kit/windlabel_box/__init__.py`) | [windlabel-box](windlabel-box.md) | relative windings in a box around a point, from a published surface prediction and lasagna grad_mag (model output) |
+| `snap` | none | `snap.cmd_snap` (in `kit/snap.py`) | [snap](snap.md) | snap a tifxyz mesh along its normals onto the nearest predicted sheet, the CT sheet midline or a band face, regularized |
+| `labelsnap` | `snap`, `check` | `labelsnap.cmd_labelsnap` (in `kit/labelsnap.py`) | [labelsnap](labelsnap.md) | move a tifxyz surface label onto the papyrus recto face: snapped tifxyz, abstain mask, OME-Zarr surface label (1 surface, 2 ignore), VC3D review points |
+| `finesnap` | `snap`, `check` | `finesnap.cmd_finesnap` (in `kit/finesnap.py`) | [finesnap](finesnap.md) | move a tifxyz surface label onto the recto face seen in a finer registered scan of the same scroll (kit labelsnap's products plus source.tif) |
 | `meshaudit` | `transforms`, `canvas`, `plan`, `depth` | `cmd_meshaudit` | [meshaudit](meshaudit.md) | audit published meshes, cross-scan transforms and render depth offsets |
 | `surfacefix` | `prepare`, `apply` | `cmd_surfacefix` | [surfacefix](surfacefix.md) | experimental region flags and bounded, controlled surface corrections |
 | `provenance` | `write`, `check` | `cmd_provenance` | [provenance](provenance.md) | who ran what, when, from which inputs: a record and one digest |
@@ -157,6 +160,7 @@ Each command's `--help` line, its actions, its handler and the page that documen
 | `shuffle` | none | `cmd_shuffle` | [layers](layers.md) | depth-shuffle control: copy a surface volume with its layers in a fixed random order |
 | `phantom` | none | `cmd_phantom` | [phantom](phantom.md) | synthetic carbon-ink phantoms with known truth: make, stress-test a detector, calibrate AUC noise |
 | `view` | none | `cmd_view` | [view](view.md) | one static HTML page overlaying several ink maps, their disagreement and the labels |
+| `labelsuggest` | `map` | `labelsuggest.cmd_labelsuggest` (in `kit/labelsuggest.py`) | [labelsuggest](labelsuggest.md) | where to paint ink labels next: tiles where readers' ink maps disagree, with matched random and agree tiles as controls |
 | `strokenet` | none | `cmd_strokenet` | [strokenet](strokenet.md) | learned text-likeness score of a 2D ink map (StrokeNet), with rotation and IAAFT controls |
 | `volumeview` | none | `cmd_volumeview` | [volumeview](volumeview.md) | build a local viewer link from explicit public volume metadata |
 | `segzoo` | none | `cmd_segzoo` | [segzoo](segzoo.md) | model zoo: nnU-Net, MedNeXt, Swin UNETR, Auto3DSeg, SegFormer, DINOv3, MedSAM2 and Mamba families, their licenses and fit; Auto3DSeg datalists |

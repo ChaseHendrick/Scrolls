@@ -1,0 +1,150 @@
+{
+ "note": "What Vesuvius Radar collects and how it scores. scanner.py reads this file at every check. Keyword score: a scroll term adds the core weight; in each topic a strong term counts on its own and a weak term counts half, only when a context term (3D, CT, volume and the like) is also present; each negative term takes 15 off. Meaning score: the cosine similarity of the item's text to the anchor sentences below, from a small sentence-embedding model, mapped from [sim_floor, sim_ceiling] to 0..100. The final score is the higher of the keyword score and the blend (blend times the meaning score plus the rest times the keyword score), so meaning alone can lift an item to medium but not to high. Anchors and meaning searches are embedded as queries (query_prefix), items as passages.",
+ "retention_days": 30,
+ "keep_score": 12,
+ "bands": {"high": 60, "medium": 35},
+ "check_cooldown_s": 300,
+ "core": {
+  "weight": 45,
+  "terms": ["vesuvius", "herculaneum", "herculanense", "papyrus", "papyri", "papyrolog", "carbonized scroll",
+            "carbonised scroll", "charred scroll", "scroll prize", "scrollprize", "volume cartographer",
+            "volume-cartographer", "vc3d", "khartes", "thaumato", "educelab", "pherc", "dinovol", "virtual unwrapping",
+            "virtual unrolling"]
+ },
+ "topics": {
+  "Sheets and surfaces": {
+   "weight": 16,
+   "strong": ["sheet segmentation", "surface extraction", "virtual unwrap", "unwrapping", "layer segmentation",
+              "winding number", "thin structure", "thin-structure", "membrane segmentation", "surface tracing",
+              "surface detection"],
+   "weak": ["sheet", "mesh", "manifold", "topolog", "instance segmentation", "3d segmentation", "volumetric segmentation",
+            "surface reconstruction", "unroll", "flatten", "parameteriz"]
+  },
+  "Ink and imaging": {
+   "weight": 16,
+   "strong": ["ink", "phase contrast", "phase-contrast", "micro-ct", "microct", "x-ray tomograph", "x-ray ct",
+              "x-ray computed tomograph", "synchrotron", "palimpsest", "cultural heritage", "archaeolog",
+              "historical document", "ancient manuscript", "manuscript"],
+   "weak": ["computed tomography", "xct", "ancient", "non-destructive"]
+  },
+  "Fibers and tracing": {
+   "weight": 16,
+   "strong": ["fiber tracing", "tubular structure", "curvilinear structure", "centerline extraction",
+              "centerline", "filament tracing", "tractography", "neuron tracing", "vessel tracing", "fiber orientation"],
+   "weak": ["fiber", "tubular", "curvilinear", "skeleton", "tracing"]
+  },
+  "Compression and storage": {
+   "weight": 14,
+   "strong": ["volumetric compression", "lossless compression", "image compression", "zarr", "entropy coding",
+              "neural compression", "scientific data compression", "tensorstore", "volume compression"],
+   "weak": ["compression", "codec", "lossless", "chunked", "bit-depth"]
+  },
+  "Registration": {
+   "weight": 14,
+   "strong": ["image registration", "deformable registration", "volume registration", "multimodal registration",
+              "multi-modal registration", "volumetric registration"],
+   "weak": ["registration", "deformable", "alignment"]
+  },
+  "3D encoders": {
+   "weight": 12,
+   "strong": ["3d vit", "volumetric foundation model", "3d foundation model", "medical foundation model",
+              "self-supervised 3d", "masked image modeling", "3d self-supervised"],
+   "weak": ["self-supervised", "foundation model", "vision transformer", "dino", "masked autoencoder", "jepa",
+            "pretraining", "pre-training", "representation learning"]
+  },
+  "Text and reading": {
+   "weight": 14,
+   "strong": ["greek", "htr", "handwritten text recognition", "handwriting recognition", "papyrolog", "epigraph",
+              "ancient text", "historical ocr", "text restoration", "lacuna"],
+   "weak": ["ocr", "text recognition", "latin", "glyph", "character recognition", "handwrit"]
+  },
+  "Speed and scale": {
+   "weight": 10,
+   "strong": ["tiled inference", "sliding window inference", "sliding-window inference", "out-of-core", "gigavoxel",
+              "teravoxel", "large-scale volume", "sparse convolution"],
+   "weak": ["memory-efficient", "inference cost", "quantiz", "flashattention", "efficient attention", "tiled"]
+  }
+ },
+ "context": ["3d", "volumetric", "volume", "volumes", "voxel", "ct", "x-ray", "xray", "tomograph", "micro-ct",
+             "microscopy", "scientific imaging", "zarr", "3-d"],
+ "context_bonus": 6,
+ "negative": ["large language model", "llm", "llms", "kv cache", "vision-language-action", "autonomous driving",
+              "dialogue", "speech", "recommender", "chatbot", "reinforcement learning from human", "text-to-motion",
+              "avatar", "gaussian splatting", "nerf"],
+ "semantic": {
+  "model": "BAAI/bge-small-en-v1.5",
+  "query_prefix": "Represent this sentence for searching relevant passages: ",
+  "sim_floor": 0.7,
+  "sim_ceiling": 0.8,
+  "blend": 0.55,
+  "topic_sim": 0.76,
+  "embed_chars": 600,
+  "anchors": {
+   "Scroll work": [
+    "Reading the carbonized Herculaneum papyrus scrolls from X-ray CT scans",
+    "Vesuvius Challenge: virtually unwrapping and reading ancient scrolls buried by Mount Vesuvius",
+    "Tools and data for segmenting papyrus sheets in CT volumes of rolled scrolls"
+   ],
+   "Sheets and surfaces": [
+    "Segmenting thin, tightly packed curved sheets or layers in a 3D volume",
+    "Extracting and flattening a curved surface from a volumetric scan",
+    "Tracing a rolled spiral surface and counting its windings in a 3D image",
+    "Topology-preserving segmentation of thin structures in 3D images"
+   ],
+   "Ink and imaging": [
+    "Detecting faint ink on ancient documents from X-ray micro-CT",
+    "Phase-contrast synchrotron tomography of cultural heritage objects",
+    "Non-destructive imaging of historical manuscripts and archaeological artifacts"
+   ],
+   "Fibers and tracing": [
+    "Tracing fibers and curvilinear structures through a 3D volume",
+    "Estimating fiber orientation in volumetric images"
+   ],
+   "Compression and storage": [
+    "Lossless compression of large 3D scientific image volumes",
+    "Chunked array storage such as Zarr for terabyte-scale volumes"
+   ],
+   "Registration": [
+    "Deformable registration of two 3D scans of the same object"
+   ],
+   "3D encoders": [
+    "Self-supervised foundation models for 3D volumetric images",
+    "3D vision transformers pretrained on CT or microscopy volumes"
+   ],
+   "Text and reading": [
+    "Recognizing ancient Greek handwriting on papyrus fragments",
+    "Restoring missing text in damaged ancient inscriptions and manuscripts"
+   ],
+   "Speed and scale": [
+    "Fast tiled inference of 3D neural networks over gigavoxel volumes"
+   ]
+  }
+ },
+ "sources": {
+  "arxiv": {"label": "arXiv", "every_min": 60, "backfill_days": 30,
+   "rss": ["cs.CV", "eess.IV", "physics.med-ph", "cs.LG", "cs.GR", "cs.DL", "physics.ins-det", "cs.CL"],
+   "pastweek": ["cs.CV", "eess.IV", "physics.med-ph", "cs.GR", "cs.DL", "physics.ins-det"],
+   "pastweek_every_h": 24,
+   "search": "all:herculaneum OR all:papyrus OR all:papyri OR abs:\"vesuvius challenge\" OR abs:\"virtual unwrapping\" OR abs:\"carbonized scroll\" OR abs:\"carbonized papyrus\""},
+  "github": {"label": "GitHub", "every_min": 20, "backfill_days": 30,
+   "queries": ["vesuvius challenge", "herculaneum", "vesuvius scroll", "scrollprize", "volume-cartographer",
+               "papyrus ct", "topic:vesuvius-challenge"],
+   "watch_repos": ["ScrollPrize/villa"], "pr_lookups": 2},
+  "hf": {"label": "Hugging Face", "every_min": 20, "backfill_days": 30,
+   "search": ["vesuvius", "herculaneum", "papyrus", "scroll-prize", "dinovol"],
+   "authors": ["scrollprize"],
+   "daily_papers": true},
+  "pypi": {"label": "PyPI", "every_min": 60, "backfill_days": 30,
+   "packages": {"vesuvius": 70, "zarr": 25, "tensorstore": 25, "numcodecs": 20, "tifffile": 20, "huggingface_hub": 15,
+                "torch": 20, "monai": 25, "nnunetv2": 30, "open3d": 20, "scikit-image": 15, "napari": 15,
+                "neuroglancer": 25, "cloud-volume": 20, "zstandard": 15, "timm": 15, "onnxruntime": 12, "fsspec": 12}},
+  "zenodo": {"label": "Zenodo", "every_min": 120, "backfill_days": 30,
+   "queries": ["\"vesuvius challenge\"", "herculaneum papyri", "herculaneum scroll", "\"virtual unwrapping\"",
+               "\"volume cartographer\"", "papyrus tomography"]},
+  "journals": {"label": "Journals", "every_min": 180, "backfill_days": 30,
+   "queries": ["herculaneum papyri", "herculaneum scrolls", "virtual unwrapping", "carbonized papyrus",
+               "papyrus x-ray tomography"]},
+  "blog": {"label": "Challenge blog", "every_min": 60, "backfill_days": 30,
+   "feeds": [["Vesuvius Challenge", "https://scrollprize.substack.com/feed"]]}
+ }
+}

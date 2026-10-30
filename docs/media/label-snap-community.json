@@ -1,0 +1,36 @@
+{
+  "schema": "scrolls-media/1",
+  "name": "label-snap-community",
+  "label": "Chart",
+  "claim_label": "Model output: mean distance gained toward a finer scan's recto face over the published label, label-scan voxels, 71 fresh PHerc0814 and PHerc0841 sites pooled, 95 % site bootstrap intervals, rule fixed before the run",
+  "alt": "Horizontal bars: kit labelsnap is 2.15 voxels closer to the recto face than the published label; one fixed offset 0.77; seven community snaps between +0.26 and -0.41, and vc_objrefine as shipped -9.72, off the scale.",
+  "caption": "Mean distance gained toward a finer scan's recto face over the published label, 71 fresh sites pooled, with 95 % intervals. Model output; geometry, not a reading.",
+  "license": "Apache-2.0",
+  "release_id": null,
+  "data": {
+    "source": "docs/media/label-snap-data.json",
+    "source_sha256": "7fe6d7a7957bceeb81eb04301b3bc2b35df3c35db087c4953d1c5ea226408d65",
+    "credit": "Vesuvius Challenge open data, CC BY-NC 4.0 (the scans the tests read); numbers from docs/results.json"
+  },
+  "outputs": [
+    {
+      "file": "label-snap-community.svg",
+      "bytes": 6796,
+      "sha256": "c5ecf98dcc01a7ea344e8a468d337b2918ed9d64c3f0f99f82b15aaa4b13283b",
+      "width": 960,
+      "height": 600,
+      "kind": "svg"
+    }
+  ],
+  "made": "2026-10-29",
+  "command": "python scripts/media/labelsnap_chart.py docs/media/label-snap-data.json docs/media",
+  "tool": {
+    "scripts": [
+      "scripts/media/common.py",
+      "scripts/media/labelsnap_chart.py"
+    ],
+    "scripts_sha256": "eda5c0a21c5ada1e80b6a7453f8a1fcee6352153b516e491bda0d2482e69a9cd",
+    "base_commit": "afcc05ae96b7348d6a24951d5d95f11bb68dbf35"
+  },
+  "colors": "categorical slots 1, 2 and 4 of the palette of greek-restoration-by-gap-length.svg (blue, orange, amber) with a neutral gray for the published label and the reference; dark mode through prefers-color-scheme"
+}

@@ -114,7 +114,7 @@
       "line": "Command-line tools, benchmarks and script folders that run from a clone of this repository.",
       "area": "Releases and repository",
       "page": "docs/tools/cli.md",
-      "released": "2026-10-28",
+      "released": "2026-10-30",
       "summary": "Command-line tools, benchmarks and script folders that run from a clone of this repository. Each line gives the tool's release date, its weights where it has them, one command to start with, its tool page and its evidence; each page lists the tool's own needs. Their outputs are model output or geometry measurements for a person to check, not readings.",
       "commands": [
         "git clone --depth 1 https://github.com/ChaseHendrick/Scrolls.git",
@@ -205,10 +205,20 @@
           "line": "Grows chains of sheet crossings around a point and writes villa's relative_windings.json for a spiral fit, with a VC3D plugin.",
           "area": "Surfaces and tracing",
           "released": "2026-10-24",
-          "summary": "Grows chains of sheet crossings around a point on a published surface prediction, cuts every step where lasagna's grad_mag sees more than one sheet, and writes villa's relative_windings.json point collections for a spiral fit, with a VC3D plugin that runs it at the focus point. It needs the scroll's umbilicus and computes no prediction itself. Under readouts fixed beforehand it scored 0.9758 step accuracy on 13,969 judged steps of 18 fresh PHerc0139 boxes and, with its split rule v2, 0.9786 on 5,938 judged steps of 20 fresh PHerc1667 boxes, against the published hand windings (Model output, 24 October 2026); split rule v1 missed the PHerc1667 keep floor. It ran inside a VC3D build from the plugin branch, where a fix to keep the windings relative on load is pending.",
+          "summary": "Grows chains of sheet crossings around a point on a published surface prediction, cuts every step where lasagna's grad_mag sees more than one sheet, and writes villa's relative_windings.json point collections for a spiral fit, with a VC3D plugin that runs it at the focus point. It needs the scroll's umbilicus and computes no prediction itself. Under readouts fixed beforehand it passed on three scrolls against the published hand windings: 0.9758 step accuracy on 13,969 judged steps of PHerc0139, 0.9786 and then 0.9706 on fresh PHerc1667 boxes, and 0.955 of 32,411 on a held-out PHerc0172 band, slightly ahead of E1 and winding-phase on the same boxes (Model output, 24 to 29 October 2026); split rule v1 once missed its keep floor.",
           "command": "python -m kit windlabel-box --prediction PRED --grad-mag GM --umbilicus UMB.json --point X,Y,Z --out RUN",
           "page": "docs/tools/windlabel-box.md",
-          "evidence": "[PHerc0139 check](docs/evidence/windlabel-box-20261024/README.md), [PHerc1667 check](docs/evidence/windlabel-box-1667-20261024/README.md)"
+          "evidence": "[PHerc0139 check](docs/evidence/windlabel-box-20261024/README.md), [PHerc1667 check](docs/evidence/windlabel-box-1667-20261024/README.md), [chart and 29 October tests](docs/tools/windlabel-box.md#checks-and-controls)"
+        },
+        {
+          "id": "seamswitch",
+          "name": "Seam-aware winding switches",
+          "line": "Counts how often a spiral fit puts touching vertices of one traced sheet on different windings, allowing for the fit's seam.",
+          "area": "Scoring and controls",
+          "released": "2026-10-29",
+          "summary": "Scores a spiral fit on traced sheet grids: switches per 1000 neighbor pairs (touching vertices the fit puts on different windings once its seam is allowed for) and the seam wrong area, on unlabeled sheets from the fit's coordinates or on labeled ones against label windings. It restates the switch definition of CanadaApollo6/vesuvius-spiral-chains so numbers can be set side by side, and needs numpy only. Checked on synthetic grids with planted errors only; a number on a fit is model output.",
+          "command": "python -m kit.seamswitch demo",
+          "page": "docs/tools/seamswitch.md"
         },
         {
           "id": "hopbench",
@@ -717,6 +727,39 @@
           "command": "bash -n scripts/mac-w045.sh scripts/mac-verify.sh scripts/mac-phase0.sh",
           "page": "docs/tools/mac-w045.md",
           "evidence": "[device check](docs/tools/mac-verify.md), [queued checks](docs/tools/mac-phase0.md)"
+        },
+        {
+          "id": "labelsnap",
+          "name": "Label snap onto the recto face",
+          "area": "Surfaces and tracing",
+          "released": "2026-10-29",
+          "summary": "Moves a published or traced tifxyz surface label along its normals onto the recto face of its papyrus band in the CT, with a per-vertex abstain mask, confidence, an OME-Zarr surface label (1 surface, 2 ignore) and a VC3D review queue. On fresh PHerc0814 sites, scored against an independent 1.129 um scan, 71.0% of vertices were within one voxel of the face against 24.2% published; on 71 fresh PHerc0814 and PHerc0841 sites it was closer to a finer scan's recto face than the published labels and seven community snaps. Geometry, not a reading; not exact at every vertex.",
+          "command": "python -m kit labelsnap snap LABEL --volume ZARR --out OUT --umbilicus UMB.json",
+          "page": "docs/tools/labelsnap.md",
+          "evidence": "[Snapped Labels](docs/tools/snapped-labels.md), [results](docs/results.json)",
+          "line": "Moves a tifxyz surface label along its normals onto the recto face of its papyrus band, with an abstain mask and VC3D review points."
+        },
+        {
+          "id": "finesnap",
+          "name": "Label snap on a finer registered scan",
+          "area": "Surfaces and tracing",
+          "released": "2026-10-29",
+          "summary": "Snaps a label traced on a coarse scan onto the recto face seen in a finer scan of the same scroll, registered per vertex along the normal through the catalog matrix, with labelsnap's products plus a per-vertex source grid. On 60 fresh PHerc0139 sites, scored against an independent 1.129 um scan, 91.2% of vertices were within one voxel of the face, against 79.4% for labelsnap and 23.7% for the published labels. Needs a finer scan of the same scroll.",
+          "command": "python -m kit finesnap snap LABEL --volume COARSE --fine FINE --matrix TRANSFORM.json --umbilicus UMB.json --out OUT",
+          "page": "docs/tools/finesnap.md",
+          "evidence": "[Snapped Labels](docs/tools/snapped-labels.md), [results](docs/results.json)",
+          "line": "Snaps a label traced on a coarse scan onto the recto face seen in a finer, per-site registered scan of the same scroll."
+        },
+        {
+          "id": "labelsuggest",
+          "name": "Label suggestions from reader disagreement",
+          "area": "Training",
+          "released": "2026-10-30",
+          "summary": "Ranks a segment's tiles by how much two or more readers' ink maps disagree and writes the top tiles as a mask to label first, with matched random and agree tiles and a shuffle control. In two preregistered tests on the organizers' own label rounds, the top 20 tiles held more of the reader committee's errors than random tiles on PHerc1667 (lift 3.82, bar 1.5) and PHerc0841 ag896 (edge measure, lift 1.84, bar 1.5, p 0.0005). Not shown to beat simple picks: plain margin did as well on both. Model output, not a reading.",
+          "command": "python -m kit labelsuggest map OUT MAP_A MAP_B MAP_C --json",
+          "page": "docs/tools/labelsuggest.md",
+          "evidence": "[results](docs/results.json)",
+          "line": "Ranks tiles by where readers' ink maps disagree, so a person labels there first; beat random tiles on two scrolls, not shown to beat simple picks."
         }
       ],
       "where": "main"
@@ -895,7 +938,7 @@
         "cd snapped-labels && sha256sum -c SHA256SUMS",
         "python load_example.py"
       ],
-      "details": "Viewer: [huggingface.co/spaces/SharpMeow/snapped-labels](https://huggingface.co/spaces/SharpMeow/snapped-labels), with a Connect your tool panel; source [`spaces/snapped-labels/`](spaces/snapped-labels/); page: [docs/tools/snapped-labels.md](docs/tools/snapped-labels.md). Credit: the people who traced the published labels, and the Vesuvius Challenge open data.",
+      "details": "Viewer: [huggingface.co/spaces/SharpMeow/snapped-labels](https://huggingface.co/spaces/SharpMeow/snapped-labels), with a Connect your tool panel; source [`spaces/snapped-labels/`](spaces/snapped-labels/); page: [docs/tools/snapped-labels.md](docs/tools/snapped-labels.md). Credit: the people who traced the published labels, and the Vesuvius Challenge open data. The code that made it is in the Scrolls kit: [labelsnap](docs/tools/labelsnap.md) and [finesnap](docs/tools/finesnap.md).",
       "where": "main"
     },
     {
@@ -911,6 +954,17 @@
         "python -c \"from gradio_client import Client; c = Client('SharpMeow/crackle-check'); print(c.predict('0841-w00', 'readerv3', api_name='/check_example')[1]['answer'])\""
       ],
       "details": "Opens at [huggingface.co/spaces/SharpMeow/crackle-check](https://huggingface.co/spaces/SharpMeow/crackle-check). Page: [`docs/tools/crackle-check.md`](docs/tools/crackle-check.md); Connect your tool: [`spaces/connect/crackle-check/CONNECT.md`](spaces/connect/crackle-check/CONNECT.md).",
+      "where": "main"
+    },
+    {
+      "id": "vesuvius-radar",
+      "title": "Vesuvius Radar (new papers, code and data for the scrolls)",
+      "line": "New papers, code, models and data that could help read the scrolls, from public sources around the clock, scored, with an API and MCP (Space).",
+      "area": "Viewers and apps",
+      "page": "docs/tools/vesuvius-radar.md",
+      "released": "2026-10-29",
+      "summary": "[Vesuvius Radar](https://huggingface.co/spaces/SharpMeow/vesuvius-radar) reads arXiv, GitHub (including ScrollPrize/villa pull requests, issues and releases), Hugging Face, PyPI, Zenodo, Crossref journals and the Vesuvius Challenge blog on a schedule, keeps 30 days, and scores every item from 0 to 100 by keywords, with a term-by-term breakdown, and by meaning, with a small sentence-embedding model (BAAI/bge-small-en-v1.5) on CPU. Status: released. Version: 1.1.0. Pick any lookback from 1 minute to 30 days, by publish date or by when the radar found an item, and a view for researchers, the Challenge team, or contributors; the page has charts, a per-topic briefing, search by meaning and \"more like this\"; a villa issue or pull request card names who made its latest comment, review or change and what it said, beside who opened it. Everything is open as JSON, CSV, RSS and an MCP server with nine tools, with no key or login, and it uses no GPU quota. License: Apache 2.0 for the code; item text and links belong to their sources. A score is a triage aid, not a judgment of the work.",
+      "details": "Opens at [huggingface.co/spaces/SharpMeow/vesuvius-radar](https://huggingface.co/spaces/SharpMeow/vesuvius-radar). Source: [`spaces/vesuvius-radar/`](spaces/vesuvius-radar/); page: [`docs/tools/vesuvius-radar.md`](docs/tools/vesuvius-radar.md). API: `https://sharpmeow-vesuvius-radar.hf.space/api/items?since=1d`; MCP: `https://sharpmeow-vesuvius-radar.hf.space/mcp`.",
       "where": "main"
     }
   ]

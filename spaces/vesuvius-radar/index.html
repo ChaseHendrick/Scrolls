@@ -1,0 +1,412 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vesuvius Radar</title>
+<meta name="description" content="New papers, code, models and data that could help read the Herculaneum scrolls, collected from public sources around the clock and scored for relevance. Open JSON API, RSS and MCP server; no login.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='14' fill='%231c5cab'/%3E%3Ccircle cx='16' cy='16' r='9' fill='none' stroke='%23fff' stroke-opacity='.5' stroke-width='1.5'/%3E%3Cpath d='M16 16 L16 3 A13 13 0 0 1 28 12 Z' fill='%23fff' fill-opacity='.8'/%3E%3Ccircle cx='21' cy='10' r='2' fill='%23eb6834'/%3E%3C/svg%3E">
+<link rel="alternate" type="application/rss+xml" title="Vesuvius Radar: last week, score 60 or more" href="feed.xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="static/style.css">
+<script>
+  // Theme before first paint: the viewer's stored choice, else the system setting.
+  try { const t = localStorage.getItem("vradar.theme"); if (t === "light" || t === "dark" || t === "vesuvius") document.documentElement.dataset.theme = t; } catch (e) {}
+</script>
+<!-- space-onescroll:start -->
+<!-- one page scroll bar: written by python -m kit spaceconnect render; do not edit -->
+<style>iframe[srcdoc]{display:block;max-height:none!important}</style>
+<script>
+(function () {
+  if (window.__oneScroll) return;
+  window.__oneScroll = true;
+  var CSS = 'html,body{height:auto!important;min-height:0!important}html{overflow:hidden!important}';
+  function size(f) {
+    var d, st = f.__os;
+    try { d = f.contentDocument; } catch (e) { return; }
+    if (!d || !d.body || st.off) return;
+    var de = d.documentElement, r = Math.ceil(de.getBoundingClientRect().height), over = de.scrollHeight;
+    var ch = f.clientHeight, t = r;
+    if (over > ch + 1) t = Math.max(r, over);
+    else if (r >= st.r) t = Math.max(r, ch);
+    st.r = r;
+    if (Math.abs(t - ch) < 2) return;
+    var now = Date.now();
+    st.n = now - st.t0 < 4000 ? st.n + 1 : 1;
+    if (st.n === 1) st.t0 = now;
+    if (st.n > 40) { st.off = true; f.removeAttribute('scrolling'); var g = d.getElementById('space-onescroll'); if (g) g.remove(); return; }
+    f.style.setProperty('height', t + 'px', 'important');
+  }
+  function attach(f) {
+    var d, st = f.__os;
+    try { d = f.contentDocument; } catch (e) { return; }
+    if (!d || !d.documentElement || st.doc === d) return;
+    st.doc = d; st.r = Infinity; st.n = 0; st.off = false;
+    if (!d.getElementById('space-onescroll')) {
+      var s = d.createElement('style'); s.id = 'space-onescroll'; s.textContent = CSS;
+      (d.head || d.documentElement).appendChild(s);
+    }
+    f.setAttribute('scrolling', 'no');
+    f.style.setProperty('min-height', '0', 'important');
+    f.style.setProperty('max-height', 'none', 'important');
+    var w = d.defaultView, go = function () { size(f); };
+    if (w && w.ResizeObserver) { var ro = new w.ResizeObserver(go); ro.observe(d.documentElement); if (d.body) ro.observe(d.body); }
+    d.addEventListener('load', go, true);
+    go();
+  }
+  function bind(f) {
+    if (f.__os || f.getAttribute('data-scroll') === 'inner') return;
+    try { if (!f.contentDocument) return; } catch (e) { return; }
+    f.__os = {t0: 0, n: 0, r: 0};
+    f.addEventListener('load', function () { attach(f); });
+    if (f.contentDocument.readyState !== 'loading') attach(f);
+    else f.contentDocument.addEventListener('DOMContentLoaded', function () { attach(f); });
+  }
+  function scan() { var fs = document.getElementsByTagName('iframe'); for (var i = 0; i < fs.length; i++) bind(fs[i]); }
+  function start() {
+    scan();
+    new MutationObserver(scan).observe(document.documentElement, {childList: true, subtree: true});
+    window.addEventListener('resize', function () {
+      var fs = document.getElementsByTagName('iframe');
+      for (var i = 0; i < fs.length; i++) if (fs[i].__os) size(fs[i]);
+    });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
+})();
+</script>
+<!-- space-onescroll:end -->
+</head>
+<body>
+<a class="skip" href="#main">Skip to the results</a>
+<header class="hero" id="top">
+  <svg class="scene" id="scene" viewBox="0 0 1600 760" preserveAspectRatio="xMaxYMax slice" aria-hidden="true"></svg>
+  <div class="hero-in">
+    <div class="hero-bar">
+      <div class="brand">
+        <svg class="logo" viewBox="0 0 48 48" aria-hidden="true">
+          <circle cx="24" cy="24" r="22" class="logo-bg"/>
+          <circle cx="24" cy="24" r="15" class="logo-ring"/>
+          <circle cx="24" cy="24" r="8" class="logo-ring"/>
+          <g class="logo-sweep"><path d="M24 24 L24 3 A21 21 0 0 1 43 15 Z" class="logo-wedge"/></g>
+          <circle cx="32" cy="14" r="2.6" class="logo-dot a"/>
+          <circle cx="14" cy="30" r="2.2" class="logo-dot b"/>
+          <circle cx="33" cy="31" r="1.8" class="logo-dot c"/>
+        </svg>
+        <span class="wordmark">Vesuvius Radar</span>
+      </div>
+      <div class="seg theme" role="group" aria-label="Theme">
+        <button type="button" data-theme-set="auto" title="Follow the system">Auto</button>
+        <button type="button" data-theme-set="light">Light</button>
+        <button type="button" data-theme-set="dark">Dark</button>
+        <button type="button" data-theme-set="vesuvius" title="Volcanic ash and lava">🌋 Vesuvius</button>
+      </div>
+    </div>
+    <div class="eyebrow">For everyone working on the Herculaneum scrolls</div>
+    <h1>Vesuvius Radar</h1>
+    <p class="lede">New papers, code, models and data that could help read the scrolls, collected from public sources around the clock and scored for relevance. Open to everyone, with an API and an MCP server.</p>
+    <div class="hero-stats" id="heroStats" aria-live="polite"></div>
+    <div class="cta">
+      <a class="btn primary" href="#main" data-go="radar">See the last day</a>
+      <a class="btn" href="#briefing" data-go="briefing">Read the briefing</a>
+      <a class="btn" href="#connect" data-go="connect">API and MCP</a>
+      <a class="btn" href="#how" data-go="how">How it works</a>
+    </div>
+  </div>
+</header>
+
+<div class="shell">
+
+<!-- ============================================================ CONTROLS -->
+<section class="card controls" aria-label="What to show">
+  <div class="ctl-block">
+    <div class="ctl-label" id="viewLabel">Who's reading</div>
+    <div class="views" role="radiogroup" aria-labelledby="viewLabel" id="views"></div>
+    <p class="view-about" id="viewAbout"></p>
+  </div>
+  <div class="ctl-block">
+    <div class="ctl-row">
+      <label class="lb-pick"><span class="ctl-label" id="lbLabel">Look back</span>
+        <span class="select-wrap"><select id="lookback" aria-labelledby="lbLabel"></select></span></label>
+      <div class="seg small" role="group" aria-label="Time by" id="byPick">
+        <button type="button" data-by="date" title="When the item was published or last updated">Published or updated</button>
+        <button type="button" data-by="found" title="When the radar first saw it">Found by the radar</button>
+      </div>
+    </div>
+  </div>
+  <div class="collector" id="collector" aria-live="polite">
+    <div class="col-main">
+      <span class="pulse" id="pulse" aria-hidden="true"></span>
+      <span id="colText">Loading the collector's state...</span>
+    </div>
+    <button class="btn" id="checkBtn" type="button">
+      <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M16.5 10a6.5 6.5 0 1 1-1.9-4.6M16.5 3.5v3.6h-3.6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span>Check now</span>
+    </button>
+  </div>
+  <div class="progress" id="progress" hidden><div class="prog-rows" id="progRows"></div></div>
+  <div class="notice" id="notice" role="status" hidden></div>
+</section>
+
+<nav class="tabs" role="tablist" aria-label="Views">
+  <button role="tab" aria-selected="true" data-tab="radar" id="tab-radar">Radar</button>
+  <button role="tab" aria-selected="false" data-tab="briefing" id="tab-briefing">Briefing</button>
+  <button role="tab" aria-selected="false" data-tab="sources" id="tab-sources">Sources</button>
+  <button role="tab" aria-selected="false" data-tab="connect" id="tab-connect">API and MCP</button>
+  <button role="tab" aria-selected="false" data-tab="how" id="tab-how">How it works</button>
+</nav>
+
+<!-- ============================================================ RADAR -->
+<main class="panel" data-panel="radar" role="tabpanel" aria-labelledby="tab-radar" id="main">
+  <section class="kpis" id="kpis" aria-label="Totals for this window"></section>
+
+  <section class="charts" aria-label="Charts">
+    <figure class="card chart wide">
+      <figcaption><div><h2>When it appeared</h2><p id="tlCaption">Items per hour, stacked by source.</p></div><div class="legend" id="legTime"></div></figcaption>
+      <div id="chTime" class="plot"></div>
+    </figure>
+    <figure class="card chart">
+      <figcaption><div><h2>Topics</h2><p>Items touching each topic. Click a bar to filter by it.</p></div></figcaption>
+      <div id="chTopics" class="plot"></div>
+    </figure>
+    <figure class="card chart">
+      <figcaption><div><h2>Relevance</h2><p>How scores spread. Darker is a higher band; the dashed line is your minimum.</p></div></figcaption>
+      <div id="chScores" class="plot"></div>
+    </figure>
+    <figure class="card chart">
+      <figcaption><div><h2>Where it came from</h2><p>Items per source in this window. Click a row to filter.</p></div></figcaption>
+      <div id="chSources" class="plot"></div>
+    </figure>
+    <figure class="card chart half">
+      <figcaption><div><h2>Topics by source</h2><p>Which sources feed which topics. Darker cells hold more items.</p></div></figcaption>
+      <div id="chMatrix" class="plot"></div>
+    </figure>
+    <figure class="card chart half">
+      <figcaption><div><h2>Top contributors</h2><p>Ranked by distinct pieces of work, each worth its best score: many small related items count as one.</p></div></figcaption>
+      <div id="chPeople" class="plot"></div>
+    </figure>
+  </section>
+
+  <section class="card filters" id="filters" aria-label="Filters">
+    <div class="frow ftop">
+      <label class="search"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="9" cy="9" r="5.5" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="m13.2 13.2 3.6 3.6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+        <input id="q" type="search" placeholder="Search titles, summaries, authors, terms" autocomplete="off" aria-label="Search">
+        <span class="mtoggle" title="Rank by closeness in meaning to your words, using sentence embeddings"><input type="checkbox" id="meaning" aria-label="Search by meaning"><label for="meaning">By meaning</label></span></label>
+      <label class="field inline sortf"><span>Sort</span>
+        <span class="select-wrap"><select id="sort"><option value="date">Newest</option><option value="score">Most relevant</option><option value="popularity">Stars, likes and upvotes</option></select></span></label>
+    </div>
+    <div class="frow fbar" id="fbar">
+      <details class="dd" id="ddSources"><summary class="ddbtn"><span class="ddl">Sources</span><span class="ddv" id="vSources"></span></summary>
+        <div class="ddpanel"><div class="opts" id="fSources" role="group" aria-label="Sources"></div></div></details>
+      <details class="dd" id="ddTopics"><summary class="ddbtn"><span class="ddl">Topics</span><span class="ddv" id="vTopics"></span></summary>
+        <div class="ddpanel"><div class="opts" id="fTopics" role="group" aria-label="Topics"></div></div></details>
+      <details class="dd" id="ddRel"><summary class="ddbtn"><span class="ddl">Relevance</span><span class="ddv" id="vRel"></span></summary>
+        <div class="ddpanel">
+          <div class="opts" id="fBands" role="group" aria-label="Bands"></div>
+          <label class="range-row"><span>Minimum score <b id="minOut">20</b></span>
+            <input id="min" type="range" min="0" max="90" step="5" value="20" aria-label="Minimum score"></label>
+        </div></details>
+      <details class="dd" id="ddMore"><summary class="ddbtn"><span class="ddl">More</span><span class="ddv" id="vMore"></span></summary>
+        <div class="ddpanel"><div class="opts" id="fToggles" role="group" aria-label="Show"></div></div></details>
+      <span class="grow"></span>
+      <button class="btn ghost" id="reset" type="button" hidden>Clear filters</button>
+    </div>
+    <div class="pills" id="pills" aria-label="Active filters" hidden></div>
+    <div class="frow foot">
+      <span id="count" class="count" aria-live="polite"></span>
+      <span class="grow"></span>
+      <label class="field inline perf"><span>Per page</span>
+        <span class="select-wrap"><select id="per"><option value="10">10</option><option value="20">20</option><option value="50">50</option><option value="100">100</option></select></span></label>
+      <details class="dd right" id="ddShare"><summary class="ddbtn"><span class="ddl">Share and export</span></summary>
+        <div class="ddpanel menu">
+          <button class="mitem" id="shareBtn" type="button">Copy link to this view</button>
+          <a class="mitem" id="dlCsv" href="api/export.csv">Download CSV</a>
+          <a class="mitem" id="dlJson" href="api/items" target="_blank" rel="noopener">Open as JSON</a>
+          <a class="mitem" id="dlRss" href="feed.xml" target="_blank" rel="noopener">RSS feed</a>
+        </div></details>
+    </div>
+  </section>
+
+  <div id="listTop"></div>
+  <section id="list" class="list" aria-label="Items"></section>
+  <nav class="pager" id="pager" aria-label="Pages of items"></nav>
+</main>
+
+<!-- ============================================================ BRIEFING -->
+<section class="panel" data-panel="briefing" role="tabpanel" aria-labelledby="tab-briefing" hidden>
+  <div class="card brief-head">
+    <div>
+      <div class="eyebrow" id="briefWhen"></div>
+      <h2 id="briefTitle">Briefing</h2>
+      <p id="briefAbout"></p>
+    </div>
+    <div class="brief-stats" id="briefStats"></div>
+  </div>
+  <div class="brief-grid" id="briefGrid"></div>
+  <p class="note">The best three items per topic in the window and view you picked above, score 35 or more, each item listed once. Scores are a triage aid, not a judgment: open the item before you act on it.</p>
+</section>
+
+<!-- ============================================================ SOURCES -->
+<section class="panel" data-panel="sources" role="tabpanel" aria-labelledby="tab-sources" hidden>
+  <div class="card tbl">
+    <table id="srcTable">
+      <caption>The collector checks each source on its own schedule and keeps 30 days of items.</caption>
+      <thead><tr><th>Source</th><th>Every</th><th>Last check</th><th>Next</th><th>State</th><th class="num">Read</th><th class="num">Kept</th><th class="num">New</th><th class="num">Stored</th><th class="num">Time</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+  <div class="src-grid" id="srcCards"></div>
+  <div class="card tbl">
+    <table id="runTable">
+      <caption>Recent checks, newest first.</caption>
+      <thead><tr><th>Finished</th><th>Source</th><th>State</th><th class="num">Read</th><th class="num">Kept</th><th class="num">New</th><th class="num">Time</th><th>Notes</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ============================================================ CONNECT -->
+<section class="panel" data-panel="connect" role="tabpanel" aria-labelledby="tab-connect" hidden>
+  <div class="card connect-card">
+<!-- space-connect:start -->
+<section class="scc" id="connect" aria-label="Connect your tool"><style>.scc{--a:var(--scc-accent,#4ea8de);color:inherit;font:inherit;line-height:1.5;max-width:60rem}
+.scc h2{font-size:1.15em;margin:.2em 0 .3em}.scc h3{font-size:1em;margin:0 0 .2em}
+.scc p{margin:.3em 0}.scc a{color:var(--a)}
+.scc .scc-src{border:1px solid color-mix(in srgb,currentColor 18%,transparent);border-radius:10px;padding:.7em .9em;margin:.7em 0;background:color-mix(in srgb,currentColor 4%,transparent)}
+.scc .scc-meta{font-size:.85em;opacity:.8}
+.scc details{border-top:1px solid color-mix(in srgb,currentColor 12%,transparent);padding:.35em 0}
+.scc summary{cursor:pointer;font-weight:600;list-style-position:inside}
+.scc .scc-b{font-weight:400;font-size:.75em;padding:.05em .5em;border-radius:99px;margin-left:.5em;border:1px solid currentColor;opacity:.75;white-space:nowrap}
+.scc .scc-b.ok{color:#3fb37f}.scc .scc-b.src{color:var(--a)}.scc .scc-b.warn{color:#e0a030}
+.scc .scc-code{position:relative;margin:.4em 0 .2em}
+.scc pre{margin:0;padding:.7em .8em;border-radius:8px;overflow:auto;font-size:.82em;background:color-mix(in srgb,currentColor 9%,transparent);white-space:pre}
+.scc code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+.scc button.scc-copy{all:unset;box-sizing:border-box;position:absolute;top:.35em;right:.35em;font-size:.75em;line-height:1.4;padding:.1em .6em;border-radius:6px;border:1px solid color-mix(in srgb,currentColor 30%,transparent);background:color-mix(in srgb,currentColor 8%,transparent);color:inherit;cursor:pointer}
+.scc button.scc-copy:hover{border-color:var(--a)}
+.scc .scc-url{position:relative}.scc .scc-url pre{padding-right:4.5em;white-space:pre-wrap;word-break:break-all}
+.scc .scc-go{display:inline-block;margin:.3em 0;padding:.25em .8em;border-radius:6px;border:1px solid var(--a);text-decoration:none}
+.scc footer{font-size:.8em;opacity:.75;margin-top:.6em}</style>
+<h2>Connect your tool</h2>
+<p>Everything this page shows is open JSON, CSV and RSS over HTTPS, and the whole radar is also an MCP server, so a script, a spreadsheet, a feed reader or an agent can use it. No key, no login and no GPU quota: anyone can call it, logged in or not.</p>
+<div class="scc-src" id="connect-mcp"><h3>MCP server for agents</h3>
+<p class="scc-meta">Item titles, summaries and links belong to their sources (arXiv, GitHub, Hugging Face, PyPI, Zenodo, Crossref, the Vesuvius Challenge blog); the radar&#x27;s code is Apache 2.0 · Streamable HTTP, no session, JSON replies, no key. Nine tools: search_items (by words or by meaning), get_item, find_similar, briefing, overview, source_status, check_now, list_views, get_settings.</p>
+<div class="scc-url"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>https://sharpmeow-vesuvius-radar.hf.space/mcp</code></pre></div>
+<details><summary>Links and embed<span class="scc-b ok">tested 2026-10-24</span></summary>
+<div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>MCP endpoint (Streamable HTTP, POST): https://sharpmeow-vesuvius-radar.hf.space/mcp</code></pre></div></details>
+</div>
+<div class="scc-src" id="connect-api"><h3>JSON API, CSV and RSS</h3>
+<p class="scc-meta">Item titles, summaries and links belong to their sources; the radar&#x27;s code is Apache 2.0 · since takes 1m up to 30d (default 1d); view takes all, research, team or builders. The same filters work on items, overview, briefing, export.csv and feed.xml. The OpenAPI page lists every parameter.</p>
+<div class="scc-url"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>https://sharpmeow-vesuvius-radar.hf.space/api/items?since=1d</code></pre></div>
+<details><summary>Links and embed<span class="scc-b ok">tested 2026-10-24</span></summary>
+<div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>Items from the last day (JSON): https://sharpmeow-vesuvius-radar.hf.space/api/items?since=1d
+Papers and methods from the last week, score 35 or more (JSON): https://sharpmeow-vesuvius-radar.hf.space/api/items?since=7d&amp;view=research&amp;min_score=35
+Search by meaning (JSON): https://sharpmeow-vesuvius-radar.hf.space/api/items?since=30d&amp;q=ink+detection+in+x-ray+ct&amp;by_meaning=true
+The strongest items per topic (JSON): https://sharpmeow-vesuvius-radar.hf.space/api/briefing?since=7d
+Counts behind the charts (JSON): https://sharpmeow-vesuvius-radar.hf.space/api/overview?since=1d
+The collector: each source&#x27;s last and next check (JSON): https://sharpmeow-vesuvius-radar.hf.space/api/sources
+The last week as CSV: https://sharpmeow-vesuvius-radar.hf.space/api/export.csv?since=7d
+RSS feed: last week, score 60 or more: https://sharpmeow-vesuvius-radar.hf.space/feed.xml
+Reader views and their rules (JSON): https://sharpmeow-vesuvius-radar.hf.space/api/views
+Sources, keywords, weights and anchor sentences (JSON): https://sharpmeow-vesuvius-radar.hf.space/api/config
+OpenAPI page with every parameter: https://sharpmeow-vesuvius-radar.hf.space/docs</code></pre></div></details>
+</div>
+<footer>Machine-readable: <a href="https://huggingface.co/spaces/SharpMeow/vesuvius-radar/blob/main/connect.json" target="_blank" rel="noopener">connect.json</a> and <a href="https://huggingface.co/spaces/SharpMeow/vesuvius-radar/blob/main/CONNECT.md" target="_blank" rel="noopener">CONNECT.md</a>. Checked 2026-10-29. "Tested" means the snippet ran against this public data on that date. Scan data keeps its own license (the Vesuvius Challenge open data is CC BY-NC 4.0).</footer></section>
+<!-- space-connect:end -->
+  </div>
+  <div class="connect-grid">
+    <div class="card prose">
+      <h2>Your current view as a link</h2>
+      <p>These follow the view, lookback and filters you picked on the Radar tab.</p>
+      <div class="linkbox"><span class="lb-l">JSON</span><code id="lnkJson"></code><button class="btn ghost copy" data-copy="lnkJson" type="button">Copy</button></div>
+      <div class="linkbox"><span class="lb-l">CSV</span><code id="lnkCsv"></code><button class="btn ghost copy" data-copy="lnkCsv" type="button">Copy</button></div>
+      <div class="linkbox"><span class="lb-l">RSS</span><code id="lnkRss"></code><button class="btn ghost copy" data-copy="lnkRss" type="button">Copy</button></div>
+      <div class="linkbox"><span class="lb-l">Page</span><code id="lnkPage"></code><button class="btn ghost copy" data-copy="lnkPage" type="button">Copy</button></div>
+      <p>Every parameter, with a form to try it, is on the <a href="docs" target="_blank" rel="noopener">OpenAPI page</a>.</p>
+    </div>
+    <div class="card prose">
+      <h2>Let an agent use it (MCP)</h2>
+      <p>The radar is an MCP server at <code>/mcp</code> (Streamable HTTP). No key or header is needed.</p>
+      <p>Claude Code:</p>
+<pre class="code"><code>claude mcp add --transport http vesuvius-radar \
+  https://sharpmeow-vesuvius-radar.hf.space/mcp</code></pre>
+      <p>Any client that takes a JSON config:</p>
+<pre class="code"><code>{"mcpServers": {"vesuvius-radar": {
+  "type": "http",
+  "url": "https://sharpmeow-vesuvius-radar.hf.space/mcp"}}}</code></pre>
+      <table class="tools-table">
+        <tr><th>Tool</th><th>What it does</th></tr>
+        <tr><td><code>search_items</code></td><td>Filter a window by words or rank it by meaning</td></tr>
+        <tr><td><code>briefing</code></td><td>The best few items per topic</td></tr>
+        <tr><td><code>get_item</code></td><td>One item, its score breakdown and its nearest neighbors</td></tr>
+        <tr><td><code>find_similar</code></td><td>Items closest in meaning to one item</td></tr>
+        <tr><td><code>overview</code></td><td>Counts by source, band, topic, kind and person</td></tr>
+        <tr><td><code>source_status</code></td><td>Each source's last and next check</td></tr>
+        <tr><td><code>check_now</code></td><td>Ask every source for its newest items</td></tr>
+        <tr><td><code>list_views</code>, <code>get_settings</code></td><td>Reader views; keywords, anchors and schedules</td></tr>
+      </table>
+    </div>
+    <div class="card prose">
+      <h2>From Python</h2>
+      <p>Standard library only, no key.</p>
+<pre class="code"><code>import json, urllib.parse, urllib.request
+
+BASE = "https://sharpmeow-vesuvius-radar.hf.space"
+
+def get(path, **params):
+    url = BASE + path + "?" + urllib.parse.urlencode(params)
+    return json.load(urllib.request.urlopen(url))
+
+week = get("/api/items", since="7d", view="builders", min_score=35, limit=100)
+for i in week["items"]:
+    print(i["score"], i["source"], i["title"], i["url"])
+
+# rank the last month by meaning
+hits = get("/api/items", since="30d", q="tracing papyrus fibers", by_meaning="true")</code></pre>
+    </div>
+    <div class="card prose">
+      <h2>From a terminal or a spreadsheet</h2>
+<pre class="code"><code>curl -s "https://sharpmeow-vesuvius-radar.hf.space/api/items?since=6h&amp;min_score=35" \
+  | python3 -m json.tool</code></pre>
+      <p>In Google Sheets or Excel, import the CSV link above (for example <code>=IMPORTDATA("...export.csv?since=7d")</code>). A feed reader takes the RSS link.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ HOW -->
+<section class="panel" data-panel="how" role="tabpanel" aria-labelledby="tab-how" hidden>
+  <div class="how-grid">
+    <div class="card prose">
+      <h2>What it is for</h2>
+      <ul>
+        <li><b>Researchers</b> see new papers and methods in the areas the scrolls need: sheet and surface segmentation, ink detection in X-ray CT, fiber tracing, registration, compression of huge volumes, 3D encoders and reading damaged Greek and Latin text.</li>
+        <li><b>The Challenge team</b> sees what the community shipped and said about the scrolls: villa pull requests, issues and releases, new repositories, Hugging Face uploads, Zenodo records and blog posts.</li>
+        <li><b>Contributors</b> see what they can use today: repositories, releases, models, datasets, Spaces, package versions and papers that link their code.</li>
+      </ul>
+      <h2>What the collector reads</h2>
+      <p>Only public pages and APIs, logged out, on a schedule per source (the Sources tab shows when each last ran). It keeps 30 days, so changing the lookback is instant.</p>
+      <ul id="howSources"></ul>
+      <p>Anyone can press Check now; to stay polite to these services there is one check at a time for the whole Space and a few minutes between checks. Chat servers and social media are not read. When the Space has been asleep it catches up on the time it missed at the next check.</p>
+    </div>
+    <div class="card prose">
+      <h2>How an item is scored</h2>
+      <p>Every item gets a keyword score and a meaning score from 0 to 100; a small learned model reads them with the text to set the final score. The page shows all three.</p>
+      <p><b>Keywords.</b> Scroll terms (Vesuvius, Herculaneum, PHerc, papyrus, Volume Cartographer and similar) add the most. In each topic a strong term counts on its own and a weak term counts half, and only when a context term such as 3D, CT or volume is present too. Terms like LLM or chatbot take points off. Each item lists every term group and its points.</p>
+      <p><b>Meaning.</b> A small sentence-embedding model (<span id="howModel">BAAI/bge-small-en-v1.5</span>, run on the Space's CPU) compares the item's title and the start of its summary (600 characters) with a set of sentences that describe the work the scrolls need, and reports the closest one. That catches items that never use our words. After the Space restarts, its first check reads every listing by meaning again, which takes several minutes on a small CPU; the Sources tab shows its progress, and items already stored stay on the page meanwhile.</p>
+      <p><b>Final score.</b> A small learned model sets it: a ridge regression on the item's embedding plus its keyword and meaning scores, source, kind, stars and likes, fitted to blind ratings (0 to 100) of what each of several hundred collected items is worth to scroll work, and calibrated so each band holds about as many items as the ratings put there. On held-out items it ranks them much closer to the ratings than keywords and meaning alone did (figures in the Learned model card below). Items with no text of their own get the same model without the embedding. Which items are kept is still decided by keywords and meaning: the higher of the keyword score and a blend of both, with a long text the model reads as unrelated held below high unless it comes from ScrollPrize/villa. The same embedding powers search by meaning and "More like this".</p>
+      <div id="howTopics" class="how-topics"></div>
+    </div>
+  </div>
+</section>
+
+<footer class="foot-note">
+  <p>Vesuvius Radar reads public sources only and holds no keys. Titles, summaries and links belong to their sources; scores are a triage aid, not a judgment. Code: Apache 2.0, in <a href="https://github.com/ChaseHendrick/Scrolls/tree/main/spaces/vesuvius-radar" target="_blank" rel="noopener">ChaseHendrick/Scrolls</a>.</p>
+  <p class="build" id="build"></p>
+</footer>
+</div>
+
+<div class="tip" id="tip" role="tooltip" hidden></div>
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+<script src="static/app.js"></script>
+</body>
+</html>

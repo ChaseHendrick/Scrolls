@@ -147,6 +147,21 @@
    },
    "doc": "docs/FINDINGS.md"
   },
+  "labelsnap-moved-published-surface-labels-closer-to-the": {
+   "line": 264,
+   "sources": {
+    "docs/results.json": "5ad25305ff4f8c2592077742ad10ce9b0fe11766c9fbce2988ace340b309d667",
+    "docs/tools/snapped-labels.md": "3da92dca823c53779149f1aa9f7699e0e9ee7533b5767956b1c4bae539b977ed"
+   }
+  },
+  "labelsnap-moved-published-surface-labels-closer-to-the-2": {
+   "line": 15,
+   "sources": {
+    "docs/results.json": "5ad25305ff4f8c2592077742ad10ce9b0fe11766c9fbce2988ace340b309d667",
+    "docs/tools/snapped-labels.md": "3da92dca823c53779149f1aa9f7699e0e9ee7533b5767956b1c4bae539b977ed"
+   },
+   "doc": "docs/FINDINGS.md"
+  },
   "measured-cpu-optimizations-make-the-complete-surface-correction": {
    "line": 307,
    "sources": {
@@ -193,6 +208,19 @@
     "r:community/9": "4d15b1fc94c8635c861ba679a866f0850ca6e4ace745dff793364c4e1e9ba2f0",
     "r:community/10": "15e582a4407fdc766b21e7c2a027e85cc26a622df7ee3c06f30eba1729e1a573"
    }
+  },
+  "parting-a-contact-classifier-on-base-dinovol-features": {
+   "line": 267,
+   "sources": {
+    "docs/logs/2026-10-29-parting-fragment-contact.md": "a225a5fd26484ae2442c1de5f92ee273d88efb8c9666e47ead31aded3d6c6098"
+   }
+  },
+  "parting-a-contact-classifier-on-base-dinovol-features-2": {
+   "line": 17,
+   "sources": {
+    "docs/logs/2026-10-29-parting-fragment-contact.md": "a225a5fd26484ae2442c1de5f92ee273d88efb8c9666e47ead31aded3d6c6098"
+   },
+   "doc": "docs/FINDINGS.md"
   },
   "pherc0841-has-3-4-cm-of-supervision-so": {
    "line": 300,
@@ -384,6 +412,22 @@
     "docs/logs/2026-10-12-upstream-reports.md": "57f81a96d5871d496ef9d88b97192cc53d5a99f383f5bf97e4e7e69f0bebe5f2"
    },
    "doc": "docs/FINDINGS.md"
+  },
+  "windlabel-box-s-automatic-relative-windings-passed-a": {
+   "line": 263,
+   "sources": {
+    "docs/tools/windlabel-box.md": "5a5e8b8baa079013560c11ca254915dfeb75291126366f8b85f8118db7c7d17b"
+   }
+  },
+  "windlabel-box-s-automatic-relative-windings-passed-a-2": {
+   "line": 15,
+   "sources": {
+    "docs/tools/windlabel-box.md": "5a5e8b8baa079013560c11ca254915dfeb75291126366f8b85f8118db7c7d17b"
+   },
+   "doc": "docs/FINDINGS.md",
+   "reasons": {
+    "97": "setting: the random control's 97.5th percentile, the rule's quantile"
+   }
   }
  },
  "results_baseline": [

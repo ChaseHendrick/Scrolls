@@ -8,6 +8,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **absorption contrast**: Image contrast that comes from how strongly different materials absorb X-rays.
 
+**active learning**: Choosing which regions a person labels next so each label helps the model most, usually where the current models are least sure. The organizers list it under label quality in their open problems; `kit labelsuggest` is one such pick for ink labels.
+
 **affine (cross-scan affine)**: A linear transform plus a shift that maps coordinates in one scan of a scroll to coordinates in another scan of the same scroll. The catalog publishes these, fitted from landmarks; `kit meshaudit transforms` refits them.
 
 **API (application programming interface)**: A defined way for one program to request data or actions from another. A tool API lets scripts use the same operations that a person might select in an app.
@@ -118,6 +120,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **fiber evidence**: Fiber Checker's per-patch score, from 0.5 to 1: how strongly its judge prefers the CT rendered along a traced surface over a copy with the same texture but its strands scrambled. Near 1 where fibers show, near 0.5 where none do. Model output ([page](docs/tools/fibercheck.md)).
 
+**finesnap**: `kit finesnap`, which snaps a surface label traced on a coarse scan onto the recto face seen in a finer scan of the same scroll, registered per site along the normal ([page](docs/tools/finesnap.md)).
+
 **fine-tune**: A model made by further training an existing model on new data.
 
 **First Letters prize**: A Vesuvius Challenge prize for the first letters found in a given scroll. Current eligible scrolls are listed by `python -m kit prizes`.
@@ -212,6 +216,10 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **label set**: One dated folder of a segment's published ink labels on the open-data bucket, `SCROLL/segments/SEGMENT/ink-labels/<voxel size>um-volume-<VOLUME>/<date>/`, holding `inklabels.zarr`, `supervision.zarr` and sometimes `validation.zarr`, all drawn on one volume's render. `kit labels` lists them ([`docs/tools/labels.md`](docs/tools/labels.md)).
 
+**labelsnap**: `kit labelsnap`, which moves each vertex of a tifxyz surface label along its normal onto the recto face of its papyrus band in the label's own CT, with a confidence and an abstain mask ([page](docs/tools/labelsnap.md)).
+
+**labelsuggest**: `kit labelsuggest`, which ranks the tiles of a segment by how much two or more readers' ink maps disagree there, so a person paints labels first where a label corrects at least one model. A suggested tile is a place to label, not a claim about ink ([page](docs/tools/labelsuggest.md)).
+
 **label smoothing**: Training with softened targets, so ink and background labels are not exactly 1 and 0.
 
 **lasagna field**: The output of villa's lasagna model (`lasagna-preprocess predict3d`) over a whole scan: OME-Zarr channels cos (a signal that repeats once per papyrus layer), grad_mag and the surface normals nx and ny, with a `SCAN.lasagna.json` manifest. villa's lasagna surface fitting and the spiral fit read it. Fields for ten scans are in the [Lasagna Fields](https://huggingface.co/spaces/SharpMeow/lasagna-fields) datasets. Model output.
@@ -300,6 +308,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **papyrologist**: A scholar of ancient papyri. Only the Vesuvius Challenge papyrology team decides whether an image is legible.
 
+**Parting**: Our contact classifier: where two papyrus layers touch, it scores whether a candidate point lies on the same layer as a reference point or on the next one, from base dinovol token, CT and normal-profile features of the two points. Trained on hand-traced windings of PHerc0139 and PHerc0172; code private, not released. Passed one of three preregistered tests on fragments it never saw (it missed on the other two), and adds little where layers are fused ([log](docs/logs/2026-10-29-parting-fragment-contact.md)). Model output.
+
 **patch**: A small piece. In tracing, a patch is one traced piece of surface that can be merged with others. In ink detection, a patch is the small 3D block of a surface volume that a model reads at one time.
 
 **Pearson correlation (Pearson r)**: A measure of how closely two sets of values vary together in a straight-line relationship. Ink Bench applies it to aligned image pixels. Correlation with a model-generated reference is agreement with that reference, not proof of ink.
@@ -334,6 +344,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **recto**: The written inner side of a roll, where the fibers run horizontally.
 
+**recto face**: The side of a papyrus band in CT that faces the scroll's axis, where a surface label should sit; `kit labelsnap` and `kit finesnap` find it as the band's edge toward the axis along each vertex normal.
+
 **relative windings**: Points along a line from a scroll's core, each labeled with how many windings it lies outward of the first, without saying which absolute winding that is. villa's spiral fit reads them as a `relative_windings.json` point collection; `kit windlabel-box` makes them and `kit windconsistency` checks them.
 
 **remote chunk cache (VC3D)**: The folder where VC3D keeps every chunk it streams from a remote volume, so later runs read them from disk; `kit doctor --remote` shows where it is and how much space it has ([`docs/tools/doctor.md`](docs/tools/doctor.md)).
@@ -367,6 +379,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 **Scroll Text Reader**: Formerly Greek Letter Reader. The `scrolls-letterread` tool proposes Greek letters with LineNet or words with explicitly installed local Tesseract language packs. Both routes record model provenance and controls; neither verifies a reading ([guide](docs/letter-reader.md)).
 
 **Scrolls Starter**: The local browser introduction to the released tools, with a synthetic controls exercise, setup checks and a Scroll Text Reader command builder. Its portable edition opens without Python and leaves setup unchecked. See [starter](docs/tools/starter.md).
+
+**seam (of a spiral fit)**: The angle at which a spiral fit's winding count steps by one as it goes around the roll. A fit may put it anywhere, so a sheet that crosses it is not an error; `kit.seamswitch` allows for it in seam cells of 10 degrees by 250 voxels ([`docs/tools/seamswitch.md`](docs/tools/seamswitch.md)).
 
 **seating (of a surface)**: Whether a traced surface lies on papyrus rather than in the gap between sheets. A seating check can reject misplaced surfaces, but passing it does not by itself rule out a jump to a neighboring sheet.
 
@@ -481,6 +495,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 **winding (wrap, turn, layer, sheet)**: One turn of papyrus around the roll. The terms are used interchangeably. A winding number counts turns from the center.
 
 **winding coverage**: How many times a slice's traced sheet winds around a point: the summed angle its segments subtend there, divided by a full turn, in wraps. Deep inside the roll it is high; off center it drops. `kit windcheck` computes it from villa's normal grids, and `kit axispolish` moves a center line to where it is highest (the coverage polish) ([page](docs/tools/windcheck.md)). A measurement on model-predicted sheets, not a distance to the true axis.
+
+**winding switch (seam-aware)**: A pair of touching vertices of one traced sheet that a spiral fit puts on different windings, once the fit's seam is allowed for. `python -m kit.seamswitch` counts them per 1000 neighbor pairs; a geometry score of a fit, not a reading ([`docs/tools/seamswitch.md`](docs/tools/seamswitch.md)).
 
 **window and level (CT display)**: Display controls for CT brightness and contrast. Window sets the range of values shown, and level sets its midpoint. Changing them changes the view, not the stored scan values.
 

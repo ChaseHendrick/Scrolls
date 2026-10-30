@@ -1,0 +1,42 @@
+<section class="scc" id="connect" aria-label="Connect your tool"><style>.scc{--a:var(--scc-accent,#4ea8de);color:inherit;font:inherit;line-height:1.5;max-width:60rem}
+.scc h2{font-size:1.15em;margin:.2em 0 .3em}.scc h3{font-size:1em;margin:0 0 .2em}
+.scc p{margin:.3em 0}.scc a{color:var(--a)}
+.scc .scc-src{border:1px solid color-mix(in srgb,currentColor 18%,transparent);border-radius:10px;padding:.7em .9em;margin:.7em 0;background:color-mix(in srgb,currentColor 4%,transparent)}
+.scc .scc-meta{font-size:.85em;opacity:.8}
+.scc details{border-top:1px solid color-mix(in srgb,currentColor 12%,transparent);padding:.35em 0}
+.scc summary{cursor:pointer;font-weight:600;list-style-position:inside}
+.scc .scc-b{font-weight:400;font-size:.75em;padding:.05em .5em;border-radius:99px;margin-left:.5em;border:1px solid currentColor;opacity:.75;white-space:nowrap}
+.scc .scc-b.ok{color:#3fb37f}.scc .scc-b.src{color:var(--a)}.scc .scc-b.warn{color:#e0a030}
+.scc .scc-code{position:relative;margin:.4em 0 .2em}
+.scc pre{margin:0;padding:.7em .8em;border-radius:8px;overflow:auto;font-size:.82em;background:color-mix(in srgb,currentColor 9%,transparent);white-space:pre}
+.scc code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+.scc button.scc-copy{all:unset;box-sizing:border-box;position:absolute;top:.35em;right:.35em;font-size:.75em;line-height:1.4;padding:.1em .6em;border-radius:6px;border:1px solid color-mix(in srgb,currentColor 30%,transparent);background:color-mix(in srgb,currentColor 8%,transparent);color:inherit;cursor:pointer}
+.scc button.scc-copy:hover{border-color:var(--a)}
+.scc .scc-url{position:relative}.scc .scc-url pre{padding-right:4.5em;white-space:pre-wrap;word-break:break-all}
+.scc .scc-go{display:inline-block;margin:.3em 0;padding:.25em .8em;border-radius:6px;border:1px solid var(--a);text-decoration:none}
+.scc footer{font-size:.8em;opacity:.75;margin-top:.6em}</style>
+<h2>Connect your tool</h2>
+<p>Everything this page shows is open JSON, CSV and RSS over HTTPS, and the whole radar is also an MCP server, so a script, a spreadsheet, a feed reader or an agent can use it. No key, no login and no GPU quota: anyone can call it, logged in or not.</p>
+<div class="scc-src" id="connect-mcp"><h3>MCP server for agents</h3>
+<p class="scc-meta">Item titles, summaries and links belong to their sources (arXiv, GitHub, Hugging Face, PyPI, Zenodo, Crossref, the Vesuvius Challenge blog); the radar&#x27;s code is Apache 2.0 · Streamable HTTP, no session, JSON replies, no key. Nine tools: search_items (by words or by meaning), get_item, find_similar, briefing, overview, source_status, check_now, list_views, get_settings.</p>
+<div class="scc-url"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>https://sharpmeow-vesuvius-radar.hf.space/mcp</code></pre></div>
+<details><summary>Links and embed<span class="scc-b ok">tested 2026-10-24</span></summary>
+<div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>MCP endpoint (Streamable HTTP, POST): https://sharpmeow-vesuvius-radar.hf.space/mcp</code></pre></div></details>
+</div>
+<div class="scc-src" id="connect-api"><h3>JSON API, CSV and RSS</h3>
+<p class="scc-meta">Item titles, summaries and links belong to their sources; the radar&#x27;s code is Apache 2.0 · since takes 1m up to 30d (default 1d); view takes all, research, team or builders. The same filters work on items, overview, briefing, export.csv and feed.xml. The OpenAPI page lists every parameter.</p>
+<div class="scc-url"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>https://sharpmeow-vesuvius-radar.hf.space/api/items?since=1d</code></pre></div>
+<details><summary>Links and embed<span class="scc-b ok">tested 2026-10-24</span></summary>
+<div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>Items from the last day (JSON): https://sharpmeow-vesuvius-radar.hf.space/api/items?since=1d
+Papers and methods from the last week, score 35 or more (JSON): https://sharpmeow-vesuvius-radar.hf.space/api/items?since=7d&amp;view=research&amp;min_score=35
+Search by meaning (JSON): https://sharpmeow-vesuvius-radar.hf.space/api/items?since=30d&amp;q=ink+detection+in+x-ray+ct&amp;by_meaning=true
+The strongest items per topic (JSON): https://sharpmeow-vesuvius-radar.hf.space/api/briefing?since=7d
+Counts behind the charts (JSON): https://sharpmeow-vesuvius-radar.hf.space/api/overview?since=1d
+The collector: each source&#x27;s last and next check (JSON): https://sharpmeow-vesuvius-radar.hf.space/api/sources
+The last week as CSV: https://sharpmeow-vesuvius-radar.hf.space/api/export.csv?since=7d
+RSS feed: last week, score 60 or more: https://sharpmeow-vesuvius-radar.hf.space/feed.xml
+Reader views and their rules (JSON): https://sharpmeow-vesuvius-radar.hf.space/api/views
+Sources, keywords, weights and anchor sentences (JSON): https://sharpmeow-vesuvius-radar.hf.space/api/config
+OpenAPI page with every parameter: https://sharpmeow-vesuvius-radar.hf.space/docs</code></pre></div></details>
+</div>
+<footer>Machine-readable: <a href="https://huggingface.co/spaces/SharpMeow/vesuvius-radar/blob/main/connect.json" target="_blank" rel="noopener">connect.json</a> and <a href="https://huggingface.co/spaces/SharpMeow/vesuvius-radar/blob/main/CONNECT.md" target="_blank" rel="noopener">CONNECT.md</a>. Checked 2026-10-29. "Tested" means the snippet ran against this public data on that date. Scan data keeps its own license (the Vesuvius Challenge open data is CC BY-NC 4.0).</footer></section>
