@@ -92,8 +92,11 @@ Constants: `PLAN_VERSION = 2`; readable plan versions `(1, 2)`; `FAILURE_KINDS =
 - Python 3.11 or newer (zarr 3 needs it). Package name `vc-autopipeline`, license Apache-2.0.
 - Dependencies: `numpy>=1.25`, `tifffile>=2023.7.10`, `zarr>=3.0`, `scipy>=1.11`. Planning, the catalog, VC3D
   discovery and the agent tools use only the standard library.
-- VC3D's five tools for tracing, rendering, flattening and the checks. On Linux x86_64, villa's release AppImage has
-  all five; on a Mac, `VC3D.app` in `/Applications`; or a villa source build named by `VC_BIN`.
+- VC3D's five tools for tracing, rendering, flattening and the checks. On Linux x86_64, villa's release AppImage had
+  all five until villa commit e1aa625a6 (29 October 2026 UTC) removed `vc_flatten` and `vc_tifxyz_selfcross`; its
+  `latest` AppImage is now built after that commit and its `stable` AppImage predates `vc_tifxyz_selfcross`. Until
+  those two steps are ported, use a villa source build at 7154682e1 named by `VC_BIN`. On a Mac, `VC3D.app` in
+  `/Applications` has both only if it was built from a villa commit between 6c180b1f (4 August 2026) and 7154682e1.
 - For ink on the same machine: a separate Python with villa's `vesuvius` package and `torch`, named by
   `KIT_INK_PYTHON`.
 

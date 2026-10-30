@@ -77,7 +77,11 @@ plan digest 553fb8d2387663d0..., run folder /tmp/autopipe-demo-x4yc4frc/run, 4.7
 DEMO PASS
 ```
 
-`f`, `r` and `s` are the forward, reversed and shuffled maps. A real run on a released scan:
+`f`, `r` and `s` are the forward, reversed and shuffled maps.
+
+Since villa commit e1aa625a6 (29 October 2026 UTC), villa builds no longer include `vc_flatten` or `vc_tifxyz_selfcross`, which the flatten stage and qa's self-intersection check call; villa's `latest` AppImage is now built after that commit, and its `stable` AppImage predates `vc_tifxyz_selfcross`. Until those two steps are ported, build villa at 7154682e1, the commit before, and set `VC_BIN` to its `build/bin` in place of the first line below.
+
+A real run on a released scan:
 
 ```bash
 APPIMAGE="$(python3 scripts/get_vc3d.py)" && export VC_APPIMAGE="$APPIMAGE"   # villa's current Linux AppImage, sha256 checked
