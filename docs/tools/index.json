@@ -1413,67 +1413,67 @@
     {
      "name": "Commands and options",
      "start_line": 85,
-     "end_line": 207,
+     "end_line": 208,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 208,
-     "end_line": 236,
+     "start_line": 209,
+     "end_line": 237,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 237,
-     "end_line": 240,
+     "start_line": 238,
+     "end_line": 241,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 241,
-     "end_line": 251,
+     "start_line": 242,
+     "end_line": 252,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 252,
-     "end_line": 265,
+     "start_line": 253,
+     "end_line": 266,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 266,
-     "end_line": 275,
+     "start_line": 267,
+     "end_line": 276,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 276,
-     "end_line": 279,
+     "start_line": 277,
+     "end_line": 280,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 280,
-     "end_line": 289,
+     "start_line": 281,
+     "end_line": 290,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 290,
-     "end_line": 297,
+     "start_line": 291,
+     "end_line": 298,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 298,
-     "end_line": 309,
+     "start_line": 299,
+     "end_line": 310,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 310,
-     "end_line": 316,
+     "start_line": 311,
+     "end_line": 317,
      "applicable": true
     }
    ]
@@ -18331,6 +18331,158 @@
      "name": "Related",
      "start_line": 208,
      "end_line": 214,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "zarrbox",
+   "name": "zarrbox",
+   "tagline": "copy one box of a zarr volume, with a sha256 list",
+   "summary": "`python -m kit zarrbox` copies one box of a zarr or OME-Zarr scan volume, chunk files byte for byte, into a local folder that opens as the same volume, writes a sha256 per chunk, and later checks the copy against that list and against the source.",
+   "status": "Current",
+   "kind": [
+    "kit command",
+    "kit module"
+   ],
+   "area": "Data and downloads",
+   "commands": [
+    "python -m kit zarrbox",
+    "python -m kit.zarrbox"
+   ],
+   "imports": [
+    "from kit import zarrbox"
+   ],
+   "code": [
+    {
+     "path": "kit/zarrbox.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/cli.py",
+     "symbols": [
+      "build_parser"
+     ]
+    }
+   ],
+   "tests": [
+    "tests/test_zarrbox.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed: it copies public open data to a local folder"
+   },
+   "checked": {
+    "date": "2026-10-30",
+    "commit": "6148ce7"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`zarrbox`",
+    "Status": "Current",
+    "Kind": "kit command, kit module",
+    "Area": "Data and downloads",
+    "Run": "`python -m kit zarrbox`, `python -m kit.zarrbox`, `from kit import zarrbox`",
+    "Code": "`kit/zarrbox.py`, `kit/cli.py` (`build_parser`); it reuses the chunk reader, key layouts and copy of [tifxyz](tifxyz.md) (`ZarrSource`, `zarr_level`, `chunk_key`, `fetch_chunks`)",
+    "Tests": "`tests/test_zarrbox.py`",
+    "Needs": "Python 3.10 or newer, standard library only. Reading the copy back needs a zarr reader (zarr-python 3.4.2 used on 2026-10-30), VC3D or villa's `vesuvius` package",
+    "Runs on": "Any CPU with network. An 8-chunk box (16.8 MB) of PHerc0139's 2.399 um volume: `plan` under 2 s, `copy` 6.0 s, `verify --source` 2.2 s (measured 2026-10-30, 4-core Claude cloud container)",
+    "Network": "For a volume given as `https://` or `s3://` (the open-data bucket `vesuvius-challenge-open-data`): its metadata files, one HEAD per chunk of the box (`plan`, `copy`), one GET per present chunk (`copy`, `verify --source`); 429, 5xx and dropped connections are asked again up to 5 times. None for a local volume or for `verify` without `--source`",
+    "Writes": "`plan` and `verify`: nothing. `copy`: the `--to` folder, holding the volume's root and level metadata, the box's chunk files at their own keys, and `zarrbox.json`",
+    "Go-ahead": "Not needed: it copies public open data to a local folder",
+    "Released": "Public `main` since 2026-10-30",
+    "Checked": "2026-10-30 against commit `6148ce7`"
+   },
+   "page": "docs/tools/zarrbox.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 22,
+     "end_line": 31,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 32,
+     "end_line": 44,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 45,
+     "end_line": 69,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 70,
+     "end_line": 77,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 78,
+     "end_line": 123,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 124,
+     "end_line": 138,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 139,
+     "end_line": 144,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 145,
+     "end_line": 175,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 176,
+     "end_line": 194,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 195,
+     "end_line": 203,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 204,
+     "end_line": 207,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 208,
+     "end_line": 217,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 218,
+     "end_line": 221,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 222,
+     "end_line": 225,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 226,
+     "end_line": 230,
      "applicable": true
     }
    ]
