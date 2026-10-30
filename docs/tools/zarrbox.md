@@ -17,7 +17,7 @@
 | Writes | `plan` and `verify`: nothing. `copy`: the `--to` folder, holding the volume's root and level metadata, the box's chunk files at their own keys, and `zarrbox.json` |
 | Go-ahead | Not needed: it copies public open data to a local folder |
 | Released | Public `main` since 2026-10-30 |
-| Checked | 2026-10-30 against commit `d99115d` |
+| Checked | 2026-10-30 against commit `6148ce7` |
 
 ## What it does
 
@@ -221,7 +221,7 @@ Free: public data, any CPU. Time is network bound: on 2026-10-30 in a 4-core Cla
 
 ## History
 
-- 2026-10-30: added `plan`, `copy` and `verify`.
+- 2026-10-30: added `plan`, `copy` and `verify` (`6148ce7`).
 
 ## Related
 

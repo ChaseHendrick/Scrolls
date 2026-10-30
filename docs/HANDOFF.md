@@ -86,13 +86,6 @@
 | Umbilici Space (23 Oct) | Released 23 Oct as 1.6.1 (Space commit `c72b2cb0`, PR #162 and #163), public since 23 Oct; SharpMeow/pherc0175a-lasagna public the same day | Superseded by the Umbilici 1.8.0 row (24 Oct). Still open: whether lag and black flashes are gone on Chase's Mac |
 | Terminal look (23 Oct) | Draft PR on `claude/project-thread-72xswo`: `kit/termstyle.py` and `kit/termview.py` from Scrolls-private, `kit live` and `kit style` in `kit/cli.py`, tests, [page](tools/termstyle.md), AGENTS.md rule 17, a line in the Scrolls kit release entry | Merged as `d79bf51` |
 
-## Continuation, 22 October 2026
-
-| Item | State | Next step |
-| --- | --- | --- |
-| Greek gap restoration benchmark (22 Oct, a public benchmark for the October entry) | Local branch `claude/greek-restoration-benchmark` from `main` `0fbc49a`: `kit/greekfill.py` and `kit/greekkn.py` ported from the code that ran the frozen test, `tests/test_greekfill.py`, the five frozen files byte-identical in [`evidence/greek-restoration-20261022/`](evidence/greek-restoration-20261022/README.md) with their CC BY-SA 4.0 licence note (NOTICE too), the [preregistration and result](prereg/2026-10-22-greek-restoration.md), the [tool page](tools/greekfill.md), `results.json` `text_restoration_checks`, finding 19 in the README and `FINDINGS.md` with its claims ledger entries, a line in the Scrolls kit release entry, the [chart](media/greek-restoration-by-gap-length.svg), index and map rows. Reproduced 22 Oct: score, corpus (sha256 `5c7c4684...`) and the three prep files byte for byte. Agent leak and quality review 22 Oct: no leaks, numbers and citations verified, wording fixed | Chase approves the exact public text; then the PR, its checks and merge |
-| README findings (22 and 23 Oct: shorter, current, leading with what works) | #156 merged 22 Oct: one line per finding in the README, full text in [`FINDINGS.md`](FINDINGS.md). 23 Oct, with Chase's OK of the exact text: findings 16 and 18 and the StrokeNet release blurb lead with what it does (orientation AUC 0.994, 7 of 9 bars, two-density ahead on PHerc0500P2) and still state the misses | Add each new public result to `FINDINGS.md` and a README line in the same PR, with its `kit.claimcheck` entry |
-
 ## Still binding from older sections (moved 14 October 2026)
 
 These come from sections now in [HANDOFF-archive.md](HANDOFF-archive.md) and still apply:

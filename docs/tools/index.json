@@ -1413,67 +1413,67 @@
     {
      "name": "Commands and options",
      "start_line": 85,
-     "end_line": 207,
+     "end_line": 208,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 208,
-     "end_line": 236,
+     "start_line": 209,
+     "end_line": 237,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 237,
-     "end_line": 240,
+     "start_line": 238,
+     "end_line": 241,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 241,
-     "end_line": 251,
+     "start_line": 242,
+     "end_line": 252,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 252,
-     "end_line": 265,
+     "start_line": 253,
+     "end_line": 266,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 266,
-     "end_line": 275,
+     "start_line": 267,
+     "end_line": 276,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 276,
-     "end_line": 279,
+     "start_line": 277,
+     "end_line": 280,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 280,
-     "end_line": 289,
+     "start_line": 281,
+     "end_line": 290,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 290,
-     "end_line": 297,
+     "start_line": 291,
+     "end_line": 298,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 298,
-     "end_line": 309,
+     "start_line": 299,
+     "end_line": 310,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 310,
-     "end_line": 316,
+     "start_line": 311,
+     "end_line": 317,
      "applicable": true
     }
    ]
@@ -18374,7 +18374,7 @@
    },
    "checked": {
     "date": "2026-10-30",
-    "commit": "d99115d"
+    "commit": "6148ce7"
    },
    "license": null,
    "fields": {
@@ -18391,7 +18391,7 @@
     "Writes": "`plan` and `verify`: nothing. `copy`: the `--to` folder, holding the volume's root and level metadata, the box's chunk files at their own keys, and `zarrbox.json`",
     "Go-ahead": "Not needed: it copies public open data to a local folder",
     "Released": "Public `main` since 2026-10-30",
-    "Checked": "2026-10-30 against commit `d99115d`"
+    "Checked": "2026-10-30 against commit `6148ce7`"
    },
    "page": "docs/tools/zarrbox.md",
    "sections": [

@@ -4,6 +4,13 @@ Sections moved out of [HANDOFF.md](HANDOFF.md) unchanged, newest first, so the h
 
 When HANDOFF.md grows long, move its oldest dated sections, unchanged, to the top of this file (below this paragraph).
 
+## Continuation, 22 October 2026
+
+| Item | State | Next step |
+| --- | --- | --- |
+| Greek gap restoration benchmark (22 Oct, a public benchmark for the October entry) | Local branch `claude/greek-restoration-benchmark` from `main` `0fbc49a`: `kit/greekfill.py` and `kit/greekkn.py` ported from the code that ran the frozen test, `tests/test_greekfill.py`, the five frozen files byte-identical in [`evidence/greek-restoration-20261022/`](evidence/greek-restoration-20261022/README.md) with their CC BY-SA 4.0 licence note (NOTICE too), the [preregistration and result](prereg/2026-10-22-greek-restoration.md), the [tool page](tools/greekfill.md), `results.json` `text_restoration_checks`, finding 19 in the README and `FINDINGS.md` with its claims ledger entries, a line in the Scrolls kit release entry, the [chart](media/greek-restoration-by-gap-length.svg), index and map rows. Reproduced 22 Oct: score, corpus (sha256 `5c7c4684...`) and the three prep files byte for byte. Agent leak and quality review 22 Oct: no leaks, numbers and citations verified, wording fixed | Chase approves the exact public text; then the PR, its checks and merge |
+| README findings (22 and 23 Oct: shorter, current, leading with what works) | #156 merged 22 Oct: one line per finding in the README, full text in [`FINDINGS.md`](FINDINGS.md). 23 Oct, with Chase's OK of the exact text: findings 16 and 18 and the StrokeNet release blurb lead with what it does (orientation AUC 0.994, 7 of 9 bars, two-density ahead on PHerc0500P2) and still state the misses | Add each new public result to `FINDINGS.md` and a README line in the same PR, with its `kit.claimcheck` entry |
+
 ## Continuation, 20 October 2026
 
 | Item | State | Next step |
