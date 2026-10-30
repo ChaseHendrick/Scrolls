@@ -537,8 +537,8 @@ def briefing(f: Filters, per_topic: int = 3) -> dict:
         pick = [i for i in items if t in i["topics"] and i["id"] not in used][:per_topic]
         if pick:
             topics[t] = [{k: i.get(k) for k in ("id", "title", "url", "source", "kind", "date", "score", "band", "who",
-                                                 "activity", "summary", "code", "keyword", "semantic") if i.get(k) not in (None, "", [])}
-                         for i in pick]
+                                                 "who_name", "activity", "summary", "code", "keyword", "semantic")
+                          if i.get(k) not in (None, "", [])} for i in map(named, pick)]
             used.update(i["id"] for i in pick)
     return {"since": scanner.iso(f.start), "view": f.view, "label": VIEWS[f.view]["label"], "about": VIEWS[f.view]["about"],
             "items": len(items), "topics": topics}

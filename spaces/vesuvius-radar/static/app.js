@@ -11,6 +11,8 @@
   // An issue's or pull request's author is who opened it; a later comment or review has its own author.
   const OPENED = { issue: "opened by", pr: "opened by", thread: "started by" };
   const clip = (s, n) => (s.length > n ? s.slice(0, n - 2) + "..." : s);
+  // who with its first name replaced by the person's name (who_name), co-authors and other posters kept
+  const byline = (i) => (i.who_name ? [i.who_name].concat(i.who.split(",").slice(1).map((s) => s.trim())).join(", ") : i.who);
   const KIND = { paper: "paper", repo: "repository", pr: "pull request", issue: "issue", release: "release", model: "model",
     dataset: "dataset", space: "Space", "daily-paper": "daily paper", package: "package version", post: "blog post" };
   const LOOKBACKS = [["1m", "1 min"], ["5m", "5 min"], ["15m", "15 min"], ["30m", "30 min"], ["1h", "1 hour"], ["3h", "3 hours"],
@@ -581,7 +583,7 @@
       `<span class="src"><i class="dot s-${i.source}"></i>${esc(SRC_LABEL[i.source] || i.source)}</span>`,
       `<span>${esc(KIND[i.kind] || i.kind)}${i.state ? " · " + esc(i.state) : ""}${i.category ? " · " + esc(i.category) : ""}</span>`,
       `<span title="${esc(stamp(i.date))}${i.created && i.created !== i.date ? "; opened " + esc(stamp(i.created)) : ""}${i.first_seen ? "; found " + esc(stamp(i.first_seen)) : ""}">${esc(dm(D(i.date)))} (${esc(ago(i.date))})</span>`,
-      i.who ? `<span${i.who_name ? ` title="${esc(i.who)}"` : ""}>${OPENED[i.kind] ? OPENED[i.kind] + " " : ""}${esc(clip(i.who_name || i.who, 80))}</span>` : "",
+      i.who ? `<span${i.who_name ? ` title="${esc(i.who)}"` : ""}>${OPENED[i.kind] ? OPENED[i.kind] + " " : ""}${esc(clip(byline(i), 80))}</span>` : "",
       i.stars != null ? `<span>${fmtN(i.stars)} stars</span>` : "",
       i.likes ? `<span>${fmtN(i.likes)} likes</span>` : "",
       i.downloads ? `<span>${fmtN(i.downloads)} downloads</span>` : "",

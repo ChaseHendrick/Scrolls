@@ -497,6 +497,9 @@ class AppTest(unittest.TestCase):
         self.assertEqual({(i["who"], i["who_name"]) for i in got},
                          {("ChaseHendrick", "Chase Hendrick"), ("SharpMeow", "Chase Hendrick")})
         self.assertEqual(self.get("/api/items?since=1h&q=sharpmeow").json()["matched"], 1)   # the account still finds it
+        b = self.get("/api/briefing?since=1h&per_topic=10").json()
+        self.assertEqual({i.get("who_name") for t in b["topics"].values() for i in t if i["id"].endswith(("chase0", "chase1"))},
+                         {"Chase Hendrick"})
 
     def test_latest_update_reaches_search_csv_feed_and_mcp(self):
         now = dt.datetime.now(dt.timezone.utc)
@@ -576,6 +579,7 @@ class PageTest(unittest.TestCase):
         self.assertIn('.some((k) => p.has(k))) return;', js)
         self.assertIn("const f = Object.assign(defaults(), { min: S.f.min });", js)   # a link without min keeps the saved one
         self.assertIn('    p.set("min", f.min);', js)                                    # a shared link always names its minimum
+        self.assertIn("${esc(clip(byline(i), 80))}", js)     # the person's name replaces the first author only, co-authors stay
         rule = re.search(r"#checkBtn \{([^}]*)\}", css).group(1)                     # Refresh wears a halo in every theme
         self.assertIn("box-shadow", rule)
         self.assertIn("var(--accent)", rule)
