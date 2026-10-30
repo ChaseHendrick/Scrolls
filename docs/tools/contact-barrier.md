@@ -8,7 +8,7 @@ The contact barrier (`kit switchfix barrier`, AutoPipeline's `qa.repair` method 
 | Status | Branch only |
 | Kind | kit command, package |
 | Area | Surfaces and tracing |
-| Run | `scrolls-kit switchfix barrier` (in the AutoPipeline package folder), `autopipeline plan SAMPLE` with `"qa": {"repair": {"method": "barrier"}}` (the default) |
+| Run | `scrolls-kit switchfix barrier` (in the AutoPipeline package folder), `scrolls-kit autopipeline plan SAMPLE --settings '{"qa": {"repair": {"method": "barrier"}}}'` (repair is opt in; barrier is its default method) |
 | Code | `submissions/progress-2026-10-fix9/autopipeline/kit/switchfix.py` (`barrier`, `barrier_keep`, `BARRIER`), `submissions/progress-2026-10-fix9/autopipeline/kit/sheetgap.py` (`contact_barrier`), `submissions/progress-2026-10-fix9/autopipeline/kit/autopipe.py` (`repair_one`) on the branch |
 | Tests | `submissions/progress-2026-10-fix9/autopipeline/tests/test_switchfix.py` on the branch (`test_the_barrier_repairs_from_a_local_prediction`, the barrier inside AutoPipeline's repair step). The barrier's own cases (a hop is cut, a control that stays is kept whole, without the barrier the hop is joined) are not in the 0.1.9 package; `scripts/media/barrier_demo.py` here runs them on the released code and writes no picture if one fails |
 | Needs | Python 3.10 or newer, numpy and scipy; a surface prediction as OME-Zarr (the open-data m7 prediction for the scans that have one) |
@@ -92,7 +92,7 @@ TRACE is a tifxyz folder (`x.tif`, `y.tif`, `z.tif`, `meta.json`), OUT a new fol
 | `--workers WORKERS` | as the package sets | Parallel chunk reads |
 | `--json` | off | Print the record as JSON |
 
-In AutoPipeline it runs by itself: any trace qa rejects for a sheet switch is cut by the barrier into `repaired/SID`, checked again by the same qa rule, and kept only if it passes and keeps at least half its area (`"qa": {"repair": {"method": "barrier", "min_area_share": 0.5}}`, the default; `"method": "switchfix"` picks the older cut).
+In AutoPipeline it runs when the plan asks for a repair: `qa.repair` is an opt-in setting, so a plan without it only rejects. With it, any trace qa rejects for a sheet switch is cut by the barrier into `repaired/SID`, checked again by the same qa rule, and kept only if it passes and keeps at least half its area (`"qa": {"repair": {"method": "barrier", "min_area_share": 0.5}}`, what `"qa": {"repair": true}` gives; `"method": "switchfix"` picks the older cut).
 
 ## Inputs and outputs
 
@@ -110,6 +110,7 @@ AutoPipeline is released as a package on its own branch per version and never on
 
 ## History
 
+- 2026-10-30: the Run row and the AutoPipeline paragraph say that repair is opt in (`qa.repair` is not in AutoPipeline's defaults; checked with `autopipeline defaults` and `plan` in the 0.1.10 package), with barrier its default method ([#262](https://github.com/ChaseHendrick/Scrolls/pull/262)).
 - 2026-10-28: the scorer's half-winding check stated beside the held-out result ([#263](https://github.com/ChaseHendrick/Scrolls/pull/263)).
 - 2026-10-28: this page, the synthetic demo media and the held-out chart (`6bf0b4a`); review fixes before publishing: the barrier cuts a finished trace and does not stop growth, PHerc0500P2's reference wraps are automatic catalog meshes, and the parent rule's earlier reads are disclosed.
 - 2026-10-25: released inside AutoPipeline 0.1.9 (`2144cdf`).
