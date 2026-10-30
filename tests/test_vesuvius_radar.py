@@ -361,9 +361,10 @@ class GitHubActivityTest(unittest.TestCase):
 
 
 class NewsFeedTest(unittest.TestCase):
-    """News searches go through the scorer, a story found by several searches is kept once, Bing's click counter is
-    unwrapped to the article, Google's outlet suffix comes off the title, and a feed that fails is a note while the
-    others still count. The blog's own posts keep their base. Feeds are faked: no network."""
+    """News searches go through the scorer, a story found by several searches is kept once (as the copy that links the
+    article and has text), Bing's click counter is unwrapped to the article, Google's outlet suffix comes off the
+    title, and a feed that fails is a note while the others still count. The blog's own posts keep their base. Feeds
+    are faked: no network."""
 
     @staticmethod
     def rss(*items, ns=""):
@@ -414,8 +415,9 @@ class NewsFeedTest(unittest.TestCase):
         by = {i["title"]: i for i in items}
         self.assertEqual(by["Monthly update"]["kind"], "post")                       # the blog's own post keeps its base
         self.assertGreaterEqual(by["Monthly update"]["keyword"], CFG["keep_score"])
-        story = by["Scientists decipher charred Herculaneum scrolls"]                  # outlet suffix off, found once
-        self.assertEqual((story["kind"], story["who"], story["feed"]), ("news", "BBC", "Google News"))
+        story = by["Scientists decipher charred Herculaneum scrolls"]  # outlet suffix off, found once, Bing's direct link kept
+        self.assertEqual((story["kind"], story["who"], story["feed"], story["url"]),
+                         ("news", "Irish Examiner", "Bing News", "https://www.example.org/scrolls"))
         self.assertEqual(sum(i["title"] == story["title"] for i in items), 1)
         self.assertGreaterEqual(story["keyword"], CFG["keep_score"])
         self.assertLess(by["How ancient DNA is rewriting history"]["keyword"], CFG["keep_score"])   # scored, so dropped
@@ -423,6 +425,23 @@ class NewsFeedTest(unittest.TestCase):
         other = by["Virtual unwrapping reads a Herculaneum papyrus"]
         self.assertEqual((other["url"], other["who"]), ("https://www.example.org/scrolls", "Irish Examiner"))
         self.assertEqual(info["notes"], ["Hacker News: HTTP 503", "Bing News: skipped, the answer was not RSS"])
+
+    def test_discussion_link_any_script_and_the_head_sees_news_as_its_own_source(self):
+        pages = {"https://hn/rss": self.rss(
+            self.item("Reading the Herculaneum scrolls with X-ray CT", "https://www.example.org/ct", 30,
+                      "<comments>https://news.ycombinator.com/item?id=1</comments>"),
+            self.item("赫库兰尼姆 卷轴 Herculaneum 2026", "https://www.example.org/zh1", 40),
+            self.item("维苏威 卷轴 Herculaneum 2026", "https://www.example.org/zh2", 50))}
+        items, _ = self.run_blog([{"name": "Hacker News", "url": "https://hn/rss", "search": True}], pages)
+        story = next(i for i in items if i["url"] == "https://www.example.org/ct")
+        self.assertEqual(story["discussion_url"], "https://news.ycombinator.com/item?id=1")
+        self.assertNotIn("comments", story)                                     # a count on GitHub cards, never a link
+        keys = {scanner.news_key("赫库兰尼姆 卷轴 Herculaneum 2026"), scanner.news_key("维苏威 卷轴 Herculaneum 2026")}
+        self.assertEqual(len(keys), 2)                                          # two stories, not one "herculaneum 2026"
+        sources, kinds = ["arxiv", "blog"], ["post", "news"]
+        news = scanner.Head.features({"source": "blog", "kind": "news"}, sources, kinds)
+        post = scanner.Head.features({"source": "blog", "kind": "post"}, sources, kinds)
+        self.assertEqual((news[-4:-2], post[-4:-2]), ([0.0, 0.0], [0.0, 1.0]))  # the blog's weight is for its own posts
 
     def test_config_reads_news_searches_and_the_scrollprize_org(self):
         feeds = CFG["sources"]["blog"]["feeds"]
@@ -486,6 +505,9 @@ class AppTest(unittest.TestCase):
         self.assertTrue({"repo", "model"} <= kinds)
         self.assertIn("arxiv:1", [i["id"] for i in r["items"]])  # a paper that links code
         self.get("/api/items?view=nobody", 400)
+        blog = {"source": "blog", "topics": []}                  # the team view keeps the blog's posts, not press stories
+        self.assertEqual((app.in_view({**blog, "kind": "post"}, "team"), app.in_view({**blog, "kind": "news"}, "team")),
+                         (True, False))
 
     def test_filters_and_sort(self):
         # word search covers titles, summaries and topic names, so the X-ray CT paper (topic Ink and imaging) matches

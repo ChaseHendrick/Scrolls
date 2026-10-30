@@ -604,6 +604,7 @@
       i.pdf ? `<a href="${esc(safe(i.pdf))}" target="_blank" rel="noopener">PDF</a>` : "",
       i.hf_url ? `<a href="${esc(safe(i.hf_url))}" target="_blank" rel="noopener">Hugging Face papers</a>` : "",
       i.doi_url ? `<a href="${esc(safe(i.doi_url))}" target="_blank" rel="noopener">DOI</a>` : "",
+      i.discussion_url ? `<a href="${esc(safe(i.discussion_url))}" target="_blank" rel="noopener">Discussion</a>` : "",
       ...(i.code || []).map((u) => `<a href="${esc(safe(u))}" target="_blank" rel="noopener">Code: ${esc(u.replace(/^https?:\/\/(www\.)?/, "").slice(0, 48))}</a>`),
     ].filter(Boolean).join("");
     const starred = S.stars.has(i.id), hidden = S.hide.has(i.id), open = S.open.has(i.id), like = S.like.has(i.id);

@@ -327,12 +327,14 @@ class Head:
     @staticmethod
     def features(item: dict, sources: list[str], kinds: list[str]) -> list[float]:
         """Metadata features, the same in training and at run time. Order: see META_FEATURES, then a one-hot of the
-        source and of the kind (lists stored in head.json; an unseen value is all zeros)."""
+        source and of the kind (lists stored in head.json; an unseen value is all zeros). A news story counts as its
+        own source: the blog's weight was learned from the Challenge's own posts."""
         likes = (item.get("likes") or 0) + (item.get("upvotes") or 0)
         f = [item.get("keyword", 0) / 100, (item.get("semantic") or 0) / 100, math.log1p(item.get("stars") or 0) / 5,
              math.log1p(likes) / 5, 1.0 if item.get("new_repo") else 0.0, 1.0 if item.get("code") else 0.0,
              min(len(item.get("summary") or ""), 900) / 900, 1.0 if item.get("state") == "merged" else 0.0]
-        return f + [1.0 if item.get("source") == s else 0.0 for s in sources] + \
+        src = "news" if item.get("kind") == "news" else item.get("source")
+        return f + [1.0 if src == s else 0.0 for s in sources] + \
             [1.0 if item.get("kind") == k else 0.0 for k in kinds]
 
     def score(self, item: dict, vec=None) -> int:
@@ -420,7 +422,7 @@ def make_item(scorer: Scorer, *, source, kind, id, title, url, date, text="", ba
             item["topics"].insert(0, t)
     if extra.get("who"):
         extra["who"] = clean(extra["who"])[:200]
-    for k in ("pdf", "hf_url", "doi_url"):
+    for k in ("pdf", "hf_url", "doi_url", "discussion_url"):
         if k in extra:
             extra[k] = safe_url(extra[k])
     links = code_links(text)
@@ -948,16 +950,18 @@ def news_link(link: str) -> str:
 
 
 def news_key(title: str) -> str:
-    """One story under one id, whichever search found it: the title in lower-case letters and digits."""
-    return re.sub(r"[^a-z0-9]+", " ", title.lower()).strip()[:120]
+    """One story under one id, whichever search found it: the title's letters and digits in lower case, in any
+    script."""
+    return re.sub(r"[\W_]+", " ", title.lower()).strip()[:120]
 
 
 def c_blog(sc, ctx):
     """The Challenge's own blog, where every post counts (a base of 50), and news searches (Google News, Bing News,
     Hacker News), whose stories go through the scorer like any other listing. A story found by several searches is
-    kept once; a feed that fails or answers with something other than RSS is a note, and the other feeds still count."""
+    kept once, as the copy that links the article itself and carries a description (Google's links are redirects with
+    no text); a feed that fails or answers with something other than RSS is a note, and the other feeds still count."""
     scorer, since, prog = ctx["scorer"], ctx["since"], ctx["progress"]
-    out, read, notes, seen = [], 0, [], set()
+    out, read, notes, seen = [], 0, [], {}
     for f in sc["feeds"]:
         name, url, search = (f[0], f[1], False) if isinstance(f, list) else (f["name"], f["url"], bool(f.get("search")))
         prog(name)
@@ -987,13 +991,19 @@ def c_blog(sc, ctx):
             if outlet and title.endswith(" - " + outlet):  # Google News ends each title with the outlet's name
                 title = title[:-len(outlet) - 3]
             key = news_key(title)
-            if not key or key in seen:
-                continue
-            seen.add(key)
+            link = news_link(link)
             text = it.findtext("description", "") if "news.google." not in url else ""  # Google's is the title again
-            out.append(make_item(scorer, source="blog", kind="news", id="news:" + key, title=title, url=news_link(link),
-                                 date=t, text=text, who=outlet or name, feed=name,
-                                 comments=safe_url(it.findtext("comments", "")) or None))
+            rank = ("news.google." not in link, bool(text.strip()))
+            if not key or (key in seen and seen[key][0] >= rank):
+                continue
+            story = make_item(scorer, source="blog", kind="news", id="news:" + key, title=title, url=link, date=t,
+                              text=text, who=outlet or name, feed=name, discussion_url=it.findtext("comments", ""))
+            if key in seen:
+                out[seen[key][1]] = story
+                seen[key] = (rank, seen[key][1])
+            else:
+                seen[key] = (rank, len(out))
+                out.append(story)
     return out, {"read": read, "notes": notes}
 
 
