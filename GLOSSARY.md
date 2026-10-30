@@ -308,7 +308,7 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **papyrologist**: A scholar of ancient papyri. Only the Vesuvius Challenge papyrology team decides whether an image is legible.
 
-**Parting**: Our contact classifier: where two papyrus layers touch, it scores whether a candidate point lies on the same layer as a reference point or on the next one, from base dinovol token, CT and normal-profile features of the two points. Trained on hand-traced windings of PHerc0139 and PHerc0172; code private, not released. Passed one of three preregistered tests on fragments it never saw (it missed on the other two), and adds little where layers are fused ([log](docs/logs/2026-10-29-parting-fragment-contact.md)). Model output.
+**Parting**: Our contact classifier: where two papyrus layers touch, it scores whether a candidate point lies on the same layer as a reference point or on the next one, from base dinovol token, CT and normal-profile features of the two points. Trained on hand-traced windings of PHerc0139 and PHerc0172; code released under Apache-2.0 and the model file on Hugging Face as SharpMeow/parting-v1 (30 October 2026). Passed one of three preregistered tests on fragments it never saw (it missed on the other two), and adds little where layers are fused ([log](docs/logs/2026-10-29-parting-fragment-contact.md)). Model output.
 
 **patch**: A small piece. In tracing, a patch is one traced piece of surface that can be merged with others. In ink detection, a patch is the small 3D block of a surface volume that a model reads at one time.
 
