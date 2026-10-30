@@ -24,6 +24,8 @@ Published Vesuvius Challenge surface labels of PHerc0139, PHerc0814, PHerc0841 a
 along its mesh normal onto the papyrus recto face, drawn over X-ray CT that your browser streams from the open data.
 On fresh test sites, 91% of snapped PHerc0139 vertices sit within one voxel of the face seen in an independent
 1.129 µm scan, against 24% for the published labels.
+On 71 fresh PHerc0814 and PHerc0841 sites, the single-scan snap moved labels 2.15 voxels closer to the recto face of
+a finer scan than the published labels, and closer than seven community snaps run on the same sites.
 
 - **Viewer**: pick a segment and a z plane; orange is the published label, blue the snapped one, gray strokes join
   matching points; Animate snap moves each vertex from its published position to its snapped one, slowly. Arrow keys
