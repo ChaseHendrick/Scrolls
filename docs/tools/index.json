@@ -17132,7 +17132,7 @@
     "Tests": "`tests/test_vesuvius_radar.py` (scoring, lookbacks, views, filters, API, CSV, RSS, MCP, the vector cache, and that no key or private material is in the Space's files); `python -m kit spaceconnect check` checks its Connect panel",
     "Needs": "A browser, or any HTTP client. To run it yourself: Python 3.10+, `fastapi` 0.115.6, `uvicorn` 0.34.0, `fastembed` 0.9.1 and `numpy` (`requirements.txt`); the model BAAI/bge-small-en-v1.5 (MIT, about 130 MB) downloads on first use",
     "Runs on": "A free Hugging Face CPU Space (2 vCPU, 16 GB); no GPU and no GPU quota. The page and API answer at once; see Cost and time for the collector",
-    "Network": "`rss.arxiv.org`, `arxiv.org`, `export.arxiv.org` (papers), `api.github.com` (repositories, ScrollPrize/villa), `huggingface.co` (models, datasets, Spaces, daily papers, the embedding model), `pypi.org`, `zenodo.org`, `api.crossref.org`, `scrollprize.substack.com` (the Challenge blog); all read logged out",
+    "Network": "`rss.arxiv.org`, `arxiv.org`, `export.arxiv.org` (papers), `api.github.com` (repositories, ScrollPrize/villa), `huggingface.co` (models, datasets, Spaces, daily papers, the embedding model), `pypi.org`, `zenodo.org`, `api.crossref.org`, `scrollprize.substack.com` (the Challenge blog), `news.google.com`, `www.bing.com` and `hnrss.org` (news searches, since 30 Oct 2026); all read logged out",
     "Writes": "In the Space: `/data/radar` with persistent storage, else `/tmp/radar` (`store.json`, `vectors.npz`); `RADAR_DATA` moves it. `scanner.py --out` writes the file you name",
     "Go-ahead": "Not needed to use. Making the Space public was Chase's yes (29 Oct 2026); later redeploys from merged `main` fall under the standing yes (rule 8)",
     "Released": "Public on Hugging Face since 2026-10-29; README \"Released tools\" entry `vesuvius-radar`",
@@ -17192,43 +17192,43 @@
     {
      "name": "Failure modes",
      "start_line": 158,
-     "end_line": 170,
+     "end_line": 171,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 171,
-     "end_line": 180,
+     "start_line": 172,
+     "end_line": 181,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 181,
-     "end_line": 184,
+     "start_line": 182,
+     "end_line": 185,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 185,
-     "end_line": 194,
+     "start_line": 186,
+     "end_line": 195,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 195,
-     "end_line": 198,
+     "start_line": 196,
+     "end_line": 199,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 199,
-     "end_line": 205,
+     "start_line": 200,
+     "end_line": 207,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 206,
-     "end_line": 209,
+     "start_line": 208,
+     "end_line": 211,
      "applicable": true
     }
    ]

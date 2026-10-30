@@ -4,8 +4,8 @@
   "use strict";
 
   const SRC = ["arxiv", "github", "hf", "pypi", "zenodo", "journals", "blog"];
-  const SRC_LABEL = { arxiv: "arXiv", github: "GitHub", hf: "Hugging Face", pypi: "PyPI", zenodo: "Zenodo", journals: "Journals", blog: "Challenge blog" };
-  const SHORT = { arxiv: "arXiv", github: "GitHub", hf: "HF", pypi: "PyPI", zenodo: "Zenodo", journals: "Journals", blog: "Blog" };
+  const SRC_LABEL = { arxiv: "arXiv", github: "GitHub", hf: "Hugging Face", pypi: "PyPI", zenodo: "Zenodo", journals: "Journals", blog: "News and blogs" };
+  const SHORT = { arxiv: "arXiv", github: "GitHub", hf: "HF", pypi: "PyPI", zenodo: "Zenodo", journals: "Journals", blog: "News" };
   const BANDS = ["high", "medium", "low"];
   const BAND_LABEL = { high: "High", medium: "Medium", low: "Low" };
   // An issue's or pull request's author is who opened it; a later comment or review has its own author.
@@ -14,7 +14,7 @@
   // who with its first name replaced by the person's name (who_name), co-authors and other posters kept
   const byline = (i) => (i.who_name ? [i.who_name].concat(i.who.split(",").slice(1).map((s) => s.trim())).join(", ") : i.who);
   const KIND = { paper: "paper", repo: "repository", pr: "pull request", issue: "issue", release: "release", model: "model",
-    dataset: "dataset", space: "Space", "daily-paper": "daily paper", package: "package version", post: "blog post" };
+    dataset: "dataset", space: "Space", "daily-paper": "daily paper", package: "package version", post: "blog post", news: "news story" };
   const LOOKBACKS = [["1m", "1 min"], ["5m", "5 min"], ["15m", "15 min"], ["30m", "30 min"], ["1h", "1 hour"], ["3h", "3 hours"],
     ["6h", "6 hours"], ["12h", "12 hours"], ["1d", "1 day"], ["2d", "2 days"], ["3d", "3 days"], ["7d", "7 days"], ["14d", "14 days"], ["30d", "30 days"]];
   const VIEW_ICON = {
@@ -745,7 +745,7 @@
     pypi: (c) => [`New versions of ${Object.keys(c.packages).length} packages: ${Object.keys(c.packages).join(", ")}`, "Pre-releases score 10 lower"],
     zenodo: (c) => [`Records matching ${c.queries.join("; ")}`, "Datasets, software, preprints and articles"],
     journals: (c) => [`Crossref works created in the window matching ${c.queries.join("; ")}`, "Journal articles, chapters, proceedings and posted content"],
-    blog: (c) => [`The feeds of ${c.feeds.map((f) => f[0]).join(", ")}`],
+    blog: (c) => [`The feeds of ${[...new Set(c.feeds.map((f) => f.name || f[0]))].join(", ")}`, "News searches go through the scorer like any listing, and a story found twice is kept once"],
   };
   function renderSources() {
     const b = S.src;

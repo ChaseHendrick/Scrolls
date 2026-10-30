@@ -8,7 +8,7 @@ Checked 2026-10-29. Generated from `connect.json` by `kit spaceconnect` in [Chas
 
 `https://sharpmeow-vesuvius-radar.hf.space/mcp`
 
-License: Item titles, summaries and links belong to their sources (arXiv, GitHub, Hugging Face, PyPI, Zenodo, Crossref, the Vesuvius Challenge blog); the radar's code is Apache 2.0. Streamable HTTP, no session, JSON replies, no key. Nine tools: search_items (by words or by meaning), get_item, find_similar, briefing, overview, source_status, check_now, list_views, get_settings.
+License: Item titles, summaries and links belong to their sources (arXiv, GitHub, Hugging Face, PyPI, Zenodo, Crossref, the Vesuvius Challenge blog, and news outlets found through Google News, Bing News and Hacker News); the radar's code is Apache 2.0. Streamable HTTP, no session, JSON replies, no key. Nine tools: search_items (by words or by meaning), get_item, find_similar, briefing, overview, source_status, check_now, list_views, get_settings.
 
 ### Links and embed (tested 2026-10-24)
 

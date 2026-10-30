@@ -3,6 +3,7 @@ the API, feed and MCP server answer, and nothing private or secret is in the Spa
 fetched and the embedding model is not loaded."""
 
 import datetime as dt
+import email.utils
 import importlib
 import importlib.util
 import json
@@ -11,6 +12,7 @@ import re
 import sys
 import tempfile
 import unittest
+import urllib.error
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
@@ -359,6 +361,78 @@ class GitHubActivityTest(unittest.TestCase):
 
 
 @unittest.skipIf(app is None, "fastapi is not installed")
+class NewsFeedTest(unittest.TestCase):
+    """News searches go through the scorer, a story found by several searches is kept once, Bing's click counter is
+    unwrapped to the article, Google's outlet suffix comes off the title, and a feed that fails is a note while the
+    others still count. The blog's own posts keep their base. Feeds are faked: no network."""
+
+    @staticmethod
+    def rss(*items, ns=""):
+        return f'<?xml version="1.0"?><rss version="2.0"{ns}><channel>' + "".join(items) + "</channel></rss>"
+
+    @staticmethod
+    def item(title, link, mins, extra=""):
+        when = email.utils.format_datetime(T0 - dt.timedelta(minutes=mins))
+        return f"<item><title>{title}</title><link>{link}</link><pubDate>{when}</pubDate>{extra}</item>"
+
+    def run_blog(self, feeds, pages):
+        def get(url, *a, **kw):
+            body = pages[url]
+            if isinstance(body, Exception):
+                raise body
+            return body.encode()
+        scanner.FETCH.get = get  # an instance attribute shadows the method for this test
+        self.addCleanup(delattr, scanner.FETCH, "get")
+        items, info = scanner.c_blog({"feeds": feeds}, {"scorer": scanner.Scorer(CFG), "since": T0 - dt.timedelta(days=2),
+                                                        "progress": lambda m: None})
+        return items, info
+
+    def test_searches_scored_deduplicated_and_unwrapped(self):
+        bing_ns = ' xmlns:News="https://www.bing.com/news/search?q=x"'
+        click = "http://www.bing.com/news/apiclick.aspx?ref=FexRss&amp;url=https%3a%2f%2fwww.example.org%2fscrolls&amp;mkt=en-us"
+        pages = {
+            "https://blog/feed": self.rss(self.item("Monthly update", "https://blog/p/october", 60)),
+            "https://google/rss": self.rss(
+                self.item("Scientists decipher charred Herculaneum scrolls - BBC", "https://news.google.com/rss/articles/A", 90,
+                          '<source url="https://www.bbc.com">BBC</source>'),
+                self.item("How ancient DNA is rewriting history - Quillette", "https://news.google.com/rss/articles/B", 95,
+                          '<source url="https://quillette.com">Quillette</source>'),
+                self.item("Old Herculaneum story - BBC", "https://news.google.com/rss/articles/C", 60 * 24 * 5)),
+            "https://bing/rss": self.rss(
+                self.item("Scientists decipher charred Herculaneum scrolls", click, 80, "<News:Source>Irish Examiner</News:Source>"),
+                self.item("Virtual unwrapping reads a Herculaneum papyrus", click, 70,
+                          "<News:Source>Irish Examiner</News:Source><description>X-ray CT of the scroll</description>"),
+                ns=bing_ns),
+            "https://hn/rss": urllib.error.HTTPError("https://hn/rss", 503, "busy", {}, None),
+            "https://html/page": "<!doctype html><html><body>not a feed</body></html>",
+        }
+        feeds = [["Vesuvius Challenge", "https://blog/feed"],
+                 {"name": "Google News", "url": "https://google/rss", "search": True},
+                 {"name": "Bing News", "url": "https://bing/rss", "search": True},
+                 {"name": "Hacker News", "url": "https://hn/rss", "search": True},
+                 {"name": "Bing News", "url": "https://html/page", "search": True}]
+        items, info = self.run_blog(feeds, pages)
+        by = {i["title"]: i for i in items}
+        self.assertEqual(by["Monthly update"]["kind"], "post")                       # the blog's own post keeps its base
+        self.assertGreaterEqual(by["Monthly update"]["keyword"], CFG["keep_score"])
+        story = by["Scientists decipher charred Herculaneum scrolls"]                  # outlet suffix off, found once
+        self.assertEqual((story["kind"], story["who"], story["feed"]), ("news", "BBC", "Google News"))
+        self.assertEqual(sum(i["title"] == story["title"] for i in items), 1)
+        self.assertGreaterEqual(story["keyword"], CFG["keep_score"])
+        self.assertLess(by["How ancient DNA is rewriting history"]["keyword"], CFG["keep_score"])   # scored, so dropped
+        self.assertNotIn("Old Herculaneum story", by)                                # outside the window
+        other = by["Virtual unwrapping reads a Herculaneum papyrus"]
+        self.assertEqual((other["url"], other["who"]), ("https://www.example.org/scrolls", "Irish Examiner"))
+        self.assertEqual(info["notes"], ["Hacker News: HTTP 503", "Bing News: skipped, the answer was not RSS"])
+
+    def test_config_reads_news_searches_and_the_scrollprize_org(self):
+        feeds = CFG["sources"]["blog"]["feeds"]
+        self.assertEqual(feeds[0][0], "Vesuvius Challenge")
+        names = {f["name"] for f in feeds[1:] if f.get("search")}
+        self.assertEqual(names, {"Google News", "Bing News", "Hacker News"})
+        self.assertIn("org:ScrollPrize", CFG["sources"]["github"]["queries"])
+
+
 class AppTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
