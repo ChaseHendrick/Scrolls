@@ -12304,8 +12304,7 @@
      "sites": 3,
      "model": 0.3333,
      "dino_base": 0.3333
-    },
-    "geom_normal_touching": 0.9721
+    }
    },
    "compute": {
     "flavor": "rtx-pro-6000",

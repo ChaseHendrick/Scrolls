@@ -46,7 +46,6 @@ After the Frag3 pass, the same frozen model, comparator, rule and bar were teste
 - **Fused layers are not solved.** On 38 fused sites (gaps under 3 voxels) Parting scored 0.633 against 0.611 for base dinovol, a gain of +0.022, not judged. Only 3 touching sites had both gaps at 4 voxels or less, too few to read.
 - **One pass in three fragments.** One PASS (Frag3) and two misses (Frag5 by the margin, Frag2 with base dinovol near its ceiling). On Frag3, five layer pairs is the floor the rule allows, so the bound is coarse. Before the read we put the chance of a PASS at about 0.3 to 0.4 (Interpretation).
 - **Room for a gain.** Base dinovol was weaker on Frag3 than on Frag5 and Frag2 (0.839 against 0.915 and 0.965), which left more room for a gain; the bar of +0.05 can only be met where dinovol leaves that much room (Interpretation).
-- **Geometry reference.** A reference that reads only the traced normal at `a`, how far each candidate sits off `a`'s sheet, scored 0.972 on these sites. It uses no CT, and on a flat stack the normal alone is a strong cue (Interpretation). The test asks whether Parting adds to dinovol's image features, not whether it beats the traced geometry.
 - **A resampled scan is not a native 7.91 um scan.** Both arms saw the same windows, so the comparison is fair, but the absolute AUCs may differ on a native scan.
 - **Team traces.** Layer segments can hold local jumps that geometry cannot find; the crossing rule removes only places where two traces actually cross.
 
