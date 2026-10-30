@@ -18,7 +18,7 @@ A Hugging Face Space that collects new papers, repositories, models, datasets, p
 | Go-ahead | Not needed to use. Making the Space public was Chase's yes (29 Oct 2026); later redeploys from merged `main` fall under the standing yes (rule 8) |
 | Released | Public on Hugging Face since 2026-10-29; README "Released tools" entry `vesuvius-radar` |
 | License | Code Apache 2.0; item titles, summaries and links belong to their sources |
-| Checked | 2026-10-30 against commit `d0a600c` |
+| Checked | 2026-10-30 against commit `b32649f` |
 
 ## What it does
 
@@ -200,7 +200,7 @@ Free: a CPU Space (cpu-basic), no paid compute. The first collection after a sta
 
 - 2026-10-29: first version (1.0.0), built from `8491642`, tested in a private Space, then made public.
 - 2026-10-30: version 1.1.0 ([PR #285](https://github.com/ChaseHendrick/Scrolls/pull/285)). Villa issue and pull request cards say who made the latest update and what it said, with the opener kept as "opened by" (a card for villa #193 credited only the issue's opener for a newer comment by someone else); "Why this score" and "More like this" open separate panels (they opened the same one); long titles wrap on phones. Items gain `activity`; CSV gains `update`, `update_by`, `update_said` and `update_url`; RSS and the briefing name the update.
-- 2026-10-30: version 1.1.2 ([PR #PRNUM](https://github.com/ChaseHendrick/Scrolls/pull/PRNUM)). The minimum score no longer snaps back to 20: Hugging Face opens the Space as `?__theme=system`, which the page took for a shared link that reset every saved filter. Only filter parameters count as a link now, a link without `min` keeps the saved minimum, and the page's own links always name `min`. ChaseHendrick, SharpMeow and Sharpie count and show as one person, Chase Hendrick (`people` in `radar.json`; items gain `who_name`). The meaning switch is labeled "Match ideas, not words", explained in its tooltip and greyed out with an empty search box; the Refresh button wears a light halo in the light, dark and Vesuvius themes.
+- 2026-10-30: version 1.1.2 ([PR #303](https://github.com/ChaseHendrick/Scrolls/pull/303)). The minimum score no longer snaps back to 20: Hugging Face opens the Space as `?__theme=system`, which the page took for a shared link that reset every saved filter. Only filter parameters count as a link now, a link without `min` keeps the saved minimum, and the page's own links always name `min`. ChaseHendrick, SharpMeow and Sharpie count and show as one person, Chase Hendrick (`people` in `radar.json`; items gain `who_name`). The meaning switch is labeled "Match ideas, not words", explained in its tooltip and greyed out with an empty search box; the Refresh button wears a light halo in the light, dark and Vesuvius themes.
 - 2026-10-30: version 1.1.1 ([PR #287](https://github.com/ChaseHendrick/Scrolls/pull/287)). A cut-off download (`IncompleteRead`) is retried like a refused one, and a villa listing that still fails is a `partial` note that keeps the check's repository search results; the first check after the 1.1.0 redeploy had lost every GitHub item to one cut-off download.
 
 ## Related
