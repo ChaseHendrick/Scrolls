@@ -6,6 +6,22 @@ The line files are not in git. They are the assets of the GitHub release [`umbil
 
 Labels follow [`docs/NOVELTY.md`](../../NOVELTY.md): Sourced fact, Model output, Interpretation.
 
+## Known problem: PHerc0172 in mid-scroll (found 30 October 2026)
+
+**Do not use this release's PHerc0172 line between about z 9,950 and 12,200** (level-0 slices of scan `20241024131838`, file `PHerc0172_20241024131838_umbilicus.json`). In that range it runs off the scroll's center and into the wrapped sheets (Model output, from two independent checks: how radial the published hand-traced windings' surface normals are about the line, and the median centroid of those windings in each slice; an agent look at the CT agrees, which is not a human check):
+
+| z (level 0) | Distance from the windings' center | mm |
+| --- | --- | --- |
+| 7,000 | 271 voxels | 2.1 |
+| 8,500 | 130 voxels | 1.0 |
+| 10,016 | 487 voxels | 3.9 |
+| 10,272 | 1,018 voxels | 8.1 |
+| 10,530 | 1,593 voxels | 12.6 |
+| 11,300 | 140 voxels | 1.1 |
+| 11,744 | 1,602 voxels | 12.7 |
+
+The end checks below judged only the ends, so they could not catch this. Use the newer finder line for the same scan instead: `lines/PHerc0172/PHerc0172_20241024131838_finder_umbilicus.json` in the Hugging Face dataset [SharpMeow/vesuvius-center-lines](https://huggingface.co/datasets/SharpMeow/vesuvius-center-lines) (sha256 `acd06043844fe55ce542cbe2e740a5ec8359e920e024f7a532fdc74043b08717`, 314 points). At the same heights it is 77 to 467 voxels from the windings' center, with no large jump (Model output). A centroid of nested windings is itself only a rough center, so treat that line as better, not as checked. The release file is unchanged, so `SHA256SUMS` still matches it. No other line in this release has been checked this way.
+
 ## Quick start
 
 ```sh
@@ -75,7 +91,7 @@ All 12 ends marked usable are on the eight 1.2 m scrolls of the first group. 12 
 | PHerc0846B | `20250804142305` 9.362 um | own scan | 178 | 1,312 to 12,512 (104.9 mm) | FLAG | not usable: tilt flag | not usable: tilt flag |
 | PHerc0814 | `20250804134230` 9.362 um | own scan | 262 | 1,760 to 18,464 (156.4 mm) | VOID | not usable: agent look, papyrus past the end (tilt VOID) | not usable: the same |
 | PHerc0841 | `20250821151531` 9.366 um | own scan | 258 | 1,632 to 18,080 (154.1 mm) | PASS | not usable: agent look, papyrus past the end | not usable: the same; its 3.0 mm extension left out |
-| PHerc0172 | `20241024131838` 7.91 um | own scan | 307 | 544 to 20,128 (154.9 mm) | VOID | not usable: agent look, papyrus past the end (tilt VOID) | not usable: the same |
+| PHerc0172 (mid-scroll problem: see [above](#known-problem-pherc0172-in-mid-scroll-found-30-october-2026)) | `20241024131838` 7.91 um | own scan | 307 | 544 to 20,128 (154.9 mm) | VOID | not usable: agent look, papyrus past the end (tilt VOID) | not usable: the same |
 | PHerc0814 | `20260309142202` 2.399 um | mapped | 264 | 6,004 to 71,021 | VOID | not usable | not usable |
 | PHerc0841 | `20260319124803` 2.403 um | mapped, partial scan | 258 | 0 to 15,120 (clipped) | PASS | not usable | not usable |
 
