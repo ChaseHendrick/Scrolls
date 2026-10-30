@@ -8,6 +8,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **absorption contrast**: Image contrast that comes from how strongly different materials absorb X-rays.
 
+**active learning**: Choosing which regions a person labels next so each label helps the model most, usually where the current models are least sure. The organizers list it under label quality in their open problems; `kit labelsuggest` is one such pick for ink labels.
+
 **affine (cross-scan affine)**: A linear transform plus a shift that maps coordinates in one scan of a scroll to coordinates in another scan of the same scroll. The catalog publishes these, fitted from landmarks; `kit meshaudit transforms` refits them.
 
 **API (application programming interface)**: A defined way for one program to request data or actions from another. A tool API lets scripts use the same operations that a person might select in an app.
@@ -215,6 +217,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 **label set**: One dated folder of a segment's published ink labels on the open-data bucket, `SCROLL/segments/SEGMENT/ink-labels/<voxel size>um-volume-<VOLUME>/<date>/`, holding `inklabels.zarr`, `supervision.zarr` and sometimes `validation.zarr`, all drawn on one volume's render. `kit labels` lists them ([`docs/tools/labels.md`](docs/tools/labels.md)).
 
 **labelsnap**: `kit labelsnap`, which moves each vertex of a tifxyz surface label along its normal onto the recto face of its papyrus band in the label's own CT, with a confidence and an abstain mask ([page](docs/tools/labelsnap.md)).
+
+**labelsuggest**: `kit labelsuggest`, which ranks the tiles of a segment by how much two or more readers' ink maps disagree there, so a person paints labels first where a label corrects at least one model. A suggested tile is a place to label, not a claim about ink ([page](docs/tools/labelsuggest.md)).
 
 **label smoothing**: Training with softened targets, so ink and background labels are not exactly 1 and 0.
 

@@ -130,14 +130,14 @@
   "labelsnap-moved-published-surface-labels-closer-to-the": {
    "line": 264,
    "sources": {
-    "docs/results.json": "7d7eea51bda1ff16f42a164789d7b7eecb820a032c4fe33eecd2862dfbb0b1b1",
+    "docs/results.json": "59970ecff3ff16ecb7d17f27377dc1c8e204f4cebe892f818749cc9fc9df5583",
     "docs/tools/snapped-labels.md": "3da92dca823c53779149f1aa9f7699e0e9ee7533b5767956b1c4bae539b977ed"
    }
   },
   "labelsnap-moved-published-surface-labels-closer-to-the-2": {
    "line": 15,
    "sources": {
-    "docs/results.json": "7d7eea51bda1ff16f42a164789d7b7eecb820a032c4fe33eecd2862dfbb0b1b1",
+    "docs/results.json": "59970ecff3ff16ecb7d17f27377dc1c8e204f4cebe892f818749cc9fc9df5583",
     "docs/tools/snapped-labels.md": "3da92dca823c53779149f1aa9f7699e0e9ee7533b5767956b1c4bae539b977ed"
    },
    "doc": "docs/FINDINGS.md"

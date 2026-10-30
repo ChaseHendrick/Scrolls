@@ -158,10 +158,11 @@ Command-line tools, benchmarks and script folders that run from a clone of this 
 </details>
 
 <details>
-<summary><b>Training</b> (1)</summary>
+<summary><b>Training</b> (2)</summary>
 
 | Tool | What it does |
 | --- | --- |
+| [Label suggestions from reader disagreement](docs/tools/labelsuggest.md) | Ranks tiles by where readers' ink maps disagree, so a person labels there first; beat random tiles on two scrolls, not shown to beat simple picks. |
 | [Segmentation model comparison tools (experimental)](docs/tools/segzoo.md) | Lists segmentation model families and provides training and controlled scoring scripts. |
 
 </details>

@@ -1413,67 +1413,67 @@
     {
      "name": "Commands and options",
      "start_line": 85,
-     "end_line": 206,
+     "end_line": 207,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 207,
-     "end_line": 235,
+     "start_line": 208,
+     "end_line": 236,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 236,
-     "end_line": 239,
+     "start_line": 237,
+     "end_line": 240,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 240,
-     "end_line": 250,
+     "start_line": 241,
+     "end_line": 251,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 251,
-     "end_line": 264,
+     "start_line": 252,
+     "end_line": 265,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 265,
-     "end_line": 274,
+     "start_line": 266,
+     "end_line": 275,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 275,
-     "end_line": 278,
+     "start_line": 276,
+     "end_line": 279,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 279,
-     "end_line": 288,
+     "start_line": 280,
+     "end_line": 289,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 289,
-     "end_line": 296,
+     "start_line": 290,
+     "end_line": 297,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 297,
-     "end_line": 308,
+     "start_line": 298,
+     "end_line": 309,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 309,
-     "end_line": 315,
+     "start_line": 310,
+     "end_line": 316,
      "applicable": true
     }
    ]
@@ -6567,6 +6567,158 @@
      "name": "Related",
      "start_line": 252,
      "end_line": 257,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "labelsuggest",
+   "name": "labelsuggest",
+   "tagline": "where to paint ink labels next, from where readers' ink maps disagree",
+   "summary": "`python -m kit labelsuggest map` ranks the tiles of a segment by how much two or more readers' ink maps disagree there and writes the top tiles as a mask to label first, beside matched random and agree tiles and a shuffle control. It reads no label.",
+   "status": "Experimental",
+   "kind": [
+    "kit command",
+    "kit module"
+   ],
+   "area": "Training",
+   "commands": [
+    "python -m kit labelsuggest map"
+   ],
+   "imports": [
+    "from kit import labelsuggest"
+   ],
+   "code": [
+    {
+     "path": "kit/labelsuggest.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/cli.py",
+     "symbols": [
+      "build_parser"
+     ]
+    }
+   ],
+   "tests": [
+    "tests/test_labelsuggest.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed: local CPU only, nothing is posted or uploaded"
+   },
+   "checked": {
+    "date": "2026-10-29",
+    "commit": "5ad1fa6"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`labelsuggest`",
+    "Status": "Experimental",
+    "Kind": "kit command, kit module",
+    "Area": "Training",
+    "Run": "`python -m kit labelsuggest map`, `from kit import labelsuggest`",
+    "Code": "`kit/labelsuggest.py`, `kit/cli.py` (`build_parser`)",
+    "Tests": "`tests/test_labelsuggest.py`",
+    "Needs": "Python 3.10 or newer (run here on 3.13) and numpy; tifffile for TIFF maps. PNG and .npy maps need nothing more (PNG through kit's `vc3d_io`). No villa, no VC3D, no GPU",
+    "Runs on": "Any CPU. The quick start (five 256 x 256 maps) takes under 1 s; three 2048 x 2048 maps took 1.2 s with `vote` and 0.6 s with `edge`; three 4096 x 4096 maps 5.5 s and 3.3 s, with 1.3 GB peak memory (in memory, 5 shuffles; measured 2026-10-29, shared 4-core cloud container, Python 3.13, numpy 2.5)",
+    "Network": "None",
+    "Writes": "OUT/suggest.json, OUT/label-suggestions.png, OUT/disagreement.png, OUT/random-tiles.png and OUT/agree-tiles.png; nothing else",
+    "Go-ahead": "Not needed: local CPU only, nothing is posted or uploaded",
+    "Released": "Public `main` from the pull request that adds this page (October 2026). The test runners and a VC3D export are not in this repository",
+    "Release id": "`scrolls-kit`",
+    "Checked": "2026-10-29 against commit `5ad1fa6`"
+   },
+   "page": "docs/tools/labelsuggest.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 23,
+     "end_line": 34,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 35,
+     "end_line": 49,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 50,
+     "end_line": 81,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 82,
+     "end_line": 111,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 112,
+     "end_line": 140,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 141,
+     "end_line": 160,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 161,
+     "end_line": 167,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 168,
+     "end_line": 200,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 201,
+     "end_line": 221,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 222,
+     "end_line": 230,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 231,
+     "end_line": 234,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 235,
+     "end_line": 244,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 245,
+     "end_line": 248,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 249,
+     "end_line": 252,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 253,
+     "end_line": 259,
      "applicable": true
     }
    ]
