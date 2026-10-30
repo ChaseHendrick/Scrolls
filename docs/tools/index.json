@@ -1790,8 +1790,7 @@
    "area": "Surfaces and tracing",
    "commands": [
     "scrolls-kit switchfix barrier",
-    "autopipeline plan SAMPLE",
-    "\"qa\": {\"repair\": {\"method\": \"barrier\"}}"
+    "scrolls-kit autopipeline plan SAMPLE --settings '{\"qa\": {\"repair\": {\"method\": \"barrier\"}}}'"
    ],
    "imports": [],
    "code": [
@@ -1834,7 +1833,7 @@
     "Status": "Branch only",
     "Kind": "kit command, package",
     "Area": "Surfaces and tracing",
-    "Run": "`scrolls-kit switchfix barrier` (in the AutoPipeline package folder), `autopipeline plan SAMPLE` with `\"qa\": {\"repair\": {\"method\": \"barrier\"}}` (the default)",
+    "Run": "`scrolls-kit switchfix barrier` (in the AutoPipeline package folder), `scrolls-kit autopipeline plan SAMPLE --settings '{\"qa\": {\"repair\": {\"method\": \"barrier\"}}}'` (repair is opt in; barrier is its default method)",
     "Code": "`submissions/progress-2026-10-fix9/autopipeline/kit/switchfix.py` (`barrier`, `barrier_keep`, `BARRIER`), `submissions/progress-2026-10-fix9/autopipeline/kit/sheetgap.py` (`contact_barrier`), `submissions/progress-2026-10-fix9/autopipeline/kit/autopipe.py` (`repair_one`) on the branch",
     "Tests": "`submissions/progress-2026-10-fix9/autopipeline/tests/test_switchfix.py` on the branch (`test_the_barrier_repairs_from_a_local_prediction`, the barrier inside AutoPipeline's repair step). The barrier's own cases (a hop is cut, a control that stays is kept whole, without the barrier the hop is joined) are not in the 0.1.9 package; `scripts/media/barrier_demo.py` here runs them on the released code and writes no picture if one fails",
     "Needs": "Python 3.10 or newer, numpy and scipy; a surface prediction as OME-Zarr (the open-data m7 prediction for the scans that have one)",
@@ -1894,13 +1893,13 @@
     {
      "name": "History",
      "start_line": 111,
-     "end_line": 117,
+     "end_line": 118,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 118,
-     "end_line": 123,
+     "start_line": 119,
+     "end_line": 124,
      "applicable": true
     }
    ]

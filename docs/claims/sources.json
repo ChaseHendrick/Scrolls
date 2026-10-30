@@ -83,8 +83,8 @@
   "claim-label-rule-and-control-data-record-with": {
    "line": 129,
    "sources": {
-    "docs/tools/windlabel-box.md": "7663b5c960350155add245a81ed026112764c1f4e5942c19700cd39c3152cb76",
-    "docs/tools/contact-barrier.md": "1f43905d98ded0773f571b3fea0789e858f15d799a8870499fcc81e07536c874",
+    "docs/tools/windlabel-box.md": "5a5e8b8baa079013560c11ca254915dfeb75291126366f8b85f8118db7c7d17b",
+    "docs/tools/contact-barrier.md": "1f7409ebb26b4f34af7cb8dc15175f8440b9b68d80c65424c1351bba4f23cca4",
     "docs/tools/snapped-labels.md": "3da92dca823c53779149f1aa9f7699e0e9ee7533b5767956b1c4bae539b977ed"
    },
    "doc": "docs/pipeline-october-2026.md"
@@ -121,7 +121,7 @@
   "in-the-autopipeline-0-1-9-package-folder": {
    "line": 52,
    "sources": {
-    "docs/tools/contact-barrier.md": "1f43905d98ded0773f571b3fea0789e858f15d799a8870499fcc81e07536c874"
+    "docs/tools/contact-barrier.md": "1f7409ebb26b4f34af7cb8dc15175f8440b9b68d80c65424c1351bba4f23cca4"
    },
    "doc": "docs/pipeline-october-2026.md",
    "reasons": {
@@ -302,7 +302,7 @@
   "step-stage-what-it-reads-what-it-writes": {
    "line": 27,
    "sources": {
-    "docs/tools/contact-barrier.md": "1f43905d98ded0773f571b3fea0789e858f15d799a8870499fcc81e07536c874"
+    "docs/tools/contact-barrier.md": "1f7409ebb26b4f34af7cb8dc15175f8440b9b68d80c65424c1351bba4f23cca4"
    },
    "doc": "docs/pipeline-october-2026.md",
    "reasons": {
