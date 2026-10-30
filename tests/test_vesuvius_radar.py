@@ -212,6 +212,109 @@ class TextTest(unittest.TestCase):
         self.assertEqual(len(out), 1)
         self.assertEqual(out[0]["upvotes"], 7)
 
+    def test_said_keeps_the_words_of_a_comment(self):
+        body = ("<!-- template -->\n> quoted earlier text\n## Update\nI tried **this** on [PHerc0332](https://x.org/a):\n"
+                "```py\nprint(1)\n```\n![shot](https://x.org/s.png) ![two](https://x.org/t.png)\nWorks `well`.")
+        self.assertEqual(scanner.said(body), "Update I tried this on PHerc0332: [code] [image] Works well.")
+        long = scanner.said("word " * 300, 50)
+        self.assertTrue(long.endswith("...") and len(long) <= 53)
+
+
+T0 = dt.datetime(2026, 10, 30, 2, 13, tzinfo=dt.timezone.utc)
+
+
+def ago_iso(minutes):
+    return iso(T0 - dt.timedelta(minutes=minutes))
+
+
+class GitHubActivityTest(unittest.TestCase):
+    """The villa watch credits whoever made an item's latest update, says what it said, and keeps the opener; an
+    update it cannot explain is not pinned on an older comment. GitHub is faked: no network."""
+
+    U = "https://api.github.com/repos/ScrollPrize/villa"
+
+    def fake(self):
+        user = lambda n: {"login": n}  # noqa: E731
+        issue = lambda n, mins_open, mins_upd, who, **kw: dict(  # noqa: E731
+            number=n, title=f"Item {n}", body="Label generation methods for surface models", user=user(who),
+            html_url=f"https://github.com/ScrollPrize/villa/issues/{n}", created_at=ago_iso(mins_open),
+            updated_at=ago_iso(mins_upd), state="open", labels=[], comments=21, **kw)
+        pr = lambda n, mins_open, mins_upd, who: dict(  # noqa: E731
+            issue(n, mins_open, mins_upd, who), html_url=f"https://github.com/ScrollPrize/villa/pull/{n}", draft=False,
+            merged_at=None)
+        routes = {
+            "/pulls?": [pr(2400, 600, 30, "opener-a"), pr(2401, 5, 5, "opener-b"), pr(2402, 900, 60, "opener-c")],
+            "/issues?": [issue(193, 900000, 49, "bruniss"), issue(194, 9000, 300, "opener-d"),
+                         {"number": 2400, "pull_request": {"url": "p"}, "updated_at": ago_iso(30)}],
+            "/releases?": [],
+            "/issues/comments?": [
+                {"issue_url": f"{self.U}/issues/193", "user": user("commenter"), "created_at": ago_iso(49),
+                 "updated_at": ago_iso(49), "html_url": "https://github.com/ScrollPrize/villa/issues/193#issuecomment-9",
+                 "body": "> old text\nHere is a new label set from the PHerc1667 fibers."},
+                {"issue_url": f"{self.U}/issues/194", "user": user("early"), "created_at": ago_iso(2000),
+                 "updated_at": ago_iso(2000), "html_url": "u", "body": "an older comment"}],
+            "/pulls/comments?": [],
+            "/issues/events?": [{"event": "labeled", "actor": user("maint"), "created_at": ago_iso(48.5),
+                                 "label": {"name": "data"}, "issue": {"number": 193, "html_url": "x"}},
+                                {"event": "subscribed", "actor": user("noise"), "created_at": ago_iso(1),
+                                 "issue": {"number": 194}}],
+            "/pulls/2400/reviews?": [{"user": user("reviewer"), "state": "APPROVED", "body": "",
+                                      "submitted_at": ago_iso(30), "html_url": "https://github.com/r"}],
+            "/pulls/2400/commits?": [{"author": user("opener-a"), "html_url": "c",
+                                      "commit": {"message": "first\n\nbody", "committer": {"date": ago_iso(400)}}}],
+            "/pulls/2402/reviews?": [], "/pulls/2402/commits?": [],
+        }
+        calls = []
+
+        def get(url):
+            calls.append(url)
+            for k in sorted(routes, key=len, reverse=True):
+                if k in url.replace(self.U, ""):
+                    return routes[k]
+            raise AssertionError("unexpected call " + url)
+        return get, calls
+
+    def run_github(self, state):
+        get, calls = self.fake()
+        orig = scanner._gh_get
+        scanner._gh_get = get
+        self.addCleanup(setattr, scanner, "_gh_get", orig)
+        sc = dict(CFG["sources"]["github"], queries=[])
+        items, info = scanner.c_github(sc, {"scorer": scanner.Scorer(CFG), "since": T0 - dt.timedelta(hours=8),
+                                            "progress": lambda m: None, "state": state})
+        return {i["id"]: i for i in items}, info, calls
+
+    def test_comment_author_and_words_credited_and_opener_kept(self):
+        items, info, _ = self.run_github({})
+        it = items["github:scrollprize/villa#193"]
+        self.assertEqual(it["who"], "bruniss")  # still the opener
+        a = it["activity"]
+        self.assertEqual((a["what"], a["who"]), ("comment", "commenter"))  # the comment, not the later bare label
+        self.assertEqual(a["text"], "Here is a new label set from the PHerc1667 fibers.")
+        self.assertTrue(a["url"].endswith("#issuecomment-9"))
+        self.assertEqual(a["also"], ["label added"])
+        self.assertTrue(scanner.parse_time(a["date"]) < T0)
+
+    def test_approval_found_by_lookup_and_remembered(self):
+        state = {}
+        items, _, calls = self.run_github(state)
+        a = items["github:scrollprize/villa#2400"]["activity"]
+        self.assertEqual((a["what"], a["who"]), ("approved", "reviewer"))
+        self.assertNotIn("activity", items["github:scrollprize/villa#2401"])  # only opened
+        self.assertNotIn("activity", items["github:scrollprize/villa#2402"])  # nothing explains it
+        self.assertNotIn("activity", items["github:scrollprize/villa#194"])   # the old comment is not credited
+        self.assertEqual(sum("/reviews?" in u for u in calls), 2)  # the lookup budget
+        _, _, again = self.run_github(state)
+        self.assertEqual(sum("/reviews?" in u or "/commits?" in u for u in again), 0)  # same updated time: remembered
+
+    def test_lookup_budget_and_partial_listing(self):
+        state = {}
+        sc_budget = CFG["sources"]["github"].get("pr_lookups")
+        self.assertLessEqual(sc_budget, 3)  # logged out: 60 calls an hour for every listing together
+        _, info, calls = self.run_github(state)
+        self.assertLessEqual(len(calls), 6 + 2 * sc_budget)
+        self.assertFalse(any("HTTP" in n for n in info["notes"]))
+
 
 @unittest.skipIf(app is None, "fastapi is not installed")
 class AppTest(unittest.TestCase):
@@ -329,6 +432,31 @@ class AppTest(unittest.TestCase):
         for p in ("/", "/connect.json", "/connect.html", "/CONNECT.md", "/api/views", "/api/config", "/api/sources", "/healthz"):
             self.get(p)
 
+    def test_latest_update_reaches_search_csv_feed_and_mcp(self):
+        now = dt.datetime.now(dt.timezone.utc)
+        it = scanner.make_item(scanner.Scorer(CFG), source="github", kind="issue", id="github:scrollprize/villa#193",
+                               title="ScrollPrize/villa #193: Methods for generating surface, fiber, or ink labels",
+                               url="https://github.com/ScrollPrize/villa/issues/193", date=iso(now - dt.timedelta(minutes=9)),
+                               text="Label generation methods", base=22, core_terms=False, who="bruniss",
+                               activity={"what": "comment", "who": "commenter", "date": iso(now - dt.timedelta(minutes=9)),
+                                         "text": "Here is a new label set.", "url": "https://github.com/c"})
+        scanner.finish([it], scanner.Scorer(CFG), None)
+        it["first_seen"] = it["date"]
+        with app.LOCK:
+            app.STORE["items"][it["id"]] = it
+        self.addCleanup(app.STORE["items"].pop, it["id"])
+        got = self.get("/api/items?since=1h&q=commenter").json()
+        self.assertEqual(got["matched"], 1)
+        self.assertEqual((got["items"][0]["who"], got["items"][0]["activity"]["who"]), ("bruniss", "commenter"))
+        csv_text = self.get("/api/export.csv?since=1h&q=commenter").text
+        self.assertIn("update_by", csv_text.splitlines()[0])
+        self.assertIn("Here is a new label set.", csv_text)
+        self.assertIn("Comment by commenter: Here is a new label set. Opened by bruniss.",
+                      self.get("/feed.xml?since=1h&min_score=0").text)
+        r = self.mcp({"jsonrpc": "2.0", "id": 5, "method": "tools/call",
+                      "params": {"name": "search_items", "arguments": {"since": "1h", "query": "commenter", "min_score": 0}}})
+        self.assertEqual(r["result"]["structuredContent"]["items"][0]["activity"]["who"], "commenter")
+
     def test_merge_keeps_first_seen(self):
         it = dict(self.items[0])
         saved = dict(app.STORE["items"][it["id"]])
@@ -371,6 +499,21 @@ class AppTest(unittest.TestCase):
         self.assertEqual(self.mcp({"jsonrpc": "2.0", "id": 4, "method": "nope"})["error"]["code"], -32601)
         self.assertEqual(self.mcp([{"jsonrpc": "2.0", "id": i, "method": "ping"} for i in range(21)], 400)["error"]["code"], -32600)
         self.assertEqual(self.c.get("/mcp").status_code, 405)
+
+
+class PageTest(unittest.TestCase):
+    def test_each_card_button_opens_its_own_panel_and_updates_name_their_author(self):
+        js, css = (HERE / "static" / "app.js").read_text(), (HERE / "static" / "style.css").read_text()
+        # "Why this score" and "More like this" once opened the same panel; each now has its own.
+        self.assertIn('if (act === "why") {', js)
+        self.assertIn('if (act === "like") {', js)
+        self.assertNotIn('act === "why" || act === "like"', js)
+        self.assertIn("data-similar", js)
+        self.assertNotIn("data-sims", js)
+        self.assertIn("${updateHTML(i)}", js)          # the update's author and words on the card
+        self.assertIn('issue: "opened by"', js)        # the opener is named as the opener
+        for cls in (".update-row", ".usaid"):
+            self.assertIn(cls, css)
 
 
 class PublicSafetyTest(unittest.TestCase):
