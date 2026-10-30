@@ -18,7 +18,7 @@ A Hugging Face Space that collects new papers, repositories, models, datasets, p
 | Go-ahead | Not needed to use. Making the Space public was Chase's yes (29 Oct 2026); later redeploys from merged `main` fall under the standing yes (rule 8) |
 | Released | Public on Hugging Face since 2026-10-29; README "Released tools" entry `vesuvius-radar` |
 | License | Code Apache 2.0; item titles, summaries and links belong to their sources |
-| Checked | 2026-10-29 against commit `8491642` |
+| Checked | 2026-10-30 against commit `b803ece` |
 
 ## What it does
 
@@ -198,7 +198,7 @@ Free: a CPU Space (cpu-basic), no paid compute. The first collection after a sta
 ## History
 
 - 2026-10-29: first version (1.0.0), built from `8491642`, tested in a private Space, then made public.
-- 2026-10-30: version 1.1.0. Villa issue and pull request cards say who made the latest update and what it said, with the opener kept as "opened by" (a card for villa #193 credited only the issue's opener for a newer comment by someone else); "Why this score" and "More like this" open separate panels (they opened the same one); long titles wrap on phones. Items gain `activity`; CSV gains `update`, `update_by`, `update_said` and `update_url`; RSS and the briefing name the update.
+- 2026-10-30: version 1.1.0 ([PR #285](https://github.com/ChaseHendrick/Scrolls/pull/285)). Villa issue and pull request cards say who made the latest update and what it said, with the opener kept as "opened by" (a card for villa #193 credited only the issue's opener for a newer comment by someone else); "Why this score" and "More like this" open separate panels (they opened the same one); long titles wrap on phones. Items gain `activity`; CSV gains `update`, `update_by`, `update_said` and `update_url`; RSS and the briefing name the update.
 
 ## Related
 
