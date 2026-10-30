@@ -172,13 +172,6 @@
    },
    "doc": "docs/pipeline-october-2026.md"
   },
-  "include-only-if-chase-says-yes-parting-missed": {
-   "line": 166,
-   "sources": {
-    "docs/logs/2026-10-29-parting-fragment-contact.md": "a225a5fd26484ae2442c1de5f92ee273d88efb8c9666e47ead31aded3d6c6098"
-   },
-   "doc": "docs/pipeline-october-2026.md"
-  },
   "ink-detection-runs-inside-the-same-autopipeline-run": {
    "line": 74,
    "sources": {
@@ -296,6 +289,13 @@
     "docs/logs/2026-10-29-parting-fragment-contact.md": "a225a5fd26484ae2442c1de5f92ee273d88efb8c9666e47ead31aded3d6c6098"
    },
    "doc": "docs/FINDINGS.md"
+  },
+  "parting-missed-its-bar-on-pherc1667cr1fr3-0-045": {
+   "line": 166,
+   "sources": {
+    "docs/logs/2026-10-29-parting-fragment-contact.md": "a225a5fd26484ae2442c1de5f92ee273d88efb8c9666e47ead31aded3d6c6098"
+   },
+   "doc": "docs/pipeline-october-2026.md"
   },
   "pherc0841-has-3-4-cm-of-supervision-so": {
    "line": 300,
