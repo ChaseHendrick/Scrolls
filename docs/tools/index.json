@@ -9112,6 +9112,161 @@
    ]
   },
   {
+   "id": "offsetdiag",
+   "name": "offsetdiag",
+   "tagline": "measure how ink AUC changes when a segment's surface moves along its normal",
+   "summary": "Renders a labeled segment box from the scan along its mesh normals at chosen offsets, snaps it to villa's lasagna sheet center against same-size controls, and scores every arm's ink map with its reverse-depth control. A development diagnostic, not a test.",
+   "status": "Experimental",
+   "kind": [
+    "script folder"
+   ],
+   "area": "Scoring and controls",
+   "commands": [
+    "python3 scripts/offsetdiag/offsetdiag.py fetch",
+    "validate",
+    "render",
+    "measure",
+    "arms",
+    "score",
+    "bash scripts/offsetdiag/infer.sh"
+   ],
+   "imports": [],
+   "code": [
+    {
+     "path": "scripts/offsetdiag",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_offsetdiag.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed for the CPU steps on public data. A paid GPU (a Hugging Face Job) follows your own compute rules"
+   },
+   "checked": {
+    "date": "2026-10-31",
+    "commit": "0f1b080"
+   },
+   "license": "Code: Apache License 2.0 ([`scripts/offsetdiag/LICENSE`](../../scripts/offsetdiag/LICENSE)). The scan, meshes, surface volumes and labels are the Vesuvius Challenge open data (CC BY-NC 4.0), read live, not copied",
+   "fields": {
+    "Id": "`offsetdiag`",
+    "Status": "Experimental",
+    "Kind": "script folder",
+    "Area": "Scoring and controls",
+    "Run": "`python3 scripts/offsetdiag/offsetdiag.py fetch`, `validate`, `render`, `measure`, `arms`, `score`; `bash scripts/offsetdiag/infer.sh`",
+    "Code": "`scripts/offsetdiag`",
+    "Tests": "`tests/test_offsetdiag.py` (synthetic data only)",
+    "Needs": "Python 3.10 or newer with numpy, scipy, tifffile, zarr (2 or 3) and numcodecs; the repository's `kit` (it imports `kit.auc` and `kit.fetch`); for the maps, villa's `vesuvius` package with its `models` extra ([ScrollPrize/villa](https://github.com/ScrollPrize/villa)), a CUDA GPU and an ink checkpoint such as Reader V3 ([`domenicor046/reader-v3`](https://huggingface.co/domenicor046/reader-v3))",
+    "Runs on": "fetch, validate, render, measure, arms and score on any CPU (one PHerc0841 box on a 4-core cloud container, 31 Oct 2026: fetch 7 s, validate 3 s, measure 61 s, render about 3 minutes); maps on a CUDA GPU, your own machine or a Hugging Face Job you own",
+    "Network": "`vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` (the scan, meshes, published surface volumes and ink labels); `huggingface.co` (villa's lasagna cos field for the PHerc0841 scan in the public Lasagna Fields bucket, and the ink checkpoint)",
+    "Writes": "In the work folder: `cache/`, `mesh/KEY/`, `labels/KEY/`, `render/KEY.npy`, `render/KEY_cos.npz`, `render/KEY_validate.json`, `arms/KEY/ARM.zarr`, `arms/KEY/arms.json`, `maps/` (from `infer.sh`), `scores.json`",
+    "Go-ahead": "Not needed for the CPU steps on public data. A paid GPU (a Hugging Face Job) follows your own compute rules",
+    "Released": "Public `main` from 2026-10-31 (code, Apache-2.0)",
+    "License": "Code: Apache License 2.0 ([`scripts/offsetdiag/LICENSE`](../../scripts/offsetdiag/LICENSE)). The scan, meshes, surface volumes and labels are the Vesuvius Challenge open data (CC BY-NC 4.0), read live, not copied",
+    "Checked": "2026-10-31 against commit `0f1b080`"
+   },
+   "page": "docs/tools/offsetdiag.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 23,
+     "end_line": 30,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 31,
+     "end_line": 42,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 43,
+     "end_line": 107,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 108,
+     "end_line": 117,
+     "applicable": true
+    },
+    {
+     "name": "Result on PHerc0841, 30 October 2026 (development only)",
+     "start_line": 118,
+     "end_line": 136,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 137,
+     "end_line": 233,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 234,
+     "end_line": 246,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 247,
+     "end_line": 257,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 258,
+     "end_line": 279,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 280,
+     "end_line": 311,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 312,
+     "end_line": 320,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 321,
+     "end_line": 324,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 325,
+     "end_line": 334,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 335,
+     "end_line": 338,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 339,
+     "end_line": 342,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 343,
+     "end_line": 349,
+     "applicable": true
+    }
+   ]
+  },
+  {
    "id": "overlap",
    "name": "overlap",
    "tagline": "do two segments trace the same papyrus, and do their ink maps agree there",
@@ -10791,6 +10946,155 @@
      "name": "Related",
      "start_line": 432,
      "end_line": 440,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "ringleader",
+   "name": "ringleader",
+   "tagline": "label every sheet in a z-slice with its winding in one solve",
+   "summary": "Ringleader labels every sheet pixel of a published surface prediction (such as m7) in a z-slice or a stack of slices with its winding, in one convex solve about the umbilicus, and scores the labels against published hand windings.",
+   "status": "Current",
+   "kind": [
+    "script folder"
+   ],
+   "area": "Surfaces and tracing",
+   "commands": [
+    "python3 scripts/ringleader/m7slices.py",
+    "python3 scripts/ringleader/run_slices.py",
+    "python3 scripts/ringleader/slab3d.py",
+    "python3 scripts/ringleader/score.py",
+    "python3 scripts/ringleader/fitlabel.py convert"
+   ],
+   "imports": [],
+   "code": [
+    {
+     "path": "scripts/ringleader/",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_ringleader_solve.py",
+    "tests/test_ringleader_score.py",
+    "tests/test_ringleader_fitlabel.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed: CPU only, public data, local files"
+   },
+   "checked": {
+    "date": "2026-10-31",
+    "commit": "0f1b080"
+   },
+   "license": "Apache License 2.0 ([`scripts/ringleader/LICENSE`](../../scripts/ringleader/LICENSE))",
+   "fields": {
+    "Id": "`ringleader`",
+    "Status": "Current",
+    "Kind": "script folder",
+    "Area": "Surfaces and tracing",
+    "Run": "`python3 scripts/ringleader/m7slices.py`, `python3 scripts/ringleader/run_slices.py`, `python3 scripts/ringleader/slab3d.py`, `python3 scripts/ringleader/score.py`, `python3 scripts/ringleader/fitlabel.py convert`",
+    "Code": "`scripts/ringleader/`",
+    "Tests": "`tests/test_ringleader_solve.py`, `tests/test_ringleader_score.py`, `tests/test_ringleader_fitlabel.py` (synthetic data only)",
+    "Needs": "Python 3.10 or newer; numpy, scipy (HiGHS `linprog`, sparse graphs, `cKDTree`), scikit-image (`skeletonize`), OR-tools (the `mcf` solver of the v1 settings), numcodecs (to decode m7's blosc chunks); for `score.py` also tifffile and the public `kit/sheetrefs.py` references (`python -m kit hopbench refs`); for `fitlabel.py` villa's Python with torch and villa's `spiral-fitting` folder (`checkpoint_io`, `flatten_spiral_checkpoint`)",
+    "Runs on": "Any CPU; no GPU. A two-slice PHerc0139 stack: about 16 s to fetch both m7 slices, 2 min 4 s to label them as one stack (mostly skeleton and geometry; the solve itself 4.3 s) and 36 s to score them; 4 min 35 s once for `python -m kit hopbench refs` (measured 2026-10-31, 4-core cloud container)",
+    "Network": "`vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` over HTTPS: the m7 surface prediction (`m7slices.py`), PHerc0139's umbilicus JSON (`run_slices.py`, `slab3d.py`, `score.py`), the hand-traced windings (`python -m kit hopbench refs`) and, with `--catalog` set to its URL, the catalog `metadata.json`. Nothing else; `fitlabel.py` reads local files only",
+    "Writes": "`m7slices.py`: `DEST/zNNNNN.npy`. `run_slices.py` and `slab3d.py`: `OUT/zNNNNN.npz`, `OUT/params.json`, `OUT/runs.jsonl` (appended), the geometry cache `--geo` (`zNNNNN-HASH.pkl`, `zNNNNN-trackhand.json`) and the umbilicus cache `--cache/json/`. `score.py`: `RUN/score.json` (or `score-clear.json`) and the truth cache `--truth/DIGEST/`. `fitlabel.py convert`: `OUT/zNNNNN.npz`, `OUT/fitlabel.json`, `OUT/pixel/`",
+    "Go-ahead": "Not needed: CPU only, public data, local files",
+    "Released": "Public `main` from the merge of its pull request (prepared 31 Oct 2026), v1.0.0",
+    "License": "Apache License 2.0 ([`scripts/ringleader/LICENSE`](../../scripts/ringleader/LICENSE))",
+    "Checked": "2026-10-31 against commit `0f1b080`"
+   },
+   "page": "docs/tools/ringleader.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 23,
+     "end_line": 34,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 35,
+     "end_line": 48,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 49,
+     "end_line": 79,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 80,
+     "end_line": 108,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 109,
+     "end_line": 221,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 222,
+     "end_line": 241,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 242,
+     "end_line": 249,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 250,
+     "end_line": 295,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 296,
+     "end_line": 319,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 320,
+     "end_line": 334,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 335,
+     "end_line": 338,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 339,
+     "end_line": 348,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 349,
+     "end_line": 352,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 353,
+     "end_line": 356,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 357,
+     "end_line": 363,
      "applicable": true
     }
    ]
@@ -13626,6 +13930,164 @@
      "name": "Related",
      "start_line": 252,
      "end_line": 256,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "sqrecipe",
+   "name": "sqrecipe",
+   "tagline": "compare two CT acquisitions of one scroll against a finer reference scan",
+   "summary": "In the same 128-voxel regions, measures whether a finer acquisition put on a coarse scan's grid keeps more sheet fidelity against an independent finer reference scan than the native coarse acquisition does, with controls that can fail.",
+   "status": "Experimental",
+   "kind": [
+    "script",
+    "kit module"
+   ],
+   "area": "Scoring and controls",
+   "commands": [
+    "python3 scripts/sqrecipe/sqrecipe.py pool",
+    "measure",
+    "dev",
+    "test-pool",
+    "test"
+   ],
+   "imports": [
+    "from kit import sqrecipe",
+    "from kit import sqfid"
+   ],
+   "code": [
+    {
+     "path": "scripts/sqrecipe/sqrecipe.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/sqrecipe.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/sqfid.py",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_sqrecipe.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed: it reads public data and rents nothing"
+   },
+   "checked": {
+    "date": "2026-10-31",
+    "commit": "0f1b080"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`sqrecipe`",
+    "Status": "Experimental",
+    "Kind": "script, kit module",
+    "Area": "Scoring and controls",
+    "Run": "`python3 scripts/sqrecipe/sqrecipe.py pool`, `measure`, `dev`, `test-pool`, `test`; library `from kit import sqrecipe`, `from kit import sqfid`",
+    "Code": "`scripts/sqrecipe/sqrecipe.py`, `kit/sqrecipe.py`, `kit/sqfid.py`",
+    "Tests": "`tests/test_sqrecipe.py`",
+    "Needs": "Python 3.10 or later, numpy, scipy; numcodecs only for blosc or zstd chunks (the volumes named in the script are uncompressed); network access to the two data hosts",
+    "Runs on": "Any CPU; 2 regions with all five arms in 19.5 s on 2 processes (measured 2026-10-31, cloud container, the Quick start below)",
+    "Network": "`data.aws.ash2txt.org` (the PHerc0332 DLS scans) and `vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` (the ESRF scans): `.zarray` headers and 128-voxel chunks, read into memory only",
+    "Writes": "The pool, rows and readout JSON files named on the command line, and `ROWS-read.json` beside each rows file; `test` writes `rows.json`, `rows-read.json` and `result.json` in a new folder. No scan data",
+    "Go-ahead": "Not needed: it reads public data and rents nothing",
+    "Released": "Public `main` since 2026-10-31 (code, Apache-2.0)",
+    "Checked": "2026-10-31 against commit `0f1b080`"
+   },
+   "page": "docs/tools/sqrecipe.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 22,
+     "end_line": 31,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 32,
+     "end_line": 43,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 44,
+     "end_line": 69,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 70,
+     "end_line": 93,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 94,
+     "end_line": 179,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 180,
+     "end_line": 235,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 236,
+     "end_line": 242,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 243,
+     "end_line": 266,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 267,
+     "end_line": 288,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 289,
+     "end_line": 296,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 297,
+     "end_line": 300,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 301,
+     "end_line": 310,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 311,
+     "end_line": 314,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 315,
+     "end_line": 318,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 319,
+     "end_line": 323,
      "applicable": true
     }
    ]
