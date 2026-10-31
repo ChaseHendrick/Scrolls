@@ -152,6 +152,7 @@ None in this repository. The read-back check above ran on 2026-10-24 before and 
 - 2026-10-24: guide Space `SharpMeow/dinovol-embeddings` with a click-to-search demo; bucket README gains a plain-words intro and links it ([PR #206](https://github.com/ChaseHendrick/Scrolls/pull/206)).
 - 2026-10-27: one page scroll bar (user decision, 27 October 2026): code blocks grow to their full height instead of scrolling inside the page at 380 px (300 px in the Download cards), keeping only a sideways scroll for long lines, and the head carries the one-scroll fragment from `python -m kit spaceconnect render` ([PR #253](https://github.com/ChaseHendrick/Scrolls/pull/253)).
 - 2026-10-28: phone fix ([PR #254](https://github.com/ChaseHendrick/Scrolls/pull/254)), found by `python -m kit spaceconnect scroll --width 390` and the live checks after the 27 October deploy: links wrap, so the model link in How it was made no longer makes the page pan sideways by 9 px at 390 px. Deployed as Space commit `26a40791`.
+- 2026-10-31: the saved theme (the Theme button, `dv-theme`) is set in the head, before the first paint, so the page no longer opens in the system theme and then switches (Chase asked on 31 Oct for every Space to remember the reader's theme). A static Space gets no theme from Hugging Face, so there is nothing else to follow.
 
 ## Related
 

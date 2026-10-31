@@ -89,6 +89,10 @@ footer{padding:36px 0 48px;color:var(--ink3);font-size:14px;text-align:center}
  th,td{padding:8px 10px;font-size:14px}
 }
 </style>
+<script>
+// Follow the theme the Space page was opened with (Gradio follows Hugging Face's ?__theme=), else the system setting.
+try{var t=new URLSearchParams(parent.location.search).get('__theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t;}catch(e){}
+</script>
 </head>
 <body>
 <nav><div class="wrap">
