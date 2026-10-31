@@ -1,0 +1,41 @@
+{
+ "about": "Reduced copy of the Vesuvius Challenge open-data catalog (https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/metadata.json, read 31 Oct 2026): only PHerc0139's volume transform from 20250728140407 to 20260102150214, which rlcommon.catalog_matrix reads by default. Pass --catalog with the bucket's metadata.json to read the live one.",
+ "samples": {
+  "PHerc0139": {
+   "sample": {
+    "properties": {
+     "volume_transforms": [
+      {
+       "from_volume_id": "20250728140407",
+       "transforms": [
+        {
+         "to_volume_id": "20260102150214",
+         "matrix": [
+          [
+           -3.886394110050942,
+           0.1467834836598507,
+           0.042991272563863626,
+           24942.184825509117
+          ],
+          [
+           -0.14932134398149824,
+           -3.8883143569764504,
+           -0.019874994068077516,
+           27018.881149603334
+          ],
+          [
+           0.04314060832031874,
+           -0.02410903665211957,
+           3.888412560623145,
+           -2553.809373804655
+          ]
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   }
+  }
+ }
+}
