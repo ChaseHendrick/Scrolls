@@ -12,8 +12,18 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="static/style.css">
 <script>
-  // Theme before first paint: the viewer's stored choice, else the system setting.
-  try { const t = localStorage.getItem("vradar.theme"); if (t === "light" || t === "dark" || t === "vesuvius") document.documentElement.dataset.theme = t; } catch (e) {}
+  // Theme before first paint: the viewer's stored choice, else Hugging Face's own theme (the Space page passes
+  // ?__theme=, kept with the account, so it holds where a browser forgets a framed page's storage, as Safari does after
+  // the session), else the system setting. "auto" is a choice too: Hugging Face's theme, else the system.
+  (function () {
+    var d = document.documentElement, t = null, hf = null;
+    try { t = localStorage.getItem("vradar.theme"); } catch (e) {}
+    try { hf = new URLSearchParams(location.search).get("__theme"); } catch (e) {}
+    d.dataset.hfTheme = hf === "light" || hf === "dark" ? hf : "";
+    d.dataset.themeChoice = t === "light" || t === "dark" || t === "vesuvius" ? t : "auto";
+    var show = d.dataset.themeChoice === "auto" ? d.dataset.hfTheme : d.dataset.themeChoice;
+    if (show) d.dataset.theme = show;
+  })();
 </script>
 <!-- space-onescroll:start -->
 <!-- one page scroll bar: written by python -m kit spaceconnect render; do not edit -->
@@ -97,7 +107,7 @@
         <span class="wordmark">Vesuvius Radar</span>
       </div>
       <div class="seg theme" role="group" aria-label="Theme">
-        <button type="button" data-theme-set="auto" title="Follow the system">Auto</button>
+        <button type="button" data-theme-set="auto" title="Follow Hugging Face's theme, else the system">Auto</button>
         <button type="button" data-theme-set="light">Light</button>
         <button type="button" data-theme-set="dark">Dark</button>
         <button type="button" data-theme-set="vesuvius" title="Volcanic ash and lava">🌋 Vesuvius</button>

@@ -257,6 +257,7 @@ procedure is absent). Not covered: the network reads and the judges themselves, 
 - 2026-10-27: one page scroll bar and American English ([PR #253](https://github.com/ChaseHendrick/Scrolls/pull/253)): the app's head carries `onescroll.html`, the welcome guide, report and records grow with the page instead of scrolling inside it, a tab link from the guide opens its tab at the top, and `fibercheck.color()` (was `colour()`); the frozen judge prompt keeps its words.
 - 2026-10-27: the Space gains a Welcome tab (hero mosaic, the judge's pairs, an example map), GIFs and stills in its How-to guides, a side-by-side Compare table, and tab links that work on phones ([#233](https://github.com/ChaseHendrick/Scrolls/pull/233)).
 - 2026-10-28: phone fix ([PR #254](https://github.com/ChaseHendrick/Scrolls/pull/254)), found by `python -m kit spaceconnect scroll --width 390` and the live checks after the 27 October deploy: the Welcome guide's results table (413 px in a 271 px frame) scrolls sideways in its own box, and links wrap. Deployed as Space commit `83fade1b`.
+- 2026-10-31: [PR #310](https://github.com/ChaseHendrick/Scrolls/pull/310). the Space's Welcome guide follows the theme the Space page was opened with (Gradio follows Hugging Face's `?__theme=`), else the system, so it matches the rest of the Space.
 
 ## Related
 

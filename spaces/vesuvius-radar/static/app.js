@@ -28,6 +28,12 @@
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
   const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  // GitHub reports a license file it cannot identify as NOASSERTION, and a Hub card may say "other" or "unknown": show
+  // those in words, with the raw value kept in the tooltip (and in the API).
+  const LICENSE_WORDS = { noassertion: ["Other license", "GitHub found a license file it could not identify"],
+    other: ["Other license", "The card names a license outside the Hub's list"], unknown: ["License unknown", "The card does not say which license"] };
+  const licenseTag = (l) => { const w = LICENSE_WORDS[String(l).toLowerCase()];
+    return w ? `<span title="${esc(w[1] + " (" + l + ")")}">${esc(w[0])}</span>` : `<span>${esc(l)}</span>`; };
   const safe = (u) => (/^https?:\/\//i.test(String(u || "")) ? String(u) : "#");
   const fmtN = (n) => (n == null ? "" : Number(n).toLocaleString("en-US"));
   const store = {
@@ -590,7 +596,7 @@
       i.upvotes ? `<span>${fmtN(i.upvotes)} upvotes</span>` : "",
       i.comments ? `<span>${fmtN(i.comments)} comments</span>` : "",
       i.language ? `<span>${esc(i.language)}</span>` : "",
-      i.license ? `<span>${esc(i.license)}</span>` : "",
+      i.license ? licenseTag(i.license) : "",
       isNew ? `<span class="badge new">new</span>` : "",
       i.code ? `<span class="badge code">code</span>` : "",
       i.new_repo ? `<span class="badge soft">created in window</span>` : "",
@@ -802,14 +808,21 @@
     try { history.replaceState(null, "", location.pathname + location.search + "#" + name); } catch (e) { /* sandboxed */ }
   }
   $$(".tabs button").forEach((b) => b.addEventListener("click", () => selectTab(b.dataset.tab)));
+  /* The theme is kept in this browser; "auto" follows Hugging Face's own theme (?__theme=, read in index.html before
+     first paint), else the system. */
+  function applyTheme(choice) {
+    const d = document.documentElement, show = choice === "auto" ? d.dataset.hfTheme : choice;
+    if (show) d.dataset.theme = show; else delete d.dataset.theme;
+    d.dataset.themeChoice = choice;
+    $$("[data-theme-set]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.themeSet === choice)));
+  }
   function setTheme(t) {
-    if (t === "auto") delete document.documentElement.dataset.theme; else document.documentElement.dataset.theme = t;
+    applyTheme(t);
     try { localStorage.setItem("vradar.theme", t === "auto" ? "" : t); } catch (e) { /* ignore */ }
-    $$("[data-theme-set]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.themeSet === t)));
     drawScene();
   }
   $$("[data-theme-set]").forEach((b) => b.addEventListener("click", () => setTheme(b.dataset.themeSet)));
-  $$("[data-theme-set]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.themeSet === (document.documentElement.dataset.theme || "auto"))));
+  applyTheme(document.documentElement.dataset.themeChoice || "auto");
 
   /* ------------------------------------------------------------ hero: Vesuvius over the bay, with a radar sweep */
   // A drawn scene, not a photo: the Bay of Naples, Vesuvius (Monte Somma and the Gran Cono), Pliny's pine-shaped

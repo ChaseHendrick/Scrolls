@@ -257,6 +257,13 @@ html.lbopen{overflow:hidden}
   details.fold>.inner{padding:0 14px 14px}
 }
 </style>
+<script>
+// Theme before first paint: the viewer's saved choice (the Theme button), else the theme the Space page was opened
+// with (Gradio follows Hugging Face's ?__theme=, which Hugging Face keeps with the account), else the system setting.
+(function(){var t=null;try{t=localStorage.getItem('lf-theme')}catch(e){}
+ if(t!=='light'&&t!=='dark'){try{t=new URLSearchParams(parent.location.search).get('__theme')}catch(e){t=null}}
+ if(t==='light'||t==='dark')document.documentElement.dataset.theme=t;})();
+</script>
 </head>
 <body>
 <header class="hero" id="top">
@@ -447,8 +454,7 @@ const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;');
 let cur=0,view='xy',ut='connect';
 
 /* theme */
-(function(){let t=null;try{t=localStorage.getItem('lf-theme')}catch(e){}
- if(t)document.documentElement.dataset.theme=t;
+(function(){/* the saved choice, or the Space page's theme, is applied in <head>, before first paint */
  $('theme').onclick=()=>{const dark=document.documentElement.dataset.theme?document.documentElement.dataset.theme==='dark':matchMedia('(prefers-color-scheme: dark)').matches;
   const n=dark?'light':'dark';document.documentElement.dataset.theme=n;try{localStorage.setItem('lf-theme',n)}catch(e){}};})();
 

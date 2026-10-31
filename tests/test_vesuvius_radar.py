@@ -9,6 +9,8 @@ import importlib.util
 import json
 import os
 import re
+import shutil
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -695,6 +697,71 @@ class PageTest(unittest.TestCase):
         self.assertIn('issue: "opened by"', js)        # the opener is named as the opener
         for cls in (".update-row", ".usaid"):
             self.assertIn(cls, css)
+
+
+def head_theme(page, stored, search, parent=False):
+    """Run a page's before-first-paint theme script in Node with this browser copy (localStorage) and URL; returns the
+    dataset it leaves on <html>. parent: read the URL as the framing page's (a guide inside a Gradio Space)."""
+    script = re.search(r"<script>\s*//[^\n]*Theme before first paint.*?</script>|<script>\s*// Follow the theme.*?</script>",
+                       page, re.S).group(0)[len("<script>"):-len("</script>")]
+    loc = json.dumps({"search": search})
+    own = json.dumps({"search": ""}) if parent else loc   # a srcdoc frame's own URL (about:srcdoc) has no query
+    js = ("const vm = require('vm'); const ds = {}; const ctx = { document: { documentElement: { dataset: ds } }, "
+          f"localStorage: {{ getItem: () => {json.dumps(stored)} }}, URLSearchParams, location: {own}"
+          + (f", parent: {{ location: {loc} }}" if parent else "") + " };"
+          f" vm.runInNewContext({json.dumps(script)}, ctx); console.log(JSON.stringify(ds));")
+    return json.loads(subprocess.run(["node", "-e", js], capture_output=True, text=True, check=True).stdout)
+
+
+@unittest.skipUnless(shutil.which("node"), "runs the page's theme script in Node")
+class ThemeTest(unittest.TestCase):
+    """Chase asked on 31 Oct 2026 for the Spaces to remember the reader's theme. The choice saved in this browser
+    comes first; with none (Safari forgets a framed page's storage after the session), the Space follows Hugging Face's
+    own theme, which the Space page passes as ?__theme= and Hugging Face keeps with the account."""
+
+    def setUp(self):
+        self.page = (HERE / "index.html").read_text()
+
+    def test_saved_choice_then_hugging_face_then_the_system(self):
+        self.assertEqual(head_theme(self.page, "vesuvius", "?__theme=dark")["theme"], "vesuvius")
+        self.assertEqual(head_theme(self.page, "light", "?__theme=dark")["theme"], "light")
+        nothing = head_theme(self.page, None, "?__theme=dark")
+        self.assertEqual((nothing["theme"], nothing["themeChoice"]), ("dark", "auto"))
+        self.assertEqual(head_theme(self.page, "", "?__theme=light")["theme"], "light")      # Auto follows Hugging Face
+        self.assertNotIn("theme", head_theme(self.page, None, "?__theme=system"))            # the control: the system
+        self.assertNotIn("theme", head_theme(self.page, "nonsense", ""))
+
+    def test_auto_and_the_buttons_use_the_choice_not_the_shown_theme(self):
+        js = (HERE / "static" / "app.js").read_text()
+        self.assertIn('const d = document.documentElement, show = choice === "auto" ? d.dataset.hfTheme : choice;', js)
+        self.assertIn('applyTheme(document.documentElement.dataset.themeChoice || "auto");', js)
+        self.assertNotIn('(document.documentElement.dataset.theme || "auto")', js)
+
+    def test_the_guides_of_other_spaces_follow_the_space_page(self):
+        spaces = HERE.parent
+        lf = (spaces / "lasagna-fields" / "guide" / "index.html").read_text()
+        self.assertEqual(head_theme(lf, "light", "?__theme=dark", parent=True)["theme"], "light")
+        self.assertEqual(head_theme(lf, None, "?__theme=dark", parent=True)["theme"], "dark")
+        self.assertEqual(head_theme(lf, None, "?__theme=system", parent=True), {})
+        fc = (spaces / "fiber-checker" / "guide" / "index.html").read_text()
+        self.assertEqual(head_theme(fc, None, "?__theme=dark", parent=True)["theme"], "dark")
+        dv = (spaces / "dinovol-embeddings" / "index.html").read_text()   # a static Space: Hugging Face passes no theme
+        self.assertEqual(head_theme(dv, "dark", "")["theme"], "dark")
+        self.assertLess(dv.index("Theme before first paint"), dv.index("</head>"))
+
+
+    def test_the_page_script_parses(self):
+        r = subprocess.run(["node", "--check", str(HERE / "static" / "app.js")], capture_output=True, text=True)
+        self.assertEqual(r.returncode, 0, r.stderr)
+
+
+class LicenseTest(unittest.TestCase):
+    def test_unidentified_licenses_are_shown_in_words(self):
+        # Chase, 31 Oct 2026: GitHub's NOASSERTION (a license file it cannot identify) read as a placeholder.
+        js = (HERE / "static" / "app.js").read_text()
+        self.assertIn('noassertion: ["Other license"', js)
+        self.assertIn("i.license ? licenseTag(i.license)", js)
+        self.assertNotIn("<span>${esc(i.license)}</span>", js)
 
 
 class PublicSafetyTest(unittest.TestCase):
