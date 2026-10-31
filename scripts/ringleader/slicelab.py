@@ -40,7 +40,7 @@ PARAMS = {
     "c_hi": 20.0,               # cost per unit a radial difference falls below 1
     "c_lo": 1.0,                # cost per unit a radial difference exceeds 1
     "c_cont": 10.0,             # cost per unit a continuity difference misses its shift
-    "skel_snap": 3.0,           # a hit maps to the skeleton pixel nearest the next sheet's centre within this
+    "skel_snap": 3.0,           # a hit maps to the skeleton pixel nearest the next sheet's center within this
     "block_margin": 4,          # px removed around chunk-fill blocks (their edges are not sheets)
     "spur_len": 8,              # skeleton branches from an end to a junction shorter than this are pruned
     "spur_rounds": 2,
@@ -61,7 +61,7 @@ PARAMS = {
                                 # "mcf": the same optimum through the dual minimum-cost flow (OR-tools), far faster
     "mcf_scale": 1000.0,        # mcf: slopes (costs per unit) are multiplied by this and rounded to integers
     "hand": None,               # None: geometry()'s shape statistic; +1 / -1: forced; "objective": the cheaper
-                                # labelling (unreliable: it can pick the wrong hand); "track": track_hand() on m7
+                                # labeling (unreliable: it can pick the wrong hand); "track": track_hand() on m7
 }
 
 # Ringleader v1: the settings of the frozen tests (the rest of PARAMS at its defaults, and slab3d.ZPARAMS for a
@@ -131,8 +131,8 @@ _NB = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
 
 
 def skel_graph(K):
-    """Sparse neighbour adjacency over skeleton pixels; returns (ys, xs, A, index image). A diagonal step is
-    dropped when the two pixels already touch through a shared 4-neighbour, so staircase lines have degree 2
+    """Sparse neighbor adjacency over skeleton pixels; returns (ys, xs, A, index image). A diagonal step is
+    dropped when the two pixels already touch through a shared 4-neighbor, so staircase lines have degree 2
     and only real junctions have degree 3 or more."""
     ys, xs = np.nonzero(K)
     n = len(ys)
@@ -148,7 +148,7 @@ def skel_graph(K):
         j[ok] = idx[y2[ok], x2[ok]]
         m = j >= 0
         if dy and dx:
-            # redundant diagonal: a 4-neighbour of both is on the skeleton
+            # redundant diagonal: a 4-neighbor of both is on the skeleton
             via = Kp[ys + dy + 1, xs + 1] | Kp[ys + 1, xs + dx + 1]
             m &= ~via
         rows.append(np.arange(n)[m])
@@ -186,7 +186,7 @@ def paths(A, deg):
             nxt = [v for v in nb if v != prev]
             if not nxt or (len(seq) > 1 and nxt[0] == start):
                 break
-            # an 8-connected skeleton can have small triangles; prefer an unvisited neighbour
+            # an 8-connected skeleton can have small triangles; prefer an unvisited neighbor
             v = nxt[0]
             if len(seq) >= len(mem):
                 break
@@ -316,7 +316,7 @@ def bridges(ys, xs, A, deg, path_list, pid, theta_p, p=PARAMS):
 # ---------------------------------------------------------------- radial edges
 
 def tangents(ys, xs, path_list, half):
-    """Unit tangent per skeleton pixel from its path neighbours."""
+    """Unit tangent per skeleton pixel from its path neighbors."""
     T = np.zeros((len(ys), 2))
     for q in path_list:
         if len(q) < 2:
@@ -332,7 +332,7 @@ def tangents(ys, xs, path_list, half):
 
 def radial_edges(S, K, ys, xs, pid, pieces, T, cx, cy, p=PARAMS):
     """From sampled skeleton pixels, march outward along the normal to the next sheet; return
-    (sample pixel, hit skeleton pixel, gap px, next-run width px, step px centre to centre) rows."""
+    (sample pixel, hit skeleton pixel, gap px, next-run width px, step px center to center) rows."""
     H, W = S.shape
     # nearest skeleton pixel for every pixel
     dist, (iy, ix) = ndimage.distance_transform_edt(~K, return_indices=True)
@@ -393,7 +393,7 @@ def radial_edges(S, K, ys, xs, pid, pieces, T, cx, cy, p=PARAMS):
 # ---------------------------------------------------------------- the solve
 
 def solve(npieces, cont, rad, p=PARAMS, bridges_=()):
-    """Integer labels minimising the convex costs. cont: (a, b, shift); rad: (a, b, f0, f1, f2, f3[, s])
+    """Integer labels minimizing the convex costs. cont: (a, b, shift); rad: (a, b, f0, f1, f2, f3[, s])
     aggregated, the cost of label difference d = s + 0, s + 1, s + 2, s + 3 (convex, extended linearly beyond),
     where s is the start-ray shift of the samples (+1 when the step outward crosses theta' = 0 in the +theta'
     direction, -1 the other way, else 0). Returns labels (float, NaN where a piece has no edge), component per
@@ -657,10 +657,10 @@ def radial_terms(geo, p=PARAMS):
 
 def track_hand(S, cx, cy, p=PARAMS):
     """The spiral's hand from the cleaned m7 slice alone (no labels, no references). On rays every
-    360 / track_rays degrees from the umbilicus, take the centres of thin sheet runs; from a start run, follow
+    360 / track_rays degrees from the umbilicus, take the centers of thin sheet runs; from a start run, follow
     the nearest run ray by ray in the +atan2 direction (with a velocity prediction) for one full turn. Back on
     the start ray, a spiral whose radius grows with the angle lands one run outward (+1), one that shrinks one
-    run inward (-1). geometry()'s shape statistic can be fooled by an off-centre outline (PHerc0139: +1, while
+    run inward (-1). geometry()'s shape statistic can be fooled by an off-center outline (PHerc0139: +1, while
     these tracks and the references say -1). Returns {"hand", "outward", "inward", "tracks"}."""
     H, W = S.shape
     nr = int(p.get("track_rays", 1440))
@@ -833,8 +833,8 @@ def _label_one_hand(geo, p, log):
 
 def label_geometry(geo, p=PARAMS, log=print):
     """Labels of one slice. p["hand"]: None keeps geometry()'s hand (a shape statistic that the scroll's
-    off-centre outline can fool), +1 or -1 forces one, "track" uses track_hand() (geo["track_hand"]), and
-    "objective" solves both and keeps the cheaper labelling (no labels are read, but the two optima can
+    off-center outline can fool), +1 or -1 forces one, "track" uses track_hand() (geo["track_hand"]), and
+    "objective" solves both and keeps the cheaper labeling (no labels are read, but the two optima can
     be close and the cheaper one can have the wrong hand).
     The returned "geo" is the geometry actually used (theta', hand and continuity shifts)."""
     h = p.get("hand")

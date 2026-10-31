@@ -26,7 +26,7 @@
 <text class="t1" x="413.4" y="152" font-size="13">0.149 to 0.179</text>
 <line class="barl" x1="810.0" y1="106" x2="810.0" y2="164"/>
 <text class="t2" x="814.0" y="104" font-size="12">bar 0.85</text>
-<text class="t1" x="24" y="196" font-size="14" font-weight="600">PHerc0332, z 3,760 to 4,340 (146 slices), organizer mesh m0828</text>
+<text class="t1" x="24" y="196" font-size="14" font-weight="600">PHerc0332, z 3,760 to 4,340 (146 slices, 142 scored), organizer mesh m0828</text>
 <text class="t2" x="290" y="227" font-size="13" text-anchor="end">Ringleader</text>
 <rect class="s0" x="300" y="214" width="395.4" height="18" rx="2"/>
 <text class="t1" x="701.4" y="228" font-size="13">0.659</text>

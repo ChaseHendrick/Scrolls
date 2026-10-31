@@ -2,16 +2,16 @@
 
 A winding's rank changes where its tracer happened to start and end the turn, while slicelab's label (the turn
 number k of the unwrapped angle Phi = theta' + 2 pi k) changes at slicelab's own start ray. So label minus rank is
-not constant even for a perfect labelling. Here each reference vertex gets its unwrapped angle about the axis
+not constant even for a perfect labeling. Here each reference vertex gets its unwrapped angle about the axis
 (rlcommon.turn_angles, continuous along the mesh), brought to one common branch for all windings, and a point
 matched to it gets
 
     turn = rank + (alpha' - theta') / 360     (an integer, since alpha' and theta' agree mod 360)
 
 the number of the turn it lies on in slicelab's own convention. label minus turn is then constant for a perfect
-labelling, wherever the references start. Seam overlaps (a winding traced past a full turn) are masked.
+labeling, wherever the references start. Seam overlaps (a winding traced past a full turn) are masked.
 
-The hand (which way theta' runs) comes from the references themselves (Truth.hand), never from a labelling:
+The hand (which way theta' runs) comes from the references themselves (Truth.hand), never from a labeling:
 score.py converts the labels' theta' to it.
 
 The rank of a winding is its number (w023 is 23), so windings left out of the reference set stay gaps. Next to a

@@ -94,7 +94,7 @@ Results of the two frozen tests, each read once, each with an independent rerun 
 | Test | Truth | Ringleader E0 | Bar | villa spiral fit, default settings (villa commit `e2254ebe`, seeds 1 to 3), read per piece | Margin over villa |
 | --- | --- | --- | --- | --- | --- |
 | PHerc0139, held-out z 3,240 to 3,400 (41 slices, every 4th, in two stacks) | 14 published hand windings | 0.902 | 0.85 | 0.149 to 0.179 | 0.72 to 0.75 (bar 0.40) |
-| PHerc0332 scan 20251211183505, z 3,760 to 4,340 (146 slices in seven stacks) | organizer mesh m0828 (about 3 turns), placed by the catalog transform alone | 0.659 | 0.595 | 0.349 to 0.398 | 0.26 to 0.31 |
+| PHerc0332 scan 20251211183505, z 3,760 to 4,340 (146 slices in seven stacks, 142 scored) | organizer mesh m0828 (about 3 turns), placed by the catalog transform alone | 0.659 | 0.595 | 0.349 to 0.398 | 0.26 to 0.31 |
 
 - On PHerc0139 the planted, shift and jitter controls failed on all 41 slices, as they should.
 - On PHerc0332 a constant labeling (every sheet one winding) scored 0.445, a margin of 0.21; the bar there was the larger of 0.50 and the constant labeling plus 0.15. Two negative labelings made from Ringleader's (a permutation and a sector swap) failed (0.302 and 0.500), as they should. Every villa seed scored below the constant labeling there, so the margin over the constant labeling carries that claim.
@@ -102,7 +102,7 @@ Results of the two frozen tests, each read once, each with an independent rerun 
 
 ![Ringleader's on-winding E0 in the two frozen tests, beside villa's spiral fit at its defaults and a constant labeling](../images/ringleader-e0.svg)
 
-Limits: E0 is a share of m7 sheet pixels, so pixels m7 does not mark as sheet are not scored and a sheet m7 missed is not counted against anyone. The truth is hand windings on PHerc0139 and one organizer mesh of about 3 turns on PHerc0332. Ringleader labels windings; it does not trace a surface.
+Limits: E0 is a share of m7 sheet pixels, so pixels m7 does not mark as sheet are not scored and a sheet m7 missed is not counted against anyone. The truth is hand windings on PHerc0139 and one organizer mesh of about 3 turns on PHerc0332. Ringleader labels windings; it does not trace a surface. On PHerc0332, m7 may have trained on that scroll's older scans or meshes, and earlier tests of ours had read the same band, so it is not fully held out there; PHerc0139 is held out by band only, since the settings and bars were set on development stacks of the same scroll. villa's spiral fit is not built to label every sheet of a slice and drifts by several turns, so the margin is over its default fit read this way, not over a tuned winding labeler. The public scorer loads the published windings w023 to w040 by default; the frozen PHerc0139 test used 14 of them, so pass `--windings` to score against a chosen subset; this page makes no claim that the default run reproduces 0.902.
 
 Claim label: Model output (the labels, and the two frozen test results above).
 
@@ -281,7 +281,7 @@ Import the scripts' modules with `scripts/ringleader` on `sys.path` (`sys.path.i
 | `slices.Z.strata.contact`, `strata.free` | dict | E0 at the global offset where another winding is within 8 voxels, and elsewhere |
 | `slices.Z.controls_pass` | dict of bool | `planted_drops`, `shift_drops`, `jitter_low` |
 | `slices.Z.sanity_truth_is_1` | bool | The truth scored against itself is perfect |
-| `pooled.global`, `pooled.naive` | dict | `on_winding` and `pair` weighted by matched labelled pixels, `step_acc` by steps |
+| `pooled.global`, `pooled.naive` | dict | `on_winding` and `pair` weighted by matched labeled pixels, `step_acc` by steps |
 
 `score.py` also prints one block per slice and a final `pooled {...}` line.
 

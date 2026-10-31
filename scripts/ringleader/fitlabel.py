@@ -1,4 +1,4 @@
-"""villa's spiral fit read as a Ringleader labelling: one winding label per m7 skeleton piece of a slice, written
+"""villa's spiral fit read as a Ringleader labeling: one winding label per m7 skeleton piece of a slice, written
 in the per-slice npz layout score.py reads (the community comparator). Model output, never a reading.
 
     python3 scripts/ringleader/fitlabel.py convert --ckpt FIT/checkpoint_fitted.ckpt --umb FIT/dataset/umbilicus.json \
@@ -6,7 +6,7 @@ in the per-slice npz layout score.py reads (the community comparator). Model out
     python3 scripts/ringleader/score.py work/ringleader/fit3000
 
 The pieces are Ringleader's own: --geo is a Ringleader run folder (its zNNNNN.npz files), and every key score.py
-reads (ys, xs, pid, rows, r) is copied unchanged, so both labellings are scored on the same skeleton pixels, pieces,
+reads (ys, xs, pid, rows, r) is copied unchanged, so both labelings are scored on the same skeleton pixels, pieces,
 radial steps and controls. Only the label, the hand and theta' change.
 
 Per skeleton pixel (slice frame: x = xs, y = ys, z = the slice) the fit's own grid coordinates come from an affine

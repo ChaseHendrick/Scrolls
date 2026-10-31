@@ -86,10 +86,11 @@ The frozen test on PHerc0332 (rule fixed before the read, read once; results.jso
 - 120 regions. B won in a share of 0.925 of them (95 % interval 0.872 to 0.968); median gain d 0.042 (0.035 to 0.055).
 - Processing control share 0.942; sign-flip control 5 of 200 draws passed; the outcome controls held.
 - Verdict: PASS under the rule fixed before the read.
+- Attempts: this was the second freeze of the test; the first never read any region (its smoke check refused it). The outcome rule (a shift search of plus or minus 10 voxels, band-pass sigmas 0.7 and 2.0, the reference read at level 1) was amended after development looks on regions already spent, before this freeze.
 
 Limits: one acquisition pair on one scroll. It measures CT against CT, not ink and not readability. PHerc0500P2's two scans are a near-identical recipe pair (a null pair), so there is no clean second scroll yet.
 
-Claim label: Sourced fact, for the frozen test's numbers above (a Measurement of the CT, CT against CT, results.json `sqrecipe_test_0332_20261030`); Interpretation, for any reading of why the binned 3.24 um acquisition keeps more sheet fidelity.
+Claim label: Model output, for the frozen test's numbers above (our own measurement of the CT, CT against CT, results.json `sqrecipe_test_0332_20261030`); Interpretation, for any reading of why the binned 3.24 um acquisition keeps more sheet fidelity.
 
 ## Commands and options
 

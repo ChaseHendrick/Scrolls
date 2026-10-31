@@ -6,7 +6,7 @@
 Reads RUN/zNNNNN.npz (from run_slices.py, slab3d.py or fitlabel.py), caches the truth per slice and reference set
 under --truth, and writes RUN/score.json. Metrics:
   on_winding  E0: the share of matched sheet pixels whose label minus true turn equals the slice's most common
-              offset (pooled over slices, weighted by matched labelled pixels)
+              offset (pooled over slices, weighted by matched labeled pixels)
   pair        share of random pairs of matched pixels (different turns) whose label difference is right
   step        radial samples with both ends matched: label difference equals turn difference
   switches    along each reference winding ordered by angle, changes of label minus turn
@@ -184,7 +184,7 @@ PX_MM = 0.009362          # PHerc0139 frame 20250728140407 voxel size, for switc
 
 
 def planted(L, th, turn_s, share=0.25):
-    """+1 on the sector theta' < phi holding `share` of the scored, labelled, matched pixels (calibrated control:
+    """+1 on the sector theta' < phi holding `share` of the scored, labeled, matched pixels (calibrated control:
     it must lower on_winding by at least 0.8 x share x the arm's on_winding)."""
     m = np.isfinite(L) & np.isfinite(turn_s)
     phi = float(np.quantile(th[m], share)) if m.any() else 0.0

@@ -1,6 +1,6 @@
 """Label a stack of m7 z-slices in one solve, with sheet continuity across z. Model output.
 
-Each slice keeps slicelab's pieces, continuity edges and radial edges. Pieces of neighbouring slices are joined
+Each slice keeps slicelab's pieces, continuity edges and radial edges. Pieces of neighboring slices are joined
 where their skeletons overlap: a skeleton pixel of slice j whose nearest skeleton pixel in slice j + 1 lies
 within `z_radius` px votes for that pair of pieces; a pair with at least `z_min` votes gets a continuity edge
 (label difference = the start-ray shift) costing c_z times the smaller of the two shares of the pieces' pixels
@@ -32,7 +32,7 @@ ZPARAMS = {"z_radius": 2.5, "z_min": 3, "c_z": 10.0}
 
 
 def zlinks(A, B, p):
-    """Continuity edges (piece of A, piece of B, shift, cost) between two neighbouring slices' geometries."""
+    """Continuity edges (piece of A, piece of B, shift, cost) between two neighboring slices' geometries."""
     tree = cKDTree(np.stack([B["xs"], B["ys"]], 1).astype(float))
     d, j = tree.query(np.stack([A["xs"], A["ys"]], 1).astype(float), distance_upper_bound=p["z_radius"])
     ok = np.isfinite(d)

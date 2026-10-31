@@ -12450,7 +12450,8 @@
    "processing_share": 0.942,
    "signflip": "5 of 200",
    "outcome_controls": "held",
-   "limits": "one acquisition pair on one scroll; it measures CT against CT, not ink and not readability; PHerc0500P2's two scans are a near-identical recipe pair (a null pair), so there is no clean second scroll yet"
+   "limits": "one acquisition pair on one scroll; it measures CT against CT, not ink and not readability; PHerc0500P2's two scans are a near-identical recipe pair (a null pair), so there is no clean second scroll yet",
+   "attempts": "second freeze; the first never read any region (its smoke check refused it); the outcome rule (shift search plus or minus 10 voxels, sigmas 0.7 and 2.0, reference at level 1) was amended after development looks on spent regions, before this freeze"
   }
  ],
  "offsetdiag_checks": [
@@ -12525,8 +12526,8 @@
    "controls": "planted, shift and jitter controls failed on all 41 slices, as they should",
    "references": "14 published PHerc0139 hand windings",
    "independent_rerun": "MATCH (a separate rerun of the frozen readout gave the same result)",
-   "metric": "on-winding E0: share of matched m7 sheet pixels whose label minus true turn equals the slice's most common offset, pooled weighted by matched labelled pixels",
-   "limits": "E0 counts m7 sheet pixels only; truth is hand windings on one scroll; it labels windings and does not trace a surface",
+   "metric": "on-winding E0: share of matched m7 sheet pixels whose label minus true turn equals the slice's most common offset, pooled weighted by matched labeled pixels",
+   "limits": "E0 counts m7 sheet pixels only; truth is hand windings on one scroll; it labels windings and does not trace a surface. On PHerc0332, m7 may have trained on that scroll's older scans or meshes, and earlier tests of ours had read the same band, so it is not fully held out there; PHerc0139 is held out by band only, since the settings and bars were set on development stacks of the same scroll. villa's spiral fit is not built to label every sheet of a slice and drifts by several turns, so the margin is over its default fit read this way, not over a tuned winding labeler.",
    "source": "docs/tools/ringleader.md#checks-and-controls",
    "date": "2026-10-30"
   },
@@ -12563,9 +12564,10 @@
    "villa_below_constant": "every villa seed scored below the constant labeling, so the margin over the constant labeling carries the claim",
    "independent_rerun": "MATCH (a separate rerun of the frozen readout gave the same result)",
    "later_tries": "Two later tries on other scrolls read VOID and would have missed their bars (on PHerc0172, 0.458 against 0.50), so it is claimed on two scrolls, not more",
-   "limits": "E0 counts m7 sheet pixels only; truth is one organizer mesh of about 3 turns; it labels windings and does not trace a surface",
+   "limits": "E0 counts m7 sheet pixels only; truth is one organizer mesh of about 3 turns; it labels windings and does not trace a surface. On PHerc0332, m7 may have trained on that scroll's older scans or meshes, and earlier tests of ours had read the same band, so it is not fully held out there; PHerc0139 is held out by band only, since the settings and bars were set on development stacks of the same scroll. villa's spiral fit is not built to label every sheet of a slice and drifts by several turns, so the margin is over its default fit read this way, not over a tuned winding labeler.",
    "source": "docs/tools/ringleader.md#checks-and-controls",
-   "date": "2026-10-30"
+   "date": "2026-10-30",
+   "slices_scored": 142
   }
  ]
 }

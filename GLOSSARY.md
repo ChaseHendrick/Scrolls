@@ -302,7 +302,7 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 ## O
 
-**On-winding E0**: Ringleader's main score: the share of matched sheet pixels (pixels of the surface prediction's skeleton within 4 voxels of a hand-traced winding) whose winding label minus true turn equals the slice's most common offset. One constant offset per slice is free, since labels are relative. Pooled over slices, weighted by matched labelled pixels. It counts only pixels the prediction marks as sheet ([page](docs/tools/ringleader.md#checks-and-controls)).
+**On-winding E0**: Ringleader's main score: the share of matched sheet pixels (pixels of the surface prediction's skeleton within 4 voxels of a hand-traced winding) whose winding label minus true turn equals the slice's most common offset. One constant offset per slice is free, since labels are relative. Pooled over slices, weighted by matched labeled pixels. It counts only pixels the prediction marks as sheet ([page](docs/tools/ringleader.md#checks-and-controls)).
 
 **one-sheet check (`kit.sheetgap`)**: A check that a traced surface stays on one sheet where sheets touch. At each mesh point it reads a surface prediction along the normal and passes only an isolated run no thicker than one sheet, with empty voxels on both sides; neighbors link only when their runs line up. Its blind spot is a prediction that draws two pressed sheets as one thin run ([`docs/tools/hopbench.md`](docs/tools/hopbench.md)).
 
