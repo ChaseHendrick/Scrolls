@@ -705,8 +705,9 @@ def head_theme(page, stored, search, parent=False):
     script = re.search(r"<script>\s*//[^\n]*Theme before first paint.*?</script>|<script>\s*// Follow the theme.*?</script>",
                        page, re.S).group(0)[len("<script>"):-len("</script>")]
     loc = json.dumps({"search": search})
+    own = json.dumps({"search": ""}) if parent else loc   # a srcdoc frame's own URL (about:srcdoc) has no query
     js = ("const vm = require('vm'); const ds = {}; const ctx = { document: { documentElement: { dataset: ds } }, "
-          f"localStorage: {{ getItem: () => {json.dumps(stored)} }}, URLSearchParams, location: {loc}"
+          f"localStorage: {{ getItem: () => {json.dumps(stored)} }}, URLSearchParams, location: {own}"
           + (f", parent: {{ location: {loc} }}" if parent else "") + " };"
           f" vm.runInNewContext({json.dumps(script)}, ctx); console.log(JSON.stringify(ds));")
     return json.loads(subprocess.run(["node", "-e", js], capture_output=True, text=True, check=True).stdout)
@@ -747,6 +748,11 @@ class ThemeTest(unittest.TestCase):
         dv = (spaces / "dinovol-embeddings" / "index.html").read_text()   # a static Space: Hugging Face passes no theme
         self.assertEqual(head_theme(dv, "dark", "")["theme"], "dark")
         self.assertLess(dv.index("Theme before first paint"), dv.index("</head>"))
+
+
+    def test_the_page_script_parses(self):
+        r = subprocess.run(["node", "--check", str(HERE / "static" / "app.js")], capture_output=True, text=True)
+        self.assertEqual(r.returncode, 0, r.stderr)
 
 
 class LicenseTest(unittest.TestCase):
