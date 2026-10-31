@@ -12425,5 +12425,149 @@
    "attempt": "attempt 2 at a second-scroll test (the first was never frozen, so no data was spent on it)",
    "limits": "one segment of one scroll, three readers, one of them a prediction whose file name says reverse; the edge pick was chosen on PHerc1667 data already used by the first test, after a disclosed amendment; margin and vote lifted as much or more, and no comparison between picks was a preregistered claim; errors are model calls against later labels, not label errors; whether labeling at these tiles saves a person's time is not tested; the organizers may have looked at these predictions while labeling version 2, and the latest predictions may have trained on interim version 2 labels (both untested); the test runner is not in this repository"
   }
+ ],
+ "sqrecipe_checks": [
+  {
+   "key": "sqrecipe_test_0332_20261030",
+   "date": "2026-10-30",
+   "tool": "scripts/sqrecipe/sqrecipe.py test (kit.sqrecipe, kit.sqfid)",
+   "source": "docs/tools/sqrecipe.md",
+   "label": "Measurement of the CT (frozen test, PHerc0332: DLS 7.910 um 53 keV 20231117143551 native against DLS 3.240 um 53 keV 20231027191953 level 1 resampled onto its grid, both scored against ESRF 2.399 um 78 keV 20251211183505 level 1)",
+   "question": "In fresh 128-voxel regions of PHerc0332's 7.910 um grid, does the DLS 3.240 um 53 keV acquisition, resampled onto that grid, keep more sheet fidelity against an independent ESRF 2.399 um scan than the native DLS 7.910 um 53 keV acquisition? Fidelity is band-passed normalized cross-correlation at the best integer shift (sqfid).",
+   "rule": "fixed before the read, read once: PASS when share(d > 0) and median d, d = F(B) - F(N), have 95 % cluster-bootstrap lower bounds above 0.5 and 0, the processing control holds (share(F(B) > F(N')) lower bound above 0.5) and the degradation control holds (median(F(Bdeg) - F(N)) at most half of median d); VOID under 60 regions or 10 clusters, or when the outcome control or border check of N or B, or the sign-flip control, fails",
+   "verdict": "PASS",
+   "regions": 120,
+   "primary_share": 0.925,
+   "primary_share_ci": [
+    0.872,
+    0.968
+   ],
+   "primary_median_d": 0.042,
+   "primary_median_ci": [
+    0.035,
+    0.055
+   ],
+   "processing_share": 0.942,
+   "signflip": "5 of 200",
+   "outcome_controls": "held",
+   "limits": "one acquisition pair on one scroll; it measures CT against CT, not ink and not readability; PHerc0500P2's two scans are a near-identical recipe pair (a null pair), so there is no clean second scroll yet",
+   "attempts": "second freeze; the first never read any region (its smoke check refused it); the outcome rule (shift search plus or minus 10 voxels, sigmas 0.7 and 2.0, reference at level 1) was amended after development looks on spent regions, before this freeze"
+  }
+ ],
+ "offsetdiag_checks": [
+  {
+   "key": "offsetdiag_dev_20261030",
+   "date": "2026-10-30",
+   "tool": "scripts/offsetdiag (ink offset diagnostic; code released under Apache-2.0)",
+   "source": "docs/logs/2026-10-30-ink-offset.md",
+   "label": "Model output",
+   "status": "development only, no frozen test",
+   "claim": "Model output: Reader V3 (domenicor046/reader-v3) at layers 6 to 23, hann, overlap 0.5, both directions, on PHerc0841 w00 and ag896 (9.366 um scan 20250821151531) inside the development scoring boxes of earlier ink rounds, with the surface moved along the published stack's normal (minus is toward layer 0); AUC inside the supervision mask with the reverse-depth control, as stored and texture registrations, arm minus our unshifted render R0 with a paired block bootstrap",
+   "gate": "before any shift, Reader V3 on the published boxes reproduced its earlier scores exactly",
+   "auc_loss_vs_R0": {
+    "minus_4": {
+     "w00": 0.07,
+     "ag896": 0.04
+    },
+    "plus_4": {
+     "w00": 0.02,
+     "ag896": 0.02,
+     "note": "not significant"
+    },
+    "minus_8": {
+     "w00": 0.25,
+     "ag896": 0.21
+    },
+    "plus_8": {
+     "w00": 0.16,
+     "ag896": 0.12
+    }
+   },
+   "toward_layer_0_cost_ratio": [
+    1.5,
+    4.1
+   ],
+   "snap_to_lasagna_sheet_center": {
+    "auc_loss": [
+     0.03,
+     0.08
+    ],
+    "beat_same_size_controls": true,
+    "controls": "ANTI (same moves, other way) and RAND (field turned 180 degrees)"
+   },
+   "second_smaller_model": "a smaller ink model of ours (not released) lost less per shift; Reader V3 stayed above it at every shift, smallest gap 0.03",
+   "renderer_effect": {
+    "w00": 0.007,
+    "ag896": -0.009,
+    "note": "our render at offset 0 against the published surface volume, Reader V3"
+   },
+   "limits": "development only; two segments of one scroll; one main model; both segments already used in earlier development; not a test, no level claimed"
+  }
+ ],
+ "ringleader_checks": [
+  {
+   "key": "ringleader_test2_20261030",
+   "about": "Ringleader v1 (slicelab.PARAMS with V1, slab3d.ZPARAMS) 3D winding labels on m7 sheet pixels of held-out PHerc0139 z 3,240 to 3,400 (frame 20250728140407, 41 slices every 4th, in two stacks), scored by on-winding E0 against 14 published hand windings, beside villa's spiral fit at its default settings (villa commit e2254ebe, seeds 1 to 3) read one label per Ringleader piece; rule and bars frozen before the read; read once",
+   "label": "Model output",
+   "verdict": "PASS",
+   "rule": "PASS when Ringleader's pooled E0 is at least 0.85, Ringleader minus the villa fit's E0 is at least 0.40 at every seed, and Ringleader's planted, shift and jitter controls behave on every slice",
+   "slices": 41,
+   "e0_ringleader": 0.902,
+   "bar_e0": 0.85,
+   "villa_fit_e0_range": [
+    0.149,
+    0.179
+   ],
+   "margins": [
+    0.72,
+    0.75
+   ],
+   "bar_margin": 0.4,
+   "controls": "planted, shift and jitter controls failed on all 41 slices, as they should",
+   "references": "14 published PHerc0139 hand windings",
+   "independent_rerun": "MATCH (a separate rerun of the frozen readout gave the same result)",
+   "metric": "on-winding E0: share of matched m7 sheet pixels whose label minus true turn equals the slice's most common offset, pooled weighted by matched labeled pixels",
+   "limits": "E0 counts m7 sheet pixels only; truth is hand windings on one scroll; it labels windings and does not trace a surface. On PHerc0332, m7 may have trained on that scroll's older scans or meshes, and earlier tests of ours had read the same band, so it is not fully held out there; PHerc0139 is held out by band only, since the settings and bars were set on development stacks of the same scroll. villa's spiral fit is not built to label every sheet of a slice and drifts by several turns, so the margin is over its default fit read this way, not over a tuned winding labeler.",
+   "source": "docs/tools/ringleader.md#checks-and-controls",
+   "date": "2026-10-30"
+  },
+  {
+   "key": "ringleader_0332_l4_20261030",
+   "about": "Ringleader v1 3D winding labels (as in ringleader_test2_20261030) on m7 sheet pixels of PHerc0332 scan 20251211183505 z 3,760 to 4,340 (146 slices every 4th, in seven stacks), scored by on-winding E0 against organizer mesh m0828 (about 3 turns) placed by the catalog transform alone, beside villa's spiral fit at its default settings (villa commit e2254ebe, seeds 1 to 3) read per piece, a constant labeling and two negative labelings made from Ringleader's; read once",
+   "label": "Model output",
+   "verdict": "PASS",
+   "rule": "PASS when Ringleader's pooled E0 is at least the larger of 0.50 and the constant labeling plus 0.15, Ringleader beats each villa seed and the constant labeling by at least 0.15, its controls pass and both negative labelings fail",
+   "slices": 146,
+   "stacks": 7,
+   "e0_ringleader": 0.659,
+   "bar_e0": 0.595,
+   "villa_fit_e0_range": [
+    0.349,
+    0.398
+   ],
+   "villa_margins": [
+    0.26,
+    0.31
+   ],
+   "constant_e0": 0.445,
+   "constant_margin": 0.21,
+   "negatives": {
+    "permutation": {
+     "e0": 0.302,
+     "verdict": "FAIL"
+    },
+    "sector_swap": {
+     "e0": 0.5,
+     "verdict": "FAIL"
+    }
+   },
+   "villa_below_constant": "every villa seed scored below the constant labeling, so the margin over the constant labeling carries the claim",
+   "independent_rerun": "MATCH (a separate rerun of the frozen readout gave the same result)",
+   "later_tries": "Two later tries on other scrolls read VOID and would have missed their bars (on PHerc0172, 0.458 against 0.50), so it is claimed on two scrolls, not more",
+   "limits": "E0 counts m7 sheet pixels only; truth is one organizer mesh of about 3 turns; it labels windings and does not trace a surface. On PHerc0332, m7 may have trained on that scroll's older scans or meshes, and earlier tests of ours had read the same band, so it is not fully held out there; PHerc0139 is held out by band only, since the settings and bars were set on development stacks of the same scroll. villa's spiral fit is not built to label every sheet of a slice and drifts by several turns, so the margin is over its default fit read this way, not over a tuned winding labeler.",
+   "source": "docs/tools/ringleader.md#checks-and-controls",
+   "date": "2026-10-30",
+   "slices_scored": 142
+  }
  ]
 }

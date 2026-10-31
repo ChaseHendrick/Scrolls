@@ -8,6 +8,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **absorption contrast**: Image contrast that comes from how strongly different materials absorb X-rays.
 
+**acquisition recipe**: The settings a CT scan was taken with: voxel size, beam energy, propagation distance and the like. Two scans of one scroll with different recipes can show its sheets differently; `sqrecipe` compares them region by region ([page](docs/tools/sqrecipe.md)).
+
 **active learning**: Choosing which regions a person labels next so each label helps the model most, usually where the current models are least sure. The organizers list it under label quality in their open problems; `kit labelsuggest` is one such pick for ink labels.
 
 **affine (cross-scan affine)**: A linear transform plus a shift that maps coordinates in one scan of a scroll to coordinates in another scan of the same scroll. The catalog publishes these, fitted from landmarks; `kit meshaudit transforms` refits them.
@@ -17,6 +19,10 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 **AppImage**: A single-file Linux application package. villa releases VC3D as one; `kit vc3d` can run VC3D through it.
 
 **Apple Silicon**: Apple's own Mac processors (M1 and later). VC3D, rendering and flattening run natively on them; see [`docs/mac.md`](docs/mac.md).
+
+**arm (offset diagnostic)**: One 28-layer stack the ink offset diagnostic maps: P0 the published surface volume's box, R0 our render at the published offsets, Rm8, Rm4, Rp4, Rp8 constant shifts along the normal (m toward layer 0, p toward layer 27), SNAP each pixel moved to villa's lasagna sheet center, ANTI and RAND its same-size controls ([page](docs/tools/offsetdiag.md))
+
+**arm (sqrecipe)**: One acquisition put on the coarse scan's grid in a paired comparison: the native arm N is the coarse scan itself, a finer arm (B) is read at a coarser level and resampled through the catalog transform. Controls add N' (N sent through B's resampling chain) and Bdeg (B blurred and noised to N's noise level).
 
 **At a glance table**: The two-column table at the top of every tool page in `docs/tools/` (Id, Status, Kind, Area, Run, Code, Tests, Needs, Runs on, Network, Writes, Go-ahead, Released, Checked). An agent reads it first. See [`docs/TOOL-DOCS.md`](docs/TOOL-DOCS.md).
 
@@ -278,6 +284,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 ## N
 
+**n_pub**: The normal of a published surface volume: layer j of its 28 layers sits at offset j - 13.5 voxels along it ([page](docs/tools/offsetdiag.md))
+
 **neighbor-sheet test (`kit sheetcheck`)**: A label-free check that an ink map reads the traced sheet: the same model is read one and two sheet pitches (wrap pitches) away along the mesh normals, and the map there must not correlate with the map on the sheet at 0.5 or more after slow shading is removed. A pass is necessary, not sufficient: a map with no ink signal passes too ([`docs/tools/sheetcheck.md`](docs/tools/sheetcheck.md)).
 
 **Neuroglancer**: An external browser viewer for multidimensional image volumes. `kit volumeview` creates a local viewer link from explicitly declared public grid metadata; it does not verify the remote volume or its registration.
@@ -286,11 +294,15 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **normal**: A direction perpendicular to a surface. A normal grid is a published 3D field of such directions that tracing uses.
 
+**null pair**: Two acquisitions of one scroll whose recipes are so close that no difference is expected, such as PHerc0500P2's 9.362 um scan (a 4.681 um acquisition binned by 2) and its 4.317 um scan. A null pair checks a comparison, but it is not a second test of a recipe difference.
+
 **null result**: A run that found no signal. Several teams have published nulls from running the released 9 µm ink models on eligible scrolls.
 
 **NumPy**: The standard Python library for numerical arrays. Several released tools need only NumPy to run.
 
 ## O
+
+**On-winding E0**: Ringleader's main score: the share of matched sheet pixels (pixels of the surface prediction's skeleton within 4 voxels of a hand-traced winding) whose winding label minus true turn equals the slice's most common offset. One constant offset per slice is free, since labels are relative. Pooled over slices, weighted by matched labeled pixels. It counts only pixels the prediction marks as sheet ([page](docs/tools/ringleader.md#checks-and-controls)).
 
 **one-sheet check (`kit.sheetgap`)**: A check that a traced surface stays on one sheet where sheets touch. At each mesh point it reads a surface prediction along the normal and passes only an isolated run no thicker than one sheet, with empty voxels on both sides; neighbors link only when their runs line up. Its blind spot is a prediction that draws two pressed sheets as one thin run ([`docs/tools/hopbench.md`](docs/tools/hopbench.md)).
 
@@ -358,6 +370,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **reverse-depth map**: An ink map made from the same surface volume with its layers in reverse order. It is the required control for an ink AUC: real ink signal should depend on the true depth order.
 
+**Ringleader**: Our winding labeler: it thins a binary surface prediction (such as m7) in a z-slice to a skeleton, cuts it into pieces and gives every piece its turn number about the umbilicus in one convex solve (phase unwrapping, solved exactly as a minimum-cost flow), alone or for a stack of slices; with a scorer against published hand windings. Code in `scripts/ringleader/`, Apache-2.0 (31 October 2026); v1 is the version frozen for its two tests of 30 October 2026. Model output, not a reading ([page](docs/tools/ringleader.md)).
+
 **ROC curve**: A plot of true positive rate against false positive rate over all thresholds. AUC is the area under it.
 
 **ROCm**: AMD's GPU computing stack, the counterpart of NVIDIA's CUDA. PyTorch has ROCm builds that run CUDA code through `torch.cuda`; `kit doctor` reports a ROCm card as a warning, because villa's spiral fitting asks for an NVIDIA GPU.
@@ -396,6 +410,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **SHA-256**: A hash function. A file's SHA-256 is checked to prove that downloaded weights or evidence are exactly the published ones.
 
+**sheet fidelity**: How much of the sheet pattern a finer, independent scan shows in a region a cube keeps there: the normalized cross-correlation of the two cubes on one grid after a band-pass to the sheet band, at the best integer shift within a few voxels (`kit.sqfid`). A Measurement of the CT, not of ink or readability ([page](docs/tools/sqrecipe.md)).
+
 **single-mesh layer**: Neuroglancer's layer type `mesh` for one triangle mesh read from a file (`vtk://` ASCII VTK or `obj://`), which can carry a value per vertex that the layer's shader colors. `kit sheetview` writes one with a volume sampled onto a segment ([`docs/tools/sheetview.md`](docs/tools/sheetview.md)).
 
 **sheet switch**: A tracing error in which a mesh jumps from one turn of papyrus to another.
@@ -407,6 +423,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 **spiral fit**: Fitting one deformed spiral to the whole rolled papyrus of a scroll.
 
 **split rule (windlabel)**: The fixed rule `kit windlabel-box` uses to cut a chain: every step whose grad_mag integral, scaled by 0.765 so one sheet reads about 1, is above 0.95 is cut, so each piece claims only counts the grad_mag agrees with. Digest `c6d2eecbebc2`.
+
+**sqrecipe**: `scripts/sqrecipe/sqrecipe.py` with `kit.sqrecipe` and `kit.sqfid`, which compares two CT acquisitions of one scroll by their sheet fidelity against a finer reference scan in the same 128-voxel regions, with controls that can fail ([page](docs/tools/sqrecipe.md)).
 
 **stage registry (`kit stages`)**: The one list of every option for each stage of reading a scroll (tracer, surface model, lasagna field, flatten, render, 2.5D or 3D ink reader, letter reader and others), with origin, license and maturity; workflows pick from it with `--use STAGE=NAME` or `KIT_STAGE_<STAGE>` instead of hard-coding a tool ([page](docs/tools/stagereg.md)).
 

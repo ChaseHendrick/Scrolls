@@ -114,7 +114,7 @@
       "line": "Command-line tools, benchmarks and script folders that run from a clone of this repository.",
       "area": "Releases and repository",
       "page": "docs/tools/cli.md",
-      "released": "2026-10-30",
+      "released": "2026-10-31",
       "summary": "Command-line tools, benchmarks and script folders that run from a clone of this repository. Each line gives the tool's release date, its weights where it has them, one command to start with, its tool page and its evidence; each page lists the tool's own needs. Their outputs are model output or geometry measurements for a person to check, not readings.",
       "commands": [
         "git clone --depth 1 https://github.com/ChaseHendrick/Scrolls.git",
@@ -760,6 +760,29 @@
           "page": "docs/tools/labelsuggest.md",
           "evidence": "[results](docs/results.json)",
           "line": "Ranks tiles by where readers' ink maps disagree, so a person labels there first; beat random tiles on two scrolls, not shown to beat simple picks."
+        },
+        {
+          "id": "sqrecipe",
+          "name": "Acquisition recipe fidelity against a finer reference scan",
+          "area": "Scoring and controls",
+          "released": "2026-10-31",
+          "summary": "Puts two CT acquisitions of one scroll on the coarse grid and, in the same 128-voxel regions, measures which keeps more sheet fidelity (band-passed NCC at the best shift, kit.sqfid) against an independent finer scan, with processing, degradation, sign-flip and mismatched-pair controls. In a frozen test on 120 fresh PHerc0332 regions, the DLS 3.240 um 53 keV scan resampled onto the 7.910 um grid won in 0.925 of regions (95 % interval 0.872 to 0.968), median gain 0.042. One acquisition pair on one scroll; CT against CT, not ink or readability.",
+          "command": "python3 scripts/sqrecipe/sqrecipe.py measure --pool POOL.json --out ROWS.json",
+          "page": "docs/tools/sqrecipe.md",
+          "evidence": "[results](docs/results.json)",
+          "line": "Compares two CT acquisitions of one scroll region by region against a finer reference scan; one frozen PASS on PHerc0332, CT against CT."
+        },
+        {
+          "id": "offsetdiag",
+          "name": "Ink offset diagnostic (AUC against surface offsets along the normal)",
+          "line": "Measures how much an ink model's AUC changes when a segment's surface moves along its normal, and tests a lasagna sheet-center snap against same-size controls.",
+          "area": "Scoring and controls",
+          "released": "2026-10-31",
+          "version": "offsetdiag 1.0.0",
+          "summary": "Renders a labeled segment box from the scan along its mesh normals, cuts 28-layer stacks at constant shifts and at villa's lasagna sheet center with two same-size controls, maps them with villa's own ink inference in both depth directions (any CUDA machine or a Hugging Face Job you own) and scores each with its reverse-depth control and its paired difference to the unshifted render. On two PHerc0841 development segments, Reader V3 lost 0.07 and 0.04 AUC at 4 voxels toward layer 0 and 0.25 and 0.21 at 8, more than the same moves the other way; snapping to the sheet center cost 0.03 to 0.08 but beat its controls (Model output, 30 Oct 2026, development only, not a test).",
+          "command": "python3 scripts/offsetdiag/offsetdiag.py fetch 0841-w00 --work WORK",
+          "page": "docs/tools/offsetdiag.md",
+          "evidence": "[log](docs/logs/2026-10-30-ink-offset.md), [results](docs/results.json)"
         }
       ],
       "where": "main"
@@ -965,6 +988,22 @@
       "released": "2026-10-29",
       "summary": "[Vesuvius Radar](https://huggingface.co/spaces/SharpMeow/vesuvius-radar) reads arXiv, GitHub (including ScrollPrize/villa pull requests, issues and releases), Hugging Face, PyPI, Zenodo, Crossref journals, the Vesuvius Challenge blog and news searches (Google News, Bing News, Hacker News) on a schedule, keeps 30 days, and scores every item from 0 to 100 by keywords, with a term-by-term breakdown, and by meaning, with a small sentence-embedding model (BAAI/bge-small-en-v1.5) on CPU. Status: released. Version: 1.2.1. Pick any lookback from 1 minute to 30 days, by publish date or by when the radar found an item, and a view for researchers, the Challenge team, or contributors; the page has charts, a per-topic briefing, search by meaning and \"more like this\"; a villa issue or pull request card names who made its latest comment, review or change and what it said, beside who opened it; the filters you set, the minimum score among them, stay where you put them. Everything is open as JSON, CSV, RSS and an MCP server with nine tools, with no key or login, and it uses no GPU quota. License: Apache 2.0 for the code; item text and links belong to their sources. A score is a triage aid, not a judgment of the work.",
       "details": "Opens at [huggingface.co/spaces/SharpMeow/vesuvius-radar](https://huggingface.co/spaces/SharpMeow/vesuvius-radar). Source: [`spaces/vesuvius-radar/`](spaces/vesuvius-radar/); page: [`docs/tools/vesuvius-radar.md`](docs/tools/vesuvius-radar.md). API: `https://sharpmeow-vesuvius-radar.hf.space/api/items?since=1d`; MCP: `https://sharpmeow-vesuvius-radar.hf.space/mcp`.",
+      "where": "main"
+    },
+    {
+      "id": "ringleader",
+      "title": "Ringleader (winding labels for every sheet in a z-slice, in one solve)",
+      "line": "Labels every m7 sheet pixel of a z-slice or stack with its winding in one convex solve, scored against hand windings with controls.",
+      "area": "Surfaces and tracing",
+      "page": "docs/tools/ringleader.md",
+      "released": "2026-10-31",
+      "summary": "Ringleader thins the sheets of a published binary surface prediction (such as the organizers' m7) in a z-slice to a skeleton, cuts it into pieces, and gives every piece its turn number in one convex solve (phase unwrapping about the umbilicus, solved exactly as a minimum-cost flow), instead of counting step by step along chains; a stack of slices is solved as one problem. A scorer compares any per-pixel winding labeling with published hand windings by on-winding E0, with planted, shift and jitter controls that must fail. In two frozen tests, each read once (Model output, 30 October 2026): on held-out PHerc0139 z 3,240 to 3,400 (41 slices) E0 was 0.902 (bar 0.85) against 0.149 to 0.179 for villa's spiral fit at its default settings; on PHerc0332 z 3,760 to 4,340 (146 slices) against organizer mesh m0828 it was 0.659 (bar 0.595) against 0.349 to 0.398 for villa's fit and 0.445 for a constant labeling. Two later tries on other scrolls read VOID and would have missed their bars, so it is claimed on two scrolls. Limits: E0 counts m7 sheet pixels only; it labels windings and does not trace a surface. Code only, Apache 2.0. Model output, not a reading.",
+      "commands": [
+        "python3 scripts/ringleader/m7slices.py work/ringleader/m7 --z 3000 3004",
+        "python3 scripts/ringleader/slab3d.py --z 3000 3004 --out work/ringleader/stack3000",
+        "python3 scripts/ringleader/score.py work/ringleader/stack3000"
+      ],
+      "details": "Page: [docs/tools/ringleader.md](docs/tools/ringleader.md); evidence: [finding 24](docs/FINDINGS.md). Reads PHerc0139's m7 surface prediction and umbilicus from the Vesuvius Challenge open data (CC BY-NC 4.0), live, and the hand windings through `python -m kit hopbench refs`. `fitlabel.py` reads a villa spiral fit checkpoint in villa's Python. Code Apache 2.0.",
       "where": "main"
     },
     {

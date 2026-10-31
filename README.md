@@ -31,6 +31,7 @@ Every released tool, one line each; each name opens its guide. Generated from [`
 | --- | --- |
 | [AutoPipeline](docs/tools/autopipeline.md) | Runs villa's VC3D tools and ink detection on a released scan, from surface checks to ink maps scored with controls (package, 0.1.11). |
 | [Unroll (interactive 3D scroll viewer)](docs/tools/unroll.md) | Virtually unrolls scroll scans in 3D in your browser, with ink layers, CT tools and an Ink Bench for comparing ink models (Space). |
+| [Ringleader (winding labels for every sheet in a z-slice, in one solve)](docs/tools/ringleader.md) | Labels every m7 sheet pixel of a z-slice or stack with its winding in one convex solve, scored against hand windings with controls. |
 | [Parting (same layer or next layer where two papyrus layers touch)](docs/tools/parting.md) | Scores whether a point where two papyrus layers touch lies on the same layer or the next, against base dinovol's cosine; code and model file. |
 | [Vesuvius Radar (new papers, code and data for the scrolls)](docs/tools/vesuvius-radar.md) | New papers, code, models and data that could help read the scrolls, from public sources around the clock, scored, with an API and MCP (Space). |
 | [Crackle Check (is there ink crackle in this patch?)](docs/tools/crackle-check.md) | Asks one ink model whether a small patch of a segment shows ink crackle, with the reversed layer order as its control (Space, API and MCP). |
@@ -113,14 +114,16 @@ Command-line tools, benchmarks and script folders that run from a clone of this 
 </details>
 
 <details>
-<summary><b>Scoring and controls</b> (10)</summary>
+<summary><b>Scoring and controls</b> (12)</summary>
 
 | Tool | What it does |
 | --- | --- |
+| [Acquisition recipe fidelity against a finer reference scan](docs/tools/sqrecipe.md) | Compares two CT acquisitions of one scroll region by region against a finer reference scan; one frozen PASS on PHerc0332, CT against CT. |
 | [Controlled benchmark gate](docs/tools/gate.md) | Checks recorded benchmark scores against the declared pass rules and required controls. |
 | [Controlled ink AUC scoring](docs/tools/auc.md) | Scores an ink map against labeled ink and background inside a supervision mask, alongside a reverse-depth control. |
 | [Ink map agreement check](docs/tools/verify.md) | Checks whether two ink maps of the same input agree while requiring a deliberately different control to fail. |
 | [Ink map self-check (neighbor-sheet test)](docs/tools/sheetcheck.md) | Checks without labels whether an ink map reads the traced sheet, comparing it with the same model one and two sheets away. |
+| [Ink offset diagnostic (AUC against surface offsets along the normal)](docs/tools/offsetdiag.md) | Measures how much an ink model's AUC changes when a segment's surface moves along its normal, and tests a lasagna sheet-center snap against same-size controls. |
 | [Letter-scale ink score](docs/tools/hpscore.md) | Compares an ink map with published labels after removing broad brightness changes, with displaced-label and reverse-depth controls. |
 | [Research integrity checks for Vesuvius claims](docs/tools/integrity.md) | Checks a claim before it goes out: controls on the same pixels, held-out status, number sources, preregistration and wording. |
 | [Seam-aware winding switches](docs/tools/seamswitch.md) | Counts how often a spiral fit puts touching vertices of one traced sheet on different windings, allowing for the fit's seam. |
@@ -267,6 +270,7 @@ Every command is in [`docs/tools/cli.md`](docs/tools/cli.md), and every tool has
 21. **windlabel-box's automatic relative windings passed a held-out test on a third scroll and were slightly more often right than two community winding tools** (0.955 of 32,411 judged steps on fresh PHerc0172 boxes, against 0.944 for constraint-gauge's E1 on the same steps and 0.934 for winding-phase at matched coverage, leads with lower bounds +0.009 and +0.005; rules fixed before any box had a prediction; 29 October 2026, model output against the published hand windings).
 22. **labelsnap moved published surface labels closer to the papyrus recto face than the published labels and seven community snaps** (mean +2.153 voxels closer than the published label, +1.892 closer than VC3D's `vc_objrefine` tuned on PHerc0139, 71 fresh PHerc0814 and PHerc0841 sites scored against a finer scan; within 1 voxel 55 to 66 % against 19 %; finesnap, on a finer registered scan, 85 % on PHerc0814 and 91 % on PHerc0139; 25 to 29 October 2026, model output; geometry, not a reading).
 23. **Parting, a contact classifier on base dinovol features, told same-layer from next-layer points at touching layers better than dinovol alone on a fragment it never saw** (AUC 0.895 against 0.839, gain +0.056 with bound +0.037, 150 sites over 5 layer pairs of PHercParis1Fr34; one pass in three fragments: misses on a PHerc1667 fragment, +0.045 against a bar of +0.05, and on a PHerc. Paris 2 fragment, +0.010, where dinovol alone scored 0.965; little gain where layers are fused; rule frozen before any of the test's 3D CT was read; 29 October 2026, model output; code released under Apache-2.0, model file on Hugging Face as SharpMeow/parting-v1: [tool page](docs/tools/parting.md)).
+24. **Ringleader labeled every m7 sheet pixel of held-out PHerc0139 slices with its winding far more often right than villa's spiral fit at its defaults, and passed a second scroll** (on-winding E0 0.902 against 0.149 to 0.179 on 41 slices at z 3,240 to 3,400, bar 0.85; on PHerc0332 0.659 against 0.349 to 0.398 for the fit and 0.445 for a constant labeling, bar 0.595, against one organizer mesh; two later tries on other scrolls read VOID, so claimed on two scrolls; PHerc0139 held out by band only, PHerc0332 not fully held out (m7 may have trained on it), and the margin is over villa's default fit, which is not built to label every sheet; rules frozen before the read, each read once; 30 October 2026, model output; code released under Apache-2.0: [tool page](docs/tools/ringleader.md)).
 
 **Pipeline and reader checks** ([details](docs/FINDINGS.md#pipeline-and-reader-checks))
 

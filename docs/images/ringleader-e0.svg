@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 380" width="960" height="380" role="img" aria-labelledby="t d">
+<title id="t">Ringleader on-winding E0 in two frozen tests</title>
+<desc id="d">On-winding E0 (share of m7 sheet pixels on the right winding, up to one offset per slice). PHerc0139 held out: Ringleader 0.902 against a 0.85 bar; villa spiral fit at defaults 0.149 to 0.179 over three seeds. PHerc0332: Ringleader 0.659 against a 0.595 bar; villa spiral fit 0.349 to 0.398; a constant labeling 0.445. Model output.</desc>
+<style>svg{font-family:system-ui,-apple-system,'Segoe UI',sans-serif}.bg{fill:#fcfcfb}.t1{fill:#0b0b0b}.t2{fill:#52514e}.grid{stroke:#e4e3df}.axis{stroke:#9c9a94}.s0{fill:#2a78d6}.s1{fill:#eb6834}.s2{fill:#8a8984}.r1{fill:#eb6834;fill-opacity:.35}.barl{stroke:#0b0b0b;stroke-width:1.5;stroke-dasharray:5 4}@media (prefers-color-scheme:dark){.bg{fill:#1a1a19}.t1{fill:#f0efec}.t2{fill:#c3c2b7}.grid{stroke:#383835}.axis{stroke:#6b6a64}.s0{fill:#3987e5}.s1{fill:#d95926}.s2{fill:#9c9a94}.r1{fill:#d95926;fill-opacity:.35}.barl{stroke:#f0efec}}</style>
+<rect class="bg" width="960" height="380" rx="8"/>
+<line class="grid" x1="300.0" y1="78" x2="300.0" y2="318"/>
+<text class="t2" x="300.0" y="334" font-size="12" text-anchor="middle">0</text>
+<line class="grid" x1="450.0" y1="78" x2="450.0" y2="318"/>
+<text class="t2" x="450.0" y="334" font-size="12" text-anchor="middle">0.25</text>
+<line class="grid" x1="600.0" y1="78" x2="600.0" y2="318"/>
+<text class="t2" x="600.0" y="334" font-size="12" text-anchor="middle">0.5</text>
+<line class="grid" x1="750.0" y1="78" x2="750.0" y2="318"/>
+<text class="t2" x="750.0" y="334" font-size="12" text-anchor="middle">0.75</text>
+<line class="grid" x1="900.0" y1="78" x2="900.0" y2="318"/>
+<text class="t2" x="900.0" y="334" font-size="12" text-anchor="middle">1</text>
+<line class="axis" x1="300" y1="318" x2="900" y2="318"/>
+<text class="t1" x="24" y="34" font-size="18" font-weight="600">Ringleader: on-winding E0 in two frozen tests, each read once</text>
+<text class="t2" x="24" y="56" font-size="13">Share of m7 sheet pixels on the right winding (one offset per slice). Model output, 30 Oct 2026. Dashed line: the test's bar.</text>
+<text class="t1" x="24" y="92" font-size="14" font-weight="600">PHerc0139, held-out z 3,240 to 3,400 (41 slices), 14 hand windings</text>
+<text class="t2" x="290" y="123" font-size="13" text-anchor="end">Ringleader</text>
+<rect class="s0" x="300" y="110" width="541.2" height="18" rx="2"/>
+<text class="t1" x="847.2" y="124" font-size="13">0.902</text>
+<text class="t2" x="290" y="151" font-size="13" text-anchor="end">villa spiral fit, defaults (3 seeds)</text>
+<rect class="s1" x="300" y="138" width="89.4" height="18" rx="2"/>
+<rect class="r1" x="389.4" y="138" width="18.0" height="18"/>
+<text class="t1" x="413.4" y="152" font-size="13">0.149 to 0.179</text>
+<line class="barl" x1="810.0" y1="106" x2="810.0" y2="164"/>
+<text class="t2" x="814.0" y="104" font-size="12">bar 0.85</text>
+<text class="t1" x="24" y="196" font-size="14" font-weight="600">PHerc0332, z 3,760 to 4,340 (146 slices, 142 scored), organizer mesh m0828</text>
+<text class="t2" x="290" y="227" font-size="13" text-anchor="end">Ringleader</text>
+<rect class="s0" x="300" y="214" width="395.4" height="18" rx="2"/>
+<text class="t1" x="701.4" y="228" font-size="13">0.659</text>
+<text class="t2" x="290" y="255" font-size="13" text-anchor="end">villa spiral fit, defaults (3 seeds)</text>
+<rect class="s1" x="300" y="242" width="209.4" height="18" rx="2"/>
+<rect class="r1" x="509.4" y="242" width="29.4" height="18"/>
+<text class="t1" x="544.8" y="256" font-size="13">0.349 to 0.398</text>
+<text class="t2" x="290" y="283" font-size="13" text-anchor="end">Constant labeling (one winding)</text>
+<rect class="s2" x="300" y="270" width="267.0" height="18" rx="2"/>
+<text class="t1" x="573.0" y="284" font-size="13">0.445</text>
+<line class="barl" x1="657.0" y1="210" x2="657.0" y2="296"/>
+<text class="t2" x="661.0" y="208" font-size="12">bar 0.595</text>
+<text class="t2" x="24" y="364" font-size="12">villa spiral fit: villa commit e2254ebe at its default settings, seeds 1 to 3, read one label per Ringleader piece. Sources: docs/results.json.</text>
+</svg>
