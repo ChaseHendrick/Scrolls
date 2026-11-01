@@ -79,6 +79,36 @@ class LabelSnapCoreTest(unittest.TestCase):
             self.assertEqual(r["report"]["abstained"]["touching neighbor"], LADDER_W * r["reason"].shape[0])
             self.assertEqual(r["opts"]["min_gap"], 2.0)
 
+    def test_min_gap_excludes_filled_holes_from_smoothing(self):
+        class Profiles:
+            def trilinear(self, points):
+                # One close neighbor only in the middle column, with different
+                # recto offsets on each side so filling it would alter smoothing.
+                x, _, z = np.asarray(points).T
+                lo = np.where(x < 2, 26.0, np.where(x > 2, 30.0, 28.0))
+                bright = (z >= lo) & (z < lo + 6)
+                bright |= (x == 2) & (z >= 20.25) & (z < 26.25)
+                return np.where(bright, 200.0, 20.0)
+
+        xs, ys, zs = plane_mesh(5, 5, 30.4, step=1.0, x0=0.0, y0=0.0)
+        r = L.label_snap(xs, ys, zs, np.ones(xs.shape, bool), Profiles(),
+                         recto_sign=1, extra_opts={"min_gap": 2.0, "sigma": 1.0})
+        excluded = np.zeros(xs.shape, bool)
+        excluded[:, 2] = True
+        np.testing.assert_array_equal(r["reason"] == 10, excluded)
+        self.assertTrue(np.isfinite(r["detail"]["measured"][~excluded]).all())
+        # Every hole is excluded, so smoothing must use measured offsets only.
+        expected = snap.normconv(r["detail"]["measured"], 1.0)
+        np.testing.assert_allclose(r["D3"][~excluded], expected[~excluded], atol=1e-6)
+        np.testing.assert_array_equal(r["zs"][excluded], zs[excluded])
+        np.testing.assert_allclose(r["zs"][~excluded], (zs + expected)[~excluded], atol=2e-6)
+        self.assertFalse(r["apply"][excluded].any())
+        self.assertTrue(np.isnan(r["D3"][excluded]).all())
+        self.assertEqual(r["opts"]["sigma"], 1.0)
+        self.assertAlmostEqual(r["report"]["median_abs_off"],
+                               float(np.median(np.abs(r["D3"][r["apply"]]))))
+        self.assertEqual(r["record"]["median_abs_off"], r["report"]["median_abs_off"])
+
     def test_default_has_no_merged_band_rule(self):
         self.assertFalse(L.DEFAULTS["merged"])
         self.assertNotIn("max_thick_ratio", L.face_opts())

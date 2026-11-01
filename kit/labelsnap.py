@@ -105,6 +105,37 @@ def confidence(detail, measured_mask):
     return out.astype(np.float32)
 
 
+def _smooth_without_gap_vertices(res, xs, ys, zs, normals, ok, opts):
+    """Rebuild smoothing from accepted measurements without filling gap-rejected holes."""
+    np = _np()
+    sigma = float(opts.get("sigma", S.FACE_SNAP_DEFAULTS["sigma"]))
+    excluded = res["detail"]["reason"] == 10
+    if sigma <= 0 or not excluded.any():
+        return
+    # snap_face already applied contrast, thickness, support and jump rejection.
+    measured = res["detail"]["measured"]
+    filled = S.normconv(measured, max(sigma, 1.0))
+    field = np.where(np.isfinite(measured), measured, filled)
+    field[excluded] = np.nan
+    field = S.normconv(field, sigma)
+    field[excluded] = np.nan
+    limit = float(res["record"]["max_move"])
+    res["D3"] = np.clip(field, -limit, limit)
+    min_support = int(opts.get("min_support", S.FACE_SNAP_DEFAULTS["min_support"]))
+    supported = np.isfinite(measured) | (S._finite_count(measured, 5) >= min_support)
+    apply = ok & np.isfinite(res["D3"]) & np.isfinite(filled) & supported & ~excluded
+    res["apply"] = apply
+    for axis, (key, original) in enumerate(zip(("xs", "ys", "zs"), (xs, ys, zs))):
+        res[key] = original.copy()
+        res[key][apply] += res["D3"][apply] * normals[apply][:, axis]
+    moved = np.abs(res["D3"][apply])
+    res["report"]["frac_snapped"] = float(apply.sum() / max(1, int(res["valid"].sum())))
+    res["report"]["median_abs_off"] = float(np.median(moved)) if moved.size else None
+    res["report"]["p90_abs_off"] = float(np.percentile(moved, 90)) if moved.size else None
+    for key in ("frac_snapped", "median_abs_off"):
+        res["record"][key] = res["report"][key]
+
+
 def label_snap(xs, ys, zs, valid, sampler, axis=None, recto_sign=None, target="recto", merged=DEFAULTS["merged"],
                face_sigma=DEFAULTS["face_sigma"], extra_opts=None, batch=S.DEFAULT_BATCH):
     """The label snap of one mesh. Returns a dict: xs, ys, zs (snapped grids), valid, abstain (uint8 grid: 0, 1 or
@@ -117,6 +148,7 @@ def label_snap(xs, ys, zs, valid, sampler, axis=None, recto_sign=None, target="r
                       face_opts={"sigma": float(face_sigma)}, batch=batch)
     det = res["detail"]
     n, ok = S.normals(xs, ys, zs, valid)
+    _smooth_without_gap_vertices(res, xs, ys, zs, n, ok, opts)
     measured = np.isfinite(det["measured"]) & ok
     abstain = np.full(xs.shape, ABSTAIN_INVALID, np.uint8)
     abstain[valid] = ABSTAIN_YES

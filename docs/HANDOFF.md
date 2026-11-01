@@ -11,7 +11,7 @@
 
 ## Continuation, 1 November 2026
 
-| Optional minimum-gap abstention in labelsnap (1 Nov) | Branch `codex/labelsnap-min-gap`: `--min-gap N` is off by default, measures both adjacent-band gaps, and leaves below-threshold vertices unmoved. The synthetic gap-ladder tests cover both orientations. This makes no claim that the gap predicts real-data snap error. | Review the public pull request and collect feedback before any follow-up |
+| Optional minimum-gap abstention in labelsnap (1 Nov) | PR #312: `--min-gap N` is off by default, measures both adjacent-band gaps, and leaves below-threshold vertices unmoved. Gap-rejected holes are excluded before smoothing, with a regression that failed on the previous implementation. All 37 focused tests pass on Python 3.13. Villa #2368 includes the option; all 28 snap-label tests pass on Python 3.14. No real-data accuracy claim. | Review the pull requests and collect feedback before any follow-up |
 
 ## Continuation, 30 October 2026
 
