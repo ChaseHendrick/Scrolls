@@ -14,9 +14,11 @@ What it does, in order, stopping at the first refusal (exit 2, nothing computed)
      --estimate-axis, from an axis estimated from the seed normals, which in a 512 voxel box often points the wrong
      way): RUN/chains.json;
   3. samples gm_x per step from the grad_mag (RUN/features.json), cuts every chain at the steps the split rule
-     (params digest c6d2eecbebc2) flags (RUN/split.json) and exports RUN/relative_windings.json (villa's
-     relative-winding point collections, winding_is_absolute false), RUN/flags.json (places a person should check,
-     the split steps among them) and RUN/export.json;
+     --split-rule names (default v2, params digest cd273aed7673; v1 at 0.95, c6d2eecbebc2; none cuts nothing and
+     marks, as places to check, the steps the v2 cut would remove) (RUN/split.json). Every run's export.json also
+     reports the run's gm_x median, p90 and share above the v2 cut of 1.0. It exports RUN/relative_windings.json
+     (villa's relative-winding point collections, winding_is_absolute false), RUN/flags.json (places a person
+     should check, the split steps among them) and RUN/export.json;
   4. prints the output paths (with --json, only one JSON object on stdout).
 
 The VC3D plugin plugins/scrolls-windlabel-box.json runs this from VC3D's focus point and loads
@@ -182,7 +184,8 @@ def run(a):
     (out / "export.json").write_text(json.dumps(summ, indent=2))
     res = {"ok": summ["ok"], "files": files, "collections": summ["collections"], "points": summ["points"],
            "pieces": summ["pieces"], "steps": summ["steps"], "split_steps": summ["split_rule"]["flagged_steps"],
-           "flags": summ["flags"], "checks": summ["checks"], "vc3d": summ["vc3d"], "note": NOTE}
+           "flags": summ["flags"], "checks": summ["checks"], "vc3d": summ["vc3d"], "gm_x": summ["gm_x"],
+           "note": NOTE}
     if a.json:
         print(json.dumps(res, indent=1))
     else:
@@ -206,8 +209,9 @@ def build_parser(p):
     p.add_argument("--box", default="512", help="box edge in voxels (default 512)")
     p.add_argument("--seeds", default="200", help="seed count (default 200)")
     p.add_argument("--rng", type=int, default=0, help="seed RNG (default 0)")
-    p.add_argument("--split-rule", default="v2", choices=("v1", "v2"),
-                   help="split rule: v2 cuts at gm_x above 1.0, v1 at 0.95 (default v2)")
+    p.add_argument("--split-rule", default="v2", choices=("v2", "v1", "none"),
+                   help="split rule: v2 cuts at gm_x above 1.0, v1 at 0.95, none keeps every step (default v2; "
+                        "with none, flags.json marks the steps the v2 cut would remove as places to check)")
     p.add_argument("--umbilicus", help="villa umbilicus JSON in the prediction's level-0 voxels (VC3D's "
                                        "{umbilicus}); it sets which way is outward")
     p.add_argument("--estimate-axis", action="store_true",
