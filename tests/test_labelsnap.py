@@ -72,6 +72,10 @@ class LabelSnapCoreTest(unittest.TestCase):
             self.assertTrue((r["reason"][:, c] == 10).all(), sign)
             self.assertTrue((r["abstain"][:, c] == L.ABSTAIN_YES).all(), sign)
             self.assertTrue((r["confidence"][:, c] == 0).all(), sign)
+            self.assertFalse(r["apply"][:, c].any(), sign)
+            np.testing.assert_array_equal(r["xs"][:, c], mesh[0][:, c])
+            np.testing.assert_array_equal(r["ys"][:, c], mesh[1][:, c])
+            np.testing.assert_array_equal(r["zs"][:, c], mesh[2][:, c])
             self.assertEqual(r["report"]["abstained"]["touching neighbor"], LADDER_W * r["reason"].shape[0])
             self.assertEqual(r["opts"]["min_gap"], 2.0)
 

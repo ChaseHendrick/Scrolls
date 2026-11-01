@@ -1251,6 +1251,12 @@ def snap_face(xs, ys, zs, valid, sampler, axis=None, recto_sign=None, opts=None,
     xo[apply] += D3[apply] * n[apply][:, 0]
     yo[apply] += D3[apply] * n[apply][:, 1]
     zo[apply] += D3[apply] * n[apply][:, 2]
+    if o["min_gap"] is not None:
+        touching = np.zeros(xs.shape, bool)
+        touching[vy, vx] = code == _FACE_REASON_CODE["touching neighbor"]
+        apply[touching] = False
+        D3[touching] = np.nan
+        xo[touching], yo[touching], zo[touching] = xs[touching], ys[touching], zs[touching]
     nvalid = int(valid.sum())
     has = np.isfinite(d)
     absd = np.abs(D3[apply])
