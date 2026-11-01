@@ -525,6 +525,8 @@ def build_parser(p):
     s.add_argument("--merged", action="store_true",
                    help="add the merged-band rule (FACE_SNAP_PER_VERTEX_MERGED; the default until 27 Oct 2026)")
     s.add_argument("--no-merged", action="store_true", help="the default since 27 Oct 2026 (kept for old commands)")
+    s.add_argument("--min-gap", type=float,
+                   help="abstain when either neighboring-band gap is under this many profile voxels (off by default)")
     s.add_argument("--face-sigma", type=float, default=DEFAULTS["face_sigma"])
     s.add_argument("--max-move", type=float, help="snap_face's max_move (default 4 voxels)")
     s.add_argument("--no-label", action="store_true", help="skip the OME-Zarr surface label")
@@ -573,7 +575,13 @@ def run_snap(args):
     xs, ys, zs, valid = S.load_mesh(args.surface)
     vol = S.open_volume(args.volume)
     sampler = S.Sampler(vol, level=args.level)
-    extra = {"max_move": float(args.max_move)} if args.max_move is not None else None
+    extra = {}
+    if args.max_move is not None:
+        extra["max_move"] = float(args.max_move)
+    if args.min_gap is not None:
+        extra["min_gap"] = float(args.min_gap)
+    if not extra:
+        extra = None
     res = label_snap(xs, ys, zs, valid, sampler, axis=axis, recto_sign=args.recto_sign, target=args.target,
                      merged=bool(args.merged) and not args.no_merged, face_sigma=args.face_sigma, extra_opts=extra)
     t_snap = time.time() - t0

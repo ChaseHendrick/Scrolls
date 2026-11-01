@@ -73,6 +73,15 @@ class FaceSnapTest(unittest.TestCase):
             r = snap.snap_face(xs, ys, zs, valid, sm, axis=self.axis, opts={"level": lv})
             self.assertLess(float(np.abs(r["zs"] - want).max()), 0.05, lv)
 
+    def test_min_gap_requires_per_profile_finding_and_a_nonnegative_value(self):
+        sm = self.sampler(band((48, 40, 40), [(20, 25)]), "one.zarr")
+        xs, ys, zs, valid = self.mesh(23.0)
+        for value in (-1.0, float("nan"), float("inf")):
+            with self.assertRaises(snap.SnapError):
+                snap.snap_face(xs, ys, zs, valid, sm, axis=self.axis, opts={"min_gap": value})
+        with self.assertRaises(snap.SnapError):
+            snap.snap_face(xs, ys, zs, valid, sm, axis=self.axis, opts={"min_gap": 2.0, "level": 110.0})
+
     def test_two_bands_about_as_near_abstain(self):
         sm = self.sampler(band((48, 40, 40), [(10, 14), (20, 24)]), "two.zarr")   # faces 14.5 and 19.5
         xs, ys, zs, valid = self.mesh(17.2)                     # 2.7 and 2.3 voxels away: ambiguous
@@ -168,18 +177,18 @@ GAPS = (4.0, 2.0, 1.0, 0.5, 0.0)     # gap between the target sheet and its neig
 LADDER_W = 16                        # grid columns per gap
 
 
-def ladder_volume(psf=1.0, noise=0.0, seed=0):
+def ladder_volume(psf=1.0, noise=0.0, seed=0, gaps=GAPS):
     """Three 6-voxel sheets along z, blurred: the target [28, 34), a neighbor on its recto side (below, toward the
     axis) whose gap to the target steps through GAPS across x (LADDER_W voxels each, from x = 4), and one above at a
     gap of 4. Rendered at 8 sub-samples per voxel in z, so a fractional gap is a partial-volume dip."""
-    nx = LADDER_W * len(GAPS) + 8
+    nx = LADDER_W * len(gaps) + 8
     Z, Y, ss = 64, 24, 8
     v = np.zeros((Z, Y, nx))
     for k in range(ss):
         zc = np.arange(Z) + (k + 0.5) / ss
         val = np.full((Z, Y, nx), 20.0)
         for j in range(nx):
-            g = GAPS[min(len(GAPS) - 1, max(0, (j - 4) // LADDER_W))]
+            g = gaps[min(len(gaps) - 1, max(0, (j - 4) // LADDER_W))]
             for lo, hi in ((28 - g - 6, 28 - g), (28, 34), (38, 44)):
                 val[(zc >= lo) & (zc < hi), :, j] = 200.0
         v += val / ss

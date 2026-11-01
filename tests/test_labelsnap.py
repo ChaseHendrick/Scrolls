@@ -60,6 +60,21 @@ class LabelSnapCoreTest(unittest.TestCase):
             self.assertTrue((r["confidence"][:, c] == 0).all(), g)
             np.testing.assert_allclose(r["zs"][:, c], 30.4, atol=1e-5)
 
+    def test_min_gap_is_opt_in_and_checks_both_sides(self):
+        self.assertNotIn("touching neighbor", self.res["report"]["abstained"])
+        volume = snap.open_volume(write_zarr(self.root / "ladder_gap175.zarr", ladder_volume(gaps=(1.75,))))
+        xs, ys, zs = plane_mesh(9, LADDER_W, 30.4, step=1.0, x0=4.0, y0=8.0)
+        mesh = (xs, ys, zs, np.ones(xs.shape, bool))
+        c = slice(3, LADDER_W - 3)
+        for sign in (1.0, -1.0):
+            r = L.label_snap(*mesh, snap.Sampler(volume), recto_sign=sign, merged=False,
+                             extra_opts={"min_gap": 2.0})
+            self.assertTrue((r["reason"][:, c] == 10).all(), sign)
+            self.assertTrue((r["abstain"][:, c] == L.ABSTAIN_YES).all(), sign)
+            self.assertTrue((r["confidence"][:, c] == 0).all(), sign)
+            self.assertEqual(r["report"]["abstained"]["touching neighbor"], LADDER_W * r["reason"].shape[0])
+            self.assertEqual(r["opts"]["min_gap"], 2.0)
+
     def test_default_has_no_merged_band_rule(self):
         self.assertFalse(L.DEFAULTS["merged"])
         self.assertNotIn("max_thick_ratio", L.face_opts())
@@ -242,6 +257,18 @@ class CommandLineTest(unittest.TestCase):
         code, text = self.run_cli(["check", str(bad)])
         self.assertEqual(code, 1)
         self.assertIn("missing", text)
+
+    def test_min_gap_cli_option_is_recorded_and_checkable(self):
+        out = self.root / "out_min_gap"
+        code, text = self.run_cli(["snap", str(self.root / "label"), "--volume", str(self.root / "ladder.zarr"),
+                                   "--out", str(out), "--axis-point", "20", "12", "-400", "--axis-dir", "1", "0", "0",
+                                   "--min-gap", "2", "--no-label", "--json"])
+        self.assertEqual(code, 0, text)
+        rec = json.loads((out / "labelsnap.json").read_text())
+        self.assertEqual(rec["opts"]["min_gap"], 2.0)
+        self.assertGreater(rec["reasons"].get("touching neighbor", 0), 0)
+        code, text = self.run_cli(["check", str(out)])
+        self.assertEqual(code, 0, text)
 
     def test_label_level_one_halves_the_coordinates(self):
         """--label-level 1 on a 2-level pyramid: the label array is level 1's, a level-0 point p sits at p / 2, and
