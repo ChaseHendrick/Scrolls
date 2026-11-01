@@ -6456,7 +6456,7 @@
    },
    "checked": {
     "date": "2026-11-01",
-    "commit": "82b9314"
+    "commit": "83df90a"
    },
    "license": null,
    "fields": {
@@ -6474,7 +6474,7 @@
     "Go-ahead": "Not needed for a local run or reads of the public open-data bucket",
     "Released": "Public `main` from the pull request that adds this page (October 2026); the same code shipped earlier inside AutoPipeline 0.1.10 (branch `submission/progress-2026-10-fix10`, 29 October 2026). The Snapped Labels dataset (snapped-labels) was made with it and with finesnap",
     "Guide": "[snapped-labels](snapped-labels.md) (the released dataset and its viewer), [snap](snap.md) (the snap underneath), [finesnap](finesnap.md) (the same snap on a finer scan)",
-    "Checked": "2026-11-01 against commit `82b9314`"
+    "Checked": "2026-11-01 against commit `83df90a`"
    },
    "page": "docs/tools/labelsnap.md",
    "sections": [
@@ -6559,13 +6559,13 @@
     {
      "name": "History",
      "start_line": 249,
-     "end_line": 255,
+     "end_line": 256,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 256,
-     "end_line": 261,
+     "start_line": 257,
+     "end_line": 262,
      "applicable": true
     }
    ]
@@ -13351,7 +13351,7 @@
    },
    "checked": {
     "date": "2026-11-01",
-    "commit": "82b9314"
+    "commit": "83df90a"
    },
    "license": null,
    "fields": {
@@ -13369,7 +13369,7 @@
     "Go-ahead": "Not needed for a local run or a read of the public open-data bucket",
     "Released": "Public `main` from the pull request that adds this page (October 2026); `kit/snap.py` shipped earlier inside the AutoPipeline package since 2026-10-14 (branch `submission/progress-2026-10` and its fix releases, the latest `submission/progress-2026-10-fix10`)",
     "Guide": "[labelsnap](labelsnap.md) and [finesnap](finesnap.md), the label snaps built on the band face snap",
-    "Checked": "2026-11-01 against commit `82b9314`"
+    "Checked": "2026-11-01 against commit `83df90a`"
    },
    "page": "docs/tools/snap.md",
    "sections": [
@@ -13454,13 +13454,13 @@
     {
      "name": "History",
      "start_line": 505,
-     "end_line": 514,
+     "end_line": 515,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 515,
-     "end_line": 521,
+     "start_line": 516,
+     "end_line": 522,
      "applicable": true
     }
    ]

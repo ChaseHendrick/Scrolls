@@ -9,6 +9,10 @@
 | Handoff headroom (31 Oct, workflow audit) | The 23 and 24 Oct sections moved unchanged to [HANDOFF-archive.md](HANDOFF-archive.md); this file went from 39.9 to about 30 KB of its 40 KB limit. Possibly open items from them are listed under "Still binding" | Move the oldest dated section to the archive whenever this file passes about 35 KB |
 | Ringleader, sqrecipe and offsetdiag released (31 Oct) | Code, tests, tool pages and results for [Ringleader](tools/ringleader.md) (two frozen PASSes, README finding 24), [sqrecipe](tools/sqrecipe.md) (PHerc0332 PASS) and [offsetdiag](tools/offsetdiag.md) (development only), with Chase's yes on 31 Oct; the Scrolls kit grouped entry limit is now 96 tools. Merged with this PR after CI, the leak check and an independent review | None. Ringleader v2 and any later Ringleader tests stay out of this repository until they are released the same way |
 
+## Continuation, 1 November 2026
+
+| Optional minimum-gap abstention in labelsnap (1 Nov) | Branch `codex/labelsnap-min-gap`: `--min-gap N` is off by default, measures both adjacent-band gaps, and leaves below-threshold vertices unmoved. The synthetic gap-ladder tests cover both orientations. This makes no claim that the gap predicts real-data snap error. | Review the public pull request and collect feedback before any follow-up |
+
 ## Continuation, 30 October 2026
 
 | Item | State | Next step |

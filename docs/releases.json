@@ -733,11 +733,11 @@
           "name": "Label snap onto the recto face",
           "area": "Surfaces and tracing",
           "released": "2026-10-29",
-          "summary": "Moves a published or traced tifxyz surface label along its normals onto the recto face of its papyrus band in the CT, with a per-vertex abstain mask, confidence, an OME-Zarr surface label (1 surface, 2 ignore) and a VC3D review queue. An opt-in `--min-gap N` abstention flags vertices where either measured gap to the next band is below N voxels; the default leaves outputs unchanged. On fresh PHerc0814 sites, scored against an independent 1.129 um scan, 71.0% of vertices were within one voxel of the face against 24.2% published; on 71 fresh PHerc0814 and PHerc0841 sites it was closer to a finer scan's recto face than the published labels and seven community snaps. Geometry, not a reading; not exact at every vertex.",
+          "summary": "Moves a published or traced tifxyz surface label along its normals onto the recto face of its papyrus band in the CT, with a per-vertex abstain mask, confidence, an OME-Zarr surface label (1 surface, 2 ignore) and a VC3D review queue. The opt-in `--min-gap N` rule leaves a vertex in place when either measured gap to the next band is below N profile voxels; it is off by default. On fresh PHerc0814 sites, scored against an independent 1.129 um scan, 71.0% of vertices were within one voxel of the face against 24.2% published; on 71 fresh PHerc0814 and PHerc0841 sites it was closer to a finer scan's recto face than the published labels and seven community snaps. Geometry, not a reading; not exact at every vertex.",
           "command": "python -m kit labelsnap snap LABEL --volume ZARR --out OUT --umbilicus UMB.json",
           "page": "docs/tools/labelsnap.md",
           "evidence": "[Snapped Labels](docs/tools/snapped-labels.md), [results](docs/results.json)",
-          "line": "Moves a tifxyz surface label onto its papyrus band’s recto face, with an abstain mask, review queue and opt-in minimum-gap rule."
+          "line": "Snaps a surface label to its recto face, with review and an opt-in minimum-gap rule that leaves flagged vertices in place."
         },
         {
           "id": "finesnap",
