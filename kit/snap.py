@@ -1027,6 +1027,7 @@ FACE_SNAP_DEFAULTS = {
     "min_support": 3,      # an offset needs this many measured offsets in its 5 x 5 window (itself included), and
                            # a hole this many around it before it is filled; a lone offset is neither trusted nor spread
     "min_contrast": None,  # a band whose profile contrast (90th minus 10th percentile) is below this abstains, CT units
+    "min_gap": None,       # abstain when either adjacent-band gap is smaller than this, profile voxels (None: off)
     "contrast_frac": 0.25, # without min_contrast: the floor is this fraction of the 1st to 99th percentile window of
                            # every profile sample of the mesh (so a vertex in a wide gap or in air does not snap to noise)
     "max_thick": None,     # a band thicker than this abstains, voxels (None: no absolute cap)
@@ -1057,7 +1058,7 @@ FACE_SNAP_PER_VERTEX_MERGED = {"jump": 1e9, "min_support": 1, "max_thick_ratio":
 # in from measured neighbors (result["apply"]), but nothing at that vertex vouches for it.
 FACE_REASONS = {0: "measured", 1: "missing data", 2: "side not named", 3: "low contrast", 4: "no band",
                 5: "ambiguous or off the profile", 6: "too far", 7: "too thick", 8: "rejected by its neighbors",
-                9: "not a valid vertex"}
+                9: "not a valid vertex", 10: "touching neighbor"}
 _FACE_REASON_CODE = {v: k for k, v in FACE_REASONS.items()}
 
 
@@ -1118,6 +1119,13 @@ def snap_face(xs, ys, zs, valid, sampler, axis=None, recto_sign=None, opts=None,
     o.update(opts or {})
     if o["target"] not in ("recto", "mid", "verso"):
         raise SnapError(f"face target must be recto, mid or verso, not {o['target']!r}")
+    if o["min_gap"] is not None:
+        min_gap = float(o["min_gap"])
+        if not math.isfinite(min_gap) or min_gap < 0:
+            raise SnapError("min_gap must be a finite nonnegative number")
+        if o["level"] is not None:
+            raise SnapError("min_gap requires per-profile band finding (level=None)")
+        o["min_gap"] = min_gap
     n, ok = normals(xs, ys, zs, valid)
     vy, vx = np.nonzero(ok)
     nv = len(vy)
@@ -1152,8 +1160,12 @@ def snap_face(xs, ys, zs, valid, sampler, axis=None, recto_sign=None, opts=None,
     code = np.zeros(nv, np.uint8)
     vcon = np.full(nv, np.nan)            # profile contrast (90th minus 10th percentile after smoothing)
     vsep = np.full(nv, np.nan)            # second-nearest band distance minus the nearest's (inf with one band)
+    vgap_recto = np.full(nv, np.nan)      # clear gap from the selected band to its next recto-side neighbor
+    vgap_verso = np.full(nv, np.nan)      # clear gap from the selected band to its next verso-side neighbor
     why = {"no band": 0, "ambiguous or off the profile": 0, "too far": 0, "side not named": 0, "missing data": 0,
            "low contrast": 0, "too thick": 0}
+    if o["min_gap"] is not None:
+        why["touching neighbor"] = 0
 
     def skip(i, reason):
         why[reason] += 1
@@ -1170,12 +1182,18 @@ def snap_face(xs, ys, zs, valid, sampler, axis=None, recto_sign=None, opts=None,
         if o["level"] is None:
             r = snaptruth.sheet_faces(t, p, rs[i], at=0.0, opts=fo)
             vcon[i] = r["contrast"]
+            vgap_recto[i], vgap_verso[i] = r["gap_recto"], r["gap_verso"]
             if r["contrast"] < floor:
                 skip(i, "low contrast")
                 continue
             if not r["ok"]:
                 skip(i, "no band" if r["why"] == "no band" else "ambiguous or off the profile")
                 continue
+            if o["min_gap"] is not None:
+                gaps = [g for g in (vgap_recto[i], vgap_verso[i]) if math.isfinite(g)]
+                if gaps and min(gaps) < o["min_gap"]:
+                    skip(i, "touching neighbor")
+                    continue
             vsep[i] = r["second"] - r["dist"]
             lo, hi = (r["recto"], r["verso"]) if rs[i] > 0 else (r["verso"], r["recto"])
         else:
@@ -1233,6 +1251,12 @@ def snap_face(xs, ys, zs, valid, sampler, axis=None, recto_sign=None, opts=None,
     xo[apply] += D3[apply] * n[apply][:, 0]
     yo[apply] += D3[apply] * n[apply][:, 1]
     zo[apply] += D3[apply] * n[apply][:, 2]
+    if o["min_gap"] is not None:
+        touching = np.zeros(xs.shape, bool)
+        touching[vy, vx] = code == _FACE_REASON_CODE["touching neighbor"]
+        apply[touching] = False
+        D3[touching] = np.nan
+        xo[touching], yo[touching], zo[touching] = xs[touching], ys[touching], zs[touching]
     nvalid = int(valid.sum())
     has = np.isfinite(d)
     absd = np.abs(D3[apply])
@@ -1271,6 +1295,10 @@ def snap_face(xs, ys, zs, valid, sampler, axis=None, recto_sign=None, opts=None,
     th = np.where(np.isfinite(d) | fat, thick, np.nan)
     detail["thick"][vy, vx] = th
     detail["sep"][vy, vx] = vsep
+    detail["gap_recto"] = np.full(G, np.nan, np.float32)
+    detail["gap_verso"] = np.full(G, np.nan, np.float32)
+    detail["gap_recto"][vy, vx] = vgap_recto
+    detail["gap_verso"][vy, vx] = vgap_verso
     return {"xs": xo, "ys": yo, "zs": zo, "valid": valid, "D3": D3, "apply": apply, "report": report,
             "record": record, "note": FACE_SOURCE_NOTE, "detail": detail}
 

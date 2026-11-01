@@ -105,6 +105,37 @@ def confidence(detail, measured_mask):
     return out.astype(np.float32)
 
 
+def _smooth_without_gap_vertices(res, xs, ys, zs, normals, ok, opts):
+    """Rebuild smoothing from accepted measurements without filling gap-rejected holes."""
+    np = _np()
+    sigma = float(opts.get("sigma", S.FACE_SNAP_DEFAULTS["sigma"]))
+    excluded = res["detail"]["reason"] == 10
+    if sigma <= 0 or not excluded.any():
+        return
+    # snap_face already applied contrast, thickness, support and jump rejection.
+    measured = res["detail"]["measured"]
+    filled = S.normconv(measured, max(sigma, 1.0))
+    field = np.where(np.isfinite(measured), measured, filled)
+    field[excluded] = np.nan
+    field = S.normconv(field, sigma)
+    field[excluded] = np.nan
+    limit = float(res["record"]["max_move"])
+    res["D3"] = np.clip(field, -limit, limit)
+    min_support = int(opts.get("min_support", S.FACE_SNAP_DEFAULTS["min_support"]))
+    supported = np.isfinite(measured) | (S._finite_count(measured, 5) >= min_support)
+    apply = ok & np.isfinite(res["D3"]) & np.isfinite(filled) & supported & ~excluded
+    res["apply"] = apply
+    for axis, (key, original) in enumerate(zip(("xs", "ys", "zs"), (xs, ys, zs))):
+        res[key] = original.copy()
+        res[key][apply] += res["D3"][apply] * normals[apply][:, axis]
+    moved = np.abs(res["D3"][apply])
+    res["report"]["frac_snapped"] = float(apply.sum() / max(1, int(res["valid"].sum())))
+    res["report"]["median_abs_off"] = float(np.median(moved)) if moved.size else None
+    res["report"]["p90_abs_off"] = float(np.percentile(moved, 90)) if moved.size else None
+    for key in ("frac_snapped", "median_abs_off"):
+        res["record"][key] = res["report"][key]
+
+
 def label_snap(xs, ys, zs, valid, sampler, axis=None, recto_sign=None, target="recto", merged=DEFAULTS["merged"],
                face_sigma=DEFAULTS["face_sigma"], extra_opts=None, batch=S.DEFAULT_BATCH):
     """The label snap of one mesh. Returns a dict: xs, ys, zs (snapped grids), valid, abstain (uint8 grid: 0, 1 or
@@ -117,6 +148,7 @@ def label_snap(xs, ys, zs, valid, sampler, axis=None, recto_sign=None, target="r
                       face_opts={"sigma": float(face_sigma)}, batch=batch)
     det = res["detail"]
     n, ok = S.normals(xs, ys, zs, valid)
+    _smooth_without_gap_vertices(res, xs, ys, zs, n, ok, opts)
     measured = np.isfinite(det["measured"]) & ok
     abstain = np.full(xs.shape, ABSTAIN_INVALID, np.uint8)
     abstain[valid] = ABSTAIN_YES
@@ -525,6 +557,8 @@ def build_parser(p):
     s.add_argument("--merged", action="store_true",
                    help="add the merged-band rule (FACE_SNAP_PER_VERTEX_MERGED; the default until 27 Oct 2026)")
     s.add_argument("--no-merged", action="store_true", help="the default since 27 Oct 2026 (kept for old commands)")
+    s.add_argument("--min-gap", type=float,
+                   help="abstain when either neighboring-band gap is under this many profile voxels (off by default)")
     s.add_argument("--face-sigma", type=float, default=DEFAULTS["face_sigma"])
     s.add_argument("--max-move", type=float, help="snap_face's max_move (default 4 voxels)")
     s.add_argument("--no-label", action="store_true", help="skip the OME-Zarr surface label")
@@ -573,7 +607,13 @@ def run_snap(args):
     xs, ys, zs, valid = S.load_mesh(args.surface)
     vol = S.open_volume(args.volume)
     sampler = S.Sampler(vol, level=args.level)
-    extra = {"max_move": float(args.max_move)} if args.max_move is not None else None
+    extra = {}
+    if args.max_move is not None:
+        extra["max_move"] = float(args.max_move)
+    if args.min_gap is not None:
+        extra["min_gap"] = float(args.min_gap)
+    if not extra:
+        extra = None
     res = label_snap(xs, ys, zs, valid, sampler, axis=axis, recto_sign=args.recto_sign, target=args.target,
                      merged=bool(args.merged) and not args.no_merged, face_sigma=args.face_sigma, extra_opts=extra)
     t_snap = time.time() - t0
