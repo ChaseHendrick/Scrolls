@@ -1,6 +1,6 @@
 # labelsnap: move a surface label onto the papyrus recto face, with an abstain mask
 
-`python -m kit labelsnap` snaps one tifxyz surface label onto the recto face of the nearest CT band and writes the snapped tifxyz, a per-vertex abstain mask and confidence, an OME-Zarr surface label (1 surface, 2 ignore) and a VC3D review queue of abstaining regions.
+`python -m kit labelsnap` moves a tifxyz surface onto the nearest CT band’s recto face and writes masks, confidence, a surface label and a review queue. `--min-gap` optionally abstains near a neighboring band.
 
 | Field | Value |
 | --- | --- |
@@ -18,13 +18,13 @@
 | Go-ahead | Not needed for a local run or reads of the public open-data bucket |
 | Released | Public `main` from the pull request that adds this page (October 2026); the same code shipped earlier inside AutoPipeline 0.1.10 (branch `submission/progress-2026-10-fix10`, 29 October 2026). The Snapped Labels dataset (snapped-labels) was made with it and with finesnap |
 | Guide | [snapped-labels](snapped-labels.md) (the released dataset and its viewer), [snap](snap.md) (the snap underneath), [finesnap](finesnap.md) (the same snap on a finer scan) |
-| Checked | 2026-10-29 against commit `afcc05a` |
+| Checked | 2026-11-01 against commit `82b9314` |
 
 ## What it does
 
 villa's 2026 open problems ask for surface labels "better localized on the papyrus' recto" and for zarr image and label pairs that work better than voxelized meshes (Sourced fact, [2026 open problems](https://scrollprize.org/2026_open_problems), read 21 October 2026; rodriguescarson's [villa #1640](https://github.com/ScrollPrize/villa/issues/1640), 29 August 2026, reports that surface labels sit a median 2.3 to 2.6 voxels off the density maximum, and pmh47 replied that the segmentation ideally is the recto surface, Community report). A published surface label (a tifxyz segment mesh) often sits inside the sheet or beside it rather than on its recto face: on fresh PHerc0139 and PHerc0814 test sites only about a quarter of published label vertices were within 1 voxel of the recto face of an independent finer scan (Checks and controls).
 
-`kit labelsnap snap` moves each vertex along its normal onto the recto face of the bright CT band nearest it, found at sub-voxel precision on a trilinear profile: kit snap's band face snap (`kit.snap.snap_face`) in its per-vertex form (`FACE_SNAP_PER_VERTEX`). The recto face is the face toward the scroll axis, so the axis is required for the recto or verso target (`--umbilicus`, a straight axis, or `--recto-sign`). A vertex **abstains** when its band is ambiguous or runs off the profile, its contrast is too low, the band is more than `max_move` (4 voxels) away, or its normal is nearly tangent to the axis direction. `--merged` adds the merged-band rule: it also abstains where the band is more than 1.8 times the mesh's 25th-percentile band thickness, meant for two sheets merged by the blur. On PHerc0139 and PHerc0814 that rule mostly held back genuinely thick single sheets and cost accuracy, so it is off by default. An abstaining vertex may still move by an offset filled in from measured neighbors, or stays; the abstain mask says that nothing at that vertex vouches for its position.
+`kit labelsnap snap` moves each vertex along its normal onto the recto face of the bright CT band nearest it, found at sub-voxel precision on a trilinear profile: kit snap's band face snap (`kit.snap.snap_face`) in its per-vertex form (`FACE_SNAP_PER_VERTEX`). The recto face is the face toward the scroll axis, so the axis is required for the recto or verso target (`--umbilicus`, a straight axis, or `--recto-sign`). A vertex **abstains** when its band is ambiguous or runs off the profile, its contrast is too low, the band is more than `max_move` (4 voxels) away, or its normal is nearly tangent to the axis direction. `--min-gap N` optionally abstains with reason `touching neighbor` if either measured gap from the selected band to its next neighbor is below N profile voxels; the default is none. `--merged` adds the merged-band rule: it also abstains where the band is more than 1.8 times the mesh's 25th-percentile band thickness, meant for two sheets merged by the blur. On PHerc0139 and PHerc0814 that rule mostly held back genuinely thick single sheets and cost accuracy, so it is off by default. An abstaining vertex may still move by an offset filled in from measured neighbors, or stays; the abstain mask says that nothing at that vertex vouches for its position.
 
 The products are made for training and review: the **abstain mask** and **reason** grids per vertex; a **confidence** in [0, 1] per vertex (an untested ranking: contrast over the floor, separation from the next band and thickness under the cap, multiplied); an **OME-Zarr surface label** in the CT's voxel frame, 1 where every corner of a grid cell measured its face, 2 (ignore) on cells with an abstaining corner and in a halo of `max_move` voxels along the normal around them, 0 elsewhere (2 is the largest value, as nnU-Net expects of its ignore label; missing chunks read 0); and a **VC3D review queue**, a point collection with one point per region of connected abstaining vertices, largest first, at the label's position, for a person to check in VC3D. `kit labelsnap check` validates a folder for agents.
 
@@ -97,7 +97,8 @@ usage: python -m kit labelsnap snap [-h] --volume VOLUME [--level LEVEL]
                                     [--axis-point X Y Z] [--axis-dir X Y Z]
                                     [--recto-sign {1.0,-1.0}]
                                     [--target {recto,mid,verso}] [--merged]
-                                    [--no-merged] [--face-sigma FACE_SIGMA]
+                                    [--no-merged] [--min-gap MIN_GAP]
+                                    [--face-sigma FACE_SIGMA]
                                     [--max-move MAX_MOVE] [--no-label]
                                     [--label-level LABEL_LEVEL]
                                     [--ignore-halo IGNORE_HALO]
@@ -122,6 +123,7 @@ usage: python -m kit labelsnap snap [-h] --volume VOLUME [--level LEVEL]
 | `--target TARGET` | `recto` | `recto` (the band face toward the axis), `mid` (the band midline, needs no axis) or `verso` |
 | `--merged` | off | add the merged-band rule (`FACE_SNAP_PER_VERTEX_MERGED`; the default until 27 Oct 2026) |
 | `--no-merged` | off | the default since 27 Oct 2026 (kept for old commands) |
+| `--min-gap MIN_GAP` | none | abstain with reason `touching neighbor` when either adjacent-band gap is less than this many profile voxels; for example `--min-gap 2` |
 | `--face-sigma FACE_SIGMA` | `1.0` | smoothing of the band finder along the profile, voxels |
 | `--max-move MAX_MOVE` | none | snap_face's max_move (default 4 voxels) |
 | `--no-label` | off | skip the OME-Zarr surface label |
@@ -211,6 +213,7 @@ usage: python -m kit labelsnap check [-h] [--json] out
 | `the outputs fail their own check`, exit code 1 | `snap` ran `check` on what it wrote and found a problem (for example no surface voxel inside the label array) | Read the listed problems; do not use the folder |
 | Most vertices abstain with `side not named` | Normals nearly along the axis direction (a mesh lying flat in z) or a wrong axis | Check the umbilicus frame and scale |
 | Most vertices abstain with `too far` | The mesh is more than 4 voxels off the sheet, or the level is too fine | Read a coarser `--level`, or snap with kit snap first |
+| A vertex has reason `touching neighbor` | `--min-gap` is set and one measured gap to an adjacent band is smaller than that threshold | Review the vertex in VC3D; lower or omit `--min-gap` if this abstention is too strict |
 | `self-check: FAILED` | Merged or faint bands, or a mesh far from the sheet | Look at the review queue; do not use the snapped label as if it passed |
 
 ## How it works
@@ -218,7 +221,7 @@ usage: python -m kit labelsnap check [-h] [--json] out
 1. Normals by kit snap's rule (central differences on the grid, `cross(d/dcol, d/drow)`).
 2. Per vertex, a trilinear profile of the CT along the normal from -12 to 12 voxels in steps of 0.25 (`FACE_SNAP_DEFAULTS` `half`, `step`).
 3. `kit.snaptruth.sheet_faces` on that profile (smoothing `--face-sigma` 1.0, level halfway between the 10th and 90th percentiles) gives the band nearest the vertex and its two faces; the recto face is the one toward the axis.
-4. Abstain rules (above); with `--merged`, the merged-band cap is 1.8 times the 25th percentile of the mesh's measured band thicknesses, applied when at least 10 bands were measured.
+4. Abstain rules (above); `--min-gap` compares both gaps returned by `sheet_faces` and abstains if either finite gap is below the threshold. With `--merged`, the merged-band cap is 1.8 times the 25th percentile of the mesh's measured band thicknesses, applied when at least 10 bands were measured.
 5. Per-vertex form: no jump rejection, holes filled from measured neighbors by normalized convolution (`min_support` 1), offsets clipped to `max_move` plus the profile half-length.
 6. The label: each grid cell sampled bilinearly every `--label-step` voxels; an ignore cell also sampled along its normal over the halo; samples rounded to voxels; surface wins over ignore where both touch a voxel; written by z slabs of one chunk, at most 2,000,000 samples in memory at once.
 7. The review queue: 4-connected components of abstaining vertices on the grid, each at the vertex nearest its middle.
@@ -241,10 +244,11 @@ Local CPU only; it rents nothing. Measured: the synthetic quick start (above). A
 
 ## Tests
 
-`python3 -m unittest tests.test_labelsnap` (18 tests, under 10 s here): the gap ladder (snaps from gaps of 2 and 4 voxels onto the recto face, abstains `too thick` under 1 with `merged=True`), the default without the merged-band rule, the detail grids, the confidence factors, the axis refusal, connected components, review regions and the VC3D document, the surface label (values, halo, surface winning, level scale, refusal to overwrite, read back through kit's volume reader), and the command line end to end with `check` passing on a good folder and failing on a tampered one, `--label-level 1` on a 2-level pyramid (surface voxels at level-1 z 13 to 14, OME scale 2), the anisotropic-level refusal, and `snap` exiting 1 when its own check fails. Not covered: real CT, a whole segment, URLs. The tests against independent scans in Checks and controls ran outside this repository's test suite.
+`python3 -m unittest tests.test_labelsnap` (20 tests, under 10 s here): the gap ladder (snaps from gaps of 2 and 4 voxels onto the recto face, abstains `too thick` under 1 with `merged=True`), the opt-in `--min-gap 2` rule on both sides of a neighbor and its command-line record, the default without the merged-band rule, the detail grids, the confidence factors, the axis refusal, connected components, review regions and the VC3D document, the surface label (values, halo, surface winning, level scale, refusal to overwrite, read back through kit's volume reader), and the command line end to end with `check` passing on a good folder and failing on a tampered one, `--label-level 1` on a 2-level pyramid (surface voxels at level-1 z 13 to 14, OME scale 2), the anisotropic-level refusal, and `snap` exiting 1 when its own check fails. Not covered: real CT, a whole segment, URLs. The tests against independent scans in Checks and controls ran outside this repository's test suite.
 
 ## History
 
+- 2026-11-01: `--min-gap` optionally abstains as `touching neighbor` when either measured adjacent-band gap is under the selected threshold; the default remains unchanged (`82b9314`).
 - 2026-10-29: on public `main` with kit snap and kit finesnap (on top of `afcc05a`); the code is the AutoPipeline 0.1.10 copy (`eea2df5`).
 - 2026-10-27: the default drops the merged-band rule after the PHerc0814 test (the rule cost 0.52 voxels); `--merged` restores the old behavior (`eea2df5`).
 - 2026-10-21: first version: `kit labelsnap snap` and `check`, with `kit.snap.snap_face` returning per-vertex detail grids; `--label-level N` halves coordinates per level and `snap` runs `check` on its own output (`eea2df5`).

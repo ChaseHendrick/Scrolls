@@ -18,7 +18,7 @@
 | Go-ahead | Not needed for a local run or a read of the public open-data bucket |
 | Released | Public `main` from the pull request that adds this page (October 2026); `kit/snap.py` shipped earlier inside the AutoPipeline package since 2026-10-14 (branch `submission/progress-2026-10` and its fix releases, the latest `submission/progress-2026-10-fix10`) |
 | Guide | [labelsnap](labelsnap.md) and [finesnap](finesnap.md), the label snaps built on the band face snap |
-| Checked | 2026-10-29 against commit `afcc05a` |
+| Checked | 2026-11-01 against commit `82b9314` |
 
 ## What it does
 
@@ -283,7 +283,7 @@ faces = snaptruth.sheet_faces(t, profile, recto_sign=+1)     # t: offsets along 
 | `stretch_window(vals, dtype, pct_lo=1.0, pct_hi=99.0)` | `(lo, hi)` floats | Nothing | Their 256-bin rule for uint8, numpy percentiles otherwise; `(0.0, 255.0)` with no values or an empty window |
 | `find_targets(sampler, P, Dd, o, band, min_edge, batch=DEFAULT_BATCH)` | `(offset, gradient, found)` per vertex | Read errors from the sampler | RectoRefine's `rr_find_target` with midline on, vectorized; `o` is a `MIDLINE_DEFAULTS`-like dict |
 | `snap_midline(xs, ys, zs, valid, sampler, opts=None, axis=None, window=None, batch=DEFAULT_BATCH)` | A dict like `snap_pred`'s (no `D3`) plus `recto` (the statistics under Outputs) | Read errors from the sampler | Technique B on one mesh. `opts` overrides `MIDLINE_DEFAULTS`; `axis` is `("line", point, direction)`, `("umbilicus", points)` or None |
-| `snap_face(xs, ys, zs, valid, sampler, axis=None, recto_sign=None, opts=None, face_opts=None, batch=DEFAULT_BATCH)` | A dict like `snap_pred`'s | `SnapError` when `opts["target"]` is not `recto`, `mid` or `verso`; read errors from the sampler | Technique D on one mesh: each vertex moves along its normal onto a face (or the midline) of the nearest bright CT band, found at sub-voxel precision on a trilinear profile by `kit.snaptruth.sheet_faces` (`face_opts` overrides its `FACE_DEFAULTS`), or at one global level when `opts["level"]` is set. The recto face is the one toward the scroll axis, from `axis` (as for `snap_midline`) or `recto_sign`. Offsets are then regularized (`jump`, `min_support`, hole filling, optional `sigma`). `opts` overrides `FACE_SNAP_DEFAULTS` (target `recto`, half 12.0, step 0.25, max_move 4.0, min_radial 0.3, jump 2.0, sigma 0.0). A vertex abstains when the band is ambiguous, off the profile, below the contrast floor, farther than `max_move`, or (recto or verso target) when its normal is nearly tangent to the radial direction |
+| `snap_face(xs, ys, zs, valid, sampler, axis=None, recto_sign=None, opts=None, face_opts=None, batch=DEFAULT_BATCH)` | A dict like `snap_pred`'s | `SnapError` when `opts["target"]` is not `recto`, `mid` or `verso`; read errors from the sampler | Technique D on one mesh: each vertex moves along its normal onto a face (or the midline) of the nearest bright CT band, found at sub-voxel precision on a trilinear profile by `kit.snaptruth.sheet_faces` (`face_opts` overrides its `FACE_DEFAULTS`), or at one global level when `opts["level"]` is set. The recto face is the one toward the scroll axis, from `axis` (as for `snap_midline`) or `recto_sign`. Offsets are then regularized (`jump`, `min_support`, hole filling, optional `sigma`). `opts` overrides `FACE_SNAP_DEFAULTS` (target `recto`, half 12.0, step 0.25, max_move 4.0, min_radial 0.3, jump 2.0, sigma 0.0). `detail` includes both measured neighbor gaps, `gap_recto` and `gap_verso`. A vertex abstains when the band is ambiguous, off the profile, below the contrast floor, farther than `max_move`, or (recto or verso target) when its normal is nearly tangent to the radial direction; `min_gap` optionally abstains when either finite neighbor gap is below its threshold |
 | `face_options(args)` | The `opts` dict for `snap_face` from parsed arguments: the per-vertex preset when `--face-per-vertex`, `target` (`recto` for `--mode recto`, else `--face-target` or `recto`), then every `--face-*` value given | `SnapError` "--mode recto snaps to the recto face; for TARGET use --mode face --face-target TARGET" | Values left out are not set, so `snap_face` takes them from `FACE_SNAP_DEFAULTS`. `--face-level-frac` is not in it: it goes to `snap_face`'s `face_opts` |
 | `planted_field(shape, shift, vary, step_r=1.0, step_c=1.0, max_slope=CHECK_MAX_SLOPE)` | A float32 (H, W) field in voxels | Nothing | shift + vary x sin(2 pi u / Lr) x cos(2 pi v / Lc), wavelengths long enough to keep the slope at most `max_slope` (0.05) |
 | `grid_steps(xs, ys, zs, valid)` | `[row step, column step]`, voxels | Nothing | Median node spacing; 1 where there are no neighbors |
@@ -360,7 +360,7 @@ Printed: one TSV row per mesh, then `done N meshes in Ss -> OUT`; with `--check`
 | `meshes[].median_abs_off`, `.p90_abs_off` | float or null | Median and 90th percentile of the move of moved vertices, voxels |
 | `meshes[].frac_rejected` | float | Pred: offsets rejected by `--jump`, over vertices with sheet. Ct midline: vertices whose move was ever reverted by the occupancy guard, over valid vertices. Face: offsets rejected by `--face-jump` or the support rule, over vertices with a target |
 | `meshes[].frac_already_on` | float | Pred: vertices with a normal whose chosen offset was within 2 voxels, over vertices with a normal. Ct: first-iteration targets within 2 voxels, over valid vertices |
-| `meshes[].abstained` | object | Face only: vertices that got no target, by reason: `no band`, `ambiguous or off the profile`, `too far`, `side not named`, `missing data`, `low contrast` |
+| `meshes[].abstained` | object | Face only: vertices that got no target, by reason: `no band`, `ambiguous or off the profile`, `too far`, `side not named`, `missing data`, `low contrast`; labelsnap adds `touching neighbor` when its opt-in `--min-gap` is set |
 | `meshes[].sham` | bool | `true` with `--sham` only |
 | `meshes[].recto` | object | Ct only: `recto_iterations`, `recto_supported` (vertices that ever had a target), `recto_moved`, `recto_reverted` (reverted moves, summed over iterations), `recto_slope_limited` (vertices the slope limit ever clipped), `recto_mean_disp` and `recto_max_disp` (voxels), `mean_abs_step` and `mean_recto_gradient` (last iteration), `window` [lo, hi], `band` (isovalue), `min_edge` |
 | `checks[]` | list | With `--check`: one per mesh |
@@ -385,6 +385,8 @@ All refusals print `kit snap: MESSAGE` on stderr and exit 2.
 | What you see | Why | What to do |
 | --- | --- | --- |
 | `face target must be recto, mid or verso, not 'X'` | `snap_face` was given an `opts["target"]` other than those three | Use `recto` (the band face toward the scroll axis), `mid` (its midline) or `verso` |
+| `min_gap must be a finite nonnegative number` | The `snap_face` `min_gap` option is negative, NaN or infinite | Use a finite value of zero or more |
+| `min_gap requires per-profile band finding (level=None)` | `min_gap` was used with a global profile threshold, which does not return neighboring-band gaps | Omit `level` or leave `min_gap` unset |
 | `usage: ...` then `error: ...` on stderr, exit code 2 | A missing or wrong argument | Check the command against Commands and options |
 | `kit snap: MESSAGE`, exit code 2 | Any refusal below, a mesh or TIFF format error, an `OSError`, or a zarr store or read error, with its message | Read the message; the rows below cover the module's own refusals |
 | `kit snap needs numpy (pip install numpy, or run inside villa's environment)` | numpy is not installed (`--help` still works) | Install numpy |
@@ -502,6 +504,7 @@ python -m unittest tests.test_snap tests.test_snap_face tests.test_snaptruth tes
 
 ## History
 
+- 2026-11-01: `snap_face` returns the measured gaps to the next recto-side and verso-side bands; labelsnap's opt-in `--min-gap` uses these to mark touching neighbors (`82b9314`).
 - 2026-10-29: on public `main` with kit labelsnap and kit finesnap (on top of `afcc05a`); the code is the AutoPipeline 0.1.10 copy (`eea2df5`).
 - 2026-10-21: `snap_face` also returns `detail`: per-vertex grids of the vertex's own measured offset, its reason (`FACE_REASONS`), the profile contrast, band thickness and band separation, with the contrast floor and thickness cap; existing outputs are unchanged. [labelsnap](labelsnap.md) builds its abstain mask and confidence on them (`eea2df5`).
 - 2026-10-16: technique D with a command line: `--source ct --mode recto` and `--mode face --face-target recto|mid|verso`, `--recto-sign`, the `--face-*` options and a default `--check` plant of 2 voxels for it; `nanmedian_filter` sorts the window stack itself, with the same values bit for bit (`eea2df5`).
