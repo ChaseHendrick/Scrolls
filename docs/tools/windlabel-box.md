@@ -23,7 +23,7 @@
 
 A spiral fit of a whole scroll (villa's `spiral-fitting`) is steered by relative windings: points along a line from the core, each labeled with how many turns of papyrus (windings) it lies outward of the first. People click these in VC3D, and the organizers' winding constraints page asks for a generator that can say how sure it is. `kit windlabel-box` makes them in a box around one point from published predictions only, with no person in between.
 
-It draws seeds on the surface prediction (a model's voxel map of where papyrus sheets are; for the open data usually m7, the organizers' binary surface model output) inside a cube of `--box` voxels centered on `--point`. From each seed it fits the local plane of the sheet, marches along the sheet's normal to the next sheet, recenters there and goes on, in both directions, counting 0 at the seed and one more per sheet outward (outward is set by the umbilicus, the scroll's center line). A step is kept only when the next sheet is thin, at a spacing in line with the chain's earlier steps and the normal turns little (chain rule version 1, digest `0e53e0ae5016`). Then it integrates lasagna's grad_mag (the published lasagna model's sheet-density channel) along every step: the median over seven parallel rays times 0.765 is about 1 for a step across one sheet. Every step above 1.0 is cut, so each piece only claims counts the grad_mag agrees with (split rule v2, digest `cd273aed7673`; `--split-rule v1` cuts above 0.95, digest `c6d2eecbebc2`). The pieces with two or more crossings become villa's relative-winding point collections; the cut steps and other places worth a look become `flags.json`.
+It draws seeds on the surface prediction (a model's voxel map of where papyrus sheets are; for the open data usually m7, the organizers' binary surface model output) inside a cube of `--box` voxels centered on `--point`. From each seed it fits the local plane of the sheet, marches along the sheet's normal to the next sheet, recenters there and goes on, in both directions, counting 0 at the seed and one more per sheet outward (outward is set by the umbilicus, the scroll's center line). A step is kept only when the next sheet is thin, at a spacing in line with the chain's earlier steps and the normal turns little (chain rule version 1, digest `0e53e0ae5016`). Then it integrates lasagna's grad_mag (the published lasagna model's sheet-density channel) along every step: the median over seven parallel rays times 0.765 is about 1 for a step across one sheet. Every step above 1.0 is cut, so each piece only claims counts the grad_mag agrees with (split rule v2, digest `cd273aed7673`; `--split-rule v1` cuts above 0.95, digest `c6d2eecbebc2`; `--split-rule none`, digest `6e3aff82495f`, keeps every step and marks in `flags.json` the steps the v2 cut would remove). Every run's `export.json` also reports the run's `gm_x` median, p90 and share above 1.0, so the cut can be judged per scroll. The pieces with two or more crossings become villa's relative-winding point collections; the cut steps and other places worth a look become `flags.json`.
 
 It never computes a prediction or a grad_mag: it refuses without them. It needs the umbilicus: an axis guessed from the box's own sheets pointed the wrong way for most chains in 4 of 6 PHerc0139 boxes of 512 voxels. It does not fit a spiral, does not trace a surface and says nothing about ink. Its windings are model output from predictions, not a reading; check them with the flags, and with [windconsistency](windconsistency.md) before a fit.
 
@@ -93,7 +93,7 @@ usage: python -m kit windlabel-box [-h] [--prediction PREDICTION]
                                    [--gm-scaledown GM_SCALEDOWN]
                                    [--gm-decode GM_DECODE] --point POINT
                                    [--box BOX] [--seeds SEEDS] [--rng RNG]
-                                   [--split-rule {v1,v2}]
+                                   [--split-rule {v2,v1,none}]
                                    [--umbilicus UMBILICUS] [--estimate-axis]
                                    [--workers WORKERS] --out OUT [--json]
 ```
@@ -109,7 +109,7 @@ usage: python -m kit windlabel-box [-h] [--prediction PREDICTION]
 | `--box BOX` | `512` | box edge in voxels (default 512) |
 | `--seeds SEEDS` | `200` | seed count (default 200) |
 | `--rng RNG` | `0` | seed RNG (default 0) |
-| `--split-rule {v1,v2}` | `v2` | split rule: v2 cuts at gm_x above 1.0, v1 at 0.95 (default v2) |
+| `--split-rule {v2,v1,none}` | `v2` | split rule: v2 cuts at gm_x above 1.0, v1 at 0.95, none keeps every step (with none, `flags.json` marks the steps the v2 cut would remove as places to check) |
 | `--umbilicus UMBILICUS` | none | villa umbilicus JSON in the prediction's level-0 voxels (VC3D's {umbilicus}); it sets which way is outward |
 | `--estimate-axis` | off | without an umbilicus, estimate the axis from the seed normals (unreliable in small boxes) |
 | `--workers WORKERS` | `2` | threads for grad_mag reads (default 2) |
@@ -131,7 +131,7 @@ Files in `--out`:
 | File | What it is |
 | --- | --- |
 | `relative_windings.json` | villa's point collections (`vc_pointcollections_json_version` "1"), one per piece of two or more crossings, points with `p` (x, y, z level-0 voxels) and `wind_a` (windings outward of the piece's first point), `metadata.winding_is_absolute` false |
-| `flags.json` | point collections of places to check: `cut`, `contact` and `spacing` stops of the chains and every `split` step's midpoint |
+| `flags.json` | point collections of places to check: `cut`, `contact` and `spacing` stops of the chains and every `split` step's midpoint (with `--split-rule none`, also the kept steps the v2 cut would remove, collection `windlabel-check-split-step`) |
 | `chains.json` | the uncut chains: `rule`, `rule_digest`, `box`, `axis`, `axis_source`, `summary` (stop reasons) and `chains` (`seed`, `points`, `counts`, `normals`, `steps`, `stop`) |
 | `features.json` | `gm_x` per step and the grad_mag source |
 | `split.json` | the chains cut at the split steps |
@@ -146,7 +146,8 @@ It prints (one JSON object with `--json`):
 | `collections`, `points` | int | point collections and points in `relative_windings.json` |
 | `pieces` | int | exported pieces |
 | `steps` | int | steps in the exported pieces |
-| `split_steps` | int | steps the split rule cut |
+| `split_steps` | int | steps the split rule cut (0 under `--split-rule none`) |
+| `gm_x` | object | the run's `gm_x`: `n` steps counted, `median` and `p90`, `above_v2` (`count` and `share` above the v2 cut of 1.0) |
 | `flags` | object | flagged places by kind |
 | `checks` | object | `ok` and `issues` per file |
 | `vc3d` | object | `tool`, `point`, `box_edge`, `seeds`, `rng`, `prediction` (location, shape, chunks), `chain_rule_version`, `umbilicus`, `wall_seconds` |
@@ -222,8 +223,8 @@ It prints (one JSON object with `--json`):
 2. Seeds: `--seeds` random voxels on the sheet inside the box (`seeds_on`, rng `--rng`).
 3. Chains (`grow_chains`, `RULE` version 1): plane fit in a radius of 5 voxels (planarity at least 4), steps of 4 to 40 voxels along the normal sampled every 0.5 voxels over five rays 2 voxels apart, next sheet at most 9 voxels thick, spacing within 0.55 to 1.6 of the median of the last 4 steps, normal turn at most 35 degrees, at most 40 steps a side, then a trim pass.
 4. gm_x per step (`features_doc`): lasagna grad_mag sampled along 7 parallel rays, integrated, the median times `k_s` 0.765.
-5. Split (`split_chains`, `PARAMS_V2` `split-v2` by default): cut each step with gm_x above `abs_own` 1.0 (0.95 under `--split-rule v1`, `PARAMS` `split-v1`); pieces keep their own counts.
-6. Export (`export_split`): pieces of two or more crossings as villa point collections, flags for stops and cuts, both files checked against villa's and VC3D's rules (`check_pcl`).
+5. Split (`split_chains`, `PARAMS_V2` `split-v2` by default): cut each step with gm_x above `abs_own` 1.0 (0.95 under `--split-rule v1`, `PARAMS` `split-v1`; none, `PARAMS_NONE` `split-none`, cuts nothing and `flags.json` marks the steps the v2 cut would remove as places to check); pieces keep their own counts.
+6. Export (`export_split`): pieces of two or more crossings as villa point collections, flags for stops and cuts, the run's `gm_x` median, p90 and share above 1.0 (`gm_stats`) into the summary, both files checked against villa's and VC3D's rules (`check_pcl`).
 
 The code is a copy, function by function, of Scrolls-private's `kit windlabel`, `kit windlabel-split` and their helpers (only what this command runs), made by its release script and tested to write the same files.
 
@@ -247,7 +248,7 @@ CPU only, no rented compute. Measured 2026-10-24 on a 4-core cloud container rea
 python -m unittest tests.test_windlabel_box tests.test_plugins -v
 ```
 
-4 tests, about 2 s (2026-10-24, skipped without numpy and scipy): on a synthetic spiral with a grad_mag doubled from x = 150, the command exits 0, writes files VC3D loads, keeps at least 95 % of exported winding differences on the true wraps, cuts only near the doubled grad_mag and records both rule digests; split rule v2 keeps the same chains and cuts a subset of v1's steps; it refuses without a prediction, a grad_mag, an umbilicus, with a missing umbilicus file, an unopenable prediction or manifest, and bad numbers, writing nothing; `python -m kit windlabel-box --help` works. `tests.test_plugins` checks the manifest against VC3D's rules and kit's parser. They do not run on real data or in a VC3D build; the real-data and VC3D checks are in Checks and controls.
+6 tests, about 2 s (2026-10-24 on the first four, 31 Oct on the last two, skipped without numpy and scipy): on a synthetic spiral with a grad_mag doubled from x = 150, the command exits 0, writes files VC3D loads, keeps at least 95 % of exported winding differences on the true wraps, cuts only near the doubled grad_mag and records both rule digests; split rule v2 keeps the same chains and cuts a subset of v1's steps; with `--split-rule none` it keeps every step, marks the kept steps the v2 cut would remove as places to check (the same places the v2 run cuts), reports the per-run `gm_x` median, p90 and share above 1.0 in `export.json` and still keeps at least 95 % of its winding differences on the true wraps; the digests of the three rules (`c6d2eecbebc2`, `cd273aed7673`, `6e3aff82495f`) are pinned; it refuses without a prediction, a grad_mag, an umbilicus, with a missing umbilicus file, an unopenable prediction or manifest, and bad numbers, writing nothing; `python -m kit windlabel-box --help` works. `tests.test_plugins` checks the manifest against VC3D's rules and kit's parser. They do not run on real data or in a VC3D build; the real-data and VC3D checks are in Checks and controls.
 
 ## History
 

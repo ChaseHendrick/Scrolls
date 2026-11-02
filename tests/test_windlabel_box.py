@@ -152,6 +152,55 @@ class TestWindlabelBox(unittest.TestCase):
             self.assertEqual({k for k in _split.PARAMS if _split.PARAMS[k] != _split.PARAMS_V2[k]},
                              {"version", "abs_own"})
 
+    def test_split_rule_none_keeps_every_step(self):
+        with tempfile.TemporaryDirectory() as d:
+            d = Path(d)
+            write_inputs(d)
+            res = {}
+            for rule in ("v2", "none"):
+                rc, out, err = run(["--prediction", str(d / "pred.zarr"), "--grad-mag",
+                                    str(d / "las/run.lasagna.json"), "--point", "120,120,24", "--box", "140",
+                                    "--seeds", "30", "--umbilicus", str(d / "umbilicus.json"), "--split-rule", rule,
+                                    "--out", str(d / rule), "--json"])
+                self.assertEqual(rc, 0, err[-1500:])
+                res[rule] = json.loads(out)
+            self.assertEqual(res["none"]["split_steps"], 0)
+            sd = json.loads((d / "none/split.json").read_text())
+            sr = sd["split_rule"]
+            self.assertIsNone(sr["params"]["abs_own"])
+            self.assertIsNone(sr["params"]["q_own"])
+            self.assertEqual(sr["pieces"], sr["chains_in"])
+            self.assertEqual(sr["params_digest"], "6e3aff82495f")
+            # the steps kept with the cut off are still marked, where the v2 cut would act
+            spots = lambda name, tag: sorted(p["p"] for c in json.loads((d / name / "flags.json")
+                                             .read_text())["collections"].values() if tag in c["name"]
+                                             for p in c["points"].values())  # noqa: E731
+            self.assertEqual(spots("none", "check-split-step"), spots("v2", "flag-split-step"))
+            self.assertTrue(spots("none", "check-split-step"))
+            # the gm_x stats travel with the run, whatever the rule
+            self.assertEqual(res["none"]["gm_x"], res["v2"]["gm_x"])
+            self.assertGreater(res["none"]["gm_x"]["n"], 20)
+            self.assertLess(res["none"]["gm_x"]["median"], 1.0)
+            self.assertEqual(res["none"]["gm_x"]["above_v2"]["count"], res["v2"]["split_steps"])
+            # every exported winding difference is still the true one, with the cut's pairs back in
+            pw = json.loads((d / "none/relative_windings.json").read_text())
+            pairs = right = 0
+            for c in pw["collections"].values():
+                pts = list(c["points"].values())
+                for a_, b_ in zip(pts, pts[1:]):
+                    pairs += 1
+                    right += (b_["wind_a"] - a_["wind_a"]) == (true_wrap(b_["p"]) - true_wrap(a_["p"]))
+            self.assertGreater(pairs, 20)
+            self.assertGreaterEqual(right / pairs, 0.95)
+
+    def test_rule_digests(self):
+        from kit.windlabel_box import _split
+        self.assertEqual(_split.digest(_split.SPLIT_RULES["v1"]), "c6d2eecbebc2")
+        self.assertEqual(_split.digest(_split.SPLIT_RULES["v2"]), "cd273aed7673")
+        self.assertEqual(_split.digest(_split.SPLIT_RULES["none"]), "6e3aff82495f")
+        self.assertEqual({k for k in _split.PARAMS if _split.PARAMS[k] != _split.PARAMS_NONE[k]},
+                         {"version", "abs_own"})
+
     def test_refuses_before_any_work(self):
         with tempfile.TemporaryDirectory() as d:
             d = Path(d)

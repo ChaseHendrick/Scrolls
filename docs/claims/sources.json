@@ -100,7 +100,7 @@
     "docs/tools/umbilicus.md": "005ddbc3d549ec37c4362fa2069c93174cffa593e8a7349be7cd905ef6a270b6",
     "docs/tools/contact-barrier.md": "1f7409ebb26b4f34af7cb8dc15175f8440b9b68d80c65424c1351bba4f23cca4",
     "docs/tools/snapped-labels.md": "3da92dca823c53779149f1aa9f7699e0e9ee7533b5767956b1c4bae539b977ed",
-    "docs/tools/windlabel-box.md": "2cbfd91604f1ea481b70e1f9a54c56392550c18f1c3c483b8d0cac9401eddfb3",
+    "docs/tools/windlabel-box.md": "5e89f8376f0968df0385f75dfa9cc802f3e14970dc829c05e4e1a90fe41ae9fd",
     "docs/tools/labelsuggest.md": "4d93cd8dbe31106498a16ed7b8efdab8c38e5f7fb26c0715aec8e9a5bb56709d",
     "docs/logs/2026-10-29-parting-fragment-contact.md": "43f809fbb25dcb0bf3defa37e9df8fe7ccf127b01d87653892a2d96580746443"
    },
@@ -344,7 +344,7 @@
   "real-runs-need-villa-s-vc3d-tools-python3": {
    "line": 43,
    "sources": {
-    "docs/releases.json": "427fdbe161c16c988b6193531e5949686bce2cb186fbc5190bc283ca63d17c65"
+    "docs/releases.json": "734c0f4eacb1c0e757ce6bf9481fcc620eed27c77e8f8d364f5f57fded65c6bb"
    },
    "doc": "docs/pipeline-october-2026.md",
    "reasons": {
@@ -513,20 +513,20 @@
   "windlabel-box-needs-a-published-surface-prediction-lasagna": {
    "line": 176,
    "sources": {
-    "docs/tools/windlabel-box.md": "2cbfd91604f1ea481b70e1f9a54c56392550c18f1c3c483b8d0cac9401eddfb3"
+    "docs/tools/windlabel-box.md": "5e89f8376f0968df0385f75dfa9cc802f3e14970dc829c05e4e1a90fe41ae9fd"
    },
    "doc": "docs/pipeline-october-2026.md"
   },
   "windlabel-box-s-automatic-relative-windings-passed-a": {
    "line": 263,
    "sources": {
-    "docs/tools/windlabel-box.md": "2cbfd91604f1ea481b70e1f9a54c56392550c18f1c3c483b8d0cac9401eddfb3"
+    "docs/tools/windlabel-box.md": "5e89f8376f0968df0385f75dfa9cc802f3e14970dc829c05e4e1a90fe41ae9fd"
    }
   },
   "windlabel-box-s-automatic-relative-windings-passed-a-2": {
    "line": 15,
    "sources": {
-    "docs/tools/windlabel-box.md": "2cbfd91604f1ea481b70e1f9a54c56392550c18f1c3c483b8d0cac9401eddfb3"
+    "docs/tools/windlabel-box.md": "5e89f8376f0968df0385f75dfa9cc802f3e14970dc829c05e4e1a90fe41ae9fd"
    },
    "doc": "docs/FINDINGS.md",
    "reasons": {
@@ -536,7 +536,7 @@
   "windlabel-box-s-split-rule-v1-failed-its": {
    "line": 164,
    "sources": {
-    "docs/tools/windlabel-box.md": "2cbfd91604f1ea481b70e1f9a54c56392550c18f1c3c483b8d0cac9401eddfb3"
+    "docs/tools/windlabel-box.md": "5e89f8376f0968df0385f75dfa9cc802f3e14970dc829c05e4e1a90fe41ae9fd"
    },
    "doc": "docs/pipeline-october-2026.md"
   }
