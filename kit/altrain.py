@@ -347,8 +347,8 @@ def segment_readout(seg, fwd, rev, base=None, expected=None, nboot=NBOOT, seed=B
     if base["n_test_blocks"] < MIN_TEST_BLOCKS:
         why.append(f"{base['n_test_blocks']} test blocks < {MIN_TEST_BLOCKS}")
     if not base["auc_inplace"] - base["auc_displaced"] >= DISPLACE_MIN:
-        why.append(f"labels do not track the CT: base AUC {base['auc_inplace']:.4f} in place against "
-                   f"{base['auc_displaced']:.4f} moved {DISPLACE_PX} px")
+        why.append(f"labels do not track the CT: base AUC {base['auc_inplace']:.6f} in place against "
+                   f"{base['auc_displaced']:.6f} moved {DISPLACE_PX} px")
     budgets = sorted({r.split("-")[0][1:] for r in expected})
     out = {"segment": seg, "budgets": {}}
     shuf_boot, shuf_point = [], []
@@ -380,7 +380,7 @@ def segment_readout(seg, fwd, rev, base=None, expected=None, nboot=NBOOT, seed=B
                 rec["revealed_ink_ratio_suggest_random"] = round(ink.get("SUGGEST", 0) / ink["RANDOM"], 4)
         for a in ARMS:
             if not rpoint[a] <= REV_MAX:
-                why.append(f"budget {b}: {a} mean reverse-depth AUC {rpoint[a]:.4f} > {REV_MAX}")
+                why.append(f"budget {b}: {a} mean reverse-depth AUC {rpoint[a]:.6f} > {REV_MAX}")
         shuf_boot.append(boot["SHUF"] - boot["RANDOM"])
         shuf_point.append(point["SHUF"] - point["RANDOM"])
         out["budgets"][b] = rec
@@ -461,7 +461,8 @@ def readout(root, nboot=NBOOT, segments=TEST_SEGMENTS):
             segs.append(segment_readout(s, f, r, b, e, nboot, extra=x))
     return {"kind": "kit-altrain-readout", "constants_sha256": constants_sha256(), "segments": segs,
             "segments_expected": list(segments), "nboot": nboot, "nboot_frozen": nboot == NBOOT,
-            "frozen_segment_set": tuple(segments) == TEST_SEGMENTS, **verdict(segs)}
+            # default_segment_set: whether the readout used the public benchmark's segment set
+            "default_segment_set": tuple(segments) == TEST_SEGMENTS, **verdict(segs)}
 
 
 def cmd_plan(a):
@@ -493,8 +494,8 @@ def cmd_readout(a):
                 print(f"  budget {b}: SUGGEST {r['auc']['SUGGEST']:.4f} RANDOM {r['auc']['RANDOM']:.4f} "
                       f"diff {d['est']:+.4f} (lower {d['lower']:+.4f})")
         print(f"verdict {rec['verdict']}: counted {rec['counted']}, passing {rec['passing']}")
-        if not (rec["nboot_frozen"] and rec["frozen_segment_set"]):
-            print("note: not the preregistered readout (non-default --nboot or --segments)")
+        if not (rec["nboot_frozen"] and rec["default_segment_set"]):
+            print("note: not the default readout (non-default --nboot or --segments)")
     return 0
 
 

@@ -12430,7 +12430,7 @@
    "tool": "kit altrain (training-run comparison) with kit labelsuggest's edge measure as SUGGEST",
    "source": "docs/tools/altrain.md",
    "claim": "Measurement on model output: a simulated labeling round with oracle labels on three Paris fragments (Frag2 PHercParis2Fr143, Frag3 PHercParis1Fr34, Frag4 PHercParis1Fr39: the public 54 keV 3.24 um exposed-surface volumes of dl.ash2txt.org/fragments mean-pooled 3 x 3 x 3 to 9.72 um, 21 layers, with their infrared-photograph ink labels pooled the same way). Per fragment a fixed label-free layout split the labeled area into 256 px test blocks and a pool of 64 px tiles one tile away from them. Each arm revealed the labels of k pool tiles: SUGGEST (top k by labelsuggest's edge measure on scrollprize/ink_9um seeds 42 and 43, revision 7109667e), UNCERTAIN (top k by entropy of seed 42), RANDOM (5 draws) and SHUF (top k of shuffled SUGGEST scores, a control). ink_9um seed 42, which trained on no fragment, was fine-tuned 300 steps on each arm's tiles at 5, 10 and 20 % of the pool, 3 seeds, and mapped the test blocks forward and with reversed depth. Rule, controls and bars were preregistered and frozen before any fine-tune, after an independent review; each fragment was read once.",
-   "claim_wording": "Not shown: fine-tuning on the tiles the edge measure picked did not beat random tiles at any budget on any fragment (no lower bound above 0), and at 5 % it was below random on Frag3 and Frag4 (about -0.10 AUC). The fragment readout is VOID by its rule: only Frag4 counted; Frag2 and Frag3 failed the displaced-label control (the base reader's map does not track their labels by the 0.05 margin), and Frag2's arms also crossed the 0.55 reverse-depth bar",
+   "claim_wording": "Not shown: fine-tuning on the tiles the edge measure picked did not beat random tiles at any budget on any fragment (no lower bound above 0), and at 5 % it was below random on Frag3 and Frag4 (about -0.10 AUC). The fragment readout is VOID by its rule: only Frag4 counted; Frag2 and Frag3 failed the displaced-label control (the base reader's map does not track their labels by the 0.05 margin), and some arms on Frag2 and Frag3 also crossed the 0.55 reverse-depth bar",
    "verdict": "VOID",
    "counted": [
     "frag4"
@@ -12441,16 +12441,16 @@
     "frag2": {
      "state": "VOID",
      "why_void": [
-      "labels do not track the CT: base AUC 0.6445 in place against 0.5984 moved 32 px",
-      "budget 0.05: RANDOM mean reverse-depth AUC 0.5615 > 0.55",
-      "budget 0.05: SHUF mean reverse-depth AUC 0.5547 > 0.55",
-      "budget 0.10: SUGGEST mean reverse-depth AUC 0.5756 > 0.55",
-      "budget 0.10: RANDOM mean reverse-depth AUC 0.5625 > 0.55",
-      "budget 0.10: SHUF mean reverse-depth AUC 0.5620 > 0.55",
-      "budget 0.20: SUGGEST mean reverse-depth AUC 0.5726 > 0.55",
-      "budget 0.20: UNCERTAIN mean reverse-depth AUC 0.5728 > 0.55",
-      "budget 0.20: RANDOM mean reverse-depth AUC 0.5670 > 0.55",
-      "budget 0.20: SHUF mean reverse-depth AUC 0.5641 > 0.55"
+      "labels do not track the CT: base AUC 0.644531 in place against 0.598413 moved 32 px",
+      "budget 0.05: RANDOM mean reverse-depth AUC 0.561457 > 0.55",
+      "budget 0.05: SHUF mean reverse-depth AUC 0.554669 > 0.55",
+      "budget 0.10: SUGGEST mean reverse-depth AUC 0.575576 > 0.55",
+      "budget 0.10: RANDOM mean reverse-depth AUC 0.562512 > 0.55",
+      "budget 0.10: SHUF mean reverse-depth AUC 0.561964 > 0.55",
+      "budget 0.20: SUGGEST mean reverse-depth AUC 0.572629 > 0.55",
+      "budget 0.20: UNCERTAIN mean reverse-depth AUC 0.572831 > 0.55",
+      "budget 0.20: RANDOM mean reverse-depth AUC 0.567018 > 0.55",
+      "budget 0.20: SHUF mean reverse-depth AUC 0.564143 > 0.55"
      ],
      "base_test_auc": 0.6445,
      "base_test_auc_labels_moved_32px": 0.5984,
@@ -12570,10 +12570,10 @@
     "frag3": {
      "state": "VOID",
      "why_void": [
-      "labels do not track the CT: base AUC 0.5674 in place against 0.5689 moved 32 px",
-      "budget 0.10: RANDOM mean reverse-depth AUC 0.5500 > 0.55",
-      "budget 0.20: RANDOM mean reverse-depth AUC 0.5512 > 0.55",
-      "budget 0.20: SHUF mean reverse-depth AUC 0.5610 > 0.55"
+      "labels do not track the CT: base AUC 0.567359 in place against 0.568890 moved 32 px",
+      "budget 0.10: RANDOM mean reverse-depth AUC 0.550020 > 0.55",
+      "budget 0.20: RANDOM mean reverse-depth AUC 0.551229 > 0.55",
+      "budget 0.20: SHUF mean reverse-depth AUC 0.561037 > 0.55"
      ],
      "base_test_auc": 0.5674,
      "base_test_auc_labels_moved_32px": 0.5689,
@@ -12811,7 +12811,10 @@
    },
    "constants_sha256": "4fe0bf2d9f45318d814cffa27f21d25834f1b482e31f91e3b39f23e12004e00b",
    "scope": "One base reader, one short recipe, fragments only (exposed surfaces, not buried ink). The private preregistration also had a scroll segment, which stays private. A suggested tile is a place to label, never a reading; the labels were already drawn, so this says nothing of a person's labeling time.",
-   "why": "A villa maintainer asked for a training run comparison before taking the active-learning tool upstream (villa PR #2381)."
+   "why": "A villa maintainer asked for a training run comparison before taking the active-learning tool upstream (villa PR #2381).",
+   "constants_sha256_note": "This is the public module's constants hash. It differs from the hash of the frozen rule the run used only in the segment list (the frozen rule also listed the private scroll segment); every other constant is the same.",
+   "rounding_note": "suggest_revealed_ink_over_random is rounded to 2 decimals; the AUC values are as the readout printed them (6 decimals).",
+   "base_reader_training_data": "scrollprize/ink_9um: its label dataset README, in the ink_9um folder of scrollprize/datasets on Hugging Face (listed in docs/external.md; file date 14 Aug 2026), lists 24 aligned segments of PHerc. 0139, Scroll 1667, PHerc. Paris 4 and PHerc. 0814 and 5 native PHerc. 0139 segments, and no fragment; model card https://huggingface.co/scrollprize/ink_9um"
   }
  ],
  "sqrecipe_checks": [

@@ -97,7 +97,7 @@ Each control makes its segment VOID (not counted) and each fails a synthetic seg
 - **Layout:** `disjoint` is false when a pool tile touches a test block (a test moves one in), and the worker refuses such a layout.
 - **The arms differ only by their picks:** equal arms give FAIL in tests, a planted better SUGGEST gives PASS.
 
-**The fragment benchmark** (3 Nov 2026, preregistered and frozen before any fine-tune, each fragment read once; numbers in `docs/results.json`, `label_suggest_checks`): on Frag2, Frag3 and Frag4, ink_9um seed 42 fine-tuned on the edge measure's tiles did **not** beat random tiles at any budget (no lower bound above 0), and at 5 % it was below random on Frag3 and Frag4 (about -0.10 AUC). The readout is **VOID** by its rule: only Frag4 counted; Frag2 and Frag3 failed the displaced-label control, and Frag2's arms also crossed the 0.55 reverse-depth bar. One base reader, one short recipe, exposed fragment surfaces only.
+**The fragment benchmark** (3 Nov 2026, preregistered and frozen before any fine-tune, each fragment read once; numbers in `docs/results.json`, `label_suggest_checks`): on Frag2, Frag3 and Frag4, ink_9um seed 42 fine-tuned on the edge measure's tiles did **not** beat random tiles at any budget (no lower bound above 0), and at 5 % it was below random on Frag3 and Frag4 (about -0.10 AUC). The readout is **VOID** by its rule: only Frag4 counted; Frag2 and Frag3 failed the displaced-label control, and some arms on Frag2 and Frag3 also crossed the 0.55 reverse-depth bar. ink_9um trained on no fragment (its label dataset README, in the ink_9um folder of scrollprize/datasets on Hugging Face, listed in docs/external.md; model card https://huggingface.co/scrollprize/ink_9um). One base reader, one short recipe, exposed fragment surfaces only.
 
 Claim label: Model output for any map; Measurement for numbers from a run; that suggested tiles beat random ones in a fine-tune is not shown (the preregistered test was VOID and no budget favored SUGGEST).
 
@@ -181,10 +181,10 @@ usage: python -m kit altrain readout [-h] [--nboot NBOOT]
 | `segments[].budgets[B].SUGGEST-RANDOM` | object | `est`, `lower`, `upper` (also UNCERTAIN-RANDOM, SUGGEST-UNCERTAIN, SHUF-RANDOM, SUGGEST-RANDOM_reverse) |
 | `segments[].budgets[B].forward_minus_reverse_gain` | object | `est`, `lower`: the claim guard |
 | `segments[].budgets[B].revealed_ink_px`, `revealed_ink_ratio_suggest_random` | object, float | each arm's mean revealed ink pixels; SUGGEST's over RANDOM's |
-| `nboot_frozen`, `frozen_segment_set` | bool | whether this is the preregistered readout |
+| `nboot_frozen`, `default_segment_set` | bool | whether the readout used the default draws and the public benchmark's segment set |
 | `segments[].shuffle_control` | object | pooled SHUF minus RANDOM, its 99 % interval, `holds` |
 | `segments[].void_why` | list | why a segment is VOID |
-| `constants_sha256` | str | the rule's constants |
+| `constants_sha256` | str | the rule's constants. The public module's hash differs from the hash of the frozen rule the fragment benchmark ran under only in the segment list (that rule also listed a private scroll segment) |
 
 | Exit code | Meaning |
 | --- | --- |

@@ -221,7 +221,7 @@ class Readout(unittest.TestCase):
             rec = A.readout(t, nboot=200, segments=("a", "b"))
             self.assertEqual(rec["verdict"], "PASS")
             self.assertEqual(rec["constants_sha256"], A.constants_sha256())
-            self.assertFalse(rec["frozen_segment_set"])
+            self.assertFalse(rec["default_segment_set"])
             self.assertAlmostEqual(rec["segments"][0]["budgets"]["0.05"]["revealed_ink_ratio_suggest_random"], 3.0)
 
     def test_readout_wants_exactly_the_segment_set(self):
