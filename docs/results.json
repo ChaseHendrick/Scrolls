@@ -12372,6 +12372,26 @@
     }
    },
    "limits": "one scroll and one band, 128 of the 173 scored vertices on w038; the two reference scans are both about 2.4 um at a similar energy and may share a face bias; scroll-label-snap is built for whole segments and ran untuned on small crops, and its default keeps the mesh's own offset by design; labelsnap's defaults were set on other PHerc0139 sites; a within-1 hit shows agreement with two other scans, not that the placement is on the papyrus"
+  },
+  {
+   "date": "2026-11-03",
+   "tool": "kit labelsnap against scroll-label-snap (A.Q. Snyder) on spent PHerc0139 development sites",
+   "source": "docs/data/pherc0139-snap-sites/README.md",
+   "claim": "Model output, development only (spent sites, not a held-out test): share of covered vertices where a placement lies within 1 voxel of the recto face that the 1.129 um scan (20260413113053) and the ROI2 scan (20260319133554) agree on, positions in volume 20250728140407 level 0; geometry only, never a reading",
+   "sites": 108,
+   "windings": "w023 to w029, w031 to w034, w036 to w038",
+   "covered_vertices": 601,
+   "hit_rate": {
+    "published": 0.298,
+    "m7_snap": 0.301,
+    "scroll_label_snap_defaults": 0.431,
+    "scroll_label_snap_offset0": 0.579,
+    "scroll_label_snap_offset0_template_weight0": 0.674,
+    "labelsnap": 0.854
+   },
+   "compared": "scroll-label-snap (https://github.com/aqsnyder/scroll-label-snap) at commit 347ea5b4, unmodified, on 13 x 13 vertex crops",
+   "data": "docs/data/pherc0139-snap-sites/pherc0139_twoscan_vertices.csv (sha256 14fb0a7c5a0bd3623bad9c80ab87b8b2d78e4e6a656f73940813cf92beb336a7), CC BY-NC 4.0",
+   "limits": "one scroll, spent development sites, small crops; scroll-label-snap is built for whole meshes and was untuned here; labelsnap's face finder resembles the truth's face definition, so it may have a home advantage; not a general ranking"
   }
  ],
  "parting_checks": [
