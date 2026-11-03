@@ -7,6 +7,7 @@
 | Item | State | Next step |
 | --- | --- | --- |
 | Prize snapshot of 3 Nov: First Letters at 8 more scrolls, $400,000 | New snapshot `kit/data/prizes-2026-11-03.json` (the 11 Oct file is kept) from the prizes page body read 3 Nov and villa #2431: 20 First Letters volumes, PHerc0306B awarded (announced 2 Nov). README table, [prizes.md](prizes.md) and the tool pages follow. The homepage card and the $2,140,000 pool figure still show the old $500,000; the Progress Prize line still names 31 Oct, so `kit.prizewatch` reports that one deadline until the page names November's | When the page names the November Progress Prize deadline, add a new dated snapshot |
+| labelsnap against scroll-label-snap: real drift chart (3 Nov) | Chart of the preregistered real drift test on 43 fresh public PHerc0139 sites (Model output): within 1 voxel of the two-scan recto face, labelsnap 0.798, A.Q. Snyder's scroll-label-snap 0.179 to 0.434 over four settings, published labels 0.173, with the caveats on the [labelsnap page](tools/labelsnap.md). PNGs in `docs/assets/labelsnap/` (light and dark, sidecar `labelsnap-realdrift.json`), script `scripts/experiments/lsnap-realdrift/chart.py`, numbers in `label_snap_checks` of `docs/results.json`. Merged with this PR after CI and the leak check | None; the private record stays in Scrolls-private |
 
 ## Continuation, 31 October 2026
 

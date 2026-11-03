@@ -1,0 +1,52 @@
+{
+  "schema": "scrolls-media/1",
+  "name": "labelsnap-realdrift",
+  "label": "Real data render",
+  "alt": "Three bar charts. Real drift test on 43 fresh public PHerc0139 sites, 173 scored vertices: share of label vertices within 1 voxel of the two-scan recto face, kit labelsnap (snap_labels in the chart) 0.798, scroll-label-snap 0.179 to 0.434 over four settings, m7 snap 0.214, published labels 0.173; median signed distance into the sheet, labelsnap +0.02 voxels, scroll-label-snap +0.91 to +2.69, published +3.21; and a self-consistency panel under a planted 3 voxel shift on 108 earlier development sites.",
+  "caption": "Real data render: a chart of placement scores (claim label Model output) from the preregistered real drift test on public PHerc0139, comparing kit labelsnap with A.Q. Snyder's scroll-label-snap (MIT, pinned at 347ea5b4); no CT pixels, mesh or map is shown. Data: Vesuvius Challenge open data, CC BY-NC 4.0.",
+  "license": "CC BY-NC 4.0",
+  "release_id": null,
+  "data": {
+    "scan": "PHerc0139",
+    "segment": "published surface label meshes at 43 sites, z 6194 to 7890 (128 of the 173 scored vertices on w038); 108 earlier development sites for the third panel",
+    "volume": "20250728140407 (label scan); reference faces from the 2.403 um region scan and the 2.399 um scan",
+    "voxel_size": "9.362 um (label scan); reference faces at 2.403 um and 2.399 um",
+    "credit": "Vesuvius Challenge open data, CC BY-NC 4.0",
+    "labels": "none"
+  },
+  "sources": [
+    "Preregistered real drift test, scored once on 3 November 2026 (Hugging Face Job 6aea627fc78863f9c6320c59); numbers copied into the chart script",
+    "scroll-label-snap, https://github.com/aqsnyder/scroll-label-snap at 347ea5b4f3f7e346197034b7df599a4709aa0bbe (MIT)"
+  ],
+  "outputs": [
+    {
+      "file": "labelsnap-realdrift-dark.png",
+      "bytes": 590497,
+      "sha256": "a809a6d71e91a1ff2ebf3d9da3207bd48381d81e5f9c2ba7c397f8fa49b11840",
+      "width": 1875,
+      "height": 2475,
+      "kind": "png",
+      "format": "png"
+    },
+    {
+      "file": "labelsnap-realdrift-light.png",
+      "bytes": 593040,
+      "sha256": "1667bc33e055f3b58d353b2e22290c3a9c81c4e7b17016c3a8e52da5b6dfd5f3",
+      "width": 1875,
+      "height": 2475,
+      "kind": "png",
+      "format": "png"
+    }
+  ],
+  "inputs": [],
+  "made": "2026-11-03",
+  "tool": {
+    "scripts": [
+      "scripts/experiments/lsnap-realdrift/chart.py"
+    ],
+    "scripts_sha256": "4e9d9f5935eb50f3f9876f091d559a151f97c550feb97d82297333fb5e5054ce",
+    "base_commit": "043bbbdee2b3ead6dd32be9b4185d7424eaa9c1d"
+  },
+  "command": "python scripts/experiments/lsnap-realdrift/chart.py docs/assets/labelsnap",
+  "note": "A chart of benchmark numbers only; both tools read only the 9.362 um label scan. Two copies, dark and light."
+}
