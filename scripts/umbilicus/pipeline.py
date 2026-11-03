@@ -11,11 +11,16 @@ it takes the median of every model and writes an umbilicus JSON in the format of
 in level-0 voxels) to OUT/umbilicus/.
 
 Umbilicus files (umbilicus_json, write_umbilicus) are named <scroll>_umbilicus.json, or with --vc3d-name
-<scroll>/umbilicus.json, the name VC3D searches for first and spiral-fitting reads. Their metadata carries the scan's
-level-0 width, height and slice count (all three or none), which VC3D uses to place the points on the volume it has
-open. Both follow villa main 8aa507c12: volume-cartographer/core/src/ScrollUmbilicus.cpp:74-75 (file names) and
-317-341 (rescale by the stamped grid), core/src/Umbilicus.cpp:272-426 (what VC3D accepts), apps/src/vc_gen_umbilicus.cpp:
-224-226 and 510-520 (villa's own writer of the triplet), spiral-fitting/fit_session.py:362-365 (umbilicus.json).
+<scroll>/umbilicus.json, the name spiral-fitting's dataset folder must hold (villa main deb1b6953,
+spiral-fitting/fit_session.py:363-365) and the name VC3D searched for first before villa #2358. Their metadata carries
+the scan's level-0 width, height and slice count (all three or none), which VC3D uses to place the points on the volume
+it has open. Since villa #2358 (29 Oct 2026 UTC) VC3D imports the file into its object store (File, Import Umbilicus...;
+deb1b6953: volume-cartographer/apps/VC3D/MenuActionController.cpp:1767-1849, vc_object_store/src/UmbilicusFile.cpp,
+which reads control_points and metadata as written here and rescales by the stamped grid at 185-231). The villa line
+references below are history, pinned to villa main 8aa507c12, before #2358: volume-cartographer/core/src/
+ScrollUmbilicus.cpp:74-75 (file names) and 317-341 (rescale by the stamped grid), core/src/Umbilicus.cpp:272-426 (what
+VC3D accepted), apps/src/vc_gen_umbilicus.cpp:224-226 and 510-520 (villa's own writer of the triplet, still on main),
+spiral-fitting/fit_session.py:362-365 (umbilicus.json).
 """
 import argparse, json, os, sys, time
 import numpy as np
@@ -39,9 +44,9 @@ def write_json(obj, path, **kw):
     with open(path, "w") as fh:
         json.dump(obj, fh, **kw)
 
-# The file name VC3D looks for first in each folder it searches (then estimated_umbilicus.json), and the one
-# spiral-fitting's dataset folder must hold: villa main 8aa507c12, volume-cartographer/core/src/ScrollUmbilicus.cpp:74-75
-# and spiral-fitting/fit_session.py:362-365.
+# The file name spiral-fitting's dataset folder must hold (villa main deb1b6953, spiral-fitting/fit_session.py:363-365),
+# and the one VC3D looked for first in each folder it searched (then estimated_umbilicus.json) before villa #2358 moved
+# the umbilicus into the object store on 29 Oct 2026 UTC (8aa507c12, volume-cartographer/core/src/ScrollUmbilicus.cpp:74-75).
 VC3D_NAME = "umbilicus.json"
 SUFFIX = "_umbilicus.json"            # this finder's default name, <scroll>_umbilicus.json, as the published files
 DIMS = ("volume_width", "volume_height", "volume_slices")    # Umbilicus.cpp:385-387; x, y and z of the grid
@@ -88,7 +93,8 @@ def umbilicus_files(src):
 
 def _rescales(fine, coarse, level):
     """True when each coarse count is floor or ceil of the fine count over 2**level: the only counts an integer
-    downsampling gives, the test VC3D's uniformRescaleFactor applies (ScrollUmbilicus.cpp:273-291)."""
+    downsampling gives, the test VC3D's uniformRescaleFactor applies (vc_object_store/src/UmbilicusFile.cpp:185-213 at villa deb1b6953;
+    ScrollUmbilicus.cpp:273-291 at 8aa507c12, before #2358)."""
     f = 2 ** int(level)
     return len(fine) == len(coarse) and all(int(c) in (int(a) // f, -(-int(a) // f)) for a, c in zip(fine, coarse))
 
@@ -108,7 +114,7 @@ def volume_dims(vol, held=None, planes=None, level=3):
     `planes` (the (H, W) of a slice file's level-`level` planes) must be that grid downsampled 2**level times, or the
     shape belongs to another scan and nothing is stamped. {} (with the reason on stderr) when the grid cannot be read:
     the file then carries no triplet, never part of one (Umbilicus.cpp:389-421 refuses a partial triplet), and VC3D
-    falls back to the voxel size (ScrollUmbilicus.cpp:348-358)."""
+    falls back to the voxel size (UmbilicusFile.cpp:226-231 at deb1b6953; ScrollUmbilicus.cpp:348-358 at 8aa507c12)."""
     why = None
     if held is not None:
         shape = [int(v) for v in np.asarray(held).ravel()]

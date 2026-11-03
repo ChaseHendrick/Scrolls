@@ -133,6 +133,20 @@ class TestCenterline(unittest.TestCase):
                 centerline.get_line("PHerc0001", folder=d, get=bad)
             self.assertFalse(Path(d, "umbilicus.json").exists())
 
+    def test_stamp_never_writes_a_null_volume(self):
+        # VC3D's object store reader (villa #2358) refuses a metadata.volume that is not a non-empty string
+        meta = json.loads(json.dumps(META))
+        del meta["samples"]["PHerc0001"]["volumes"]["20250101000000"]["long_id"]
+        def no_long_id(url, timeout=60):
+            return json.dumps(meta).encode() if url == find.METADATA else fake_get(url)
+        data = {"control_points": [{"x": 1, "y": 2, "z": 3}]}
+        self.assertTrue(centerline.stamp(data, "PHerc0001", "20250101000000", get=no_long_id))
+        self.assertNotIn("volume", data["metadata"])
+        self.assertEqual(data["metadata"]["volume_slices"], 3000)
+        data = {"control_points": [{"x": 1, "y": 2, "z": 3}]}
+        self.assertTrue(centerline.stamp(data, "PHerc0001", "20250101000000", get=fake_get))
+        self.assertEqual(data["metadata"]["volume"], "20250101000000-9.362um-1.2m-113keV-masked.zarr")
+
     def test_no_stamp_keeps_bytes(self):
         with tempfile.TemporaryDirectory() as d:
             centerline.get_line("PHerc0001", out=f"{d}/u.json", get=fake_get, do_stamp=False)

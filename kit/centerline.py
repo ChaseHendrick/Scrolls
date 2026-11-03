@@ -3,13 +3,16 @@
 Sources, both public: the center lines dataset SharpMeow/vesuvius-center-lines on Hugging Face (every public line
 for the prize-eligible scans and, since v2.3, 11 other public scans, each with its sha256 in index.json) and the
 open-data bucket's SCROLL/representations/umbilicus/ files. `list` shows every line kit can find; `get` downloads one, checks its
-sha256 when the index gives one, and writes it as FOLDER/umbilicus.json, the name VC3D searches for and
-spiral-fitting reads (villa main 8aa507c12: volume-cartographer/core/src/ScrollUmbilicus.cpp, spiral-fitting/
-fit_session.py; see docs/tools/umbilicus.md). When the file lacks volume_width, volume_height and volume_slices and
-the line's volume is known, they are stamped from metadata.json's shape, so VC3D can place the points at any
-pyramid level. It replaces an umbilicus.json already in FOLDER only with --force, and never writes beside an
-estimated_umbilicus.json (VC3D refuses a folder with both). The line's points are in level-0 voxels of the volume
-it names.
+sha256 when the index gives one, and writes it as FOLDER/umbilicus.json, the name spiral-fitting's dataset folder
+must hold (villa main deb1b6953, spiral-fitting/fit_session.py:363-365). VC3D imports the file under any name through
+File, Import Umbilicus... into its object store since villa #2358 (29 Oct 2026 UTC; vc_object_store/src/UmbilicusFile.cpp);
+before that it searched folders for umbilicus.json (villa main 8aa507c12, volume-cartographer/core/src/
+ScrollUmbilicus.cpp; see docs/tools/umbilicus.md). When the file lacks volume_width, volume_height and volume_slices
+and the line's volume is known, they are stamped from metadata.json's shape, so VC3D can place the points at any
+pyramid level. metadata.volume is added only as a non-empty string, since VC3D's reader refuses any other value
+(UmbilicusFile.cpp:92-96). It replaces an umbilicus.json already in FOLDER only with --force, and never writes beside
+an estimated_umbilicus.json (VC3D before #2358 refused a folder with both). The line's points are in level-0 voxels
+of the volume it names.
 """
 
 import argparse
@@ -94,7 +97,9 @@ def stamp(data, scroll, volume, get=_find.http_get):
     if not (isinstance(shape, list) and len(shape) == 3 and all(isinstance(n, int) and n > 0 for n in shape)):
         return False
     meta["volume_slices"], meta["volume_height"], meta["volume_width"] = shape
-    meta.setdefault("volume", v.get("long_id"))
+    long_id = v.get("long_id")
+    if isinstance(long_id, str) and long_id and "volume" not in meta:
+        meta["volume"] = long_id  # VC3D refuses a null or empty metadata.volume (UmbilicusFile.cpp:92-96)
     return True
 
 
@@ -118,8 +123,8 @@ def get_line(scroll, folder=None, out=None, source=None, force=False, get=_find.
         if not folder.is_dir():
             raise VerifyError(f"no folder {folder}: give the folder that holds your *.volpkg.json, or a spiral fit dataset")
         if (folder / "estimated_umbilicus.json").exists():
-            raise VerifyError(f"{folder} has estimated_umbilicus.json; move it away first (VC3D refuses a folder "
-                              "with both it and umbilicus.json)")
+            raise VerifyError(f"{folder} has estimated_umbilicus.json; move it away first (VC3D before villa "
+                              "#2358 refused a folder with both it and umbilicus.json)")
         if (folder / "umbilicus.json").exists() and not force:
             raise VerifyError(f"{folder} already has umbilicus.json; use --force to replace it")
         dest = folder / "umbilicus.json"

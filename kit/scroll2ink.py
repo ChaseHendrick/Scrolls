@@ -13,7 +13,8 @@ calls villa's VC3D command line tools and villa's ink inference and checks what 
            surface that fails stops the run)
   extend   extend: vc_extend_edge grows the checked surface past its edges; the extension is kept only when it
            passes check_surface too (skipped when this build has no vc_extend_edge)
-  flatten  flatten: vc_flatten (ABF++)
+  flatten  flatten: vc_flatten (ABF++), which villa removed on 29 Oct 2026 (#2358); a Headless VC3D whose flatten
+           tool falls back to villa's flatboi (SLIM) runs that on newer builds, and the record names the flattener
   render   render: vc_render_tifxyz along the flat surface, in the team's layer order, its flag voted from the
            surface's normal against the umbilicus (a grown surface need not face the way a published one does)
   ink      ink: the forward map and the reverse-depth control
@@ -385,12 +386,22 @@ def stage_extend(run, agent, log, inp, tr):
     return "done", {"kept": True, "surface": path, "area_cm2": area, "check": c, "seconds_tool": res.get("seconds")}
 
 
+# villa #2358 (squash merge e1aa625a6, 29 Oct 2026 UTC) removed vc_flatten; Headless VC3D 1.1.1 knows no other flattener.
+NO_VC_FLATTEN = ("this VC3D build has no vc_flatten: villa removed it on 29 Oct 2026 (#2358). Use a VC3D build from "
+                 "before it (villa 7154682e1), or a Headless VC3D whose flatten tool falls back to villa's flatboi, such "
+                 "as the one in AutoPipeline 0.1.11 (--agent scrolls-kit; not yet run with scroll2ink)")
+
+
 def stage_flatten(run, agent, log, surf):
     rc, res = call(agent, "flatten", {"surface": surf, "out": str(run.dir / "flat" / "flat")}, log)
     path, area = _surface(res)
     if rc != 0 or not path:
-        raise Scroll2InkError(f"flatten: {res.get('error') or res.get('log_tail', '')[-500:]}")
-    return {"surface": path, "area_cm2": area}
+        why = res.get("error") or res.get("log_tail", "")[-500:]
+        if "vc_flatten is not in" in str(why):
+            why = f"{why}. {NO_VC_FLATTEN}"
+        raise Scroll2InkError(f"flatten: {why}")
+    # Headless VC3D releases before the fallback name no tool: they ran vc_flatten (ABF++)
+    return {"surface": path, "area_cm2": area, "flattener": res.get("tool") or "vc_flatten"}
 
 
 def stage_render(run, agent, log, inp, flat):

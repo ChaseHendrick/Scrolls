@@ -24,7 +24,7 @@
    "why": "no held-out comparison with villa's standard tracer recorded here",
    "reach": "villa (ScrollPrize/villa)"},
   {"stage": "flatten", "name": "villa", "origin": "community", "licence": "GPL-3.0 (called, not copied)",
-   "by": "villa's vc_flatten (ABF++)", "use": {"scroll2ink": {"args": []}}},
+   "by": "villa's vc_flatten (ABF++), removed from villa on 29 Oct 2026 by #2358, so it needs a VC3D build from before it; a Headless VC3D whose flatten tool falls back to villa's flatboi (SLIM) runs that on newer builds, and scroll2ink records which ran", "use": {"scroll2ink": {"args": []}}},
   {"stage": "render", "name": "villa", "origin": "community", "licence": "GPL-3.0 (called, not copied)",
    "by": "villa's vc_render_tifxyz", "maturity": "default",
    "use": {"autopipeline": {"settings": {}}, "scroll2ink": {"args": []}}},

@@ -14,7 +14,7 @@ from kit import scroll2ink
 ROOT = Path(__file__).resolve().parents[1]
 
 # A stand-in for `vc3d-agent`: `vc3d call TOOL JSON` appends the call to $FAKE_LOG and answers like the real tool.
-# $FAKE_MODE changes one answer: badseed, badcheck, badextend, noextend, inkfail, inward.
+# $FAKE_MODE changes one answer: badseed, badcheck, badextend, noextend, noflatten, flatboi, inkfail, inward.
 FAKE = textwrap.dedent('''
     import json, os, sys
     from pathlib import Path
@@ -63,7 +63,12 @@ FAKE = textwrap.dedent('''
             out({"error": "vc_extend_edge is not in /opt/bin (build it from the VC3D fork branch)"}, 1)
         out({"exit": 0, "out": a["out"], "surface": surf(a["out"], 6.0), "seconds": 3})
     if tool == "flatten":
-        out({"exit": 0, "out": a["out"], "surface": surf(a["out"], 6.1)})
+        if mode == "noflatten":   # Headless VC3D 1.1.1 on a villa build after #2358
+            out({"error": "vc_flatten is not in /opt/bin"}, 1)
+        res = {"exit": 0, "out": a["out"], "surface": surf(a["out"], 6.1)}
+        if mode == "flatboi":     # a Headless VC3D that falls back to villa's flatboi names the tool it ran
+            res["tool"] = "flatboi"
+        out(res)
     if tool == "render":
         z = os.path.join(a["out"], "render.zarr"); Path(z).mkdir(parents=True, exist_ok=True)
         out({"zarr": z, "shape": [21, 100, 80], "order": "team (--flip-normals)"})
@@ -180,6 +185,20 @@ class Scroll2InkTest(unittest.TestCase):
         self.assertTrue(ext["surface"].endswith("trace/trace"))
         flat = [c for c in self.calls() if c["tool"] == "flatten"][0]
         self.assertTrue(flat["args"]["surface"].endswith("trace/trace"))
+
+    def test_flattener_is_recorded(self):
+        p = self.kit("--until", "flatten")
+        self.assertEqual(p.returncode, 0, p.stderr)
+        self.assertEqual(self.state()["flatten"]["flattener"], "vc_flatten")   # older Headless VC3D names no tool
+        p = self.kit("--until", "flatten", mode="flatboi", out=self.tmp / "run2")
+        self.assertEqual(p.returncode, 0, p.stderr)
+        self.assertEqual(self.state(self.tmp / "run2")["flatten"]["flattener"], "flatboi")
+
+    def test_missing_vc_flatten_says_why(self):
+        p = self.kit(mode="noflatten")
+        self.assertEqual(p.returncode, 1)
+        self.assertIn("villa removed it on 29 Oct 2026 (#2358)", p.stderr)
+        self.assertNotIn("render", [c["tool"] for c in self.calls()])
 
     def test_no_extend_tool_skips(self):
         p = self.kit(mode="noextend")
