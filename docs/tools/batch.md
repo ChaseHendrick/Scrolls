@@ -11,7 +11,7 @@
 | Run | `python -m kit run all`, `python -m kit run watch`, `python -m kit run catalog`, `from kit import autobatch, scancatalog` |
 | Code | `kit/autobatch.py`, `kit/scancatalog.py`, `kit/cli.py` (`cmd_batch`) |
 | Tests | `tests/test_autobatch.py` |
-| Needs | Python 3.10 or newer, standard library only. Reads `kit/data/modal-rates.json` (through [cloudcost](cloudcost.md)) and the prizes snapshot `kit/data/prizes-2026-10-11.json`. Launching an approved scan needs the released AutoPipeline package (`scrolls-kit`), which this tool does not call |
+| Needs | Python 3.10 or newer, standard library only. Reads `kit/data/modal-rates.json` (through [cloudcost](cloudcost.md)) and the prizes snapshot `kit/data/prizes-2026-11-03.json`. Launching an approved scan needs the released AutoPipeline package (`scrolls-kit`), which this tool does not call |
 | Runs on | Any CPU. A dry run of a 5-volume synthetic catalog took 0.19 s (measured 2026-10-16, cloud container). A catalog of the real bucket: Not measured; it is a few hundred small HTTPS requests |
 | Network | `run catalog`, `run watch`, and `run all` with `--refresh` or with no saved catalog: anonymous HTTPS GETs of `https://vesuvius-challenge-open-data.s3.amazonaws.com/metadata.json`, the bucket's S3 listing (root and each `SAMPLE/volumes/`) and `https://scrollprize.org/prizes` (skipped by `run catalog --no-live-prizes`). `run all` and `run watch` also GET each in-bucket volume's `.zattrs`, and `0/.zarray` when the shape is missing, once (cached). `dl.ash2txt.org` is refused. Nothing is posted |
 | Writes | `run catalog`: `--out` only (default `work/autobatch/catalog.json`). `run all` and `run watch`: under `--state` (default `work/autobatch/`, git-ignored): `catalog.json`, `plan.json`, `plan.md`, `batch-ledger.csv`, `approval.json`, `scans/SAMPLE/VOLUME/status.json` and `settings.json`, `zattrs/` caches. `run all --status` writes nothing |
@@ -192,7 +192,7 @@ plan = autobatch.plan_all("STATE", catalog=doc, levels_get=lambda url: b"{}")  #
 | --- | --- | --- |
 | `metadata.json` | JSON from the bucket | `samples.SAMPLE.volumes.ID` with `long_id`, `scan_id`, `data` (an `ome-zarr` entry with `origins[0].path` and `access_roots`; `surface-prediction-zarr`, `normal-grids`, `umbilicus`, `lasagna`, `ink-detection-3d-zarr`) and `properties` (`pixel_size_um`, `energy_keV`, `shape` z y x, `superseded_by`, `license.name`); `segments` with `original_volume_id` and data types; `scans` |
 | Bucket listing | S3 ListObjectsV2 XML | Zarr folder names under each `SAMPLE/volumes/` |
-| Prizes | The live page's HTML, and `kit/data/prizes-2026-10-11.json` | A 14-digit volume id on the live page makes a row prize eligible; the snapshot says which prize names it |
+| Prizes | The live page's HTML, and `kit/data/prizes-2026-11-03.json` | A 14-digit volume id on the live page makes a row prize eligible; the snapshot says which prize names it |
 | Zarr headers | `.zattrs` (OME-Zarr multiscales) and `0/.zarray` | Level paths; level-0 shape when `metadata.json` has none. Levels are assumed to halve resolution each step |
 | Rates | `kit/data/modal-rates.json` | Through `cloudcost.load_rates()` |
 | Saved state | `STATE/catalog.json`, `STATE/scans/*/*/status.json`, `STATE/plan.json` | From earlier runs; a status file's `status` may be edited by hand to `running`, `done` or `failed` as scans run |

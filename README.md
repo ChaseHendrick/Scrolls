@@ -242,14 +242,14 @@ python -m unittest discover -s tests
 
 Every command is in [`docs/tools/cli.md`](docs/tools/cli.md), and every tool has a page in [`docs/tools/`](docs/tools/README.md). Install AutoPipeline in its own environment, since both install `kit`.
 
-## Open prizes (snapshot 2026-10-11)
+## Open prizes (snapshot 2026-11-03)
 
 | Prize | Money | Deadline | What wins |
 | --- | --- | --- | --- |
 | [2027 Grand Prize](https://scrollprize.org/prizes#2027-grand-prize) | $800k / $100k / $50k / $50k | 25 Jun 2027 | Fully unroll one of 13 sealed scrolls; at least 70% of each counted column's preserved characters legible |
-| [First Letters](https://scrollprize.org/prizes#first-letters-prizes) | $50k per scroll, 9 more ($450k remaining; one already used) | 25 Jun 2027 | First team to show 10 legible letters in a single 4 cm² area of one of 21 eligible scrolls |
+| [First Letters](https://scrollprize.org/prizes#first-letters-prizes) | $50k per scroll, 8 more ($400k remaining; two already used, PHerc. 343 and PHerc. 306B) | 25 Jun 2027 | First team to show 10 legible letters in a single 4 cm² area of one of 20 eligible scrolls |
 | [PHerc. Paris 4 title](https://scrollprize.org/prizes#first-title-prize) | $50k | 25 Jun 2027 | A papyrologist-readable image of Scroll 1's title |
-| [Progress Prizes](https://scrollprize.org/prizes#progress-prizes) | $20k best of month, plus $250 to $20k awards | monthly, several entries a month allowed (next: 31 Oct 2026) | Open-source tools, models, datasets, fixes, reports that help read the scrolls |
+| [Progress Prizes](https://scrollprize.org/prizes#progress-prizes) | $20k best of month, plus $250 to $20k awards | monthly, several entries a month allowed (on 3 Nov 2026 the page still named 31 Oct 2026 as the next deadline) | Open-source tools, models, datasets, fixes, reports that help read the scrolls |
 
 > [!IMPORTANT]
 > All prizes require open-sourcing your method (permissive license) to accept the money. Details, submission contents and the eligible-scroll lists: [`docs/prizes.md`](docs/prizes.md).

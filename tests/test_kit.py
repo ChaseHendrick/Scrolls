@@ -19,7 +19,7 @@ class PrizeSnapshotTest(unittest.TestCase):
         self.snap = prizes.load()
 
     def test_snapshot_matches_prize_page_totals(self):
-        self.assertEqual(self.snap["checked"], "2026-10-11")
+        self.assertEqual(self.snap["checked"], "2026-11-03")
         grand = prizes.find(self.snap, "grand-prize-2027")
         self.assertEqual(grand["total_usd"], 1_000_000)
         self.assertEqual(grand["tiers_usd"], {"1st": 800_000, "2nd": 100_000, "3rd": 50_000, "4th": 50_000})
@@ -27,14 +27,19 @@ class PrizeSnapshotTest(unittest.TestCase):
         self.assertTrue(grand["deadline"].startswith("2027-06-25T23:59:00"))
         letters = prizes.find(self.snap, "first-letters-2027")
         self.assertEqual(letters["per_scroll_usd"], 50_000)
-        self.assertEqual(letters["max_scrolls"], 9)
-        self.assertEqual(letters["total_usd"], 450_000)
-        self.assertEqual(letters["awarded_count"], 1)
+        self.assertEqual(letters["max_scrolls"], 8)
+        self.assertEqual(letters["total_usd"], 400_000)
+        self.assertEqual(letters["awarded_count"], 2)
+        self.assertEqual(len(letters["awarded"]), letters["awarded_count"])
         self.assertEqual(letters["per_scroll_usd"] * letters["max_scrolls"], letters["total_usd"])
         self.assertEqual(letters["awarded"][0]["scroll"], "PHerc0343")
         self.assertEqual(letters["awarded"][0]["winner"], "Erwin Nieuwlaar")
         self.assertEqual(letters["awarded"][0]["date"], "2026-10-08")
         self.assertEqual(letters["awarded"][0]["usd"], 50_000)
+        self.assertEqual(letters["awarded"][1]["scroll"], "PHerc0306B")
+        self.assertEqual(letters["awarded"][1]["winner"], "Liam Warner and Nicola Bodill")
+        self.assertEqual(letters["awarded"][1]["date"], "2026-11-02")
+        self.assertEqual(letters["awarded"][1]["usd"], 50_000)
         paris = prizes.find(self.snap, "first-title")
         self.assertEqual(paris["total_usd"], 50_000)
         self.assertTrue(paris["deadline"].startswith("2027-06-25T23:59:00"))
@@ -53,9 +58,23 @@ class PrizeSnapshotTest(unittest.TestCase):
     def test_eligible_counts(self):
         self.assertEqual(len(prizes.find(self.snap, "grand-prize-2027")["eligible"]), 13)
         letters = prizes.find(self.snap, "first-letters-2027")["eligible"]
-        self.assertEqual(len(letters), 21)
-        self.assertNotIn("PHerc0343", [entry["scroll"] for entry in letters])
-        self.assertIsNone(prizes.eligible_volume(self.snap, "PHerc0343"))
+        self.assertEqual(len(letters), 20)
+        for scroll in ("PHerc0343", "PHerc0306B"):
+            self.assertNotIn(scroll, [entry["scroll"] for entry in letters])
+            self.assertIsNone(prizes.eligible_volume(self.snap, scroll))
+
+    def test_october_11_snapshot_still_has_21_including_pherc0306b(self):
+        old = prizes.load(prizes.DATA_DIR / "prizes-2026-10-11.json")
+        self.assertEqual(old["checked"], "2026-10-11")
+        letters = prizes.find(old, "first-letters-2027")
+        self.assertEqual(len(letters["eligible"]), 21)
+        self.assertEqual(letters["max_scrolls"], 9)
+        self.assertEqual(letters["total_usd"], 450_000)
+        self.assertEqual(prizes.eligible_volume(old, "PHerc0306B"), "20250521133212")
+        # Every volume still eligible now was eligible on 11 Oct, with the same zarr name.
+        kept = {e["scroll"]: e for e in letters["eligible"]}
+        for entry in prizes.find(self.snap, "first-letters-2027")["eligible"]:
+            self.assertEqual(kept[entry["scroll"]], entry)
 
     def test_october_6_snapshot_still_has_22_including_pherc0343(self):
         old = prizes.load(prizes.DATA_DIR / "prizes-2026-10-06.json")
@@ -202,11 +221,15 @@ class PlanTest(unittest.TestCase):
             plan.first_letters("PHerc1667")
         with self.assertRaises(ValueError):
             plan.first_letters("PHerc0343")
+        with self.assertRaises(ValueError):
+            plan.first_letters("PHerc0306B")
 
     def test_plan_names_the_award_when_it_rejects_an_awarded_scroll(self):
-        # The 2026-10-11 snapshot records PHerc0343's award in First Letters' "awarded" list.
+        # The snapshot records PHerc0343's and PHerc0306B's awards in First Letters' "awarded" list.
         with self.assertRaisesRegex(ValueError, r"awarded on 2026-10-08 \(https://scrollprize\.substack\.com/"):
             plan.first_letters("PHerc. 343")
+        with self.assertRaisesRegex(ValueError, r"awarded on 2026-11-02 \(https://scrollprize\.substack\.com/"):
+            plan.first_letters("PHerc. 306B")
         # A scroll that was never eligible gets no award sentence, so the check can fail.
         with self.assertRaises(ValueError) as ctx:
             plan.first_letters("PHerc1667")
@@ -241,7 +264,10 @@ class SpiralChainTest(unittest.TestCase):
         from kit import prizes
         letters = prizes.find(prizes.load(), "first-letters-2027")
         inputs = plan.spiral_inputs()
-        self.assertEqual(set(inputs["scans"]), {e["scroll"] for e in letters["eligible"]})
+        # The 24 Oct inputs file follows the 11 Oct snapshot; scrolls awarded since then stay in it and are refused.
+        awarded = {a["scroll"] for a in letters["awarded"]}
+        self.assertEqual(set(inputs["scans"]) - awarded, {e["scroll"] for e in letters["eligible"]})
+        self.assertEqual(set(inputs["scans"]) & awarded, {"PHerc0306B"})
         for e in letters["eligible"]:
             row = inputs["scans"][e["scroll"]]
             self.assertEqual(row["volume"], e["volume"])
@@ -304,6 +330,8 @@ class SpiralChainTest(unittest.TestCase):
     def test_refusals(self):
         with self.assertRaisesRegex(ValueError, "awarded on 2026-10-08"):
             plan.spiral_chain("PHerc0343")
+        with self.assertRaisesRegex(ValueError, "awarded on 2026-11-02"):
+            plan.spiral_chain("PHerc0306B")
         inputs = plan.spiral_inputs()
         inputs["scans"]["PHerc0826"]["volume"] = "19990101000000"
         with self.assertRaisesRegex(ValueError, "no public spiral-fit inputs recorded for volume 20250821151701"):
@@ -311,7 +339,12 @@ class SpiralChainTest(unittest.TestCase):
 
     @unittest.skipUnless(shutil.which("bash"), "needs bash")
     def test_every_chain_is_valid_bash(self):
+        eligible = {e["scroll"] for e in prizes.find(prizes.load(), "first-letters-2027")["eligible"]}
         for scroll in plan.spiral_inputs()["scans"]:
+            if scroll not in eligible:
+                with self.assertRaisesRegex(ValueError, "awarded on"):
+                    plan.spiral_chain(scroll)
+                continue
             with tempfile.NamedTemporaryFile("w", suffix=".sh", delete=False) as fh:
                 fh.write(plan.spiral_chain(scroll))
             try:
