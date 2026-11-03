@@ -165,6 +165,150 @@
    ]
   },
   {
+   "id": "altrain",
+   "name": "altrain",
+   "tagline": "does fine-tuning on suggested tiles beat random tiles?",
+   "summary": "`python -m kit altrain` lays out a simulated labeling round on one segment with real ink labels (test blocks and a pool of tiles), picks tiles by a label suggester, uncertainty or chance, and judges the fine-tuned readers' test AUC with a paired bootstrap and fixed controls.",
+   "status": "Experimental",
+   "kind": [
+    "kit command",
+    "kit module"
+   ],
+   "area": "Training",
+   "commands": [
+    "python -m kit altrain plan",
+    "python -m kit altrain readout"
+   ],
+   "imports": [],
+   "code": [
+    {
+     "path": "kit/altrain.py",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_altrain.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed"
+   },
+   "checked": {
+    "date": "2026-11-03",
+    "commit": "043bbbd"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`altrain`",
+    "Status": "Experimental",
+    "Kind": "kit command,kit module",
+    "Area": "Training",
+    "Run": "`python -m kit altrain plan`, `python -m kit altrain readout`",
+    "Code": "`kit/altrain.py`",
+    "Tests": "`tests/test_altrain.py`",
+    "Needs": "Python 3 (run here with 3.13), numpy. The fine-tunes themselves need a GPU worker of your own (torch, villa's `vesuvius` package and the released `scrollprize/ink_9um` checkpoints) that writes one `runs/ID.npz` per run",
+    "Runs on": "`plan` and `readout`: any CPU, about 1 s for `plan` on a 1024 x 1536 mask and 17 s for `readout` of two synthetic segments with 2000 bootstrap draws (measured 2026-11-03, 4-core cloud container). The fine-tunes: one rtx-pro-6000 Hugging Face Job per segment (see Cost and time)",
+    "Network": "None",
+    "Writes": "Nothing (prints only)",
+    "Go-ahead": "Not needed",
+    "Released": "Public `main` since 2026-11-03",
+    "Checked": "2026-11-03 against commit `043bbbd`"
+   },
+   "page": "docs/tools/altrain.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 22,
+     "end_line": 31,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 32,
+     "end_line": 42,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 43,
+     "end_line": 86,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 87,
+     "end_line": 103,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 104,
+     "end_line": 133,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 134,
+     "end_line": 166,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 167,
+     "end_line": 171,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 172,
+     "end_line": 193,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 194,
+     "end_line": 208,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 209,
+     "end_line": 217,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 218,
+     "end_line": 221,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 222,
+     "end_line": 231,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 232,
+     "end_line": 235,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 236,
+     "end_line": 239,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 240,
+     "end_line": 245,
+     "applicable": true
+    }
+   ]
+  },
+  {
    "id": "atlas",
    "name": "atlas",
    "tagline": "Segment Atlas, the same numbers for every published segment",

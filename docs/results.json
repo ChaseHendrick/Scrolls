@@ -12424,6 +12424,394 @@
    },
    "attempt": "attempt 2 at a second-scroll test (the first was never frozen, so no data was spent on it)",
    "limits": "one segment of one scroll, three readers, one of them a prediction whose file name says reverse; the edge pick was chosen on PHerc1667 data already used by the first test, after a disclosed amendment; margin and vote lifted as much or more, and no comparison between picks was a preregistered claim; errors are model calls against later labels, not label errors; whether labeling at these tiles saves a person's time is not tested; the organizers may have looked at these predictions while labeling version 2, and the latest predictions may have trained on interim version 2 labels (both untested); the test runner is not in this repository"
+  },
+  {
+   "date": "2026-11-03",
+   "tool": "kit altrain (training-run comparison) with kit labelsuggest's edge measure as SUGGEST",
+   "source": "docs/tools/altrain.md",
+   "claim": "Measurement on model output: a simulated labeling round with oracle labels on three Paris fragments (Frag2 PHercParis2Fr143, Frag3 PHercParis1Fr34, Frag4 PHercParis1Fr39: the public 54 keV 3.24 um exposed-surface volumes of dl.ash2txt.org/fragments mean-pooled 3 x 3 x 3 to 9.72 um, 21 layers, with their infrared-photograph ink labels pooled the same way). Per fragment a fixed label-free layout split the labeled area into 256 px test blocks and a pool of 64 px tiles one tile away from them. Each arm revealed the labels of k pool tiles: SUGGEST (top k by labelsuggest's edge measure on scrollprize/ink_9um seeds 42 and 43, revision 7109667e), UNCERTAIN (top k by entropy of seed 42), RANDOM (5 draws) and SHUF (top k of shuffled SUGGEST scores, a control). ink_9um seed 42, which trained on no fragment, was fine-tuned 300 steps on each arm's tiles at 5, 10 and 20 % of the pool, 3 seeds, and mapped the test blocks forward and with reversed depth. Rule, controls and bars were preregistered and frozen before any fine-tune, after an independent review; each fragment was read once.",
+   "claim_wording": "Not shown: fine-tuning on the tiles the edge measure picked did not beat random tiles at any budget on any fragment (no lower bound above 0), and at 5 % it was below random on Frag3 and Frag4 (about -0.10 AUC). The fragment readout is VOID by its rule: only Frag4 counted; Frag2 and Frag3 failed the displaced-label control (the base reader's map does not track their labels by the 0.05 margin), and Frag2's arms also crossed the 0.55 reverse-depth bar",
+   "verdict": "VOID",
+   "counted": [
+    "frag4"
+   ],
+   "passing": [],
+   "rule": "PASS needs two counted segments each with SUGGEST minus RANDOM's paired hierarchical bootstrap lower bound (2000 draws resampling test blocks and runs, 2.5th percentile) above 0, and its forward gain larger than its reverse-depth gain, at two or more of the three budgets; a segment is VOID when any arm's mean reverse-depth AUC exceeds 0.55, shuffled suggestions differ from RANDOM (99 % interval pooled over budgets), the base reader's test AUC beats the labels-moved-32-px AUC by less than 0.05, or the pool or test is too small",
+   "segments": {
+    "frag2": {
+     "state": "VOID",
+     "why_void": [
+      "labels do not track the CT: base AUC 0.6445 in place against 0.5984 moved 32 px",
+      "budget 0.05: RANDOM mean reverse-depth AUC 0.5615 > 0.55",
+      "budget 0.05: SHUF mean reverse-depth AUC 0.5547 > 0.55",
+      "budget 0.10: SUGGEST mean reverse-depth AUC 0.5756 > 0.55",
+      "budget 0.10: RANDOM mean reverse-depth AUC 0.5625 > 0.55",
+      "budget 0.10: SHUF mean reverse-depth AUC 0.5620 > 0.55",
+      "budget 0.20: SUGGEST mean reverse-depth AUC 0.5726 > 0.55",
+      "budget 0.20: UNCERTAIN mean reverse-depth AUC 0.5728 > 0.55",
+      "budget 0.20: RANDOM mean reverse-depth AUC 0.5670 > 0.55",
+      "budget 0.20: SHUF mean reverse-depth AUC 0.5641 > 0.55"
+     ],
+     "base_test_auc": 0.6445,
+     "base_test_auc_labels_moved_32px": 0.5984,
+     "pool_tiles": 912,
+     "test_blocks": 57,
+     "budgets": {
+      "0.05": {
+       "mean_auc": {
+        "SUGGEST": 0.713062,
+        "UNCERTAIN": 0.709675,
+        "RANDOM": 0.718903,
+        "SHUF": 0.719426
+       },
+       "mean_reverse_depth_auc": {
+        "SUGGEST": 0.538023,
+        "UNCERTAIN": 0.526999,
+        "RANDOM": 0.561457,
+        "SHUF": 0.554669
+       },
+       "suggest_minus_random": {
+        "est": -0.005841,
+        "lower": -0.031624,
+        "upper": 0.019753
+       },
+       "suggest_gain_forward_minus_reverse": {
+        "est": 0.017593,
+        "lower": -0.012866
+       },
+       "uncertain_minus_random": {
+        "est": -0.009228,
+        "lower": -0.034837,
+        "upper": 0.017208
+       },
+       "shuffled_minus_random": {
+        "est": 0.000522,
+        "lower": -0.020258,
+        "upper": 0.02274
+       },
+       "suggest_revealed_ink_over_random": 1.6
+      },
+      "0.10": {
+       "mean_auc": {
+        "SUGGEST": 0.752589,
+        "UNCERTAIN": 0.749727,
+        "RANDOM": 0.735805,
+        "SHUF": 0.748152
+       },
+       "mean_reverse_depth_auc": {
+        "SUGGEST": 0.575576,
+        "UNCERTAIN": 0.549666,
+        "RANDOM": 0.562512,
+        "SHUF": 0.561964
+       },
+       "suggest_minus_random": {
+        "est": 0.016784,
+        "lower": -0.006201,
+        "upper": 0.040847
+       },
+       "suggest_gain_forward_minus_reverse": {
+        "est": 0.003721,
+        "lower": -0.026498
+       },
+       "uncertain_minus_random": {
+        "est": 0.013922,
+        "lower": -0.010232,
+        "upper": 0.039265
+       },
+       "shuffled_minus_random": {
+        "est": 0.012347,
+        "lower": -0.010515,
+        "upper": 0.037486
+       },
+       "suggest_revealed_ink_over_random": 1.59
+      },
+      "0.20": {
+       "mean_auc": {
+        "SUGGEST": 0.769624,
+        "UNCERTAIN": 0.768109,
+        "RANDOM": 0.760662,
+        "SHUF": 0.762181
+       },
+       "mean_reverse_depth_auc": {
+        "SUGGEST": 0.572629,
+        "UNCERTAIN": 0.572831,
+        "RANDOM": 0.567018,
+        "SHUF": 0.564143
+       },
+       "suggest_minus_random": {
+        "est": 0.008962,
+        "lower": -0.006585,
+        "upper": 0.025196
+       },
+       "suggest_gain_forward_minus_reverse": {
+        "est": 0.003351,
+        "lower": -0.021457
+       },
+       "uncertain_minus_random": {
+        "est": 0.007447,
+        "lower": -0.012224,
+        "upper": 0.026509
+       },
+       "shuffled_minus_random": {
+        "est": 0.00152,
+        "lower": -0.014823,
+        "upper": 0.018946
+       },
+       "suggest_revealed_ink_over_random": 1.47
+      }
+     },
+     "shuffle_control": {
+      "est": 0.004796,
+      "lo": -0.010185,
+      "hi": 0.022511,
+      "holds": true
+     }
+    },
+    "frag3": {
+     "state": "VOID",
+     "why_void": [
+      "labels do not track the CT: base AUC 0.5674 in place against 0.5689 moved 32 px",
+      "budget 0.10: RANDOM mean reverse-depth AUC 0.5500 > 0.55",
+      "budget 0.20: RANDOM mean reverse-depth AUC 0.5512 > 0.55",
+      "budget 0.20: SHUF mean reverse-depth AUC 0.5610 > 0.55"
+     ],
+     "base_test_auc": 0.5674,
+     "base_test_auc_labels_moved_32px": 0.5689,
+     "pool_tiles": 270,
+     "test_blocks": 13,
+     "budgets": {
+      "0.05": {
+       "mean_auc": {
+        "SUGGEST": 0.557527,
+        "UNCERTAIN": 0.534149,
+        "RANDOM": 0.663957,
+        "SHUF": 0.637735
+       },
+       "mean_reverse_depth_auc": {
+        "SUGGEST": 0.49202,
+        "UNCERTAIN": 0.515826,
+        "RANDOM": 0.540043,
+        "SHUF": 0.524565
+       },
+       "suggest_minus_random": {
+        "est": -0.10643,
+        "lower": -0.164077,
+        "upper": -0.054272
+       },
+       "suggest_gain_forward_minus_reverse": {
+        "est": -0.058408,
+        "lower": -0.106297
+       },
+       "uncertain_minus_random": {
+        "est": -0.129808,
+        "lower": -0.206895,
+        "upper": -0.066683
+       },
+       "shuffled_minus_random": {
+        "est": -0.026222,
+        "lower": -0.075023,
+        "upper": 0.023561
+       },
+       "suggest_revealed_ink_over_random": 0.49
+      },
+      "0.10": {
+       "mean_auc": {
+        "SUGGEST": 0.658821,
+        "UNCERTAIN": 0.615172,
+        "RANDOM": 0.691748,
+        "SHUF": 0.682795
+       },
+       "mean_reverse_depth_auc": {
+        "SUGGEST": 0.513725,
+        "UNCERTAIN": 0.546873,
+        "RANDOM": 0.55002,
+        "SHUF": 0.546678
+       },
+       "suggest_minus_random": {
+        "est": -0.032927,
+        "lower": -0.094024,
+        "upper": 0.017189
+       },
+       "suggest_gain_forward_minus_reverse": {
+        "est": 0.003369,
+        "lower": -0.060417
+       },
+       "uncertain_minus_random": {
+        "est": -0.076576,
+        "lower": -0.132745,
+        "upper": -0.03289
+       },
+       "shuffled_minus_random": {
+        "est": -0.008953,
+        "lower": -0.049636,
+        "upper": 0.02702
+       },
+       "suggest_revealed_ink_over_random": 0.89
+      },
+      "0.20": {
+       "mean_auc": {
+        "SUGGEST": 0.689616,
+        "UNCERTAIN": 0.639359,
+        "RANDOM": 0.710025,
+        "SHUF": 0.696217
+       },
+       "mean_reverse_depth_auc": {
+        "SUGGEST": 0.52867,
+        "UNCERTAIN": 0.547591,
+        "RANDOM": 0.551229,
+        "SHUF": 0.561037
+       },
+       "suggest_minus_random": {
+        "est": -0.020408,
+        "lower": -0.063909,
+        "upper": 0.016703
+       },
+       "suggest_gain_forward_minus_reverse": {
+        "est": 0.00215,
+        "lower": -0.048348
+       },
+       "uncertain_minus_random": {
+        "est": -0.070665,
+        "lower": -0.103645,
+        "upper": -0.029062
+       },
+       "shuffled_minus_random": {
+        "est": -0.013807,
+        "lower": -0.050526,
+        "upper": 0.015431
+       },
+       "suggest_revealed_ink_over_random": 1.12
+      }
+     },
+     "shuffle_control": {
+      "est": -0.016328,
+      "lo": -0.046052,
+      "hi": 0.009285,
+      "holds": true
+     }
+    },
+    "frag4": {
+     "state": "COUNTED",
+     "why_void": [],
+     "base_test_auc": 0.6419,
+     "base_test_auc_labels_moved_32px": 0.5822,
+     "pool_tiles": 485,
+     "test_blocks": 24,
+     "budgets": {
+      "0.05": {
+       "mean_auc": {
+        "SUGGEST": 0.574422,
+        "UNCERTAIN": 0.671241,
+        "RANDOM": 0.675365,
+        "SHUF": 0.668893
+       },
+       "mean_reverse_depth_auc": {
+        "SUGGEST": 0.48714,
+        "UNCERTAIN": 0.509413,
+        "RANDOM": 0.512247,
+        "SHUF": 0.523867
+       },
+       "suggest_minus_random": {
+        "est": -0.100943,
+        "lower": -0.16311,
+        "upper": -0.044128
+       },
+       "suggest_gain_forward_minus_reverse": {
+        "est": -0.075835,
+        "lower": -0.171948
+       },
+       "uncertain_minus_random": {
+        "est": -0.004124,
+        "lower": -0.040483,
+        "upper": 0.029335
+       },
+       "shuffled_minus_random": {
+        "est": -0.006472,
+        "lower": -0.053808,
+        "upper": 0.038615
+       },
+       "suggest_revealed_ink_over_random": 1.56
+      },
+      "0.10": {
+       "mean_auc": {
+        "SUGGEST": 0.69113,
+        "UNCERTAIN": 0.730165,
+        "RANDOM": 0.706613,
+        "SHUF": 0.688187
+       },
+       "mean_reverse_depth_auc": {
+        "SUGGEST": 0.509547,
+        "UNCERTAIN": 0.516982,
+        "RANDOM": 0.536664,
+        "SHUF": 0.49883
+       },
+       "suggest_minus_random": {
+        "est": -0.015483,
+        "lower": -0.055753,
+        "upper": 0.022213
+       },
+       "suggest_gain_forward_minus_reverse": {
+        "est": 0.011635,
+        "lower": -0.05581
+       },
+       "uncertain_minus_random": {
+        "est": 0.023551,
+        "lower": -0.009012,
+        "upper": 0.056703
+       },
+       "shuffled_minus_random": {
+        "est": -0.018426,
+        "lower": -0.061165,
+        "upper": 0.02381
+       },
+       "suggest_revealed_ink_over_random": 1.52
+      },
+      "0.20": {
+       "mean_auc": {
+        "SUGGEST": 0.749102,
+        "UNCERTAIN": 0.742769,
+        "RANDOM": 0.733703,
+        "SHUF": 0.743848
+       },
+       "mean_reverse_depth_auc": {
+        "SUGGEST": 0.529017,
+        "UNCERTAIN": 0.522257,
+        "RANDOM": 0.522538,
+        "SHUF": 0.524368
+       },
+       "suggest_minus_random": {
+        "est": 0.0154,
+        "lower": -0.007651,
+        "upper": 0.037919
+       },
+       "suggest_gain_forward_minus_reverse": {
+        "est": 0.00892,
+        "lower": -0.024877
+       },
+       "uncertain_minus_random": {
+        "est": 0.009067,
+        "lower": -0.017937,
+        "upper": 0.036857
+       },
+       "shuffled_minus_random": {
+        "est": 0.010146,
+        "lower": -0.022654,
+        "upper": 0.040614
+       },
+       "suggest_revealed_ink_over_random": 1.36
+      }
+     },
+     "shuffle_control": {
+      "est": -0.004918,
+      "lo": -0.031151,
+      "hi": 0.021427,
+      "holds": true
+     }
+    }
+   },
+   "constants_sha256": "4fe0bf2d9f45318d814cffa27f21d25834f1b482e31f91e3b39f23e12004e00b",
+   "scope": "One base reader, one short recipe, fragments only (exposed surfaces, not buried ink). The private preregistration also had a scroll segment, which stays private. A suggested tile is a place to label, never a reading; the labels were already drawn, so this says nothing of a person's labeling time.",
+   "why": "A villa maintainer asked for a training run comparison before taking the active-learning tool upstream (villa PR #2381)."
   }
  ],
  "sqrecipe_checks": [

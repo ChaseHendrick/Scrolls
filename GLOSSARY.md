@@ -12,6 +12,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **active learning**: Choosing which regions a person labels next so each label helps the model most, usually where the current models are least sure. The organizers list it under label quality in their open problems; `kit labelsuggest` is one such pick for ink labels.
 
+**altrain (training-run comparison)**: A simulated labeling round with oracle labels: one base reader is fine-tuned on the labels of tiles picked by `kit labelsuggest` (SUGGEST), by entropy (UNCERTAIN), at random (RANDOM) or by shuffled suggestion scores (SHUF), and the fine-tuned readers' test AUC on held-out blocks of the same segment is compared (`kit/altrain.py`, [page](docs/tools/altrain.md)).
+
 **affine (cross-scan affine)**: A linear transform plus a shift that maps coordinates in one scan of a scroll to coordinates in another scan of the same scroll. The catalog publishes these, fitted from landmarks; `kit meshaudit transforms` refits them.
 
 **API (application programming interface)**: A defined way for one program to request data or actions from another. A tool API lets scripts use the same operations that a person might select in an app.

@@ -6,6 +6,7 @@
 
 | Item | State | Next step |
 | --- | --- | --- |
+| Training-run comparison for label suggestions: `kit altrain` and a fragment benchmark (3 Nov) | New kit command ([page](tools/altrain.md)): lays out a simulated labeling round with oracle labels and judges whether fine-tuning on `kit labelsuggest`'s tiles beats random tiles, with a paired bootstrap and reverse-depth, shuffle and displaced-label controls. Benchmark on Frag2, Frag3 and Frag4 (`docs/results.json`, `label_suggest_checks`): fine-tuning ink_9um on the suggested tiles did not beat random tiles at any budget; at 5 % it was below random on two fragments; readout VOID by its controls (only Frag4 counted). | None for this tool; a villa follow-up on PR #2381 is not proposed on this evidence |
 | Prize snapshot of 3 Nov: First Letters at 8 more scrolls, $400,000 | New snapshot `kit/data/prizes-2026-11-03.json` (the 11 Oct file is kept) from the prizes page body read 3 Nov and villa #2431: 20 First Letters volumes, PHerc0306B awarded (announced 2 Nov). README table, [prizes.md](prizes.md) and the tool pages follow. The homepage card and the $2,140,000 pool figure still show the old $500,000; the Progress Prize line still names 31 Oct, so `kit.prizewatch` reports that one deadline until the page names November's | When the page names the November Progress Prize deadline, add a new dated snapshot |
 
 ## Continuation, 31 October 2026
