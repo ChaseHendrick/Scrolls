@@ -204,14 +204,14 @@
   "labelsnap-moved-published-surface-labels-closer-to-the": {
    "line": 264,
    "sources": {
-    "docs/results.json": "be82ebf9398bdca09fa6530db0370ad3c3a831a86ad91aeb2a6bdf3222ece5c5",
+    "docs/results.json": "acfb3bf634dbfd1bfcd70073aa3defba7c4957c6acc059e624113e7b828b588e",
     "docs/tools/snapped-labels.md": "3da92dca823c53779149f1aa9f7699e0e9ee7533b5767956b1c4bae539b977ed"
    }
   },
   "labelsnap-moved-published-surface-labels-closer-to-the-2": {
    "line": 15,
    "sources": {
-    "docs/results.json": "be82ebf9398bdca09fa6530db0370ad3c3a831a86ad91aeb2a6bdf3222ece5c5",
+    "docs/results.json": "acfb3bf634dbfd1bfcd70073aa3defba7c4957c6acc059e624113e7b828b588e",
     "docs/tools/snapped-labels.md": "3da92dca823c53779149f1aa9f7699e0e9ee7533b5767956b1c4bae539b977ed"
    },
    "doc": "docs/FINDINGS.md"
@@ -344,7 +344,7 @@
   "real-runs-need-villa-s-vc3d-tools-python3": {
    "line": 43,
    "sources": {
-    "docs/releases.json": "734c0f4eacb1c0e757ce6bf9481fcc620eed27c77e8f8d364f5f57fded65c6bb"
+    "docs/releases.json": "23d6510d44a472cc8be0d22754597b162b900d1f7102760affa769ddf3286d24"
    },
    "doc": "docs/pipeline-october-2026.md",
    "reasons": {
