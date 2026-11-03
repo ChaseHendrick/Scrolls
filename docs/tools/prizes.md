@@ -202,7 +202,7 @@ python -m unittest tests.test_packaging.ConsoleScriptTest tests.test_cli_parser_
 
 ## History
 
-- 2026-11-03: the 3 November snapshot becomes current: First Letters at $50,000 a scroll for a maximum of 8 more scrolls ($400,000), 20 eligible volumes after the PHerc0306B award announced on 2 November 2026, which joins the `awarded` list; the 11 October file is kept.
+- 2026-11-03: the 3 November snapshot becomes current: First Letters at $50,000 a scroll for a maximum of 8 more scrolls ($400,000), 20 eligible volumes after the PHerc0306B award announced on 2 November 2026, which joins the `awarded` list; the 11 October file is kept ([PR #314](https://github.com/ChaseHendrick/Scrolls/pull/314)).
 - 2026-10-14: `scrolls-workbench prizes` in the installable package, which ships the snapshots as package data (`2582ab7`, [PR #58](https://github.com/ChaseHendrick/Scrolls/pull/58)).
 - 2026-10-11: the 11 October snapshot becomes current: First Letters at $50,000 a scroll for a maximum of 9 more scrolls ($450,000), 21 eligible volumes after the PHerc0343 award, and an `awarded` list; the 6 October file is kept (`f4092cd`, [PR #40](https://github.com/ChaseHendrick/Scrolls/pull/40)).
 - 2026-10-06: first version, with the 6 October snapshot: 13 Grand Prize and 22 First Letters volumes, each resolved to its zarr name in the bucket (`2daee8e`).
