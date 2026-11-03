@@ -11,7 +11,7 @@
 | Run | `python -m kit.prizewatch`, `from kit import prizewatch` |
 | Code | `kit/prizewatch.py` |
 | Tests | `tests/test_prizewatch.py`, `tests/test_routines.py` |
-| Needs | Python 3.10 or newer (`requires-python` in `pyproject.toml`), standard library only (urllib, html, re, json, hashlib). The prize snapshot, `kit/data/prizes-2026-10-11.json`, read through `kit.prizes`. HTTPS access to scrollprize.org; urllib uses the proxy in `HTTPS_PROXY` when one is set |
+| Needs | Python 3.10 or newer (`requires-python` in `pyproject.toml`), standard library only (urllib, html, re, json, hashlib). The prize snapshot, `kit/data/prizes-2026-11-03.json`, read through `kit.prizes`. HTTPS access to scrollprize.org; urllib uses the proxy in `HTTPS_PROXY` when one is set |
 | Runs on | Any machine with network. 0.36 to 0.59 s per call with `--state` and 0.27 to 0.36 s with `--json` (5 runs each), peak resident memory about 23 MB (measured 2026-10-17, 4-core Intel Xeon @ 2.80GHz cloud container, Python 3.13.16, through the container's HTTPS proxy; the page was 55,590 bytes of HTML that day) |
 | Network | One HTTPS GET of `https://scrollprize.org/prizes` (`URL`), or of `--url`, with the User-Agent `scrolls-kit-prizewatch` and a 20 s timeout. No other host; it sends nothing but the request |
 | Writes | Nothing, unless `--state FILE`: then it rewrites FILE, creating its folders, after every successful fetch, whatever the result. The `prize-page` routine passes `work/routines/prize-page.json`, which is git-ignored |
@@ -21,7 +21,7 @@
 
 ## What it does
 
-The Vesuvius Challenge's open prizes change: PHerc1447 left First Letters on 24 September 2026 (the rulebook's rule 4), and after the award of 8 October 2026 the page offers First Letters for a maximum of 9 more scrolls instead of 10 ([prizes](prizes.md)). kit keeps a dated copy of the page as JSON, the prize snapshot (`kit/data/prizes-2026-10-11.json`, `prizes.SNAPSHOT`), which `kit prizes`, `kit plan` and `kit run init` read. The rulebook asks every agent to re-check prizes before acting on them and to add a new dated snapshot in `kit/data/` when the page changes (rule 4 of [AI-AGENTS.md](../AI-AGENTS.md)). This tool is the daily backup for that rule: the `prize-page` routine of [routines](routines.md) runs it at session start and in the daily workflow.
+The Vesuvius Challenge's open prizes change: PHerc1447 left First Letters on 24 September 2026 (the rulebook's rule 4), and after the awards of 8 October and 2 November 2026 the page offers First Letters for a maximum of 8 more scrolls instead of 10 ([prizes](prizes.md)). kit keeps a dated copy of the page as JSON, the prize snapshot (`kit/data/prizes-2026-11-03.json`, `prizes.SNAPSHOT`), which `kit prizes`, `kit plan` and `kit run init` read. The rulebook asks every agent to re-check prizes before acting on them and to add a new dated snapshot in `kit/data/` when the page changes (rule 4 of [AI-AGENTS.md](../AI-AGENTS.md)). This tool is the daily backup for that rule: the `prize-page` routine of [routines](routines.md) runs it at session start and in the daily workflow.
 
 It makes one GET of the page, takes the visible text (scripts and styles dropped, tags removed, entities decoded), and picks out three kinds of fact: dollar amounts (`$1,000,000`, `$200k`, `$1 million`), long dates (`June 25th, 2027`, `Sept 1, 2027`) and 14-digit volume ids starting with `20`. Then it checks the snapshot against them: every deadline date, every prize total, per-scroll amount, best monthly amount and tier in the snapshot must appear among the page's amounts and dates; every eligible volume in the snapshot must appear on the page; every volume id on the page must be in the snapshot; and no deadline in the snapshot may have passed. With `--state` it also keeps what the page showed and reports what appeared or disappeared since the last run.
 
@@ -100,7 +100,7 @@ usage: python -m kit.prizewatch [-h] [--url URL] [--snapshot SNAPSHOT]
 | Option | Default | Meaning |
 | --- | --- | --- |
 | `--url URL` | `https://scrollprize.org/prizes` (`URL`) | The page to fetch |
-| `--snapshot SNAPSHOT` | `kit/data/prizes-2026-10-11.json` (`prizes.SNAPSHOT`, an absolute path) | The snapshot to compare with, read with `prizes.load` |
+| `--snapshot SNAPSHOT` | `kit/data/prizes-2026-11-03.json` (`prizes.SNAPSHOT`, an absolute path) | The snapshot to compare with, read with `prizes.load` |
 | `--state STATE` | none | A JSON file that keeps the page's facts from the last run. The facts are compared with it and then written to it after every successful fetch. Without it nothing is written and no changes are reported |
 | `--timeout TIMEOUT` | `20` | Seconds to wait for the page |
 | `--today TODAY` | none (the current time, UTC) | Run as at 12:00 UTC on this day, written `YYYY-MM-DD`: it decides which deadlines have passed and the `checked` stamp in the state file. It is read before the fetch; a malformed date stops with exit 2 |
@@ -132,7 +132,7 @@ Module constants: `URL` (`https://scrollprize.org/prizes`), `EXIT_ATTENTION` (3)
 | Input | Format | Notes |
 | --- | --- | --- |
 | The page | HTML from `--url`, decoded as UTF-8 | On 2026-10-17: 55,590 bytes of HTML, 27,079 characters of visible text |
-| The snapshot | JSON, `kit/data/prizes-2026-10-11.json` or `--snapshot` | Fields read: `checked`, and per entry of `prizes`: `id`, `deadline` (ISO 8601 with offset), `total_usd`, `per_scroll_usd`, `monthly_best_usd`, `tiers_usd` (object), `typical_tiers_usd` (list) and `eligible[].volume`. The current snapshot gives 54 expectations: 4 deadlines (2 distinct dates), 16 amounts (11 distinct values) and 34 eligible volumes (22 distinct ids). Its fields are described on the [prizes](prizes.md) page |
+| The snapshot | JSON, `kit/data/prizes-2026-11-03.json` or `--snapshot` | Fields read: `checked`, and per entry of `prizes`: `id`, `deadline` (ISO 8601 with offset), `total_usd`, `per_scroll_usd`, `monthly_best_usd`, `tiers_usd` (object), `typical_tiers_usd` (list) and `eligible[].volume`. The current snapshot gives 53 expectations: 4 deadlines (2 distinct dates), 16 amounts (12 distinct values) and 33 eligible volumes (21 distinct ids). Its fields are described on the [prizes](prizes.md) page |
 | The state file | JSON from a previous run, `--state` | `{"checked": ..., "facts": {...}}`; anything else counts as no previous run |
 | `--today` | `YYYY-MM-DD` | Optional |
 

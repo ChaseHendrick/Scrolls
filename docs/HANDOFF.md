@@ -2,6 +2,12 @@
 
 **This file is the one handoff for this repository.** Every agent (Claude, Codex, Grok, ChatGPT or any other) reads it first and updates it before stopping: change the open-items table when you start or finish something, link longer notes from their row, and merge the handoff change into `main` at once rather than leaving it on a work branch. Private work has its own single handoff in Scrolls-private's `docs/HANDOFF.md`; nothing private goes here. Read [AGENTS.md](../AGENTS.md), [the workflow](WORKFLOW.md) and the current Git/PR state before continuing. Use plain sentences and preserve historical evidence bytes and hashes. Older dated sections are in [HANDOFF-archive.md](HANDOFF-archive.md), newest first; when this file grows long, move its oldest dated sections there, unchanged (`tests/test_repo.py` fails past 40 KB).
 
+## Continuation, 3 November 2026
+
+| Item | State | Next step |
+| --- | --- | --- |
+| Prize snapshot of 3 Nov: First Letters at 8 more scrolls, $400,000 | New snapshot `kit/data/prizes-2026-11-03.json` (the 11 Oct file is kept) from the prizes page body read 3 Nov and villa #2431: 20 First Letters volumes, PHerc0306B awarded (announced 2 Nov). README table, [prizes.md](prizes.md) and the tool pages follow. The homepage card and the $2,140,000 pool figure still show the old $500,000; the Progress Prize line still names 31 Oct, so `kit.prizewatch` reports that one deadline until the page names November's | When the page names the November Progress Prize deadline, add a new dated snapshot |
+
 ## Continuation, 31 October 2026
 
 | Item | State | Next step |

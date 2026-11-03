@@ -11,7 +11,7 @@
 | Run | `python -m kit run init`, `python -m kit run status`, `python -m kit run cost`, `python -m kit run record`, `python -m kit run check`, `python -m kit run list`, `from kit import ledger` |
 | Code | `kit/ledger.py`, `templates/experiment.json`, `experiments/README.md`, `kit/cli.py` (`cmd_run`) |
 | Tests | `tests/test_kit.py`, `tests/test_verify.py` |
-| Needs | Python 3.10 or newer, standard library only. `run init` reads the dated prize snapshot `kit/data/prizes-2026-10-11.json` through `kit/prizes.py` |
+| Needs | Python 3.10 or newer, standard library only. `run init` reads the dated prize snapshot `kit/data/prizes-2026-11-03.json` through `kit/prizes.py` |
 | Runs on | Any CPU. Each action took about 0.13 s wall on a one-record ledger, almost all of it Python start-up (measured 2026-10-16, 4-core cloud container, synthetic record). `run record` hashes every `--file` in full, so it grows with file size; not measured on large files |
 | Network | None |
 | Writes | `experiments/SLUG/run.json` (or `ROOT/SLUG/run.json` with `--root`): `init` creates it and its folder; `status`, `cost` and `record` rewrite it in place. `check` and `list` write nothing |
@@ -192,7 +192,7 @@ print(ledger.check("demo-a"))  # [] when consistent
 | `path_for(slug, root=DEFAULT_ROOT)` | `Path` of `root/slug/run.json` | `LedgerError` (`bad slug: ...`) for an empty slug, one with `/`, or one starting with `.` | Does not touch the disk |
 | `load(slug, root=DEFAULT_ROOT)` | The record dict | `LedgerError` (`no experiment at ...`) when the file is missing; `LedgerError` (`cannot read ...` or `... is not a run record`) for a file that is not JSON or not a JSON object | |
 | `save(record, root=DEFAULT_ROOT)` | `Path` written | `LedgerError` for a bad `record["slug"]`; `OSError` | Creates the folder; writes indented JSON with a final newline, replacing the file |
-| `init(slug, scroll, question, readout, root=DEFAULT_ROOT, villa_commit=None, snapshot=None)` | `(path, record)` | `LedgerError` when the experiment exists or the readout is blank | `snapshot` is a prize snapshot dict; by default `prizes.load()` reads `kit/data/prizes-2026-10-11.json` |
+| `init(slug, scroll, question, readout, root=DEFAULT_ROOT, villa_commit=None, snapshot=None)` | `(path, record)` | `LedgerError` when the experiment exists or the readout is blank | `snapshot` is a prize snapshot dict; by default `prizes.load()` reads `kit/data/prizes-2026-11-03.json` |
 | `set_status(slug, status, note='', announced=False, root=DEFAULT_ROOT)` | The updated record | `LedgerError` for an unknown status (new, or stored in the file), a step not in `TRANSITIONS`, or `submitted` to `published` without `announced` | Appends to `history` and saves |
 | `add_cost(slug, usd, what, root=DEFAULT_ROOT)` | The updated record | `LedgerError` for a `usd` that is not finite (NaN or infinity) or is negative | Stores `round(usd, 2)` |
 | `add_provenance(slug, command, files=(), root=DEFAULT_ROOT)` | The updated record | `LedgerError` (`not a file: ...`) for a path that is not a file | Record a command line and the SHA-256 of files it used or wrote (checkpoints, maps), in 1 MiB chunks |
@@ -208,7 +208,7 @@ Constants: `DEFAULT_ROOT = Path("experiments")`, `STATUSES` and `TRANSITIONS` (s
 | Input | Format | Notes |
 | --- | --- | --- |
 | Options | Text on the command line | The question, readout rule, notes and command lines are stored as given, in UTF-8 |
-| Prize snapshot | `kit/data/prizes-2026-10-11.json`, read by `run init` | Gives `first_letters_volume` (the First Letters 2027 volume for the scroll) and `prize_snapshot` (the snapshot's `checked` date). Offline; `python -m kit prizes` shows it |
+| Prize snapshot | `kit/data/prizes-2026-11-03.json`, read by `run init` | Gives `first_letters_volume` (the First Letters 2027 volume for the scroll) and `prize_snapshot` (the snapshot's `checked` date). Offline; `python -m kit prizes` shows it |
 | Files for `run record` | Any regular files | Read in full to hash; folders are refused (use [provenance](provenance.md), which fingerprints folders) |
 | An existing `run.json` | JSON, as under Outputs | Every action but `init` and `list` needs it |
 

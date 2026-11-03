@@ -885,7 +885,7 @@
     "Run": "`python -m kit run all`, `python -m kit run watch`, `python -m kit run catalog`, `from kit import autobatch, scancatalog`",
     "Code": "`kit/autobatch.py`, `kit/scancatalog.py`, `kit/cli.py` (`cmd_batch`)",
     "Tests": "`tests/test_autobatch.py`",
-    "Needs": "Python 3.10 or newer, standard library only. Reads `kit/data/modal-rates.json` (through [cloudcost](cloudcost.md)) and the prizes snapshot `kit/data/prizes-2026-10-11.json`. Launching an approved scan needs the released AutoPipeline package (`scrolls-kit`), which this tool does not call",
+    "Needs": "Python 3.10 or newer, standard library only. Reads `kit/data/modal-rates.json` (through [cloudcost](cloudcost.md)) and the prizes snapshot `kit/data/prizes-2026-11-03.json`. Launching an approved scan needs the released AutoPipeline package (`scrolls-kit`), which this tool does not call",
     "Runs on": "Any CPU. A dry run of a 5-volume synthetic catalog took 0.19 s (measured 2026-10-16, cloud container). A catalog of the real bucket: Not measured; it is a few hundred small HTTPS requests",
     "Network": "`run catalog`, `run watch`, and `run all` with `--refresh` or with no saved catalog: anonymous HTTPS GETs of `https://vesuvius-challenge-open-data.s3.amazonaws.com/metadata.json`, the bucket's S3 listing (root and each `SAMPLE/volumes/`) and `https://scrollprize.org/prizes` (skipped by `run catalog --no-live-prizes`). `run all` and `run watch` also GET each in-bucket volume's `.zattrs`, and `0/.zarray` when the shape is missing, once (cached). `dl.ash2txt.org` is refused. Nothing is posted",
     "Writes": "`run catalog`: `--out` only (default `work/autobatch/catalog.json`). `run all` and `run watch`: under `--state` (default `work/autobatch/`, git-ignored): `catalog.json`, `plan.json`, `plan.md`, `batch-ledger.csv`, `approval.json`, `scans/SAMPLE/VOLUME/status.json` and `settings.json`, `zattrs/` caches. `run all --status` writes nothing",
@@ -10079,6 +10079,10 @@
      "symbols": []
     },
     {
+     "path": "kit/data/prizes-2026-11-03.json",
+     "symbols": []
+    },
+    {
      "path": "kit/data/prizes-2026-10-11.json",
      "symbols": []
     },
@@ -10103,8 +10107,8 @@
     "text": "Not needed"
    },
    "checked": {
-    "date": "2026-10-16",
-    "commit": "29e7e8c"
+    "date": "2026-11-03",
+    "commit": "3ce3b48"
    },
    "license": null,
    "fields": {
@@ -10113,7 +10117,7 @@
     "Kind": "kit command, kit module",
     "Area": "Planning and prizes",
     "Run": "`python -m kit prizes`, `from kit import prizes`",
-    "Code": "`kit/prizes.py`, `kit/data/prizes-2026-10-11.json`, `kit/data/prizes-2026-10-06.json`, `kit/cli.py` (`cmd_prizes`)",
+    "Code": "`kit/prizes.py`, `kit/data/prizes-2026-11-03.json`, `kit/data/prizes-2026-10-11.json`, `kit/data/prizes-2026-10-06.json`, `kit/cli.py` (`cmd_prizes`)",
     "Tests": "`tests/test_kit.py`, `tests/test_packaging.py`, `tests/test_cli_parser_cache.py`",
     "Needs": "Python 3.10 or newer, standard library only (json, datetime, pathlib)",
     "Runs on": "Any machine. 0.31 to 0.56 s per call for the table and 0.45 to 0.60 s for `--json`, almost all of it Python start-up and importing `kit.cli` (5 runs each, measured 2026-10-16, 4-core Xeon cloud container)",
@@ -10122,7 +10126,7 @@
     "Go-ahead": "Not needed",
     "Released": "Public `main` since 2026-10-06 (`2daee8e`); the 11 October snapshot since 2026-10-11 ([PR #40](https://github.com/ChaseHendrick/Scrolls/pull/40)). Also inside the AutoPipeline release copy at `faada83`, and as `scrolls-workbench prizes` in the installable package since 2026-10-14 (`2582ab7`)",
     "Guide": "[prizes.md](../prizes.md) (the prize terms in prose, from the same snapshot)",
-    "Checked": "2026-10-16 against commit `29e7e8c`"
+    "Checked": "2026-11-03 against commit `3ce3b48`"
    },
    "page": "docs/tools/prizes.md",
    "sections": [
@@ -10207,13 +10211,13 @@
     {
      "name": "History",
      "start_line": 203,
-     "end_line": 208,
+     "end_line": 209,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 209,
-     "end_line": 216,
+     "start_line": 210,
+     "end_line": 217,
      "applicable": true
     }
    ]
@@ -10262,7 +10266,7 @@
     "Run": "`python -m kit.prizewatch`, `from kit import prizewatch`",
     "Code": "`kit/prizewatch.py`",
     "Tests": "`tests/test_prizewatch.py`, `tests/test_routines.py`",
-    "Needs": "Python 3.10 or newer (`requires-python` in `pyproject.toml`), standard library only (urllib, html, re, json, hashlib). The prize snapshot, `kit/data/prizes-2026-10-11.json`, read through `kit.prizes`. HTTPS access to scrollprize.org; urllib uses the proxy in `HTTPS_PROXY` when one is set",
+    "Needs": "Python 3.10 or newer (`requires-python` in `pyproject.toml`), standard library only (urllib, html, re, json, hashlib). The prize snapshot, `kit/data/prizes-2026-11-03.json`, read through `kit.prizes`. HTTPS access to scrollprize.org; urllib uses the proxy in `HTTPS_PROXY` when one is set",
     "Runs on": "Any machine with network. 0.36 to 0.59 s per call with `--state` and 0.27 to 0.36 s with `--json` (5 runs each), peak resident memory about 23 MB (measured 2026-10-17, 4-core Intel Xeon @ 2.80GHz cloud container, Python 3.13.16, through the container's HTTPS proxy; the page was 55,590 bytes of HTML that day)",
     "Network": "One HTTPS GET of `https://scrollprize.org/prizes` (`URL`), or of `--url`, with the User-Agent `scrolls-kit-prizewatch` and a 20 s timeout. No other host; it sends nothing but the request",
     "Writes": "Nothing, unless `--state FILE`: then it rewrites FILE, creating its folders, after every successful fetch, whatever the result. The `prize-page` routine passes `work/routines/prize-page.json`, which is git-ignored",
@@ -11503,7 +11507,7 @@
     "Run": "`python -m kit run init`, `python -m kit run status`, `python -m kit run cost`, `python -m kit run record`, `python -m kit run check`, `python -m kit run list`, `from kit import ledger`",
     "Code": "`kit/ledger.py`, `templates/experiment.json`, `experiments/README.md`, `kit/cli.py` (`cmd_run`)",
     "Tests": "`tests/test_kit.py`, `tests/test_verify.py`",
-    "Needs": "Python 3.10 or newer, standard library only. `run init` reads the dated prize snapshot `kit/data/prizes-2026-10-11.json` through `kit/prizes.py`",
+    "Needs": "Python 3.10 or newer, standard library only. `run init` reads the dated prize snapshot `kit/data/prizes-2026-11-03.json` through `kit/prizes.py`",
     "Runs on": "Any CPU. Each action took about 0.13 s wall on a one-record ledger, almost all of it Python start-up (measured 2026-10-16, 4-core cloud container, synthetic record). `run record` hashes every `--file` in full, so it grows with file size; not measured on large files",
     "Network": "None",
     "Writes": "`experiments/SLUG/run.json` (or `ROOT/SLUG/run.json` with `--root`): `init` creates it and its folder; `status`, `cost` and `record` rewrite it in place. `check` and `list` write nothing",

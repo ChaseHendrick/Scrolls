@@ -1,6 +1,8 @@
 # Open prizes
 
-**Snapshot checked 2026-10-11** from the [scrollprize.org/prizes](https://scrollprize.org/prizes) page body (not the homepage banner) and its source [`34_prizes.md`](https://github.com/ScrollPrize/villa/blob/34d4b260dd2a281d635227a71ab8bfb5eb45c4cd/scrollprize.org/docs/34_prizes.md) and [`prizeEligibility.json`](https://github.com/ScrollPrize/villa/blob/34d4b260dd2a281d635227a71ab8bfb5eb45c4cd/scrollprize.org/src/data/prizeEligibility.json) at villa commit `34d4b260dd2a` ([#2037](https://github.com/ScrollPrize/villa/pull/2037)). Machine-readable copy: [`../kit/data/prizes-2026-10-11.json`](../kit/data/prizes-2026-10-11.json). The 6 October 2026 snapshot is kept at [`../kit/data/prizes-2026-10-06.json`](../kit/data/prizes-2026-10-06.json): a maximum of 10 First Letters scrolls ($500,000) and 22 eligible volumes, including PHerc0343. The live page wins on any disagreement. Eligible lists change: PHerc. 1447 left First Letters on 24 Sep 2026 when the team found text in it ([villa #1887](https://github.com/ScrollPrize/villa/pull/1887)). PHerc0343 left after its First Letters prize was awarded on 8 Oct 2026.
+**Snapshot checked 2026-11-03** from the [scrollprize.org/prizes](https://scrollprize.org/prizes) page body (not the homepage card or the page's "Open prize pool" figure) and its source [`34_prizes.md`](https://github.com/ScrollPrize/villa/blob/deb1b6953d6725966c57bfe40feddbcd14644858/scrollprize.org/docs/34_prizes.md) and [`prizeEligibility.json`](https://github.com/ScrollPrize/villa/blob/deb1b6953d6725966c57bfe40feddbcd14644858/scrollprize.org/src/data/prizeEligibility.json) at villa commit `deb1b6953d67`; the last change to either file was `812d7a893155` ([#2431](https://github.com/ScrollPrize/villa/pull/2431), 2 Nov 2026). Machine-readable copy: [`../kit/data/prizes-2026-11-03.json`](../kit/data/prizes-2026-11-03.json). Earlier snapshots are kept: [`../kit/data/prizes-2026-10-11.json`](../kit/data/prizes-2026-10-11.json) (a maximum of 9 First Letters scrolls, $450,000, 21 eligible volumes including PHerc0306B) and [`../kit/data/prizes-2026-10-06.json`](../kit/data/prizes-2026-10-06.json) (a maximum of 10, $500,000, 22 volumes including PHerc0343). The live page wins on any disagreement. Eligible lists change: PHerc. 1447 left First Letters on 24 Sep 2026 when the team found text in it ([villa #1887](https://github.com/ScrollPrize/villa/pull/1887)). PHerc0343 left after its First Letters prize was awarded on 8 Oct 2026, and PHerc0306B after its award was announced on 2 Nov 2026.
+
+On 3 Nov 2026 two figures on scrollprize.org had not caught up with the page body: the homepage card still said First Letters $500,000 (max 10 scrolls), and the "Open prize pool" figure of $2,140,000 at the top of the prizes page adds up the same out-of-date card amounts ($1,000,000 + $500,000 + $50,000 + $590,000). Both come from the page's frontmatter, which villa #2431 did not change. The body text, which sets the terms, says $400,000. The Progress Prizes line still named 31 Oct 2026 as the next deadline.
 
 Label: **Sourced fact** (see [`NOVELTY.md`](NOVELTY.md)).
 
@@ -9,9 +11,9 @@ Label: **Sourced fact** (see [`NOVELTY.md`](NOVELTY.md)).
 | Prize | Money | Deadline (11:59pm Pacific) | Submit |
 | --- | --- | --- | --- |
 | 2027 Grand Prize | $1,000,000: 1st $800k, 2nd $100k, 3rd $50k, 4th $50k | 25 Jun 2027 | grandprize@scrollprize.org |
-| First Letters | $50,000 per scroll, maximum of 9 more scrolls ($450,000 remaining; one prize already used) | 25 Jun 2027 | [form](https://forms.gle/TM5ao8GwC2mDrdLk9) |
+| First Letters | $50,000 per scroll, maximum of 8 more scrolls ($400,000 remaining; two prizes already used) | 25 Jun 2027 | [form](https://forms.gle/TM5ao8GwC2mDrdLk9) |
 | PHerc. Paris 4 title | $50,000 | 25 Jun 2027 | [form](https://forms.gle/4zeVPPBtNdSCAQa88) |
-| Progress Prizes | $20,000 best of month guaranteed; others $20k, $10k, $5k, $2,500, $1,000, $500, $250; about $590k per year | monthly, several entries a month allowed; next 31 Oct 2026 | [form](https://docs.google.com/forms/d/e/1FAIpQLSc4flEfgK2nyjoczz2_U_XrIGMlgrnSknWatLqrFPnbtKfZwg/viewform) |
+| Progress Prizes | $20,000 best of month guaranteed; others $20k, $10k, $5k, $2,500, $1,000, $500, $250; about $590k per year | monthly, several entries a month allowed; on 3 Nov 2026 the page still named 31 Oct 2026 as the next deadline | [form](https://docs.google.com/forms/d/e/1FAIpQLSc4flEfgK2nyjoczz2_U_XrIGMlgrnSknWatLqrFPnbtKfZwg/viewform) |
 
 ## 2027 Grand Prize
 
@@ -31,9 +33,11 @@ The organizers suggest a team: one person on whole-scroll segmentation (start wi
 
 ## First Letters
 
-10 legible letters within one 4 cm² area of an eligible scroll. 21 eligible volumes remain. The page says prizes will be awarded for a maximum of 9 more scrolls, up to $450,000. One prize was already used.
+10 legible letters within one 4 cm² area of an eligible scroll. 20 eligible volumes remain. The page says prizes will be awarded for a maximum of 8 more scrolls, up to $400,000. Two prizes were already used.
 
 On 8 October 2026 the $50,000 First Letters prize for PHerc 343 was awarded to Erwin Nieuwlaar ([official post](https://scrollprize.substack.com/p/50k-first-letters-prize-awarded-for), [@scrollprize](https://x.com/scrollprize/status/2108285044133663084)). That is why PHerc0343 is no longer eligible. The 6 October snapshot listed 22 volumes and a maximum of 10 scrolls ($500,000), and it included PHerc0343 (volume 20250521140437, 8.64 µm).
+
+On 2 November 2026 the organizers announced a $50,000 First Letters prize for PHerc. 306B to Liam Warner and Nicola Bodill ([official post](https://scrollprize.substack.com/p/writing-seen-in-pherc-306b-for-the), [winners page](https://scrollprize.org/winners), [villa #2431](https://github.com/ScrollPrize/villa/pull/2431)). That is why PHerc0306B is no longer eligible. The 11 October snapshot listed 21 volumes and a maximum of 9 scrolls ($450,000), and it included PHerc0306B (volume 20250521133212, 8.64 µm).
 
 | Scroll | Volume | Voxel (µm) |
 | --- | --- | --- |
@@ -44,7 +48,6 @@ On 8 October 2026 the $50,000 First Letters prize for PHerc 343 was awarded to E
 | PHerc0211 | 20250821151803 | 9.362 |
 | PHerc0257 | 20250821151750 | 9.362 |
 | PHerc0268 | 20251110183117 | 8.64 |
-| PHerc0306B | 20250521133212 | 8.64 |
 | PHerc0358 | 20250821151737 | 9.362 |
 | PHerc0483A | 20250521140913 | 8.64 |
 | PHerc0483B | 20251124083638 | 8.64 |
