@@ -12812,9 +12812,9 @@
    "constants_sha256": "4fe0bf2d9f45318d814cffa27f21d25834f1b482e31f91e3b39f23e12004e00b",
    "scope": "One base reader, one short recipe, fragments only (exposed surfaces, not buried ink). The private preregistration also had a scroll segment, which stays private. A suggested tile is a place to label, never a reading; the labels were already drawn, so this says nothing of a person's labeling time.",
    "why": "A villa maintainer asked for a training run comparison before taking the active-learning tool upstream (villa PR #2381).",
-   "constants_sha256_note": "This is the public module's constants hash. It differs from the hash of the frozen rule the run used only in the segment list (the frozen rule also listed the private scroll segment); every other constant is the same.",
-   "rounding_note": "suggest_revealed_ink_over_random is rounded to 2 decimals; the AUC values are as the readout printed them (6 decimals).",
-   "base_reader_training_data": "scrollprize/ink_9um: its label dataset README, in the ink_9um folder of scrollprize/datasets on Hugging Face (listed in docs/external.md; file date 14 Aug 2026), lists 24 aligned segments of PHerc. 0139, Scroll 1667, PHerc. Paris 4 and PHerc. 0814 and 5 native PHerc. 0139 segments, and no fragment; model card https://huggingface.co/scrollprize/ink_9um"
+   "constants_sha256_note": "This is the public module's constants hash. It differs from the hash of the frozen rule the run used only in the segment list; every other constant is the same.",
+   "rounding_note": "suggest_revealed_ink_over_random is rounded to 2 decimals; the base AUC fields are at 4 decimals; the arm AUCs and differences are as the readout printed them (6 decimals).",
+   "base_reader_training_data": "scrollprize/ink_9um: its label dataset README, in the ink_9um folder of scrollprize/datasets on Hugging Face (its URL is in docs/external.md; file date 14 Aug 2026), lists 24 aligned segments of PHerc. 0139, Scroll 1667, PHerc. Paris 4 and PHerc. 0814 and 5 native PHerc. 0139 segments, and no fragment; model card https://huggingface.co/scrollprize/ink_9um"
   }
  ],
  "sqrecipe_checks": [
