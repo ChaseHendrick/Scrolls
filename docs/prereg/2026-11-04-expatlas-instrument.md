@@ -73,6 +73,17 @@ the call and Sourced fact or Community report for the list it starts from; "clea
 surface was found, not that a model is proven held out. The evaluation segments' overlaps with each other are
 reported beside the matrix.
 
+## Amendment before attempt 2 (4 November 2026)
+
+Attempt 1 (rule frozen in commit `0ec8999`) planted all 30 copies and was then killed by the container's
+out-of-memory guard (exit 137) before any check was scored; nothing was read from it but the planting log. A
+technical break, so the same rule and seed run again as attempt 2 (standing decision of 29 Oct 2026 on reruns
+after a technical break). One technical change, no threshold or bar changed: every mesh is now read in single
+precision and thinned as it is read, every k-th row and column with k the smallest that leaves at most 400,000
+vertices that are not holes (`MAX_MESH_POINTS`; the planted copies were already capped at that count by
+`max_mesh_points` above). Before it, a 5-million-vertex catalog mesh was held whole while its normals and search
+tree were built.
+
 ## Results
 
 Not yet run.

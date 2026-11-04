@@ -59,6 +59,7 @@ TRACE_FRAC = 0.005
 TRANSFORM_FLAG_UM = 30.0   # half of D_SAME_UM
 TRANSFORM_LIMIT_UM = 70.0  # half a nominal winding of 140 um
 MAX_EVAL_POINTS = 150_000
+MAX_MESH_POINTS = 400_000  # every mesh is thinned to this many grid vertices as it is read (memory)
 FOOTPRINT = 0.8            # tangential reach, as a share of the training grid's step
 K_NEAREST = 8
 TRAIN_ROLES = ("train", "train_split")
@@ -217,22 +218,35 @@ class Fetcher:
         self.base = base
         self.get = get or meshaudit._get
 
-    def read(self, path):
+    def read(self, path, max_points=MAX_MESH_POINTS):
+        """(H, W, 3) float64 vertices, NaN for holes; every k-th row and column, k the smallest that leaves at most
+        about max_points vertices that are not holes."""
         np = _np()
         import io
-        if os.path.isdir(path):
-            return meshaudit.read_tifxyz(path, fetch=lambda p: Path(p).read_bytes())
-        key = hashlib.sha256(path.encode()).hexdigest()[:20]
-        folder = self.cache / key
         arrs = []
-        for a in "xyz":
-            f = folder / f"{a}.tif"
-            if not f.is_file():
-                folder.mkdir(parents=True, exist_ok=True)
-                tmp = f.with_suffix(".part")
-                tmp.write_bytes(self.get(f"{self.base}/{path}/{a}.tif"))
-                tmp.replace(f)
-            arrs.append(meshaudit.imread_capped(io.BytesIO(f.read_bytes())).astype(np.float64))
+        if os.path.isdir(path):
+            raw = [lambda a=a: Path(path, f"{a}.tif").read_bytes() for a in "xyz"]
+        else:
+            key = hashlib.sha256(path.encode()).hexdigest()[:20]
+            folder = self.cache / key
+            raw = []
+            for a in "xyz":
+                f = folder / f"{a}.tif"
+                if not f.is_file():
+                    folder.mkdir(parents=True, exist_ok=True)
+                    tmp = f.with_suffix(".part")
+                    tmp.write_bytes(self.get(f"{self.base}/{path}/{a}.tif"))
+                    tmp.replace(f)
+                raw.append(lambda f=f: f.read_bytes())
+        k = 1
+        for i, get in enumerate(raw):
+            arr = meshaudit.imread_capped(io.BytesIO(get()))
+            if i == 0 and max_points:
+                n = int(np.count_nonzero(np.isfinite(arr) & (arr > 0)))   # vertices that are not holes
+                if n > max_points:
+                    k = int(math.ceil(math.sqrt(n / max_points)))
+            arrs.append(np.ascontiguousarray(arr[::k, ::k], dtype=np.float64))
+            del arr
         xyz = np.stack(arrs, -1)
         bad = (xyz == -1).any(-1) | ~np.isfinite(xyz).all(-1) | (xyz <= 0).all(-1)
         xyz[bad] = np.nan
