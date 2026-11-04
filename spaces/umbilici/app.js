@@ -7,7 +7,7 @@ import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 
-const VERSION = '1.12.0';
+const VERSION = '1.13.0';
 const DATASET = 'https://huggingface.co/datasets/SharpMeow/vesuvius-center-lines';
 const LASAGNA_SCROLL = 'PHerc0175A';
 const ICE = new THREE.Color('#89f0ff');
@@ -27,6 +27,7 @@ const $ = (id) => document.getElementById(id);
 const S = {
   data: null, las: null, mode: 'array', sel: null, hot: null, ex: 3, z: null,
   ct: true, render: 'xray', gain: 44, sheets: true, needles: true, ct2: false, ori: false, blend: 70,
+  outside: false, // draw the end runs that lie outside the scroll in the CT (hidden by default; URL outside=1)
   dirty: true, status: '',
 };
 
@@ -90,16 +91,25 @@ const mm = (s, v) => v * s.voxel_um / 1000;
 const fmt = (v, d = 1) => Number(v).toFixed(d);
 async function getJSON(url) { const r = await fetch(url); if (!r.ok) throw new Error(`${r.status} ${url}`); return r.json(); }
 function linePts(l) { const p = l.points, out = []; for (let i = 0; i < p.length; i += 3) out.push([p[i], p[i + 1], p[i + 2]]); return out; }
-function lineAt(l, z) {
-  const p = linePts(l);
-  if (z < p[0][2] || z > p[p.length - 1][2]) return null;
+// The CT test of tools/build_lines.py (outside_ends): l.outside counts, per end, the control points from that end to
+// the innermost one that lies outside the scroll in the CT; null when the line could not be tested (l.outside_why).
+// Those end runs are hidden unless S.outside, and every drift statistic uses the inside part only. The file, its
+// points and its sha256 are the dataset's, unchanged.
+function cut(l) { const n = l.points.length / 3, o = l.outside; return o ? [o.low.hidden, n - o.high.hidden] : [0, n]; }
+function insidePts(l) { const [a, b] = cut(l); return linePts(l).slice(a, b); }
+// whether height z falls in a hidden end run of l
+function outsideAt(l, z) { const o = l.outside; if (!o) return false; const p = l.points, n = p.length / 3, [a, b] = cut(l); return (a > 0 && z < p[3 * a + 2]) || (b < n && z > p[3 * (b - 1) + 2]); }
+function lineAt(l, z, pts) {
+  const p = pts || linePts(l);
+  if (!p.length || z < p[0][2] || z > p[p.length - 1][2]) return null;
   for (let i = 1; i < p.length; i++) {
     if (p[i][2] >= z) { const a = p[i - 1], b = p[i], t = b[2] === a[2] ? 0 : (z - a[2]) / (b[2] - a[2]); return [a[0] + t * (b[0] - a[0]), a[1] + t * (b[1] - a[1])]; }
   }
   return null;
 }
-function lineMean(l) { const p = linePts(l); let x = 0, y = 0; for (const q of p) { x += q[0]; y += q[1]; } return [x / p.length, y / p.length]; }
-function drift(s, l) { const [mx, my] = lineMean(l); let d = 0; for (const q of linePts(l)) d = Math.max(d, Math.hypot(q[0] - mx, q[1] - my)); return mm(s, d); }
+// the mean and the stray use the inside part (insidePts), so an end that runs off past the scroll moves neither
+function lineMean(l) { const p = insidePts(l); let x = 0, y = 0; for (const q of p) { x += q[0]; y += q[1]; } return [x / p.length, y / p.length]; }
+function drift(s, l) { const [mx, my] = lineMean(l); let d = 0; for (const q of insidePts(l)) d = Math.max(d, Math.hypot(q[0] - mx, q[1] - my)); return mm(s, d); }
 const isFinder = (l) => l.source === 'finder';
 // an older version (superseded_by names the newer line's file) or a withdrawn line is drawn faded
 const isOld = (l) => !!l.superseded_by || l.note.includes('withdrawn');
@@ -155,8 +165,10 @@ const RAW = (l) => `${DATASET}/resolve/main/${l.file}`;
 const lic = (l) => l.licence;
 const median = (a) => { if (!a.length) return null; const b = [...a].sort((u, v) => u - v); const k = b.length >> 1; return b.length % 2 ? b[k] : (b[k - 1] + b[k]) / 2; };
 function lineStats(s, l) {
-  const p = linePts(l), n = p.length;
-  const dz = []; for (let i = 1; i < n; i++) dz.push(p[i][2] - p[i - 1][2]);
+  // points, z range, coverage and steps describe the whole file; mean, stray, tilt, wiggle and path the inside part
+  const all = linePts(l), N = all.length;
+  const dz = []; for (let i = 1; i < N; i++) dz.push(all[i][2] - all[i - 1][2]);
+  const p = insidePts(l), n = p.length;
   const [mx, my] = lineMean(l);
   // least-squares x(z), y(z)
   let sz = 0, szz = 0, sx = 0, sy = 0, sxz = 0, syz = 0;
@@ -167,18 +179,21 @@ function lineStats(s, l) {
   for (let i = 0; i < n; i++) { const [x, y, z] = p[i]; r2 += (x - ax - bx * z) ** 2 + (y - ay - by * z) ** 2; if (i) path += Math.hypot(x - p[i - 1][0], y - p[i - 1][1], z - p[i - 1][2]); }
   const st = l.stamp || {};
   const stamped = st.volume_width === s.shape[2] && st.volume_height === s.shape[1] && st.volume_slices === s.shape[0];
-  const z0 = p[0][2], z1 = p[n - 1][2];
+  const z0 = all[0][2], z1 = all[N - 1][2], o = l.outside;
   return {
-    points: n, z_start: z0, z_end: z1, height_mm: mm(s, z1 - z0), coverage: (z1 - z0) / s.shape[0],
+    points: N, z_start: z0, z_end: z1, height_mm: mm(s, z1 - z0), coverage: (z1 - z0) / s.shape[0],
+    outside_low: o ? o.low.hidden : null, outside_high: o ? o.high.hidden : null, inside_z_start: p[0][2], inside_z_end: p[n - 1][2],
     median_step_vox: median(dz), max_step_vox: dz.length ? Math.max(...dz) : null,
     mean_x: mx, mean_y: my, off_center_mm: mm(s, Math.hypot(mx - s.shape[2] / 2, my - s.shape[1] / 2)),
     stray_mm: drift(s, l), tilt_deg: Math.atan(Math.hypot(bx, by)) * 180 / Math.PI, wiggle_mm: mm(s, Math.sqrt(r2 / n)),
-    path_mm: mm(s, path), path_over_height: path / Math.max(1, z1 - z0), stamped,
+    path_mm: mm(s, path), path_over_height: path / Math.max(1, p[n - 1][2] - p[0][2]), stamped,
   };
 }
+// pair gaps over the heights where both lines' inside parts exist
 function pairStats(s, a, b) {
-  const lo = Math.max(a.z[0], b.z[0]), hi = Math.min(a.z[1], b.z[1]); const g = [];
-  for (let z = lo; z <= hi; z += 64) { const p = lineAt(a, z), q = lineAt(b, z); if (p && q) g.push(Math.hypot(p[0] - q[0], p[1] - q[1])); }
+  const pa = insidePts(a), pb = insidePts(b);
+  const lo = Math.max(pa[0][2], pb[0][2]), hi = Math.min(pa[pa.length - 1][2], pb[pb.length - 1][2]); const g = [];
+  for (let z = lo; z <= hi; z += 64) { const p = lineAt(a, z, pa), q = lineAt(b, z, pb); if (p && q) g.push(Math.hypot(p[0] - q[0], p[1] - q[1])); }
   if (!g.length) return null;
   return { a: a.source, b: b.source, overlap_mm: mm(s, hi - lo), samples: g.length, median_mm: mm(s, median(g)), min_mm: mm(s, Math.min(...g)), max_mm: mm(s, Math.max(...g)) };
 }
@@ -190,7 +205,7 @@ function lineRows() {
     const t = statsOf(s, l);
     return {
       scroll: s.scroll, scan: s.scan, volume: s.volume, voxel_um: s.voxel_um, source: l.source, maker: S.data.sources[l.source].label,
-      kind: l.kind, grade: l.grade || '', ct_untested: !!l.untested, ct_end_low: endText(l, 'low'), ct_end_high: endText(l, 'high'), usable_ends: isFinder(l) ? (usable(l) || '') : '', withdrawn: l.note.includes('withdrawn'), superseded: !!l.superseded_by,
+      kind: l.kind, grade: l.grade || '', ct_untested: !!l.untested, ct_end_low: endText(l, 'low'), ct_end_high: endText(l, 'high'), outside_tested: !!l.outside, outside_why: l.outside_why || '', usable_ends: isFinder(l) ? (usable(l) || '') : '', withdrawn: l.note.includes('withdrawn'), superseded: !!l.superseded_by,
       ...t, license: lic(l), sha256: l.sha256, file: RAW(l), upstream: l.upstream, note: l.note,
     };
   }));
@@ -242,6 +257,25 @@ function tube(points3, color, radius, opacity = 1) {
   const m = new THREE.MeshBasicMaterial({ color: color.clone().multiplyScalar(1.35), transparent: true, opacity, depthWrite: true, toneMapped: false });
   const mesh = new THREE.Mesh(g, m); mesh.renderOrder = 3; mesh.userData.base = opacity; return mesh;
 }
+// a hidden end run when the viewer shows it: faded dots along the same curve, one draw call
+function dots(points3, color, radius, opacity) {
+  const curve = new THREE.CatmullRomCurve3(points3.map((p) => new THREE.Vector3(...p)), false, 'centripetal');
+  const n = Math.max(2, Math.min(600, Math.floor(curve.getLength() / (radius * 3.2))));
+  const m = new THREE.MeshBasicMaterial({ color: color.clone().multiplyScalar(1.35), transparent: true, opacity, depthWrite: false, toneMapped: false });
+  const mesh = new THREE.InstancedMesh(new THREE.SphereGeometry(radius * 0.8, 8, 6), m, n);
+  const at = new THREE.Matrix4();
+  for (let i = 0; i < n; i++) mesh.setMatrixAt(i, at.makeTranslation(curve.getPointAt(i / (n - 1))));
+  mesh.renderOrder = 3; mesh.userData.base = opacity; return mesh;
+}
+// a line as drawn: its inside part as a tube, and, when S.outside, each hidden end run as dots from the last inside point
+function lineMeshes(l, pts3, radius, opacity) {
+  const [a, b] = cut(l), out = [tube(pts3.slice(a, b), colOf(l), radius, opacity)];
+  if (S.outside) {
+    if (a > 0) out.push(dots(pts3.slice(0, a + 1), colOf(l), radius, opacity * 0.4));
+    if (b < pts3.length) out.push(dots(pts3.slice(b - 1), colOf(l), radius, opacity * 0.4));
+  }
+  return out;
+}
 function ring(r, y, color, opacity, seg = 96) {
   const pts = []; for (let i = 0; i <= seg; i++) { const a = i / seg * Math.PI * 2; pts.push(new THREE.Vector3(Math.cos(a) * r, y, Math.sin(a) * r)); }
   const l = new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), new THREE.LineBasicMaterial({ color, transparent: true, opacity, toneMapped: false }));
@@ -268,7 +302,7 @@ function buildArray() {
       for (const l of s.lines) {
         if (!shown(s, l)) continue;
         const pts = linePts(l).map(([x, y, z]) => [mm(s, x - cx) * S.ex, mm(s, z), mm(s, y - cy) * S.ex]);
-        g.add(tube(pts, colOf(l), 0.9, isOld(l) ? 0.45 : 1));
+        g.add(...lineMeshes(l, pts, 0.9, isOld(l) ? 0.45 : 1));
       }
       const tint = hasFinder(s) ? AMBER : ICE;
       g.add(ring(26, 0, tint, 0.28)); g.add(ring(26, H, tint, 0.12));
@@ -455,7 +489,7 @@ function toWorld(s, x, y, z) { const [ox, oy] = scanOrigin(s); return [mm(s, x -
 const scanLines = new THREE.Group();
 function buildScanLines(s) {
   scanLines.clear();
-  for (const l of s.lines) if (shown(s, l)) scanLines.add(tube(linePts(l).map(([x, y, z]) => toWorld(s, x, y, z)), colOf(l), 0.55, isOld(l) ? 0.5 : 1));
+  for (const l of s.lines) if (shown(s, l)) scanLines.add(...lineMeshes(l, linePts(l).map(([x, y, z]) => toWorld(s, x, y, z)), 0.55, isOld(l) ? 0.5 : 1));
   S.dirty = true;
 }
 function buildScan(s) {
@@ -563,12 +597,15 @@ function drawMarks(sx, s, z, a = 0) {
   for (const l of s.lines) {
     if (!shown(s, l)) continue;
     const p = lineAt(l, z); if (!p) continue;
+    const off = outsideAt(l, z); if (off && !S.outside) continue; // an end run outside the scroll: faded and dashed when shown
     const u = p[0] * kx - c, v = p[1] * ky - c; const x = c + u * ca - v * sa, y = c + u * sa + v * ca; const col = hexOf(l);
+    sx.globalAlpha = off ? 0.45 : 1; sx.setLineDash(off ? [3, 3] : []);
     sx.strokeStyle = col; sx.lineWidth = 1.6; sx.shadowColor = col; sx.shadowBlur = 10;
     sx.beginPath(); sx.arc(x, y, 9, 0, Math.PI * 2); sx.stroke();
     sx.beginPath(); sx.moveTo(x - 22, y); sx.lineTo(x - 12, y); sx.moveTo(x + 12, y); sx.lineTo(x + 22, y); sx.moveTo(x, y - 22); sx.lineTo(x, y - 12); sx.moveTo(x, y + 12); sx.lineTo(x, y + 22); sx.stroke();
     sx.fillStyle = col; sx.beginPath(); sx.arc(x, y, 1.6, 0, Math.PI * 2); sx.fill();
     sx.shadowBlur = 0; sx.font = '500 12px JetBrains Mono, monospace'; sx.fillText(S.data.sources[l.source].short, x + 14, y - 13);
+    sx.globalAlpha = 1; sx.setLineDash([]);
   }
 }
 async function drawSlice() {
@@ -694,6 +731,19 @@ function buildPick() {
   $('c-pick').innerHTML = `<optgroup label="Prize page">${on.map(opt).join('')}</optgroup>` + (off.length ? `<optgroup label="Not on the prize page">${off.map(opt).join('')}</optgroup>` : '');
 }
 $('c-pick').addEventListener('change', (e) => { const name = e.target.value; select(name, S.mode === 'lasagna' && name !== LASAGNA_SCROLL ? 'scan' : S.mode === 'array' ? 'scan' : S.mode); e.target.blur(); });
+// what the CT test says about a line's ends, for its scan card
+function outsideHTML(l) {
+  const o = l.outside;
+  if (!o) return `<div class="note">Ends not tested against the CT: ${l.outside_why || 'this copy of the line has no CT test'}. Drawn whole.</div>`;
+  const P = linePts(l), n = P.length;
+  const end = (k) => {
+    const e = o[k]; if (!e.hidden) return `${k} end: none`;
+    const z = k === 'low' ? [P[0][2], P[e.hidden - 1][2]] : [P[n - e.hidden][2], P[n - 1][2]];
+    return `${k} end: <b>${e.hidden} point${e.hidden === 1 ? '' : 's'}</b> hidden (z ${z[0]} to ${z[1]}), ${e.far} of them outside the scroll${e.max_mm != null ? `, up to ${fmt(e.max_mm, 1)} mm past it` : ''}${e.empty ? `, ${e.empty} in slices with no scroll at all` : ''}`;
+  };
+  if (!o.low.hidden && !o.high.hidden) return '<div class="note">CT: no end point lies outside the scroll.</div>';
+  return `<div class="note out">Outside the scroll in the CT: ${end('low')}; ${end('high')}. ${S.outside ? 'Shown faded and dotted.' : 'Hidden; tick <i>show ends outside the scroll</i> to see them.'} The file is unchanged.</div>`;
+}
 function buildCard(s) {
   $('c-pick').value = s.scroll;
   $('c-kick').textContent = `SCAN ${s.scan} · ${s.voxel_um} µm · ${prizeWords(s)}`;
@@ -710,12 +760,13 @@ function buildCard(s) {
     const row = (k, v) => `<tr><th>${k}</th><td>${v}</td></tr>`;
     const k = lineKey(s, l);
     return `<div class="ln${shown(s, l) ? '' : ' off'}"><div class="who"><span class="name"><label class="show" title="show or hide this line"><input type="checkbox" data-line="${k}"${OFF.line.has(k) ? '' : ' checked'}${OFF.src.has(l.source) ? ' disabled' : ''}></label><b style="color:${hexOf(l)}">${src.label}</b></span><span class="tags">${ver}${grade}</span></div>
-      <div class="meta">${t.points} points · z ${t.z_start} to ${t.z_end} (${fmt(t.height_mm, 0)} mm, ${fmt(t.coverage * 100, 0)}% of the scan) · strays up to ${fmt(t.stray_mm, 1)} mm from its mean · ${lic(l)}</div>${was}${note}
+      <div class="meta">${t.points} points · z ${t.z_start} to ${t.z_end} (${fmt(t.height_mm, 0)} mm, ${fmt(t.coverage * 100, 0)}% of the scan) · strays up to ${fmt(t.stray_mm, 1)} mm from its mean · ${lic(l)}</div>${was}${note}${outsideHTML(l)}
       <div class="links"><a href="${RAW(l)}" download>download</a><button class="lk" data-copy="${RAW(l)}" data-what="file URL copied">copy URL</button><button class="lk" data-copy="python -m kit centerline get ${s.scroll} --source ${l.source} --into YOUR_PROJECT_FOLDER" data-what="kit command copied: it writes YOUR_PROJECT_FOLDER/umbilicus.json" title="A command for the Scrolls kit that downloads this line, checks its sha256 and writes it as umbilicus.json where VC3D looks">copy kit command</button><a href="${DATASET}/blob/main/${l.file}" target="_blank" rel="noopener">view</a>${up}</div>
       <details class="full"><summary>every number</summary><table class="kv">
         ${row('credit', l.credit)}${row('kind', l.kind)}${row('points', t.points)}
         ${row('z range', `${t.z_start} to ${t.z_end} voxels, ${fmt(mm(s, t.z_start), 2)} to ${fmt(mm(s, t.z_end), 2)} mm`)}
         ${row('coverage', `${fmt(t.coverage * 100, 1)}% of ${s.shape[0]} slices`)}
+        ${row('inside the scroll', l.outside ? `z ${t.inside_z_start} to ${t.inside_z_end}; ${t.outside_low} low and ${t.outside_high} high end points hidden (CT level ${l.outside.level}, more than ${l.outside.far_mm} mm past the scroll's outline)` : `not tested: ${l.outside_why || 'no CT test'}`)}
         ${row('step', `median ${fmt(t.median_step_vox, 0)}, max ${fmt(t.max_step_vox, 0)} voxels (${fmt(mm(s, t.max_step_vox), 1)} mm)`)}
         ${row('mean x, y', `${fmt(t.mean_x, 0)}, ${fmt(t.mean_y, 0)} voxels, ${fmt(t.off_center_mm, 2)} mm off grid center`)}
         ${row('stray', `${fmt(t.stray_mm, 2)} mm`)}${row('tilt', `${fmt(t.tilt_deg, 2)}°`)}${row('wiggle', `${fmt(t.wiggle_mm, 3)} mm RMS`)}
@@ -733,12 +784,12 @@ function buildCard(s) {
     <div class="dim">every level ${s.pyramid[0].dtype === '|u1' ? 'uint8' : s.pyramid[0].dtype}, chunks ${s.pyramid[0].chunks.join(' x ')}, ${s.pyramid[0].compressor || 'no compressor'}</div>${streamable(s) ? '' : `<div class="note">This page reads one plane of an uncompressed chunk at a time, so it shows no CT for this scan; its line is drawn in the scan's frame. zarr, VC3D and the neuroglancer link read the compressed chunks.</div>`}`;
   $('c-vol').innerHTML = `CT <a href="${s.zarr}/.zattrs" target="_blank" rel="noopener">${s.volume}</a> · Vesuvius Challenge open data, CC BY-NC 4.0`;
 }
-function hereRows(s, z) { return s.lines.map((l) => { const p = lineAt(l, z); return p ? { source: l.source, x: p[0], y: p[1], z } : null; }).filter(Boolean); }
+function hereRows(s, z) { return s.lines.map((l) => { const p = lineAt(l, z); return p ? { source: l.source, x: p[0], y: p[1], z, outside: outsideAt(l, z) } : null; }).filter(Boolean); }
 function drawHere() {
   const s = S.sel; if (!s || S.z == null) return;
   const z = Math.round(S.z); const rows = hereRows(s, z);
   $('c-here').innerHTML = `<div class="mono small dim">AT z ${z} (${fmt(mm(s, z), 2)} mm), LEVEL-0 VOXELS</div>` + (rows.length
-    ? rows.map((r) => `<div class="hr"><span class="${r.source.startsWith('finder') ? 'amber' : 'ice'}">${S.data.sources[r.source].short}</span> <code>${fmt(r.x, 1)}, ${fmt(r.y, 1)}, ${z}</code><button class="lk" data-copy="${fmt(r.x, 1)}, ${fmt(r.y, 1)}, ${z}" data-what="x, y, z copied">copy</button></div>`).join('')
+    ? rows.map((r) => `<div class="hr"><span class="${r.source.startsWith('finder') ? 'amber' : 'ice'}">${S.data.sources[r.source].short}</span> <code>${fmt(r.x, 1)}, ${fmt(r.y, 1)}, ${z}</code><button class="lk" data-copy="${fmt(r.x, 1)}, ${fmt(r.y, 1)}, ${z}" data-what="x, y, z copied">copy</button>${r.outside ? ' <span class="dim">outside the scroll</span>' : ''}</div>`).join('')
     : '<div class="dim small">no line reaches this height</div>');
 }
 function setMode(m) {
@@ -777,6 +828,8 @@ $('b-connect').addEventListener('click', () => { markSeen(); openGuide('connect'
 let exQueued = false;
 $('ex').addEventListener('input', (e) => { S.ex = +e.target.value; $('ex-v').textContent = S.ex; if (!exQueued) { exQueued = true; requestAnimationFrame(() => { exQueued = false; buildArray(); }); } syncURLSoon(); });
 $('t-ct').addEventListener('change', (e) => { S.ct = e.target.checked; applyVolUniforms(); });
+function setOutside(on) { S.outside = on === undefined ? !S.outside : !!on; $('t-outside').checked = S.outside; linesChanged(); return { outside: S.outside }; }
+$('t-outside').addEventListener('change', (e) => setOutside(e.target.checked));
 $('t-ct2').addEventListener('change', (e) => { S.ct2 = e.target.checked; applyVolUniforms(); });
 $('render').addEventListener('change', (e) => { S.render = e.target.value; applyVolUniforms(); });
 $('gain').addEventListener('input', (e) => { S.gain = +e.target.value; applyVolUniforms(); });
@@ -851,7 +904,7 @@ $('about').querySelector('.tabs').addEventListener('click', (e) => { const b = e
 
 // data sheet
 const COLS = {
-  lines: [['scroll', 'scroll'], ['maker', 'maker'], ['grade', 'grade'], ['ct_end_low', 'low end'], ['ct_end_high', 'high end'], ['points', 'pts'], ['z_start', 'z start'], ['z_end', 'z end'], ['height_mm', 'height mm'],
+  lines: [['scroll', 'scroll'], ['maker', 'maker'], ['grade', 'grade'], ['ct_end_low', 'low end'], ['ct_end_high', 'high end'], ['outside_low', 'low out'], ['outside_high', 'high out'], ['points', 'pts'], ['z_start', 'z start'], ['z_end', 'z end'], ['height_mm', 'height mm'],
     ['coverage', 'cover'], ['median_step_vox', 'step'], ['max_step_vox', 'max step'], ['off_center_mm', 'off ctr mm'], ['stray_mm', 'stray mm'], ['tilt_deg', 'tilt °'],
     ['wiggle_mm', 'wiggle mm'], ['path_over_height', 'path/ht'], ['stamped', 'stamp'], ['usable_ends', 'usable ends'], ['superseded', 'superseded'], ['license', 'license'], ['sha256', 'sha256']],
   scans: [['scroll', 'scroll'], ['scan', 'scan'], ['voxel_um', 'µm'], ['slices', 'z'], ['height_px', 'y'], ['width_px', 'x'], ['height_mm', 'height mm'], ['width_mm', 'width mm'],
@@ -972,18 +1025,20 @@ function syncURL() {
   if (S.mode !== 'array') { q.set('mode', S.mode); q.set('scan', S.sel.scroll); q.set('z', Math.round(S.z)); }
   if (S.ex !== 3) q.set('ex', S.ex);
   const off = [...OFF.src, ...OFF.line]; if (off.length) q.set('off', off.join(','));
+  if (S.outside) q.set('outside', '1');
   history.replaceState(null, '', q.toString() ? `?${q}` : location.pathname);
 }
 window.umbilici = {
   version: () => VERSION,
   show: (kind, name, on) => showLines(kind, name, on),
+  outside: (on) => setOutside(on),
   scans: () => S.data.scrolls.map((s) => ({ scroll: s.scroll, scan: s.scan, volume: s.volume, voxel_um: s.voxel_um, shape_zyx: s.shape, grand_prize: s.grand_prize, first_letters: s.first_letters, sources: s.lines.map((l) => l.source), grade: gradeOf(s) })),
   lines: (name) => { const s = S.data.scrolls.find((q) => q.scroll === name); return s ? s.lines.map((l) => ({ ...l, points: linePts(l) })) : null; },
   at: (name, z) => { const s = S.data.scrolls.find((q) => q.scroll === name); return s ? s.lines.map((l) => ({ source: l.source, xy: lineAt(l, z) })) : null; },
   select: (name, mode = 'scan') => select(name, mode),
   mode: (m) => setMode(m),
   setZ: (z) => setZ(z, true),
-  state: () => ({ mode: S.mode, scan: S.sel?.scroll ?? null, z: S.z, ex: S.ex, ct: { loaded: vol?.loaded ?? 0, total: vol?.total ?? 0 }, render: S.render, pixel_ratio: renderer.getPixelRatio(), auto_level: autoLevel }),
+  state: () => ({ mode: S.mode, scan: S.sel?.scroll ?? null, z: S.z, ex: S.ex, outside: S.outside, ct: { loaded: vol?.loaded ?? 0, total: vol?.total ?? 0 }, render: S.render, pixel_ratio: renderer.getPixelRatio(), auto_level: autoLevel }),
   image: () => { composer.render(); return renderer.domElement.toDataURL('image/png'); },
   slice: () => sc.toDataURL('image/png'),
   stats: (name) => { const s = S.data.scrolls.find((q) => q.scroll === name); return s ? { lines: s.lines.map((l) => ({ source: l.source, file: RAW(l), ...statsOf(s, l) })), pairs: pairsOf(s) } : null; },
@@ -1081,7 +1136,10 @@ async function liveLine(f, had, at) {
     usable = use && typeof use === 'object' ? ['low', 'high'].filter((k) => use[k]) : null;
   }
   const l = Object.fromEntries(LINE_KEYS.map((k) => [k, f[k] ?? (k === 'note' ? '' : f[k])]));
-  return { ...l, grade, ends, untested: !!f.ct_untested_scan, usable, stamp, points, superseded_by: f.superseded_by ?? null };
+  // the CT test of a line's ends runs when the page is built; a file newer than the build is drawn whole
+  const outside = had ? had.outside ?? null : null;
+  const outside_why = had ? had.outside_why ?? (outside ? null : 'this copy of the page was built before the CT test') : 'the file is newer than this page\'s build, which ran the CT test';
+  return { ...l, grade, ends, untested: !!f.ct_untested_scan, usable, stamp, points, superseded_by: f.superseded_by ?? null, outside, outside_why };
 }
 
 // ---------- boot ----------
@@ -1114,6 +1172,7 @@ async function liveLine(f, had, at) {
   const q = new URLSearchParams(location.search);
   if (q.get('ex')) { S.ex = Math.max(1, Math.min(30, +q.get('ex'))); $('ex').value = S.ex; $('ex-v').textContent = S.ex; }
   for (const k of (q.get('off') || '').split(',').filter(Boolean)) (k.includes(':') ? OFF.line : OFF.src).add(k);
+  S.outside = q.get('outside') === '1'; $('t-outside').checked = S.outside;
   buildLegend();
   applySettings(false); buildRail(); buildPick(); buildArray();
   $('boot').remove();

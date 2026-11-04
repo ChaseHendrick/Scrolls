@@ -114,6 +114,21 @@ villa's source (`main`, read 23 Oct 2026):
 Because VC3D holds the ends and spiral-fitting extrapolates them, check a line's usable ends before relying on
 it near the top or bottom of a scan.
 
+## Ends outside the scroll
+
+Since 1.13.0 each line is drawn from its first to its last point inside the scroll. `tools/build_lines.py` tests
+every line's end points against the scan's masked CT at level 5 (32 times down; voxels outside the scroll are zero):
+a point lies outside when, in its own axial slice, it sits more than 4 mm outside the scroll's outline (the convex
+hull of the nonzero voxels) or the slice holds no scroll at all. At each end the hidden run reaches from the end to
+the innermost outside point among the outer quarter of the line's points; the middle half is never hidden. Two
+checks make the test able to fail: the line's middle point must be inside and the slice corner farthest from it
+outside, or the line is drawn whole and marked untested. Each card says per end how many points are hidden and how
+far past the scroll they lie, the Data tables have `low out` and `high out` columns, and the drift statistics
+(mean, stray, tilt, wiggle, path, pair gaps) use the inside part. **show ends outside the scroll** at bottom left
+(`outside=1` in the view link) draws the hidden runs faded and dotted. Some Center Finder v2 lines run tens of mm
+sideways at an end, where their start line was never trimmed to the papyrus; their files are unchanged here, and
+the downloads, `lines()` and the copied URLs keep every point.
+
 ## X-ray
 
 CT is not stored on this Space. Each visitor's browser reads coarse levels of the OME-Zarr volumes straight from
@@ -140,19 +155,20 @@ The page is driven from the console or a headless browser through `window.umbili
 | Call | Returns or does |
 | --- | --- |
 | `scans()` | every scan: scroll, scan id, volume, voxel size, shape, prize lists, sources, end grade |
-| `lines(scroll)` | that scan's lines with control points `[x, y, z]` in level-0 voxels |
+| `lines(scroll)` | that scan's lines with control points `[x, y, z]` in level-0 voxels, every point of the file, and `outside` (points hidden at each end, or null with `outside_why`) |
 | `at(scroll, z)` | each line's `[x, y]` at height `z` (linear between control points) |
 | `select(scroll, mode)`, `mode('array' or 'scan' or 'lasagna')`, `setZ(z)` | change the view |
-| `state()` | mode, scan, height, CT streaming progress |
+| `state()` | mode, scan, height, whether the ends outside the scroll are shown, CT streaming progress |
+| `outside(on)` | shows (`true`) or hides (`false`) the line ends that lie outside the scroll in the CT, omitted toggles; returns `{outside}`, also kept in the URL as `outside=1` |
 | `image()`, `slice()` | PNG data URLs of the 3D view and the slice |
-| `stats(scroll)` | every statistic of each line (points, z range, coverage, steps, stray, tilt, wiggle, path, stamp) and the pair gaps |
+| `stats(scroll)` | every statistic of each line (points, z range, coverage, steps, points hidden at each end, stray, tilt, wiggle, path, stamp; the drift statistics on the inside part) and the pair gaps |
 | `table('lines' or 'scans')`, `csv('lines' or 'scans' or 'points')` | the Data tables as objects or CSV text |
 | `guide(tab)`, `data(tab)` | open the guide (`basics`, `vc3d`, `research`, `data`, `credits`) or the Data tables |
 | `bench(n)` | renders `n` frames and returns milliseconds per frame and the pixel ratio |
-| `show(kind, name, on)` | shows or hides lines: `kind` `'source'` with a maker (`bucket`, `drobkov`, `tauil`, `dopico`, `finder`, `finder-polished`) or `'line'` with `SCROLL:SOURCE`; `on` true or false, omitted toggles; returns `{off}`, also kept in the URL as `off=` |
+| `show(kind, name, on)` | shows or hides lines: `kind` `'source'` with a maker (`bucket`, `drobkov`, `tauil`, `dopico`, `finder`, `finder-polished`, `finder-v2`) or `'line'` with `SCROLL:SOURCE`; `on` true or false, omitted toggles; returns `{off}`, also kept in the URL as `off=` |
 | `settings(obj)` | read or change the viewer settings: `glow` (0 to 3), `radius` (0 to 1), `quality` (`auto`, `high`, `low`), `film`, `spin`, `inset` (the slice panel shown), `turn` (the slice turns with the 3D view) |
 
-URL parameters: `?mode=scan&scan=PHerc0191&z=10400`, `?mode=lasagna&scan=PHerc0175A&z=6400`, `?ex=5`,
+URL parameters: `?mode=scan&scan=PHerc0191&z=10400`, `?mode=lasagna&scan=PHerc0175A&z=6400`, `?ex=5`, `?outside=1`,
 `?guide=vc3d`, `?data=lines`, `?glow=1.5`. The gear button holds the settings (glow strength and spread, quality,
 film grain, spin), saved in the browser.
 `data/lines.json` is the line table built at deploy by `tools/build_lines.py` from a copy of the dataset. On load the page reads the dataset's newest revision from huggingface.co and shows it instead, so new releases appear without a redeploy; the built table is the fallback.
