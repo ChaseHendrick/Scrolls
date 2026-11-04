@@ -185,6 +185,24 @@ class BuildLines(unittest.TestCase):
             self.assertIn(f".src.s-{k} ", css, k)
 
 
+    def test_the_glowing_line_is_the_one_kit_takes(self):
+        # 1.14.0: one line per scan glows, ranked like kit centerline get (kit/centerline.py order()), so the page's
+        # best line and the line kit and AutoPipeline take by default stay the same
+        from kit import centerline
+        app = (SPACE / "app.js").read_text()
+        ranks = re.search(r"const KIND_RANK = \{(.*?)\};", app).group(1)
+        self.assertEqual(dict((k, int(v)) for k, v in re.findall(r"(\w+): (\d+)", ranks)), centerline.KIND_ORDER)
+        rank = app[app.index("const rankOf"):].split("\n", 1)[0]
+        self.assertEqual(list(centerline.SOURCE_ORDER), ["finder-polished"])
+        self.assertIn("l.source === 'finder-polished' ? 0 : 1", rank)
+        self.assertIn("isOld(l) ? 1 : 0", rank)
+        self.assertLess(rank.index("KIND_RANK"), rank.index("isOld"))
+        self.assertLess(rank.index("isOld"), rank.index("finder-polished"))
+        boot = app[app.index("// ---------- boot"):]
+        self.assertIn("assignRoles(await liveData(", boot)
+        for role in ("best", "alternate", "unused"):
+            self.assertIn(f".role.{role} ", (SPACE / "style.css").read_text(), role)
+
     def test_live_lines_keep_the_built_fields(self):
         # the page reads the dataset's newest revision at load (app.js liveData); its lines must carry the same
         # fields build_lines.py writes, so the rest of the page reads either the same way
@@ -388,7 +406,8 @@ class Page(unittest.TestCase):
         api = re.search(r"window\.umbilici = \{(.*?)\n\};", self.text("app.js"), re.S).group(1)
         names = set(re.findall(r"^\s+(\w+):", api, re.M))
         self.assertEqual(names, {"version", "scans", "lines", "at", "select", "mode", "setZ", "state", "image", "slice",
-                                 "stats", "table", "csv", "guide", "data", "settings", "bench", "show", "outside"})
+                                 "stats", "table", "csv", "guide", "data", "settings", "bench", "show", "outside",
+                                 "best"})
         readme = self.text("README.md")
         for n in names - {"version"}:
             self.assertIn(f"`{n}(", readme, n)
