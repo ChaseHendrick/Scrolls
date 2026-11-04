@@ -207,13 +207,14 @@ Command-line tools, benchmarks and script folders that run from a clone of this 
 </details>
 
 <details>
-<summary><b>Releases and repository</b> (3)</summary>
+<summary><b>Releases and repository</b> (4)</summary>
 
 | Tool | What it does |
 | --- | --- |
 | [Recurring repository checks](docs/tools/routines.md) | Lists and runs the registered recurring repository checks and records their status locally. |
 | [Release list and README generator](docs/tools/releases.md) | Keeps the public release list, compact tool inventory and generated README section in step. |
 | [Stale repository reference check](docs/tools/stale.md) | Checks live documentation and registries for outdated references and pending work. |
+| [Villa port check for your scripts](docs/tools/villaports.md) | Says which references to villa's Python packages in your scripts break at a villa commit, and what replaces each. |
 
 </details>
 <!-- releases:end -->

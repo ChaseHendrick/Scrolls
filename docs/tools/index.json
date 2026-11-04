@@ -1557,67 +1557,67 @@
     {
      "name": "Commands and options",
      "start_line": 85,
-     "end_line": 211,
+     "end_line": 212,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 212,
-     "end_line": 240,
+     "start_line": 213,
+     "end_line": 241,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 241,
-     "end_line": 244,
+     "start_line": 242,
+     "end_line": 245,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 245,
-     "end_line": 255,
+     "start_line": 246,
+     "end_line": 256,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 256,
-     "end_line": 269,
+     "start_line": 257,
+     "end_line": 270,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 270,
-     "end_line": 279,
+     "start_line": 271,
+     "end_line": 280,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 280,
-     "end_line": 283,
+     "start_line": 281,
+     "end_line": 284,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 284,
-     "end_line": 293,
+     "start_line": 285,
+     "end_line": 294,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 294,
-     "end_line": 301,
+     "start_line": 295,
+     "end_line": 302,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 302,
-     "end_line": 313,
+     "start_line": 303,
+     "end_line": 314,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 314,
-     "end_line": 320,
+     "start_line": 315,
+     "end_line": 321,
      "applicable": true
     }
    ]
@@ -18326,6 +18326,163 @@
      "name": "Related",
      "start_line": 247,
      "end_line": 255,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "villaports",
+   "name": "villaports",
+   "tagline": "find what villa #2440 broke in your scripts",
+   "summary": "`python -m kit villaports` scans a folder of your Python and shell scripts for references to villa's `vesuvius` and `vc_reader` packages, says which ones break at a villa commit and what replaces each, and compares any two villa commits. Read-only.",
+   "status": "Current",
+   "kind": [
+    "kit command",
+    "kit module"
+   ],
+   "area": "Releases and repository",
+   "commands": [
+    "python -m kit villaports scan",
+    "python -m kit villaports diff",
+    "python -m kit.villaports"
+   ],
+   "imports": [
+    "from kit import villaports"
+   ],
+   "code": [
+    {
+     "path": "kit/villaports.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/data/villaports-map.json",
+     "symbols": []
+    },
+    {
+     "path": "kit/cli.py",
+     "symbols": [
+      "build_parser"
+     ]
+    }
+   ],
+   "tests": [
+    "tests/test_villaports.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed: it reads villa, which is public, and your own folder"
+   },
+   "checked": {
+    "date": "2026-11-04",
+    "commit": "77933ca"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`villaports`",
+    "Status": "Current",
+    "Kind": "kit command, kit module",
+    "Area": "Releases and repository",
+    "Run": "`python -m kit villaports scan`, `python -m kit villaports diff`, `python -m kit.villaports`, `from kit import villaports`",
+    "Code": "`kit/villaports.py`, `kit/data/villaports-map.json`, `kit/cli.py` (`build_parser`)",
+    "Tests": "`tests/test_villaports.py`",
+    "Needs": "Python 3.10 or newer, standard library only; `git` 2.43 or newer on `PATH` (blobless partial clones and `git fetch --stdin`). villa itself need not be installed",
+    "Runs on": "Any CPU. The first run clones villa without file contents: 8.9 s end to end on a made-up five-reference folder, 36 MB of cache. Later runs: 0.97 s and 49 MB peak for `scan`, 1.15 s for `diff`, on this repository with `--offline` (measured 2026-11-04, 4-core Intel Xeon at 2.10 GHz cloud container)",
+    "Network": "`github.com` over anonymous git only: the first run clones villa without blobs, later runs fetch its branches and the blobs they read, each in one batch. `--offline` or `--villa-git` contacts nothing beyond blobs a partial clone lacks. Never the GitHub REST API",
+    "Writes": "Only its villa cache, `~/.cache/scrolls-villaports/villa.git` (or under `$XDG_CACHE_HOME`, or `--cache PATH`), and the missing objects of a clone `--villa-git` names; it prints its report",
+    "Go-ahead": "Not needed: it reads villa, which is public, and your own folder",
+    "Released": "Public `main` from the change that adds it (4 Nov 2026), in the Scrolls kit release entry",
+    "Checked": "2026-11-04 against commit `77933ca`"
+   },
+   "page": "docs/tools/villaports.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 22,
+     "end_line": 31,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 32,
+     "end_line": 43,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 44,
+     "end_line": 74,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 75,
+     "end_line": 84,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 85,
+     "end_line": 140,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 141,
+     "end_line": 172,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 173,
+     "end_line": 179,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 180,
+     "end_line": 205,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 206,
+     "end_line": 225,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 226,
+     "end_line": 236,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 237,
+     "end_line": 240,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 241,
+     "end_line": 250,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 251,
+     "end_line": 258,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 259,
+     "end_line": 262,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 263,
+     "end_line": 268,
      "applicable": true
     }
    ]
