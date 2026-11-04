@@ -136,7 +136,17 @@ class Geometry(unittest.TestCase):
         self.assertTrue(np.allclose(a[1:], b[1:], atol=1e-3))
 
 
+@unittest.skipUnless(HAVE, "needs numpy, scipy and tifffile")
 class Calls(unittest.TestCase):
+    def test_bars_compare_the_unrounded_share(self):
+        h = np.array([10.0] * 499_997 + [np.inf] * 9_500_003)   # 0.0499997, which rounds to 0.05
+        self.assertEqual(expatlas.summarize(h)["call"], "trace")
+
+    def test_zoverlap_flat_mesh(self):
+        pts = np.array([[0.0, 0.0, 5.0], [1.0, 1.0, 5.0]])
+        self.assertEqual(expatlas.zoverlap(pts, (0.0, 10.0)), 1.0)
+        self.assertEqual(expatlas.zoverlap(pts, (6.0, 10.0)), 0.0)
+
     def test_call_bands(self):
         self.assertEqual(expatlas.call(0.05), "exposed")
         self.assertEqual(expatlas.call(0.0499), "trace")
@@ -192,7 +202,7 @@ class Registry(unittest.TestCase):
             self.assertIn(need, ids)
 
     def test_every_entry_well_formed(self):
-        roles = {"train", "train_split", "validation", "validation_only", "selected", "test"}
+        roles = set(expatlas.ROLES)
         for m in self.reg["models"]:
             self.assertIn(m["label"], ("Sourced fact", "Community report"))
             for e in m["entries"]:
@@ -226,7 +236,14 @@ class Registry(unittest.TestCase):
         self.assertNotIn(chr(0x2013), text)
 
 
-def tiny_catalog():
+def _landmarks(m):
+    src = [[100.0, 200.0, 300.0], [900.0, 250.0, 310.0], [150.0, 950.0, 330.0], [880.0, 870.0, 900.0],
+           [500.0, 500.0, 1200.0], [300.0, 700.0, 50.0]]
+    dst = [[sum(m[i][j] * p[j] for j in range(3)) + m[i][3] for i in range(3)] for p in src]
+    return src, dst
+
+
+def tiny_catalog(landmarks=True):
     """Two scrolls; scroll A has an evaluation segment E on volume V1 and training segments on V1 and V2."""
     m = [[2.0, 0, 0, 10.0], [0, 2.0, 0, 0], [0, 0, 2.0, 0]]
     inv = [[0.5, 0, 0, -5.0], [0, 0.5, 0, 0], [0, 0, 0.5, 0]]
@@ -237,13 +254,18 @@ def tiny_catalog():
             data.append({"type": "ink-labels", "origins": [{"path": f"A/{gid}/ink-labels/"}]})
         return {"suffix": f"s{gid[-1]}", "original_volume_id": vol, "data": data}
 
+    vol1 = {"properties": {"pixel_size_um": 9.0}}
+    if landmarks:
+        src, dst = _landmarks(m)
+        vol1["properties"]["transforms"] = [{"to_volume_id": "22222222222222", "transformation_matrix": m,
+                                             "from_landmarks": src, "to_landmarks": dst}]
     return {"samples": {
         "A": {"sample": {"properties": {"volume_transforms": [
             {"from_volume_id": "11111111111111", "transforms": [{"to_volume_id": "22222222222222", "matrix": m,
                                                                  "derivation_path": "11111111111111-22222222222222"}]},
             {"from_volume_id": "22222222222222", "transforms": [{"to_volume_id": "11111111111111", "matrix": inv,
                                                                  "derivation_path": "11111111111111-22222222222222⁻¹"}]}]}},
-              "volumes": {"11111111111111": {"properties": {"pixel_size_um": 9.0}},
+              "volumes": {"11111111111111": vol1,
                           "22222222222222": {"properties": {"pixel_size_um": 4.5}}},
               "segments": {"30000000000001": seg("30000000000001", "11111111111111", True),
                            "30000000000002": seg("30000000000002", "22222222222222"),
@@ -330,6 +352,56 @@ class Matrix(unittest.TestCase):
         m, c = self.cell(reg, skip=["A/*"])
         self.assertEqual(c["status"], "not-run")
         self.assertEqual(m["duplicates"], [])
+
+    def entry(self, role, segment, scroll="A", name="x"):
+        return {"role": role, "scroll": scroll, "name": name, "segment": segment, "match": "id", "source": "s"}
+
+    def test_route_without_landmark_error_is_unknown(self):
+        self.cat = tiny_catalog(landmarks=False)
+        _, c = self.cell(self.reg([self.entry("train", "30000000000002")]))
+        self.assertEqual(c["status"], "unknown")
+
+    def test_partial_list_cannot_read_clear(self):
+        _, c = self.cell(self.reg([], lst="partial"))
+        self.assertEqual(c["status"], "unknown")
+        self.assertIn("not fully published", c["why"])
+
+    def test_partial_list_with_author_statement(self):
+        reg = self.reg([self.entry("not_trained", "*", name="the card says scroll A was never seen")], lst="partial")
+        reg["models"][0]["entries"][0]["match"] = "its card says scroll A was never seen"
+        _, c = self.cell(reg)
+        self.assertEqual(c["status"], "clear")
+        self.assertIn("never seen", c["why"])
+
+    def test_partial_list_keeps_exposure(self):
+        _, c = self.cell(self.reg([self.entry("train", "30000000000002")], lst="partial"))
+        self.assertEqual(c["status"], "exposed")
+
+    def test_missing_catalog_id_is_unknown(self):
+        _, c = self.cell(self.reg([self.entry("train", "39999999999999")]))
+        self.assertEqual(c["status"], "unknown")
+
+    def test_train_names_without_scroll_are_unknown(self):
+        _, c = self.cell(self.reg([self.entry("train", None, scroll=None, name="658")]))
+        self.assertEqual(c["status"], "unknown")
+
+    def test_selected_by_id(self):
+        _, c = self.cell(self.reg([self.entry("selected", "30000000000001")]))
+        self.assertEqual(c["status"], "selected")
+
+    def test_unknown_model_is_refused(self):
+        with self.assertRaises(expatlas.AtlasError):
+            expatlas.build_matrix(self.cat, self.reg([]), self.fetch, models=["nope"])
+
+    def test_no_voxel_size_and_empty_mesh_read_unknown(self):
+        self.cat["samples"]["A"]["volumes"]["11111111111111"]["properties"]["pixel_size_um"] = None
+        _, c = self.cell(self.reg([self.entry("train", "30000000000003")]))
+        self.assertEqual(c["status"], "unknown")
+        self.cat = tiny_catalog()
+        self.fetch.meshes["A/30000000000001/tifxyz"][:] = np.nan
+        m, c = self.cell(self.reg([self.entry("train", "30000000000003")]))
+        self.assertEqual(c["status"], "unknown")
+        self.assertIn("no valid vertices", m["segments"][0]["status"])
 
     def test_text_render(self):
         reg = self.reg([{"role": "train", "scroll": "A", "name": "t2", "segment": "30000000000002", "match": "id",

@@ -1,6 +1,6 @@
 {
  "schema": "expatlas-models/1",
- "about": "Published training lists of released ink models, each name resolved to an open-data catalog segment where one matches, for kit/expatlas.py. role: train (its training data), train_split (in a dataset its published split rule draws training patches from), validation (chose its checkpoint), validation_only (in its dataset, but the split rule gives it no training patch), selected (its authors chose the checkpoint on it), test (its own list holds it out). segment null: no catalog segment matched, so only the name is known. Catalog: metadata.json Last-Modified 2026-11-02.",
+ "about": "Published training lists of released ink models, each name resolved to an open-data catalog segment where one matches, for kit/expatlas.py. role: train (its training data), train_split (in a dataset its published split rule draws training patches from), validation (chose its checkpoint), validation_only (in its dataset, but the split rule gives it no training patch), selected (its authors chose the checkpoint on it), test (its own list holds it out), not_trained (an author's statement that a scroll (segment *) was not trained on; it lets a cell read clear where the list itself is not fully published). segment null: no catalog segment matched, so only the name is known. Catalog: metadata.json Last-Modified 2026-11-02.",
  "sources": {
   "ink9-readme": {
    "url": "https://huggingface.co/scrollprize/ink_9um",
@@ -40,6 +40,11 @@
   "ahn-card": {
    "url": "https://huggingface.co/Prodigle/pherc0306b-ink-ahn/blob/e57c4d541c239e06450a98c1cf2015d3de8d887e/README.md",
    "rev": "e57c4d54",
+   "read": "2026-11-04"
+  },
+  "readerv3-card": {
+   "url": "https://huggingface.co/domenicor046/reader-v3/blob/aee1d64bced4eb35546348f3d276b9e2a0b99c46/README.md",
+   "rev": "aee1d64",
    "read": "2026-11-04"
   }
  },
@@ -371,10 +376,10 @@
     },
     {
      "role": "train",
-     "scroll": null,
+     "scroll": "PHercParis2Fr47",
      "name": "Frag1",
      "segment": null,
-     "match": "a fragment, not a scroll",
+     "match": "a fragment: the Kaggle naming makes Frag1 PHercParis2Fr47 (Interpretation); no labeled catalog segment",
      "source": "v8in-config"
     },
     {
@@ -387,18 +392,18 @@
     },
     {
      "role": "validation",
-     "scroll": null,
+     "scroll": "PHercParis1Fr34",
      "name": "Frag3",
      "segment": null,
-     "match": "a fragment, not a scroll",
+     "match": "a fragment: the Kaggle naming makes Frag3 PHercParis1Fr34 (Interpretation); no labeled catalog segment",
      "source": "v8in-config"
     },
     {
      "role": "validation",
-     "scroll": null,
+     "scroll": "PHercParis1Fr39",
      "name": "Frag4",
      "segment": null,
-     "match": "a fragment, not a scroll",
+     "match": "a fragment: the Kaggle naming makes Frag4 PHercParis1Fr39 (Interpretation); no labeled catalog segment",
      "source": "v8in-config"
     },
     {
@@ -2334,7 +2339,16 @@
    "inherits": [
     "reader-v2"
    ],
-   "entries": [],
+   "entries": [
+    {
+     "role": "not_trained",
+     "scroll": "PHerc0841",
+     "name": "PHerc0841 (author's statement)",
+     "segment": "*",
+     "match": "its card at aee1d64 shows PHerc0841 w00 as a never-seen scroll and says every result is on data the model never trained on (Community report)",
+     "source": "readerv3-card"
+    }
+   ],
    "note": "its card calls it the upgrade to Reader v2; the repository at aee1d64 (read 4 Nov 2026) holds no training list, so anything it added beyond Reader v2 is unknown"
   },
   {

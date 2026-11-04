@@ -63,6 +63,7 @@ MAX_MESH_POINTS = 400_000  # every mesh is thinned to this many grid vertices as
 FOOTPRINT = 0.8            # tangential reach, as a share of the training grid's step
 K_NEAREST = 8
 TRAIN_ROLES = ("train", "train_split")
+ROLES = ("train", "train_split", "validation", "validation_only", "selected", "test", "not_trained")
 STATUSES = ("trained", "exposed", "trace", "selected", "clear", "unknown", "not-run")
 CODES = {"trained": "T", "exposed": "E", "trace": "t", "selected": "S", "clear": ".", "unknown": "?", "not-run": "-"}
 
@@ -330,6 +331,8 @@ def offsets(points, surf, px_um, reach_um=REACH_UM, k=K_NEAREST):
     """|offset| in um along the training surface's normal for each point, inf where the surface does not cover it
     (no vertex within reach whose tangential distance is inside FOOTPRINT grid steps)."""
     np = _np()
+    if not px_um or px_um <= 0:
+        raise AtlasError("the frame volume has no voxel size (pixel_size_um) in the catalog")
     tau = FOOTPRINT * surf.step
     r = math.hypot(reach_um / px_um, 1.5 * surf.step)
     k = min(k, len(surf.points))
@@ -358,9 +361,11 @@ def summarize(h):
     np = _np()
     n = int(h.size)
     if n == 0:
-        return {"points": 0}
+        return {"points": 0, "f_same": None, "f_band": None, "f_reach": None, "median_offset_um": None,
+                "call": "unknown"}
     same = h <= D_SAME_UM
-    return {"points": n, "f_same": round(float(same.mean()), 5), "f_band": round(float((h <= BAND_UM).mean()), 5),
+    raw = float(same.mean())
+    return {"points": n, "f_same": round(raw, 5), "call": call(raw), "f_band": round(float((h <= BAND_UM).mean()), 5),
             "f_reach": round(float(np.isfinite(h).mean()), 5),
             "median_offset_um": round(float(np.median(h[same])), 2) if same.any() else None}
 
@@ -377,9 +382,11 @@ def call(f_same):
 
 def zoverlap(points, zrange):
     """Share of the evaluation mesh's z range that the training mesh's z range also spans (villa 2346's z check)."""
+    if len(points) == 0:
+        return None
     lo, hi = float(points[:, 2].min()), float(points[:, 2].max())
-    if hi <= lo:
-        return 0.0
+    if hi <= lo:                       # a mesh at one z: overlapped when that z lies in the training range
+        return 1.0 if zrange[0] <= lo <= zrange[1] else 0.0
     return round(max(0.0, min(hi, zrange[1]) - max(lo, zrange[0])) / (hi - lo), 4)
 
 
@@ -389,7 +396,7 @@ def pair(eval_xyz, train_xyz, px_um, name=""):
     surf = Surface(train_xyz, name)
     h = offsets(pts, surf, px_um)
     out = summarize(h)
-    out.update(call=call(out.get("f_same")), z_overlap=zoverlap(pts, surf.zrange), eval_stride=k,
+    out.update(z_overlap=zoverlap(pts, surf.zrange), eval_stride=k,
                train_step_um=round(surf.step * px_um, 2))
     return out
 
@@ -405,9 +412,11 @@ def _entries_for(registry, model_id):
     return out
 
 
-def _unpublished(registry, model_id):
+def _not_published(registry, model_id):
+    """Models in the chain whose training list is anything but fully published (partial, not published, a dataset
+    without its run manifest)."""
     by = {m["id"]: m for m in registry["models"]}
-    return [mid for mid, _ in chain(registry, model_id) if by[mid].get("list") == "not published"]
+    return [mid for mid, _ in chain(registry, model_id) if by[mid].get("list") != "published"]
 
 
 def build_matrix(cat, registry, fetch, models=None, scrolls=None, skip=(), log=None):
@@ -416,7 +425,11 @@ def build_matrix(cat, registry, fetch, models=None, scrolls=None, skip=(), log=N
     log = log or (lambda s: None)
     index, px = catalog_index(cat)
     errors = transform_errors(cat)
-    model_ids = models or [m["id"] for m in registry["models"]]
+    known = [m["id"] for m in registry["models"]]
+    model_ids = models or known
+    bad = [m for m in model_ids if m not in known]
+    if bad:
+        raise AtlasError(f"unknown model(s) {', '.join(bad)}; the registry has {', '.join(known)}")
     evals = evaluation_segments(index, scrolls)
     rows, cells, dups = [], [], []
     cache = {}
@@ -438,6 +451,13 @@ def build_matrix(cat, registry, fetch, models=None, scrolls=None, skip=(), log=N
                 cells.append({"model": mid, "segment": e, "status": "unknown", "why": f"evaluation mesh: {how}"})
             continue
         pts, k = eval_points(xyz)
+        why = None if pxu else f"volume {frame} has no voxel size in the catalog"
+        why = why or (None if len(pts) else "the evaluation mesh has no valid vertices")
+        if why:
+            row["status"] = f"not measured: {why}"
+            for mid in model_ids:
+                cells.append({"model": mid, "segment": e, "status": "unknown", "why": why})
+            continue
         row.update(px_um=pxu, points=int(len(pts)), stride=k, status="run")
         log(f"{rec['scroll']} {e} {rec['suffix']}: {len(pts)} points at stride {k}")
 
@@ -468,7 +488,7 @@ def build_matrix(cat, registry, fetch, models=None, scrolls=None, skip=(), log=N
                 h, info, err = offsets_to(o)
                 if h is not None:
                     s = summarize(h)
-                    dups.append({"segment": e, "other": o, **s, "call": call(s["f_same"]),
+                    dups.append({"segment": e, "other": o, **s,
                                  "transform_error_um": err})
         for mid in model_ids:
             cells.append(_cell(registry, mid, e, rec, offsets_to, index))
@@ -485,86 +505,115 @@ def settings():
 
 
 def _cell(registry, mid, e, rec, offsets_to, index):
+    """One cell. Names first; then the geometry over the model's resolved training meshes on this scroll. Anything
+    that leaves exposure open (a list that is not fully published, a name or id that matches no catalog mesh, a train
+    name with no scroll, a mesh that cannot be read, a route with no or too large a landmark error) turns what would
+    be clear into unknown, unless an explicit, cited not_trained entry (an author's statement) covers the scroll."""
     np = _np()
     scroll = rec["scroll"]
     ents = _entries_for(registry, mid)
-    named = [x for x in ents if x["segment"] == e]
     cell = {"model": mid, "segment": e, "flags": []}
-    trained = [x for x in named if x["role"] in TRAIN_ROLES]
+
+    def on(x):
+        return x["scroll"] == scroll and x["segment"] in (e, "*")
+
+    trained = [x for x in ents if x["role"] in TRAIN_ROLES and x["segment"] == e]
     if trained:
         x = trained[0]
         cell.update(status="trained", why=f"named in {x['via']}'s list as {x['name']} ({x['role']})",
                     names=[{"name": y["name"], "via": y["via"], "role": y["role"]} for y in trained])
         return cell
-    sel = [x for x in named if x["role"] in ("validation",)] + \
-          [x for x in ents if x["role"] == "selected" and x["scroll"] == scroll and x["segment"] == "*"]
-    notes = [f"{x['via']}: {x['role']} ({x['name']})" for x in named if x["role"] in ("validation_only", "test")]
-    if notes:
-        cell["flags"] += notes
-    # geometry over the training (and validation) segments on this scroll
-    best, union, uerr = [], None, []
+    sel = [x for x in ents if x["role"] == "validation" and x["segment"] == e] + \
+          [x for x in ents if x["role"] == "selected" and on(x)]
+    stated = [x for x in ents if x["role"] == "not_trained" and on(x)]
+    notes = [f"{x['via']}: {x['role']} ({x['name']})" for x in ents
+             if x["segment"] == e and x["role"] in ("validation_only", "test")]
+    cell["flags"] += notes
+    open_ends = []                       # reasons a would-be clear cell must read unknown
+    best, union, union_err = [], None, None
     for role_set, tag in ((TRAIN_ROLES, "train"), (("validation",), "validation")):
         for x in ents:
-            if x["role"] not in role_set or x["scroll"] != scroll or not x["segment"] or x["segment"] == "*":
+            if x["role"] not in role_set or x["scroll"] != scroll or not x["segment"] or x["segment"] in ("*", e):
                 continue
-            if x["segment"] == e or x["segment"] not in index:
+            if x["segment"] not in index:
+                cell["flags"].append(f"{x['via']}: {x['name']}: id {x['segment']} is not in this catalog")
+                if tag == "train":
+                    open_ends.append("a listed segment id is not in this catalog")
                 continue
             h, info, err = offsets_to(x["segment"])
             if h is None:
                 cell["flags"].append(f"{x['via']}: {x['name']}: {info}")
+                if tag == "train":
+                    open_ends.append("a training mesh on this scroll could not be read")
                 continue
             s = summarize(h)
+            if err is None:
+                cell["flags"].append(f"{x['via']}: {x['name']}: came through a transform with no landmark error")
             best.append({"segment": x["segment"], "name": x["name"], "via": x["via"], "as": tag,
-                         "f_same": s["f_same"], "f_band": s["f_band"], "transform_error_um": err,
-                         "z_overlap": info.get("z_overlap") if isinstance(info, dict) else None})
+                         "f_same": s["f_same"], "f_band": s["f_band"], "call": s["call"], "transform_error_um": err,
+                         "z_overlap": info.get("z_overlap") if isinstance(info, dict) else None,
+                         "_h": h, "_err": err})
             if tag == "train":
                 union = h if union is None else np.minimum(union, h)
-                uerr.append(err)
     best.sort(key=lambda b: -b["f_same"])
-    cell["covering"] = [b for b in best if b["f_band"] > 0][:5]
     unresolved = [x for x in ents if x["role"] in TRAIN_ROLES and x["scroll"] == scroll and not x["segment"]]
     noscroll = [x for x in ents if x["role"] in TRAIN_ROLES and x["scroll"] is None and not x["segment"]]
     if unresolved:
         cell["flags"].append(f"{len(unresolved)} name(s) on {scroll} match no catalog segment: "
                              + ", ".join(sorted({x['name'] for x in unresolved})))
+        open_ends.append("names on this scroll that match no catalog segment")
     if noscroll:
         cell["flags"].append(f"{len(noscroll)} name(s) with no scroll: " + ", ".join(sorted({x['name'] for x in noscroll})))
-    geo = None
+        open_ends.append("train names with no scroll, which could be this one")
+    partial = [m for m in _not_published(registry, mid)]
+    if partial:
+        open_ends.append("training list not fully published: " + ", ".join(partial))
+    geo, gcall = None, None
     if union is not None:
         geo = summarize(union)
         cell.update({k: geo[k] for k in ("f_same", "f_band", "median_offset_um")})
-        errs = [x for x in uerr if x]
-        worst = max(errs) if errs else 0.0
-        if any(x is None for x in uerr):
-            cell["flags"].append("a training mesh came through a transform with no landmark error")
-        cell["transform_error_um"] = round(worst, 2)
-        if worst > TRANSFORM_FLAG_UM:
-            cell["flags"].append(f"winding uncertain: transform landmark error {worst:.1f} um")
-    gcall = call(geo["f_same"]) if geo else None
-    if geo and cell.get("transform_error_um", 0) > TRANSFORM_LIMIT_UM and gcall in ("exposed", "trace", "clear"):
-        cell["flags"].append(f"geometric call {gcall} not trusted: transform error over {TRANSFORM_LIMIT_UM:g} um")
-        gcall = None
-    vcover = [b for b in best if b["as"] == "validation" and call(b["f_same"]) == "exposed"]
+        gcall = geo["call"]
+        trains = [b for b in best if b["as"] == "train"]
+        # the transform errors that matter: the meshes that cover it for a positive call, every mesh for clear
+        cover = [b for b in trains if np.isfinite(b["_h"]).any()] if gcall in ("exposed", "trace") else trains
+        errs = [b["_err"] for b in cover]
+        if any(x is None for x in errs):
+            union_err = None
+            cell["flags"].append("transform error unknown for a mesh that decides this call")
+            gcall = None
+        else:
+            union_err = max(errs) if errs else 0.0
+            cell["transform_error_um"] = round(union_err, 2)
+            if union_err > TRANSFORM_FLAG_UM:
+                cell["flags"].append(f"winding uncertain: transform landmark error {union_err:.1f} um")
+            if union_err > TRANSFORM_LIMIT_UM:
+                cell["flags"].append(f"geometric call {gcall} not trusted: transform error over "
+                                     f"{TRANSFORM_LIMIT_UM:g} um")
+                gcall = None
+    for b in best:
+        b.pop("_h"), b.pop("_err")
+    cell["covering"] = [b for b in best if b["f_band"] > 0][:5]
+    vcover = [b for b in best if b["as"] == "validation" and b["call"] == "exposed"]
     if gcall == "exposed":
         b = next(b for b in best if b["as"] == "train")
         cell.update(status="exposed", why=f"training surfaces cover {geo['f_same']:.1%} of it within {D_SAME_UM:g} um "
                                           f"(largest: {b['name']} via {b['via']}, {b['f_same']:.1%})")
     elif sel or vcover:
         why = sel[0] if sel else None
-        cell.update(status="selected", why=(f"{why['via']}: checkpoint chosen on {why['name']}" if why else
+        cell.update(status="selected", why=(f"{why['via']}: checkpoint chosen on {why['name']} ({why['match']})"
+                                            if why else
                                             f"validation segment {vcover[0]['name']} covers {vcover[0]['f_same']:.1%}"))
     elif gcall == "trace":
         cell.update(status="trace", why=f"training surfaces cover {geo['f_same']:.1%} within {D_SAME_UM:g} um")
-    elif _unpublished(registry, mid):
-        cell.update(status="unknown", why="training list not published: " + ", ".join(_unpublished(registry, mid)))
-    elif unresolved:
-        cell.update(status="unknown", why="names on this scroll that match no catalog segment")
-    elif union is None and any(x["role"] in TRAIN_ROLES and x["scroll"] == scroll for x in ents):
-        cell.update(status="unknown", why="its training meshes on this scroll could not be read")
-    elif union is None and geo is None and cell["flags"] and any("not trusted" in f for f in cell["flags"]):
-        cell.update(status="unknown", why="transform error too large to call")
-    elif geo is not None and gcall is None:
-        cell.update(status="unknown", why="transform error too large to call")
+    elif union is not None and gcall is None:
+        cell.update(status="unknown", why="transform error unknown or too large to call")
+    elif stated:
+        x = stated[0]
+        cell.update(status="clear", why=f"{x['via']}: {x['match']} ({x['source']})")
+        if open_ends:
+            cell["flags"].append("clear rests on that statement; open otherwise: " + "; ".join(open_ends))
+    elif open_ends:
+        cell.update(status="unknown", why="; ".join(open_ends))
     elif geo is not None:
         cell.update(status="clear", why=f"training surfaces cover {geo['f_same']:.2%} within {D_SAME_UM:g} um")
     else:
@@ -699,7 +748,7 @@ def plant_check(cat, prereg, fetch, out, log=None):
                     continue
                 h = h[free]
             s = summarize(h)
-            res[tag].append({**row, **s, "call": call(s["f_same"])})
+            res[tag].append({**row, **s})
     # (c) cross-scroll: each original against a planted copy from the other scroll, read as if in this frame
     others = {}
     for p in planted:
@@ -714,7 +763,7 @@ def plant_check(cat, prereg, fetch, out, log=None):
         h = offsets(pts, Surface(raw, q["id"]), px[p["scroll"]][p["frame"]])
         s = summarize(h)
         res["c"].append({"source": p["source"], "scroll": p["scroll"], "other": q["source"],
-                         "other_scroll": q["scroll"], **s, "call": call(s["f_same"])})
+                         "other_scroll": q["scroll"], **s})
     # (d) the real positive pair, both directions
     for a, b in prereg["positive_pairs"]:
         for x, y in ((a, b), (b, a)):
@@ -813,7 +862,9 @@ def format_plant(res):
     fb = sorted(r["f_same"] for r in res["b"] if "f_same" in r)
     fc = sorted(r["f_same"] for r in res["c"])
     if fa:
-        lines.append(f"  (a) f_same min {fa[0]:.3f} median {fa[len(fa) // 2]:.3f}")
+        mid = len(fa) // 2
+        med = fa[mid] if len(fa) % 2 else (fa[mid - 1] + fa[mid]) / 2
+        lines.append(f"  (a) f_same min {fa[0]:.3f} median {med:.3f}")
     if fb:
         lines.append(f"  (b) f_same max {fb[-1]:.3f}")
     if fc:
@@ -920,6 +971,10 @@ def _run(args):
                 raise AtlasError("two local folders need --px-um")
             r = pair(fetch.read(args.eval), fetch.read(args.train), args.px_um, args.train)
         else:
+            for gid in (args.eval, args.train):
+                if gid not in index:
+                    raise AtlasError(f"segment {gid} is not in the catalog (give a catalog segment id or a local "
+                                     f"tifxyz folder)")
             frame = args.frame or index[args.eval]["volume"]
             ex, _ = mesh_in_frame(cat, index, args.eval, frame, fetch)
             tx, how = mesh_in_frame(cat, index, args.train, frame, fetch)
