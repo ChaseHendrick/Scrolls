@@ -13093,5 +13093,126 @@
    "date": "2026-10-30",
    "slices_scored": 142
   }
+ ],
+ "exposure_atlas_checks": [
+  {
+   "key": "expatlas_instrument_v1_attempt2_20261104",
+   "tool": "kit/expatlas.py (python -m kit expatlas)",
+   "catalog": "metadata.json Last-Modified 2 Nov 2026 11:32:29 GMT, ETag 274f64b9261982444dfd2881f48ae766",
+   "about": "Planted-duplicate instrument checks of the Exposure Atlas, rule version 1 (docs/prereg/2026-11-04-expatlas-instrument.md, frozen at 0ec8999; attempt 1 killed for memory before scoring), run at 34c3683 in Hugging Face Job 6aeaa27a0e0338d1bb7f85ec on 30 public PHerc0814 and PHerc0009B meshes",
+   "label": "Model output",
+   "verdict": "FAIL",
+   "rule": "PASS when (a) at least 29 of 30 planted copies are called exposed, (b) at least 29 of 30 copies moved a further 100 um along the normal are not, (c) all 30 cross-scroll pairs are not, and (d) both directions of the real positive pair are",
+   "a_exposed": 30,
+   "b_not_exposed": 21,
+   "c_not_exposed": 30,
+   "d_exposed": 2,
+   "of": 30,
+   "a_f_same_min": 0.804,
+   "a_f_same_median": 0.927,
+   "b_f_same_max": 0.25,
+   "c_f_same_max": 0.009,
+   "note": "all ten (b) failures (9 exposed, 1 trace) are large auto-grown PHerc0814 meshes on the 9.362 um scan; a post-hoc self-cover diagnostic (Interpretation) found 7 to 45 % of their vertices with another part of the same mesh 60 to 160 um away, so the 100 um copy lands on the mesh's own next winding; the matrix was not computed",
+   "source": "docs/data/expatlas/plant-v1-attempt2-2026-11-04.json"
+  },
+  {
+   "key": "expatlas_instrument_v2_20261104",
+   "tool": "kit/expatlas.py (python -m kit expatlas)",
+   "catalog": "metadata.json Last-Modified 2 Nov 2026 11:32:29 GMT, ETag 274f64b9261982444dfd2881f48ae766",
+   "about": "Planted-duplicate instrument checks, rule version 2 (docs/prereg/2026-11-04-expatlas-instrument-v2.md, frozen at 7741f8b; control (b) scored only on vertices with no other part of their own mesh within 160 um; new seed, 28 of 30 meshes shared with version 1's draw), Hugging Face Job 6aeaa4410e0338d1bb7f866e",
+   "label": "Model output",
+   "verdict": "PASS",
+   "rule": "as version 1, with (b) passing when at least 95 % of at least 25 scored meshes are not called exposed",
+   "a_exposed": 30,
+   "b_not_exposed": 30,
+   "b_scored": 30,
+   "c_not_exposed": 30,
+   "d_exposed": 2,
+   "of": 30,
+   "a_f_same_min": 0.804,
+   "a_f_same_median": 0.927,
+   "b_f_same_max": 0.037,
+   "b_trace": 9,
+   "c_f_same_max": 0.01,
+   "d_f_same": [
+    0.0505,
+    0.9012
+   ],
+   "note": "the nine (b) traces (0.005 to 0.037, free vertices only) are the multi-winding PHerc0814 meshes; on all their vertices the same copies give 0.039 to 0.259, and matrix cells are scored on all vertices; free vertices were 54 to 100 % of each mesh. Not independent of version 1: the free-vertex rule came from a diagnostic of version 1's failed meshes, and 28 of the 30 source meshes are version 1's. (d) passes at 0.0505 against the 0.05 bar in one direction, a near miss. (a) goes forward and back through the same catalog matrix, so it tests the instrument, not the transforms' accuracy",
+   "source": "docs/data/expatlas/plant-v2-2026-11-04.json",
+   "b_all_vertex_f_same_range_multiwinding": [
+    0.039,
+    0.259
+   ]
+  },
+  {
+   "key": "expatlas_matrix_20261104",
+   "tool": "kit/expatlas.py (python -m kit expatlas)",
+   "catalog": "metadata.json Last-Modified 2 Nov 2026 11:32:29 GMT, ETag 274f64b9261982444dfd2881f48ae766",
+   "about": "Exposure Atlas matrix after the version 2 PASS: 20 labeled segments of PHerc0009B, PHerc0500P2, PHerc0814, PHerc0841, PHerc1667 and PHercParis4 against 10 released ink models (kit/data/expatlas-models.json), rerun locally at 913e932 after review fixes (first run Hugging Face Job 6aeaa4cfc78863f9c6322578 at 7741f8b: same shares; ink_canonical_2um's 8 PHercParis4 cells read clear there, unknown now); no labels or CT read",
+   "label": "Model output (the calls); Sourced fact or Community report (the lists, per model)",
+   "cells": {
+    "trained": 92,
+    "exposed": 18,
+    "trace": 3,
+    "selected": 6,
+    "clear": 32,
+    "unknown": 49
+   },
+   "exposed_beyond_names": {
+    "d9v2 on PHerc0009B ag487 (its own test list)": 0.43,
+    "d9v2 on PHerc0500P2 -1 (its own test list)": 0.263,
+    "Reader v2 and Reader V3 on PHerc0009B ag487": 0.43,
+    "Reader v2 and Reader V3 on PHerc0500P2 -1": 0.086,
+    "v8in, v8in-1447, A-hn on PHercParis4 20230929220926": 0.146,
+    "v8in, v8in-1447, A-hn on PHercParis4 20231007101619": 0.101,
+    "v8in, v8in-1447, A-hn on PHerc1667 w023": 0.056,
+    "v8in, v8in-1447, A-hn on PHerc0500P2 -1": 0.056
+   },
+   "evaluation_pairs": {
+    "pairs": 92,
+    "exposed": 18,
+    "trace": 9,
+    "examples": "PHerc0841 w00 and ag896 0.35; PHercParis4 pairs 0.08 to 0.25; PHerc1667 w028 and w029 0.20 (named as neighboring windings: a sheet switch or windings closer than 60 um, the geometry cannot tell)"
+   },
+   "source": "docs/data/expatlas/matrix-2026-11-04.json",
+   "cross_scan_cells": 0
+  }
+ ],
+ "bucket_sentinel_checks": [
+  {
+   "key": "sentinel_controls_20261104",
+   "date": "2026-11-04",
+   "label": "Model output",
+   "verdict": "PASS",
+   "about": "Bucket Sentinel (kit sentinel, commit 9fcc215) planted-defect controls on 20 public S3 segment surface volumes of PHerc0343P, PHerc0814 and PHerc0009B, each rendered from its own mesh (docs/sentinel/dev-pool.json); attempt 2, after attempt 1 failed on three implementation faults",
+   "rule": "PASS when recall over must-flag plants is at least 0.95, the offset error is at most 2 px in at least 95 percent of caught shift and resample plants, and at most 5 percent of negatives and bases flag",
+   "plants": 252,
+   "recall": 0.9881,
+   "shift_error_median_px": 0.341,
+   "shift_within_2px": 1.0,
+   "negatives_and_bases": 56,
+   "false_flag_rate": 0.0,
+   "bases_aligned": 18,
+   "bases_not_measured": 2,
+   "source": "docs/prereg/2026-11-04-bucket-sentinel.md#4-dev-runs-filled-at-the-freeze"
+  },
+  {
+   "key": "sentinel_backtest_20261104",
+   "date": "2026-11-04",
+   "label": "Model output",
+   "verdict": "PASS",
+   "about": "Bucket Sentinel (commit a7ecd62) frozen blind back-test on the 14 Hugging Face ink/ folders of scrollprize/datasets that the reserved-data rule leaves open, against the defects villa #2370, #2107 and #2369 report (Community report); the reporters' tables were not read; run once",
+   "rule": "B1 at least 8 of 9 misaligned canvases flagged; B2 none of 4 aligned; B3 at least 4 of 5 truncated pyramids and none of 9 others; B4 MAN5_outer_3 labels flagged 59 px short",
+   "b1_flagged": "9/9",
+   "b2_false_flags": "0/4",
+   "b3_flagged": "5/5",
+   "b3_false_flags": "0/9",
+   "b4": "flagged, short by 59 and 59 px",
+   "agreement": "PHerc0009B constant (-19.20, -19.29) px against about (-19.6, -19.6) in #2370; Paris 4 w01_r15 slopes 0.00427 and -0.00388 against 0.004263 and -0.003876",
+   "offset_table": "docs/sentinel/offsets.json",
+   "limits": "14 of the bucket's ink/ folders; the folders the reserved-data rule keeps closed were not opened; one bucket version",
+   "source": "docs/prereg/2026-11-04-bucket-sentinel.md#outcome"
+  }
  ]
 }

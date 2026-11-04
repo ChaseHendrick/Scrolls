@@ -1557,67 +1557,67 @@
     {
      "name": "Commands and options",
      "start_line": 85,
-     "end_line": 209,
+     "end_line": 211,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 210,
-     "end_line": 238,
+     "start_line": 212,
+     "end_line": 240,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 239,
-     "end_line": 242,
+     "start_line": 241,
+     "end_line": 244,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 243,
-     "end_line": 253,
+     "start_line": 245,
+     "end_line": 255,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 254,
-     "end_line": 267,
+     "start_line": 256,
+     "end_line": 269,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 268,
-     "end_line": 277,
+     "start_line": 270,
+     "end_line": 279,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 278,
-     "end_line": 281,
+     "start_line": 280,
+     "end_line": 283,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 282,
-     "end_line": 291,
+     "start_line": 284,
+     "end_line": 293,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 292,
-     "end_line": 299,
+     "start_line": 294,
+     "end_line": 301,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 300,
-     "end_line": 311,
+     "start_line": 302,
+     "end_line": 313,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 312,
-     "end_line": 318,
+     "start_line": 314,
+     "end_line": 320,
      "applicable": true
     }
    ]
@@ -2959,6 +2959,163 @@
      "name": "Related",
      "start_line": 228,
      "end_line": 236,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "expatlas",
+   "name": "expatlas",
+   "tagline": "how much of each labeled segment a released ink model's training meshes already cover",
+   "summary": "`python -m kit expatlas` resolves the published training lists of ten released ink models to open-data catalog segments and measures, on meshes in one scroll frame, how much of each labeled evaluation segment their training segments already cover: a leakage matrix for fair train and test splits.",
+   "status": "Experimental",
+   "kind": [
+    "kit command",
+    "kit module",
+    "data"
+   ],
+   "area": "Scoring and controls",
+   "commands": [
+    "python -m kit expatlas"
+   ],
+   "imports": [],
+   "code": [
+    {
+     "path": "kit/expatlas.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/cli.py",
+     "symbols": [
+      "cmd_expatlas"
+     ]
+    }
+   ],
+   "tests": [
+    "tests/test_expatlas.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed: it reads public meshes and the catalog and prints. Running it on paid compute follows the compute rule (AGENTS.md rule 11); posting the matrix to villa or the community needs Chase's yes"
+   },
+   "checked": {
+    "date": "2026-11-04",
+    "commit": "7741f8b"
+   },
+   "license": "Apache-2.0 for the code and the registry (this repository's license); the catalog and meshes it reads are Vesuvius Challenge open data, CC BY-NC 4.0",
+   "fields": {
+    "Id": "`expatlas`",
+    "Status": "Experimental",
+    "Kind": "kit command, kit module, data",
+    "Area": "Scoring and controls",
+    "Run": "`python -m kit expatlas`",
+    "Code": "`kit/expatlas.py`, `kit/cli.py` (`cmd_expatlas`)",
+    "Tests": "`tests/test_expatlas.py`",
+    "Needs": "Python 3.10 or newer, numpy, scipy (cKDTree) and tifffile; imagecodecs for the LZW-compressed meshes some catalog segments have (the 4 Nov run used numpy 2.5.3, scipy 1.18.1, tifffile 2026.10.15, imagecodecs 2026.10.10). No villa, VC3D, torch or GPU",
+    "Runs on": "Any CPU with about 1 GB free. The 4 Nov 2026 matrix (20 segments by 10 models) took 76 s and the planted checks 50 s on a Hugging Face cpu-upgrade Job (8 vCPU, 32 GB; `exposure_atlas_checks` in [results.json](../results.json)); one pair took about 4 s in a 4-core cloud container (measured 4 Nov 2026)",
+    "Network": "HTTPS GET of the open-data bucket `vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com`: `metadata.json` (the catalog) and each segment's tifxyz `x.tif`, `y.tif`, `z.tif`. None for `models`, `show` or local folders",
+    "Writes": "`matrix`: OUT/matrix.json and OUT/matrix.txt; `plant`: OUT/plant.json and the planted copies under OUT/planted/ (tifxyz folders); every mesh read from the bucket is cached under `--cache` (default `work/expatlas/cache`). `models`, `segments`, `pair` and `show` print only",
+    "Go-ahead": "Not needed: it reads public meshes and the catalog and prints. Running it on paid compute follows the compute rule (AGENTS.md rule 11); posting the matrix to villa or the community needs Chase's yes",
+    "License": "Apache-2.0 for the code and the registry (this repository's license); the catalog and meshes it reads are Vesuvius Challenge open data, CC BY-NC 4.0",
+    "Released": "Public branch `claude/exposure-atlas` since 4 Nov 2026 (open pull request, not merged)",
+    "Checked": "2026-11-04 against commit `7741f8b`"
+   },
+   "page": "docs/tools/expatlas.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 23,
+     "end_line": 32,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 33,
+     "end_line": 43,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 44,
+     "end_line": 53,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 54,
+     "end_line": 69,
+     "applicable": true
+    },
+    {
+     "name": "The matrix of 4 November 2026",
+     "start_line": 70,
+     "end_line": 89,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 90,
+     "end_line": 181,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 182,
+     "end_line": 220,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 221,
+     "end_line": 228,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 229,
+     "end_line": 249,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 250,
+     "end_line": 275,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 276,
+     "end_line": 288,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 289,
+     "end_line": 292,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 293,
+     "end_line": 302,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 303,
+     "end_line": 306,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 307,
+     "end_line": 312,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 313,
+     "end_line": 321,
      "applicable": true
     }
    ]
@@ -13144,6 +13301,168 @@
      "name": "Related",
      "start_line": 305,
      "end_line": 310,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "sentinel",
+   "name": "sentinel",
+   "tagline": "Bucket Sentinel, standing checks on the organizers' public uploads",
+   "summary": "`python -m kit sentinel` checks new or changed uploads to the organizers' public data for label canvases out of line with their meshes, truncated pyramids, fake unit scales and meshes from another frame, and writes an offset table that training loaders can import.",
+   "status": "Experimental",
+   "kind": [
+    "kit command",
+    "kit module"
+   ],
+   "area": "Data and downloads",
+   "commands": [
+    "python -m kit sentinel",
+    "python -m kit.sentinel",
+    "bash scripts/sentinel/job.sh"
+   ],
+   "imports": [
+    "from kit import sentinel",
+    "from kit import sentinel_table"
+   ],
+   "code": [
+    {
+     "path": "kit/sentinel.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/sentinel_table.py",
+     "symbols": []
+    },
+    {
+     "path": "scripts/sentinel/",
+     "symbols": []
+    },
+    {
+     "path": "kit/cli.py",
+     "symbols": [
+      "build_parser"
+     ]
+    }
+   ],
+   "tests": [
+    "tests/test_sentinel.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed: it reads public open data and writes local files. A paid Hugging Face Job follows the launch rules of AGENTS.md rule 11"
+   },
+   "checked": {
+    "date": "2026-11-04",
+    "commit": "d4da5ec"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`sentinel`",
+    "Status": "Experimental",
+    "Kind": "kit command, kit module",
+    "Area": "Data and downloads",
+    "Run": "`python -m kit sentinel`, `python -m kit.sentinel`, `from kit import sentinel`, `from kit import sentinel_table`, `bash scripts/sentinel/job.sh`",
+    "Code": "`kit/sentinel.py`, `kit/sentinel_table.py`, `scripts/sentinel/`, `kit/cli.py` (`build_parser`); it reuses [tifxyz](tifxyz.md)'s chunk reader (`ZarrSource`) and [meshaudit](meshaudit.md)'s TIFF reader and catalog helpers",
+    "Tests": "`tests/test_sentinel.py`",
+    "Needs": "Python 3.10 or newer, numpy; numcodecs for Blosc-compressed stores (zarr installs it); tifffile for tifxyz meshes (and imagecodecs for LZW-compressed ones, such as some `ink/unused/manbp` meshes); huggingface_hub 1.33 or newer (bucket listings) for `scan` and `hf:` items. `kit/sentinel_table.py` alone needs only the standard library (numpy for array input)",
+    "Runs on": "Any CPU with network. One S3 segment with every check and `--image`: about 45 s and 200 MB read (measured 2026-11-04, 4-core Claude cloud container); metadata checks alone take a few seconds an item. Larger runs go to a Hugging Face CPU Job (`scripts/sentinel/job.sh`)",
+    "Network": "Hugging Face: the bucket API listing (anonymous) and the bucket's file URLs under `HF_ENDPOINT` (default `https://huggingface.co`), for `meta.json`, `x.tif`, `y.tif`, `z.tif`, zarr metadata and chunks. S3: `metadata.json` and `metadata.min.json` of `vesuvius-challenge-open-data`, and CT volume metadata and chunks. Plain HTTPS GETs; 429, 5xx and dropped connections are asked again up to 5 times",
+    "Writes": "`scan`: the state file (`work/sentinel/state.json` by default). `check --out DIR`: one JSON file per item. `table --out FILE`: the offset table. `controls --out DIR`: one base result per pool item and `controls.json` (or `controls-KofN.json`). Nothing is ever written to a bucket; planted copies live in memory",
+    "Go-ahead": "Not needed: it reads public open data and writes local files. A paid Hugging Face Job follows the launch rules of AGENTS.md rule 11",
+    "Released": "Public branch `claude/bucket-sentinel` since 2026-11-04 (pull request open, not merged)",
+    "Checked": "2026-11-04 against commit `d4da5ec`"
+   },
+   "page": "docs/tools/sentinel.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 22,
+     "end_line": 37,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 38,
+     "end_line": 50,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 51,
+     "end_line": 77,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 78,
+     "end_line": 95,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 96,
+     "end_line": 202,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 203,
+     "end_line": 266,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 267,
+     "end_line": 274,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 275,
+     "end_line": 304,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 305,
+     "end_line": 329,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 330,
+     "end_line": 340,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 341,
+     "end_line": 344,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 345,
+     "end_line": 354,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 355,
+     "end_line": 358,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 359,
+     "end_line": 362,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 363,
+     "end_line": 369,
      "applicable": true
     }
    ]
