@@ -475,6 +475,19 @@ class Mesh:
         self.pins = pins or {}
         self.valid = np.isfinite(self.xyz).all(-1)
 
+    @property
+    def stretch(self):
+        """Median level-0 voxels per full-resolution cell along the grid (1.0 for an isometric tifxyz)."""
+        if getattr(self, "_stretch", None) is None:
+            np = _np()
+            k = max(1, int(math.sqrt(self.valid.size / 4e5)))
+            g = self.xyz[::k, ::k]
+            ey = np.linalg.norm(g[1:] - g[:-1], axis=-1) * self.scale[0] / k
+            ex = np.linalg.norm(g[:, 1:] - g[:, :-1], axis=-1) * self.scale[1] / k
+            e = np.concatenate([ey[np.isfinite(ey)], ex[np.isfinite(ex)]])
+            self._stretch = float(np.median(e)) if len(e) else 1.0
+        return self._stretch
+
     def valid_cells(self, most=200000):
         """Grid indices (rows, cols) of valid nodes, subsampled on a regular stride to at most about `most`."""
         np = _np()
@@ -641,7 +654,7 @@ def ct_window(mesh, ct, F, r0, c0, n, model):
     Y, X = _lattice(F, r0, c0, n)
     dy, dx = model(Y, X)
     pts = mesh.points(Y + dy, X + dx)
-    lv, fac = ct(F) if callable(ct) else ct
+    lv, fac = ct(F * max(1.0, mesh.stretch)) if callable(ct) else ct   # a stretched mesh covers more voxels a pixel
     return sample_ct(lv, fac, pts)
 
 
@@ -681,7 +694,7 @@ def check_canvas(canvas, mesh, ct, prior=True, log=None):
     sy = gy / H - 1.0 if prior else 0.0
     sx = gx / W - 1.0 if prior else 0.0
     model = lambda Y, X: (sy * Y, sx * X)          # noqa: E731  the size-ratio prior (#2370's slopes)
-    out = {"check": "canvas", "prior_slope": [sy, sx], "windows": []}
+    out = {"check": "canvas", "prior_slope": [sy, sx], "mesh_stretch": round(mesh.stretch, 4), "windows": []}
     # where the mesh is valid, in canvas level-0 px (through the prior)
     vy, vx = mesh.valid_cells()
     cy = vy / mesh.scale[0] / (1 + sy)
@@ -705,8 +718,12 @@ def check_canvas(canvas, mesh, ct, prior=True, log=None):
         return res
 
     def measure(F, n, search, r0, c0, mdl, refine=False):
-        cv = canvas.window(F, r0, c0, n)
-        ctw = ct_window(mesh, ct, F, r0, c0, n, mdl)
+        try:
+            cv = canvas.window(F, r0, c0, n)
+            ctw = ct_window(mesh, ct, F, r0, c0, n, mdl)
+        except SentinelError as e:          # a window the mesh crosses too steeply is skipped, and recorded
+            out.setdefault("skipped_windows", []).append(str(e)[:120])
+            return None
         valid = np.isfinite(ctw) & (cv > 0)
         if valid.mean() < FILL_MIN:
             return None
@@ -716,7 +733,10 @@ def check_canvas(canvas, mesh, ct, prior=True, log=None):
             # one refinement: resample the CT at the measured shift and register the remainder near zero, where
             # the parabolic peak fit has no pixel-locking bias
             shifted = lambda Y, X: tuple(a + b for a, b in zip(mdl(Y, X), (dy * F, dx * F)))  # noqa: E731
-            ct2 = ct_window(mesh, ct, F, r0, c0, n, shifted)
+            try:
+                ct2 = ct_window(mesh, ct, F, r0, c0, n, shifted)
+            except SentinelError:
+                ct2 = np.full_like(ctw, np.nan)
             v2 = np.isfinite(ct2) & (cv > 0)
             if v2.mean() >= FILL_MIN:
                 ry, rx, psr2 = register(ct2, cv, 3, v2)
@@ -845,7 +865,8 @@ def check_blank(canvas, level=None, probe=None):
             continue
         for p in range(a.shape[0]):
             z0 = int(p * fz)
-            if z0 < len(ref) and ref[z0] > 0.5 and nz[p] == 0:
+            interior = 0 < p < a.shape[0] - 1 and nz[p - 1] > 0.5 and nz[p + 1] > 0.5
+            if nz[p] == 0 and (interior or (k > 0 and z0 < len(ref) and ref[z0] > 0.5)):
                 probs.append({"level": k, "plane": p, "kind": "blank_plane"})
     return {"check": "blank", "verdict": "defect" if probs else "ok", "problems": probs}
 
@@ -928,7 +949,8 @@ def hf_listing(prefix, api=None):
     return sorted(out)
 
 
-SAMPLE_ALIASES = {"man5": "PHercMAN5", "phercparis4": "PHercParis4"}
+SAMPLE_ALIASES = {"man5": "PHercMAN5", "phercparis4": "PHercParis4", "manb": "PHercMANB", "manbp": "PHercMANBp",
+                  "p343p": "PHerc0343P", "500p2a": "PHerc0500P2"}
 
 
 def sample_of(folder):
@@ -943,14 +965,19 @@ def sample_of(folder):
 
 
 def discover_hf(api=None, root="ink"):
-    """Segment folders under the HF bucket's ink/ (one level of scroll folders, then segment folders)."""
+    """Segment folders under the HF bucket's ink/: scroll folders, then segment folders; ink/unused/ one level
+    deeper (ink/unused/<scroll>/<segment>)."""
     items = []
     for p, t, _, _ in hf_listing(root, api):
-        if t != "directory" or p.endswith("/unused"):
+        if t != "directory":
             continue
-        for q, t2, _, _ in hf_listing(p, api):
-            if t2 == "directory":
-                items.append("hf:" + q)
+        scrolls = [p]
+        if p.endswith("/unused"):
+            scrolls = [q for q, t2, _, _ in hf_listing(p, api) if t2 == "directory"]
+        for sc in scrolls:
+            for q, t2, _, _ in hf_listing(sc, api):
+                if t2 == "directory" and not q.endswith((".zarr", "/preds", "/layers")):
+                    items.append("hf:" + q)
     return items
 
 
@@ -964,7 +991,8 @@ def hf_item(path, api=None):
     has_mesh = all(any(p.endswith("/" + n) for p, t, _, _ in files) for n in ("x.tif", "y.tif", "z.tif"))
     listing = [[p.split("/")[-1], t, s, h] for p, t, s, h in files]
     return {"id": "hf:" + path, "path": path, "canvas": canvas, "labels": labels, "mesh": path if has_mesh else None,
-            "sample": sample_of(path.split("/")[1]) if path.startswith("ink/") else None,
+            "sample": sample_of(path.split("/")[2] if path.startswith("ink/unused/") else path.split("/")[1])
+            if path.startswith("ink/") else None,
             "listing_digest": sha256_bytes(json.dumps(listing).encode())[:16], "listing": listing}
 
 
@@ -1154,9 +1182,10 @@ def plant_canvas(canvas, plant):
             meta["axes"] = [{"name": a.get("name"), "type": a.get("type")} for a in meta.get("axes") or []]
         else:
             p = float(plant["pitch"])
+            base = meta["levels"][0].get("scale") or [1.0] * n
             for lv in meta["levels"]:
                 s = lv.get("scale") or [1.0] * n
-                lv["scale"] = [v * p for v in s]
+                lv["scale"] = [v / b * p for v, b in zip(s, base)]
             meta["axes"] = [{"name": a, "type": "space", "unit": "micrometer"} for a in "zyx"]
         return Canvas(canvas.store, meta, shape=canvas.shape0), {kind: True}
     raise SentinelError(f"unknown plant kind {kind!r}")
@@ -1720,7 +1749,11 @@ def run_controls(args):
     out.mkdir(parents=True, exist_ok=True)
     rows = []
     for iid in pool:
-        base = check_item(iid, rule, image=True, catalog=cat, minmeta=minmeta)
+        try:
+            base = check_item(iid, rule, image=True, catalog=cat, minmeta=minmeta)
+        except Exception as e:  # noqa: BLE001  an item that cannot be read is recorded, not fatal
+            rows.append({"item": iid, "plant": None, "base_kind": "error: " + str(e)[:120], "flag": False})
+            continue
         if base.get("skipped"):
             continue
         (out / (re.sub(r"[^A-Za-z0-9._-]+", "_", iid) + ".base.json")).write_text(json.dumps(base, indent=1))

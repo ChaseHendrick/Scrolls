@@ -208,6 +208,9 @@ class Synthetic(unittest.TestCase):
         out = sn.check_blank(pc, probe=(320, 320))
         self.assertEqual(out["verdict"], "defect")
         self.assertEqual(out["problems"][0]["plane"], 4)
+        pc, _ = sn.plant_canvas(c, {"kind": "drop_planes", "level": 0, "planes": [5]})
+        out = sn.check_blank(pc, probe=(320, 320))
+        self.assertEqual([(q["level"], q["plane"]) for q in out["problems"]], [(0, 5)])
 
     def test_absent_chunks_read_as_fill(self):
         lv = sn.Store(str(self.ct)).level(0)
@@ -267,6 +270,10 @@ class Metadata(unittest.TestCase):
         fake = sn._MetaOnly(None, m)
         fixed = sn.plant_canvas(fake, {"kind": "fix_scale", "pitch": 8.64})[0].meta
         self.assertEqual(sn.check_scale(fixed, 8.64, "name")["verdict"], "ok")
+        real = self.meta([[10, 10, 10], [5, 5, 5]], [[8.64] * 3, [17.28] * 3], unit="micrometer")
+        refixed = sn.plant_canvas(sn._MetaOnly(None, real), {"kind": "fix_scale", "pitch": 8.64})[0].meta
+        self.assertEqual(sn.check_scale(refixed, 8.64, "name")["verdict"], "ok")      # a real scale stays right
+        self.assertEqual(refixed["levels"][1]["scale"], [17.28] * 3)
         reset = sn.plant_canvas(sn._MetaOnly(None, fixed), {"kind": "reset_scale"})[0].meta
         self.assertEqual(sn.check_scale(reset, 8.64, "name")["kind"], "scale_reset")
         dropped = sn.plant_canvas(sn._MetaOnly(None, m), {"kind": "drop_meta", "level": 1, "keep": 2})[0].meta
