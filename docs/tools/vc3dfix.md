@@ -40,7 +40,7 @@ Do not use it:
 
 - To download a volume: use [fetch](fetch.md), which asks again after a false 404 itself.
 - For a local volume: VC3D's cache and markers are only for remote ones.
-- With a VC3D build that counts an S3 404 as missing only with a complete `NoSuchKey` error (the fix proposed in draft [villa PR #2060](https://github.com/ScrollPrize/villa/pull/2060)): the relay is then not needed, though `vc3dcache` still repairs markers older builds left.
+- With a VC3D build that counts an S3 404 as missing only with a complete `NoSuchKey` error (the fix proposed in [villa PR #2060](https://github.com/ScrollPrize/villa/pull/2060), closed unmerged on 30 Oct 2026): the relay is then not needed, though `vc3dcache` still repairs markers older builds left.
 
 ## Quick start
 
@@ -225,4 +225,4 @@ python -m unittest tests.test_vc3dfix -v
 - [vc3d-cache](vc3d-cache.md): finding VC3D's cache, checking its markers, `Guard`.
 - [s3retry](s3retry.md): the false-404 rule.
 - [VC3D and S3's false 404s](../vc3d-false-404.md): the how-to.
-- [The upstream reports log](../logs/2026-10-12-upstream-reports.md): the measurements, villa issue #2058 and draft PR #2060.
+- [The upstream reports log](../logs/2026-10-12-upstream-reports.md): the measurements, villa issue #2058 and proposed fix PR #2060 (closed unmerged 30 Oct 2026).

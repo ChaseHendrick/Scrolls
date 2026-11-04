@@ -117,7 +117,7 @@ One row per module, script folder and docs area. [AGENTS.md](../AGENTS.md) holds
 | `scripts/mac-verify.sh` | Mac GPU: `ink_9um` CPU (forced) vs MPS on w035, villa `main` at a pinned commit |
 | `scripts/heldout/hecate_split.py`, `tests/test_hecate_split.py` | Applies the train and validation split rule of Hecate's published trainer (villa `distilled_3d_ink` 5ff00ca0, numpy port) to a segment's label masks from the ink dataset and reports training patches and the share of supervised pixels under them; reads masks only ([log](logs/2026-10-16-reader-exposure.md)) |
 | `scripts/soup.py` | Weight average of checkpoints from ONE run (Nieuwlaar's soup42_last4, bit-identical); refuses mixed seeds |
-| `scripts/false404/fault_relay.py` | Local relay in front of the open-data bucket that replays S3's false 404 on chosen chunk keys, for villa #2058 and its fix #2060 ([log](logs/2026-10-12-upstream-reports.md)); standard library |
+| `scripts/false404/fault_relay.py` | Local relay in front of the open-data bucket that replays S3's false 404 on chosen chunk keys, for villa #2058 and its proposed fix #2060, closed unmerged 30 Oct 2026 ([log](logs/2026-10-12-upstream-reports.md)); standard library |
 | `scripts/v8in_run.py` | v8in inference wrapper with opt-in fp16 on MPS; logs `tiles=N done in Ns` |
 | `scripts/experiments/` | Saved scripts, logs and scores of past public-data jobs (2026-10-07 cloud jobs, lanes, tricks); records, keep their wording |
 | `docs/compute/` | Modal pricing, rates, job assumptions, the public Modal ledger and run specs (hard rule 11) |
