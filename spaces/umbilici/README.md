@@ -69,7 +69,7 @@ that reopens the exact view; and the scan's points as CSV or JSON.
 
 Every file, with its hash, upstream link and note, is in
 [SharpMeow/vesuvius-center-lines](https://huggingface.co/datasets/SharpMeow/vesuvius-center-lines). Abd Elilah's
-PHerc1203 curve is shown faded: its author withdrew it from recommended use (repository README, 16 Aug 2026).
+PHerc1203 curve is drawn grey and labeled unused: its author withdrew it from recommended use (repository README, 16 Aug 2026).
 
 The 18 Center Finder lines are model output, made for the scans that had no person's line: nine 1.2 m prize
 scans, then (dataset release v2.3, 24 Oct 2026) PHerc0343, PHerc0814 and PHerc0841 at 1.2 m and PHerc1299,
@@ -91,7 +91,7 @@ the polish ran on level 2 and is untested. On all ten scans of a frozen
 test the 1.2 m polished lines sat deeper in villa's traced sheet than the line before the polish (winding coverage on villa's model
 output, not distance to the true axis; PHerc0343 and PHerc0846A were not in it), and Scrolls kit takes them first.
 They are jumpier than the originals and their ends were not re-checked, so the scan's grade stays the original
-line's. Each card marks the newest version NEWEST and the older one SUPERSEDED; the older one is drawn faded.
+line's. Each card marks the newest version NEWEST and the older one SUPERSEDED; the older one is drawn grey and labeled unused.
 
 ## Using the lines in VC3D and villa
 
@@ -113,6 +113,18 @@ villa's source (`main`, read 23 Oct 2026):
 
 Because VC3D holds the ends and spiral-fitting extrapolates them, check a line's usable ends before relying on
 it near the top or bottom of a scan.
+
+## One glowing line per scan
+
+Since 1.14.0 only one line per scan glows: its best line, the one Scrolls `kit centerline get` and AutoPipeline take
+by default (`order()` in `kit/centerline.py`). That is a person's or the organizers' line where the scan has one,
+ranked the organizers' first and then the makers by name, otherwise the newest Center Finder line; a withdrawn line
+counts as an old version. Every other line is drawn grey and thinner, without glow, and gets a role: **alternate**, a
+current line the default passes over, or **unused**, an older version (superseded) or a withdrawn line. The role is
+on each scan card (BEST, ALTERNATE, UNUSED, best first), in the scan list (the best line's chip first, the others
+grey), in the Data tables (`role` per line, `best line` per scan), in the `lines.csv`, `points.csv` and
+`umbilici.json` downloads, and in `lines()`, `at()` and `best()` for agents. Best means first in that order, not
+checked against the CT: no person has compared the lines on a scan.
 
 ## Ends outside the scroll
 
@@ -154,9 +166,10 @@ The page is driven from the console or a headless browser through `window.umbili
 
 | Call | Returns or does |
 | --- | --- |
-| `scans()` | every scan: scroll, scan id, volume, voxel size, shape, prize lists, sources, end grade |
-| `lines(scroll)` | that scan's lines with control points `[x, y, z]` in level-0 voxels, every point of the file, and `outside` (points hidden at each end, or null with `outside_why`) |
-| `at(scroll, z)` | each line's `[x, y]` at height `z` (linear between control points) |
+| `scans()` | every scan: scroll, scan id, volume, voxel size, shape, prize lists, sources, best (the source of its best line), end grade |
+| `lines(scroll)` | that scan's lines with control points `[x, y, z]` in level-0 voxels, every point of the file, `role` (`best`, `alternate` or `unused`) and `outside` (points hidden at each end, or null with `outside_why`) |
+| `at(scroll, z)` | each line's `[x, y]` at height `z` (linear between control points) and its `role` |
+| `best(scroll)` | that scan's best line (the glowing one, the line kit takes by default) with its points, or null |
 | `select(scroll, mode)`, `mode('array' or 'scan' or 'lasagna')`, `setZ(z)` | change the view |
 | `state()` | mode, scan, height, whether the ends outside the scroll are shown, CT streaming progress |
 | `outside(on)` | shows (`true`) or hides (`false`) the line ends that lie outside the scroll in the CT, omitted toggles; returns `{outside}`, also kept in the URL as `outside=1` |

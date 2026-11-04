@@ -336,3 +336,14 @@ body.nofilm .film::after, body.nofilm .scan-lines { display: none; }
   .sheet .tabs .grow { flex: 1 1 auto; height: auto; }
 }
 #c-kick { text-wrap: balance; }
+
+/* 1.14.0: one glowing line per scan (its best line); the rest grey, labeled alternate or unused */
+.role { font-size: 9px; letter-spacing: .08em; padding: 0 5px; border: 1px solid; border-radius: 3px; text-transform: uppercase; }
+.role.best { color: #fff3c4; border-color: rgba(255,230,150,.75); box-shadow: 0 0 6px rgba(255,220,130,.45); }
+.role.alternate { color: #9aa7b0; border-color: rgba(154,167,176,.5); }
+.role.unused { color: #6f7b84; border-color: rgba(111,123,132,.4); border-style: dashed; }
+.legend .lg-role { flex-basis: 100%; color: var(--dim); line-height: 1.5; }
+.legend .lg-role .sw.glow { background: #fff3c4; box-shadow: 0 0 6px #ffe08a; }
+.legend .lg-role .sw.grey { background: #7b868e; }
+.src.r-alternate, .src.r-unused { border-color: rgba(123,134,142,.45); color: #7b868e; }
+.src.r-unused { border-style: dashed; opacity: .7; }

@@ -7,7 +7,7 @@ import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 
-const VERSION = '1.13.0';
+const VERSION = '1.14.0';
 const DATASET = 'https://huggingface.co/datasets/SharpMeow/vesuvius-center-lines';
 const LASAGNA_SCROLL = 'PHerc0175A';
 const ICE = new THREE.Color('#89f0ff');
@@ -114,6 +114,24 @@ const isFinder = (l) => l.source === 'finder';
 // an older version (superseded_by names the newer line's file) or a withdrawn line is drawn faded
 const isOld = (l) => !!l.superseded_by || l.note.includes('withdrawn');
 const isNewest = (s, l) => s.lines.some((o) => o.superseded_by === l.file);
+// One line per scan glows: its best line, the one Scrolls `kit centerline get` and AutoPipeline take by default
+// (kit/centerline.py order(): a person's or the organizers' line first, then the newest version, then the polished
+// Center Finder line, then by source name); a withdrawn line counts as an old one. Every other line is drawn grey,
+// without glow, and labeled: alternate (a current line the default passes over) or unused (superseded or withdrawn).
+const KIND_RANK = { person: 0, bucket: 1, model: 2 };
+const rankOf = (l) => [KIND_RANK[l.kind] ?? 3, isOld(l) ? 1 : 0, l.source === 'finder-polished' ? 0 : 1, l.source];
+function byRank(a, b) { const u = rankOf(a), v = rankOf(b); for (let i = 0; i < u.length; i++) if (u[i] !== v[i]) return u[i] < v[i] ? -1 : 1; return 0; }
+const bestOf = (s) => [...s.lines].sort(byRank)[0] || null;
+const ROLE_TEXT = {
+  best: 'the best line for this scan: the one Scrolls kit and AutoPipeline take by default, drawn glowing',
+  alternate: 'a current line the default passes over (a person\'s line comes first, then the newest Center Finder line), drawn grey',
+  unused: 'not used: a newer version of this line exists, or its author withdrew it; kept for comparison and drawn grey',
+};
+function assignRoles(data) {
+  for (const s of data.scrolls) { const b = bestOf(s); for (const l of s.lines) l.role = l === b ? 'best' : isOld(l) ? 'unused' : 'alternate'; }
+  return data;
+}
+const isBest = (l) => l.role === 'best';
 // lines the visitor switched off: a whole maker (legend) or one line (scan card); kept in the URL as off=
 const OFF = { src: new Set(), line: new Set() };
 const lineKey = (s, l) => `${s.scroll}:${l.source}`;
@@ -204,7 +222,7 @@ function lineRows() {
   return S.data.scrolls.flatMap((s) => s.lines.map((l) => {
     const t = statsOf(s, l);
     return {
-      scroll: s.scroll, scan: s.scan, volume: s.volume, voxel_um: s.voxel_um, source: l.source, maker: S.data.sources[l.source].label,
+      scroll: s.scroll, scan: s.scan, volume: s.volume, voxel_um: s.voxel_um, source: l.source, maker: S.data.sources[l.source].label, role: l.role,
       kind: l.kind, grade: l.grade || '', ct_untested: !!l.untested, ct_end_low: endText(l, 'low'), ct_end_high: endText(l, 'high'), outside_tested: !!l.outside, outside_why: l.outside_why || '', usable_ends: isFinder(l) ? (usable(l) || '') : '', withdrawn: l.note.includes('withdrawn'), superseded: !!l.superseded_by,
       ...t, license: lic(l), sha256: l.sha256, file: RAW(l), upstream: l.upstream, note: l.note,
     };
@@ -216,7 +234,7 @@ function scanRows() {
     return {
       scroll: s.scroll, scan: s.scan, volume: s.volume, voxel_um: s.voxel_um, slices: s.shape[0], height_px: s.shape[1], width_px: s.shape[2],
       height_mm: mm(s, s.shape[0]), width_mm: mm(s, s.shape[2]), levels: s.levels, first_letters: s.first_letters, grand_prize: s.grand_prize,
-      lines: s.lines.length, sources: s.lines.map((l) => l.source).join(' '), grade: gradeOf(s) || '',
+      lines: s.lines.length, sources: s.lines.map((l) => l.source).join(' '), best: s.lines.find(isBest)?.source || '', grade: gradeOf(s) || '',
       pair_median_mm: pr ? pr.median_mm : null, pair_max_mm: pr ? pr.max_mm : null, zarr: s.zarr,
     };
   });
@@ -228,7 +246,7 @@ function toCSV(rows) {
   return [cols.join(','), ...rows.map((r) => cols.map((c) => cell(r[c])).join(','))].join('\n') + '\n';
 }
 function pointRows(only) {
-  return S.data.scrolls.filter((s) => !only || s === only).flatMap((s) => s.lines.flatMap((l) => linePts(l).map(([x, y, z]) => ({ scroll: s.scroll, scan: s.scan, source: l.source, x, y, z }))));
+  return S.data.scrolls.filter((s) => !only || s === only).flatMap((s) => s.lines.flatMap((l) => linePts(l).map(([x, y, z]) => ({ scroll: s.scroll, scan: s.scan, source: l.source, role: l.role, x, y, z }))));
 }
 function scanJSON(s) {
   return {
@@ -254,25 +272,33 @@ async function copy(text, what = 'copied') {
 function tube(points3, color, radius, opacity = 1) {
   const curve = new THREE.CatmullRomCurve3(points3.map((p) => new THREE.Vector3(...p)), false, 'centripetal');
   const g = new THREE.TubeGeometry(curve, Math.min(900, points3.length * 4), radius, 8, false);
-  const m = new THREE.MeshBasicMaterial({ color: color.clone().multiplyScalar(1.35), transparent: true, opacity, depthWrite: true, toneMapped: false });
+  const m = new THREE.MeshBasicMaterial({ color, transparent: true, opacity, depthWrite: true, toneMapped: false });
   const mesh = new THREE.Mesh(g, m); mesh.renderOrder = 3; mesh.userData.base = opacity; return mesh;
 }
 // a hidden end run when the viewer shows it: faded dots along the same curve, one draw call
 function dots(points3, color, radius, opacity) {
   const curve = new THREE.CatmullRomCurve3(points3.map((p) => new THREE.Vector3(...p)), false, 'centripetal');
   const n = Math.max(2, Math.min(600, Math.floor(curve.getLength() / (radius * 3.2))));
-  const m = new THREE.MeshBasicMaterial({ color: color.clone().multiplyScalar(1.35), transparent: true, opacity, depthWrite: false, toneMapped: false });
+  const m = new THREE.MeshBasicMaterial({ color, transparent: true, opacity, depthWrite: false, toneMapped: false });
   const mesh = new THREE.InstancedMesh(new THREE.SphereGeometry(radius * 0.8, 8, 6), m, n);
   const at = new THREE.Matrix4();
   for (let i = 0; i < n; i++) mesh.setMatrixAt(i, at.makeTranslation(curve.getPointAt(i / (n - 1))));
   mesh.renderOrder = 3; mesh.userData.base = opacity; return mesh;
 }
+// how a line looks: the best line in its maker's color, bright enough to glow; the others grey with a trace of the
+// maker's color, thinner and below the glow's threshold, alternates a little stronger than unused lines
+const GREY = new THREE.Color('#4f5961'), GREY_HEX = '#7b868e';
+function lookOf(l) {
+  if (isBest(l) || !l.role) return { color: colOf(l).clone().multiplyScalar(1.35), opacity: 1, radius: 1 };
+  return { color: GREY.clone().lerp(colOf(l), 0.25), opacity: l.role === 'alternate' ? 0.85 : 0.5, radius: 0.6 };
+}
 // a line as drawn: its inside part as a tube, and, when S.outside, each hidden end run as dots from the last inside point
-function lineMeshes(l, pts3, radius, opacity) {
-  const [a, b] = cut(l), out = [tube(pts3.slice(a, b), colOf(l), radius, opacity)];
+function lineMeshes(l, pts3, radius) {
+  const k = lookOf(l), r = radius * k.radius, op = k.opacity;
+  const [a, b] = cut(l), out = [tube(pts3.slice(a, b), k.color, r, op)];
   if (S.outside) {
-    if (a > 0) out.push(dots(pts3.slice(0, a + 1), colOf(l), radius, opacity * 0.4));
-    if (b < pts3.length) out.push(dots(pts3.slice(b - 1), colOf(l), radius, opacity * 0.4));
+    if (a > 0) out.push(dots(pts3.slice(0, a + 1), k.color, r, op * 0.4));
+    if (b < pts3.length) out.push(dots(pts3.slice(b - 1), k.color, r, op * 0.4));
   }
   return out;
 }
@@ -302,7 +328,7 @@ function buildArray() {
       for (const l of s.lines) {
         if (!shown(s, l)) continue;
         const pts = linePts(l).map(([x, y, z]) => [mm(s, x - cx) * S.ex, mm(s, z), mm(s, y - cy) * S.ex]);
-        g.add(...lineMeshes(l, pts, 0.9, isOld(l) ? 0.45 : 1));
+        g.add(...lineMeshes(l, pts, 0.9));
       }
       const tint = hasFinder(s) ? AMBER : ICE;
       g.add(ring(26, 0, tint, 0.28)); g.add(ring(26, H, tint, 0.12));
@@ -489,7 +515,7 @@ function toWorld(s, x, y, z) { const [ox, oy] = scanOrigin(s); return [mm(s, x -
 const scanLines = new THREE.Group();
 function buildScanLines(s) {
   scanLines.clear();
-  for (const l of s.lines) if (shown(s, l)) scanLines.add(...lineMeshes(l, linePts(l).map(([x, y, z]) => toWorld(s, x, y, z)), 0.55, isOld(l) ? 0.5 : 1));
+  for (const l of s.lines) if (shown(s, l)) scanLines.add(...lineMeshes(l, linePts(l).map(([x, y, z]) => toWorld(s, x, y, z)), 0.55));
   S.dirty = true;
 }
 function buildScan(s) {
@@ -594,13 +620,13 @@ function drawCT(sl, alpha = 1) {
 function drawMarks(sx, s, z, a = 0) {
   // the slice fills the square inset whatever the scan's x and y extent, so x and y scale apart (PHerc0172 is not square)
   const kx = sc.width / s.shape[2], ky = sc.height / s.shape[1], c = sc.width / 2, ca = Math.cos(a), sa = Math.sin(a);
-  for (const l of s.lines) {
+  for (const l of [...s.lines].sort((a, b) => isBest(a) - isBest(b))) {   // the best line's mark last, on top
     if (!shown(s, l)) continue;
     const p = lineAt(l, z); if (!p) continue;
     const off = outsideAt(l, z); if (off && !S.outside) continue; // an end run outside the scroll: faded and dashed when shown
-    const u = p[0] * kx - c, v = p[1] * ky - c; const x = c + u * ca - v * sa, y = c + u * sa + v * ca; const col = hexOf(l);
-    sx.globalAlpha = off ? 0.45 : 1; sx.setLineDash(off ? [3, 3] : []);
-    sx.strokeStyle = col; sx.lineWidth = 1.6; sx.shadowColor = col; sx.shadowBlur = 10;
+    const u = p[0] * kx - c, v = p[1] * ky - c; const x = c + u * ca - v * sa, y = c + u * sa + v * ca; const best = isBest(l) || !l.role, col = best ? hexOf(l) : GREY_HEX;
+    sx.globalAlpha = (off ? 0.45 : 1) * (best ? 1 : l.role === 'alternate' ? 0.75 : 0.5); sx.setLineDash(off ? [3, 3] : []);
+    sx.strokeStyle = col; sx.lineWidth = best ? 1.6 : 1.1; sx.shadowColor = col; sx.shadowBlur = best ? 10 : 0;
     sx.beginPath(); sx.arc(x, y, 9, 0, Math.PI * 2); sx.stroke();
     sx.beginPath(); sx.moveTo(x - 22, y); sx.lineTo(x - 12, y); sx.moveTo(x + 12, y); sx.lineTo(x + 22, y); sx.moveTo(x, y - 22); sx.lineTo(x, y - 12); sx.moveTo(x, y + 12); sx.lineTo(x, y + 22); sx.stroke();
     sx.fillStyle = col; sx.beginPath(); sx.arc(x, y, 1.6, 0, Math.PI * 2); sx.fill();
@@ -666,7 +692,8 @@ sc.addEventListener('wheel', (e) => { if (!S.sel) return; e.preventDefault(); co
 // ---------- showing and hiding lines ----------
 function buildLegend() {
   const used = Object.keys(S.data.sources).filter((k) => S.data.scrolls.some((s) => s.lines.some((l) => l.source === k)));
-  $('legend').innerHTML = used.map((k) => `<button class="lg${OFF.src.has(k) ? ' off' : ''}" data-src="${k}" aria-pressed="${!OFF.src.has(k)}" title="show or hide every line by ${S.data.sources[k].label}"><i class="sw" style="background:${SRC_HEX[k]};box-shadow:0 0 6px ${SRC_HEX[k]}"></i>${k === 'finder' ? 'Center Finder (model output)' : k === 'finder-polished' ? 'Center Finder, polished (model output)' : k === 'finder-v2' ? 'Center Finder v2 (model output)' : S.data.sources[k].label}</button>`).join('');
+  $('legend').innerHTML = used.map((k) => `<button class="lg${OFF.src.has(k) ? ' off' : ''}" data-src="${k}" aria-pressed="${!OFF.src.has(k)}" title="show or hide every line by ${S.data.sources[k].label}"><i class="sw" style="background:${SRC_HEX[k]};box-shadow:0 0 6px ${SRC_HEX[k]}"></i>${k === 'finder' ? 'Center Finder (model output)' : k === 'finder-polished' ? 'Center Finder, polished (model output)' : k === 'finder-v2' ? 'Center Finder v2 (model output)' : S.data.sources[k].label}</button>`).join('')
+    + '<div class="lg-role" title="One line per scan glows: the one Scrolls kit and AutoPipeline take by default. The rest are grey: alternate (a current line the default passes over) or unused (superseded or withdrawn)."><i class="sw glow"></i>glowing: best line per scan<br><i class="sw grey"></i>grey: alternate or unused</div>';
 }
 function linesChanged() {
   buildLegend(); buildArray(); if (S.sel) { buildScanLines(S.sel); buildCard(S.sel); drawSlice(); }
@@ -707,7 +734,7 @@ addEventListener('resize', placeHudSoon);
 placeHud();
 function railRow(s) {
   const li = document.createElement('li'); li.dataset.scroll = s.scroll;
-  const srcs = s.lines.map((l) => `<span class="src s-${l.source}" title="${S.data.sources[l.source].label}">${S.data.sources[l.source].short}</span>`).join('');
+  const srcs = [...s.lines].sort(byRank).map((l) => `<span class="src s-${l.source}${isBest(l) ? '' : ' r-' + l.role}" title="${S.data.sources[l.source].label}: ${l.role}">${S.data.sources[l.source].short}</span>`).join('');
   const g = gradeOf(s);
   const f = s.lines.find(isFinder); const ut = !!(f && f.untested); const lt = lightOf(f);
   li.innerHTML = `<span class="nm">${s.scroll}<small>${prizeTag(s)}</small></span><span class="srcs">${srcs}</span><span class="grade ${g || ''} ${lt ? 'lt-' + lt : ''}${ut ? ' ut' : ''}" title="${f ? endsText(f) + (ut ? `; ${UNTESTED}` : '') + (lt ? `; ${LIGHT_WORD[lt]}` : '') : ''}">${g || '·'}</span>`;
@@ -748,18 +775,21 @@ function buildCard(s) {
   $('c-pick').value = s.scroll;
   $('c-kick').textContent = `SCAN ${s.scan} · ${s.voxel_um} µm · ${prizeWords(s)}`;
   $('c-title').textContent = s.scroll;
-  $('c-lines').innerHTML = s.lines.map((l, i) => {
+  $('c-lines').innerHTML = [...s.lines].sort(byRank).map((l) => {
     const src = S.data.sources[l.source]; const f = isFinder(l); const t = statsOf(s, l);
     const up = /^https?:/.test(l.upstream) ? `<a href="${l.upstream}" target="_blank" rel="noopener">upstream</a>` : '';
     const grade = l.grade ? `<span class="grade ${l.grade} lt-${lightOf(l)}" title="${GRADE_TEXT[l.grade]}; ${LIGHT_WORD[lightOf(l)]}">END CHECK ${l.grade}${lightOf(l) === 'caution' ? ' · CAUTION' : ''}</span>` : `<span class="dim">${l.kind === 'person' ? 'made by a person' : ''}</span>`;
     const ends = endsText(l);
-    const ver = l.superseded_by ? '<span class="ver old" title="a newer version of this line exists; it is kept for comparison">SUPERSEDED</span>' : (isNewest(s, l) ? '<span class="ver new" title="the newest version of this line; kit takes it by default">NEWEST</span>' : '');
-    const was = l.superseded_by ? '<div class="note">Superseded: the newer version of this line is on this card, marked NEWEST. This one is kept for comparison and drawn faded.</div>' : '';
+    const ver = `<span class="role ${l.role}" title="${ROLE_TEXT[l.role]}">${l.role.toUpperCase()}</span>` + (l.superseded_by ? '<span class="ver old" title="a newer version of this line exists; it is kept for comparison">SUPERSEDED</span>' : (isNewest(s, l) ? '<span class="ver new" title="the newest version of this line">NEWEST</span>' : ''));
+    const was = isBest(l) ? '<div class="note">Best: the line Scrolls kit and AutoPipeline take by default for this scan, so it alone glows.</div>'
+      : l.superseded_by ? '<div class="note">Unused: superseded by the newer version of this line on this card (NEWEST). Kept for comparison and drawn grey.</div>'
+      : l.role === 'unused' ? '<div class="note">Unused: its author withdrew it. Kept for comparison and drawn grey.</div>'
+      : '<div class="note">Alternate: a current line that the default passes over; a person\'s line comes first, then the newest Center Finder line. Drawn grey.</div>';
     const note = f ? `<div class="note">${ends ? `CT end check: ${endsHTML(l)}` : `${GRADE_TEXT[l.grade] || 'No CT end check'}.`}</div><div class="note">${l.untested ? `Untested: ${UNTESTED}. ` : ''}Usable ends: ${usable(l) || 'see note'}. Model output: no end has been checked on CT by a person.</div>`
       : (l.note ? `<div class="note">${l.note}${/[.!?]$/.test(l.note.trim()) ? '' : '.'}</div>` : '');
     const row = (k, v) => `<tr><th>${k}</th><td>${v}</td></tr>`;
     const k = lineKey(s, l);
-    return `<div class="ln${shown(s, l) ? '' : ' off'}"><div class="who"><span class="name"><label class="show" title="show or hide this line"><input type="checkbox" data-line="${k}"${OFF.line.has(k) ? '' : ' checked'}${OFF.src.has(l.source) ? ' disabled' : ''}></label><b style="color:${hexOf(l)}">${src.label}</b></span><span class="tags">${ver}${grade}</span></div>
+    return `<div class="ln${shown(s, l) ? '' : ' off'}"><div class="who"><span class="name"><label class="show" title="show or hide this line"><input type="checkbox" data-line="${k}"${OFF.line.has(k) ? '' : ' checked'}${OFF.src.has(l.source) ? ' disabled' : ''}></label><b style="color:${isBest(l) ? hexOf(l) : GREY_HEX}">${src.label}</b></span><span class="tags">${ver}${grade}</span></div>
       <div class="meta">${t.points} points · z ${t.z_start} to ${t.z_end} (${fmt(t.height_mm, 0)} mm, ${fmt(t.coverage * 100, 0)}% of the scan) · strays up to ${fmt(t.stray_mm, 1)} mm from its mean · ${lic(l)}</div>${was}${note}${outsideHTML(l)}
       <div class="links"><a href="${RAW(l)}" download>download</a><button class="lk" data-copy="${RAW(l)}" data-what="file URL copied">copy URL</button><button class="lk" data-copy="python -m kit centerline get ${s.scroll} --source ${l.source} --into YOUR_PROJECT_FOLDER" data-what="kit command copied: it writes YOUR_PROJECT_FOLDER/umbilicus.json" title="A command for the Scrolls kit that downloads this line, checks its sha256 and writes it as umbilicus.json where VC3D looks">copy kit command</button><a href="${DATASET}/blob/main/${l.file}" target="_blank" rel="noopener">view</a>${up}</div>
       <details class="full"><summary>every number</summary><table class="kv">
@@ -784,12 +814,12 @@ function buildCard(s) {
     <div class="dim">every level ${s.pyramid[0].dtype === '|u1' ? 'uint8' : s.pyramid[0].dtype}, chunks ${s.pyramid[0].chunks.join(' x ')}, ${s.pyramid[0].compressor || 'no compressor'}</div>${streamable(s) ? '' : `<div class="note">This page reads one plane of an uncompressed chunk at a time, so it shows no CT for this scan; its line is drawn in the scan's frame. zarr, VC3D and the neuroglancer link read the compressed chunks.</div>`}`;
   $('c-vol').innerHTML = `CT <a href="${s.zarr}/.zattrs" target="_blank" rel="noopener">${s.volume}</a> · Vesuvius Challenge open data, CC BY-NC 4.0`;
 }
-function hereRows(s, z) { return s.lines.map((l) => { const p = lineAt(l, z); return p ? { source: l.source, x: p[0], y: p[1], z, outside: outsideAt(l, z) } : null; }).filter(Boolean); }
+function hereRows(s, z) { return [...s.lines].sort(byRank).map((l) => { const p = lineAt(l, z); return p ? { source: l.source, role: l.role, x: p[0], y: p[1], z, outside: outsideAt(l, z) } : null; }).filter(Boolean); }
 function drawHere() {
   const s = S.sel; if (!s || S.z == null) return;
   const z = Math.round(S.z); const rows = hereRows(s, z);
   $('c-here').innerHTML = `<div class="mono small dim">AT z ${z} (${fmt(mm(s, z), 2)} mm), LEVEL-0 VOXELS</div>` + (rows.length
-    ? rows.map((r) => `<div class="hr"><span class="${r.source.startsWith('finder') ? 'amber' : 'ice'}">${S.data.sources[r.source].short}</span> <code>${fmt(r.x, 1)}, ${fmt(r.y, 1)}, ${z}</code><button class="lk" data-copy="${fmt(r.x, 1)}, ${fmt(r.y, 1)}, ${z}" data-what="x, y, z copied">copy</button>${r.outside ? ' <span class="dim">outside the scroll</span>' : ''}</div>`).join('')
+    ? rows.map((r) => `<div class="hr"><span class="${r.role !== 'best' ? 'dim' : r.source.startsWith('finder') ? 'amber' : 'ice'}" title="${r.role}">${S.data.sources[r.source].short}</span> <code>${fmt(r.x, 1)}, ${fmt(r.y, 1)}, ${z}</code><button class="lk" data-copy="${fmt(r.x, 1)}, ${fmt(r.y, 1)}, ${z}" data-what="x, y, z copied">copy</button>${r.outside ? ' <span class="dim">outside the scroll</span>' : ''}</div>`).join('')
     : '<div class="dim small">no line reaches this height</div>');
 }
 function setMode(m) {
@@ -904,17 +934,18 @@ $('about').querySelector('.tabs').addEventListener('click', (e) => { const b = e
 
 // data sheet
 const COLS = {
-  lines: [['scroll', 'scroll'], ['maker', 'maker'], ['grade', 'grade'], ['ct_end_low', 'low end'], ['ct_end_high', 'high end'], ['outside_low', 'low out'], ['outside_high', 'high out'], ['points', 'pts'], ['z_start', 'z start'], ['z_end', 'z end'], ['height_mm', 'height mm'],
+  lines: [['scroll', 'scroll'], ['maker', 'maker'], ['role', 'role'], ['grade', 'grade'], ['ct_end_low', 'low end'], ['ct_end_high', 'high end'], ['outside_low', 'low out'], ['outside_high', 'high out'], ['points', 'pts'], ['z_start', 'z start'], ['z_end', 'z end'], ['height_mm', 'height mm'],
     ['coverage', 'cover'], ['median_step_vox', 'step'], ['max_step_vox', 'max step'], ['off_center_mm', 'off ctr mm'], ['stray_mm', 'stray mm'], ['tilt_deg', 'tilt °'],
     ['wiggle_mm', 'wiggle mm'], ['path_over_height', 'path/ht'], ['stamped', 'stamp'], ['usable_ends', 'usable ends'], ['superseded', 'superseded'], ['license', 'license'], ['sha256', 'sha256']],
   scans: [['scroll', 'scroll'], ['scan', 'scan'], ['voxel_um', 'µm'], ['slices', 'z'], ['height_px', 'y'], ['width_px', 'x'], ['height_mm', 'height mm'], ['width_mm', 'width mm'],
-    ['levels', 'levels'], ['grand_prize', 'GP'], ['first_letters', 'FL'], ['lines', 'lines'], ['sources', 'sources'], ['grade', 'grade'], ['pair_median_mm', 'pair gap mm'], ['pair_max_mm', 'pair max mm']],
+    ['levels', 'levels'], ['grand_prize', 'GP'], ['first_letters', 'FL'], ['lines', 'lines'], ['sources', 'sources'], ['best', 'best line'], ['grade', 'grade'], ['pair_median_mm', 'pair gap mm'], ['pair_max_mm', 'pair max mm']],
 };
 const DEC = { height_mm: 1, coverage: 2, median_step_vox: 0, max_step_vox: 0, off_center_mm: 2, stray_mm: 2, tilt_deg: 2, wiggle_mm: 3, path_over_height: 4, width_mm: 1, voxel_um: 3, pair_median_mm: 2, pair_max_mm: 2 };
 const SHEET = { tab: 'lines', key: null, dir: 1 };
 function cellHTML(k, v) {
   if (v == null || v === '') return '<span class="dim">·</span>';
   if (k === 'grade') return `<span class="grade ${v}">${v}</span>`;
+  if (k === 'role') return `<span class="role ${v}" title="${ROLE_TEXT[v]}">${v}</span>`;
   if (k === 'ct_end_low' || k === 'ct_end_high') { const m = /^(\w+) (PASS|FLAG)( \(CT recap\))?$/.exec(v); if (m) return `<span class="end"><span class="grade ${m[2]}">${m[2]}</span>${m[3] ? '<span class="rc">CT recap</span>' : ''}</span>`; }
   if (k === 'sha256') return `<button class="lk mono" data-copy="${v}" data-what="sha256 copied">${v.slice(0, 10)}…</button>`;
   if (typeof v === 'boolean') return v ? 'yes' : '<span class="dim">no</span>';
@@ -926,7 +957,7 @@ function renderSheet() {
   const rows = SHEET.tab === 'lines' ? lineRows() : scanRows(); const cols = COLS[SHEET.tab];
   if (SHEET.key) rows.sort((a, b) => { const u = a[SHEET.key], v = b[SHEET.key]; return (u > v ? 1 : u < v ? -1 : 0) * SHEET.dir; });
   $('tbl').innerHTML = `<thead><tr>${cols.map(([k, h]) => `<th data-k="${k}" class="${SHEET.key === k ? (SHEET.dir > 0 ? 'up' : 'dn') : ''}">${h}</th>`).join('')}</tr></thead>
-    <tbody>${rows.map((r) => `<tr data-scroll="${r.scroll}" class="${r.source?.startsWith('finder') ? 'cf' : ''}${r.withdrawn || r.superseded ? ' wd' : ''}">${cols.map(([k]) => `<td>${cellHTML(k, r[k])}</td>`).join('')}</tr>`).join('')}</tbody>`;
+    <tbody>${rows.map((r) => `<tr data-scroll="${r.scroll}" class="${r.source?.startsWith('finder') ? 'cf' : ''}${r.role !== 'best' ? ' wd' : ''}">${cols.map(([k]) => `<td>${cellHTML(k, r[k])}</td>`).join('')}</tr>`).join('')}</tbody>`;
   $('sheet-note').textContent = `${rows.length} ${SHEET.tab}. Click a column to sort, a row to open its scan. Definitions: Guide, For researchers. Downloads hold every column and the full notes.`;
 }
 function openSheet(tab = 'lines') { SHEET.tab = tab; tabs($('sheet'), tab); renderSheet(); if (!$('sheet').open) $('sheet').showModal(); modalState(); }
@@ -1032,9 +1063,10 @@ window.umbilici = {
   version: () => VERSION,
   show: (kind, name, on) => showLines(kind, name, on),
   outside: (on) => setOutside(on),
-  scans: () => S.data.scrolls.map((s) => ({ scroll: s.scroll, scan: s.scan, volume: s.volume, voxel_um: s.voxel_um, shape_zyx: s.shape, grand_prize: s.grand_prize, first_letters: s.first_letters, sources: s.lines.map((l) => l.source), grade: gradeOf(s) })),
+  scans: () => S.data.scrolls.map((s) => ({ scroll: s.scroll, scan: s.scan, volume: s.volume, voxel_um: s.voxel_um, shape_zyx: s.shape, grand_prize: s.grand_prize, first_letters: s.first_letters, sources: s.lines.map((l) => l.source), best: s.lines.find(isBest)?.source ?? null, grade: gradeOf(s) })),
   lines: (name) => { const s = S.data.scrolls.find((q) => q.scroll === name); return s ? s.lines.map((l) => ({ ...l, points: linePts(l) })) : null; },
-  at: (name, z) => { const s = S.data.scrolls.find((q) => q.scroll === name); return s ? s.lines.map((l) => ({ source: l.source, xy: lineAt(l, z) })) : null; },
+  at: (name, z) => { const s = S.data.scrolls.find((q) => q.scroll === name); return s ? s.lines.map((l) => ({ source: l.source, role: l.role, xy: lineAt(l, z) })) : null; },
+  best: (name) => { const s = S.data.scrolls.find((q) => q.scroll === name); const l = s && s.lines.find(isBest); return l ? { ...l, points: linePts(l) } : null; },
   select: (name, mode = 'scan') => select(name, mode),
   mode: (m) => setMode(m),
   setZ: (z) => setZ(z, true),
@@ -1144,7 +1176,7 @@ async function liveLine(f, had, at) {
 
 // ---------- boot ----------
 (async () => {
-  S.data = await liveData(await getJSON('data/lines.json'));
+  S.data = assignRoles(await liveData(await getJSON('data/lines.json')));
   for (const k of Object.keys(S.data.sources)) SRC_HEX[k] ||= SRC_OTHER;
   try { S.las = await getJSON('data/lasagna/meta.json'); } catch { S.las = null; document.querySelector('.chip.las').disabled = true; }
   const nPrize = S.data.scrolls.filter(onPrize).length, nOther = S.data.scrolls.length - nPrize;
