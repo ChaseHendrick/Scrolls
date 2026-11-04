@@ -1,0 +1,301 @@
+{
+ "about": "Curated replacements for villa Python modules and names that villa PR #2440, the vc_reader takeover (https://github.com/ScrollPrize/villa/pull/2440, merged 4 Nov 2026 as baf5e605b), removed or moved; read by kit/villaports.py. Each entry was read from the villa diff of the commit it names. 'villa' is the file in villa's tree at that commit that holds the replacement; 'use' says how villa's own callers were ported. Where 'use' says 'by name', the counterpart was matched by its name and role, not by a villa caller: check the arguments. Packages: where each villa Python package lives in villa's tree (the first folder with an __init__.py wins).",
+ "packages": {
+  "vesuvius": [
+   "vesuvius/src/vesuvius"
+  ],
+  "vc_reader": [
+   "vc_reader/src/vc_reader"
+  ]
+ },
+ "entries": [
+  {
+   "old": "vesuvius",
+   "name": "Volume",
+   "new_module": "vc_reader.reader",
+   "new_name": "open_zarr",
+   "use": "scroll volumes are read with vc_reader: vc_reader.reader.open_zarr(path_or_url, level=...) returns a ZarrReader you slice (villa's own calls pass level=, auth= and threads=); vesuvius.data.volume now holds only Cube, and its docstring says to use vc_reader for scroll volumes. Volume's normalization_scheme has no argument here: apply vc_reader.transforms.Normalize to the slice (by name)",
+   "villa": "vc_reader/src/vc_reader/reader/zarr_reader.py",
+   "commit": "baf5e605bb42a3d55a62b7c5c728e0908137225c",
+   "pr": 2440
+  },
+  {
+   "old": "vesuvius.data",
+   "name": "Volume",
+   "new_module": "vc_reader.reader",
+   "new_name": "open_zarr",
+   "use": "scroll volumes are read with vc_reader: vc_reader.reader.open_zarr(path_or_url, level=...) returns a ZarrReader you slice (villa's own calls pass level=, auth= and threads=); vesuvius.data.volume now holds only Cube, and its docstring says to use vc_reader for scroll volumes. Volume's normalization_scheme has no argument here: apply vc_reader.transforms.Normalize to the slice (by name)",
+   "villa": "vc_reader/src/vc_reader/reader/zarr_reader.py",
+   "commit": "baf5e605bb42a3d55a62b7c5c728e0908137225c",
+   "pr": 2440
+  },
+  {
+   "old": "vesuvius.data.volume",
+   "name": "Volume",
+   "new_module": "vc_reader.reader",
+   "new_name": "open_zarr",
+   "use": "scroll volumes are read with vc_reader: vc_reader.reader.open_zarr(path_or_url, level=...) returns a ZarrReader you slice (villa's own calls pass level=, auth= and threads=); vesuvius.data.volume now holds only Cube, and its docstring says to use vc_reader for scroll volumes. Volume's normalization_scheme has no argument here: apply vc_reader.transforms.Normalize to the slice (by name)",
+   "villa": "vc_reader/src/vc_reader/reader/zarr_reader.py",
+   "commit": "baf5e605bb42a3d55a62b7c5c728e0908137225c",
+   "pr": 2440
+  },
+  {
+   "old": "vesuvius.data.utils",
+   "new_module": "vc_reader.reader",
+   "new_name": "open_zarr",
+   "use": "vesuvius.data.utils is gone: zarr reads go through vc_reader.reader.open_zarr(path, level=...) and open_group, writes through vc_reader.reader.create_group and ZarrWriter",
+   "villa": "vc_reader/src/vc_reader/reader/__init__.py",
+   "commit": "baf5e605bb42a3d55a62b7c5c728e0908137225c",
+   "pr": 2440
+  },
+  {
+   "old": "vesuvius.tifxyz",
+   "new_module": "vc_reader.tifxyz",
+   "use": "from vc_reader import tifxyz: tifxyz.read(path, mask=True) returns a tifxyz.Surface (.xyz, .points_at), tifxyz.write(path, surface, overwrite=True), tifxyz.list_surfaces(folder) gives entries with .location",
+   "villa": "vc_reader/src/vc_reader/tifxyz.py",
+   "commit": "baf5e605bb42a3d55a62b7c5c728e0908137225c",
+   "pr": 2440
+  },
+  {
+   "old": "vesuvius.tifxyz",
+   "name": "Tifxyz",
+   "new_module": "vc_reader.tifxyz",
+   "new_name": "Surface",
+   "use": "vc_reader.tifxyz.Surface(xyz, uuid=..., bbox=...) in place of Tifxyz (villa's ports: Surface(grid_zyx[..., ::-1]) then Surface(s.xyz, uuid=..., bbox=s.bounds()))",
+   "villa": "vc_reader/src/vc_reader/tifxyz.py",
+   "commit": "baf5e605bb42a3d55a62b7c5c728e0908137225c",
+   "pr": 2440
+  },
+  {
+   "old": "vesuvius.tifxyz",
+   "name": "read_tifxyz",
+   "new_module": "vc_reader.tifxyz",
+   "new_name": "read",
+   "use": "vc_reader.tifxyz.read(path) (mask=False for the raw stored grid) in place of read_tifxyz",
+   "villa": "vc_reader/src/vc_reader/tifxyz.py",
+   "commit": "baf5e605bb42a3d55a62b7c5c728e0908137225c",
+   "pr": 2440
+  },
+  {
+   "old": "vesuvius.tifxyz",
+   "name": "write_tifxyz",
+   "new_module": "vc_reader.tifxyz",
+   "new_name": "write",
+   "use": "vc_reader.tifxyz.write(path, surface, overwrite=True) in place of write_tifxyz(folder / uuid, surface, overwrite=True); write takes the full output path and returns nothing",
+   "villa": "vc_reader/src/vc_reader/tifxyz.py",
+   "commit": "baf5e605bb42a3d55a62b7c5c728e0908137225c",
+   "pr": 2440
+  },
+  {
+   "old": "vesuvius.tifxyz",
+   "name": "list_tifxyz",
+   "new_module": "vc_reader.tifxyz",
+   "new_name": "list_surfaces",
+   "use": "vc_reader.tifxyz.list_surfaces(folder, recursive=True); each entry's .location goes to tifxyz.read",
+   "villa": "vc_reader/src/vc_reader/tifxyz.py",
+   "commit": "baf5e605bb42a3d55a62b7c5c728e0908137225c",
+   "pr": 2440
+  },
+  {
+   "old": "vesuvius.tifxyz",
+   "name": "upsampling",
+   "new_module": "vc_reader.tifxyz",
+   "new_name": "Surface",
+   "use": "tifxyz.Surface(xyz).points_at(rows, cols, interpolation=\"smooth\") returns (xyz, valid) in place of upsampling.interpolate_at_points(..., method=\"catmull_rom\")",
+   "villa": "vc_reader/src/vc_reader/tifxyz.py",
+   "commit": "baf5e605bb42a3d55a62b7c5c728e0908137225c",
+   "pr": 2440
+  },
+  {
+   "old": "vesuvius.tifxyz.upsampling",
+   "new_module": "vc_reader.tifxyz",
+   "new_name": "Surface",
+   "use": "tifxyz.Surface(xyz).points_at(rows, cols, interpolation=\"smooth\") returns (xyz, valid) in place of interpolate_at_points(..., method=\"catmull_rom\")",
+   "villa": "vc_reader/src/vc_reader/tifxyz.py",
+   "commit": "baf5e605bb42a3d55a62b7c5c728e0908137225c",
+   "pr": 2440
+  },
+  {
+   "old": "vesuvius.tifxyz.store",
+   "new_module": "vesuvius.neural_tracing.inference.surface_store",
+   "use": "moved to vesuvius.neural_tracing.inference.surface_store (git rename, 74 percent similar)",
+   "villa": "vesuvius/src/vesuvius/neural_tracing/inference/surface_store.py",
+   "commit": "baf5e605bb42a3d55a62b7c5c728e0908137225c",
+   "pr": 2440
+  },
+  {
+   "old": "vesuvius.tifxyz_canvas",
+   "name": "full_resolution_extent",
+   "new_module": "vc_reader.tifxyz",
+   "new_name": "full_extent",
+   "use": "vc_reader.tifxyz.full_extent(stored, scale) in place of full_resolution_extent",
+   "villa": "vc_reader/src/vc_reader/tifxyz.py",
+   "commit": "baf5e605bb42a3d55a62b7c5c728e0908137225c",
+   "pr": 2440
+  },
+  {
+   "old": "vesuvius.image_proc",
+   "new_module": "vc_reader.transforms",
+   "use": "vesuvius.image_proc is gone: its filters are vc_reader.transforms configs (Normalize, StructureTensor, CoherenceEnhancingDiffusion, Ridges, DistanceTransform, GaussianBlur) and vc_reader.geometry (label_components); its label scripts moved to vesuvius.label_processing",
+   "villa": "vc_reader/src/vc_reader/transforms/__init__.pyi",
+   "commit": "baf5e605bb42a3d55a62b7c5c728e0908137225c",
+   "pr": 2440
+  },
+  {
+   "old": "vesuvius.image_proc.intensity.normalization",
+   "new_module": "vc_reader.transforms",
+   "new_name": "Normalize",
+   "use": "vc_reader.transforms.Normalize(mode, ...) with mode minmax, zscore, robust, percentile or fixed, applied per channel to a (C, ...) array; villa ports its own callers through vesuvius.ink_detection.data.normalization.normalize_image(x, NormalizationConfig(mode=...))",
+   "villa": "vc_reader/src/vc_reader/transforms/__init__.pyi",
+   "commit": "baf5e605bb42a3d55a62b7c5c728e0908137225c",
+   "pr": 2440
+  },
+  {
+   "old": "vesuvius.image_proc.intensity.normalization",
+   "name": "normalize_robust",
+   "new_module": "vesuvius.ink_detection.data.normalization",
+   "new_name": "normalize_image",
+   "use": "normalize_image(x, NormalizationConfig(mode=\"robust_mad\")) from vesuvius.ink_detection.data.normalization and vesuvius.ink_detection.config (villa's own port of normalize_robust; defaults 1 and 99 percent, as before), which runs vc_reader.transforms.Normalize(\"robust\", lower=1, upper=99) over the whole array",
+   "villa": "vesuvius/src/vesuvius/ink_detection/data/normalization.py",
+   "commit": "baf5e605bb42a3d55a62b7c5c728e0908137225c",
+   "pr": 2440
+  },
+  {
+   "old": "vesuvius.image_proc.intensity.normalization",
+   "name": "normalize_zscore",
+   "new_module": "vc_reader.transforms",
+   "new_name": "Normalize",
+   "use": "vc_reader.transforms.Normalize(\"zscore\") (population std; nonzero=True excludes zeros by default)",
+   "villa": "vc_reader/src/vc_reader/transforms/__init__.pyi",
+   "commit": "baf5e605bb42a3d55a62b7c5c728e0908137225c",
+   "pr": 2440
+  },
+  {
+   "old": "vesuvius.image_proc.intensity.normalization",
+   "name": "normalize_minmax",
+   "new_module": "vc_reader.transforms",
+   "new_name": "Normalize",
+   "use": "vc_reader.transforms.Normalize(\"minmax\")",
+   "villa": "vc_reader/src/vc_reader/transforms/__init__.pyi",
+   "commit": "baf5e605bb42a3d55a62b7c5c728e0908137225c",
+   "pr": 2440
+  },
+  {
+   "old": "vesuvius.image_proc.geometry.structure_tensor",
+   "name": "StructureTensorComputer",
+   "new_module": "vc_reader.transforms",
+   "new_name": "StructureTensor",
+   "use": "vc_reader.transforms.StructureTensor(on=\"image\", sigma=...) (by name)",
+   "villa": "vc_reader/src/vc_reader/transforms/__init__.pyi",
+   "commit": "baf5e605bb42a3d55a62b7c5c728e0908137225c",
+   "pr": 2440
+  },
+  {
+   "old": "vesuvius.image_proc.run.edt_frangi_label",
+   "new_module": "vesuvius.label_processing.refine_labels",
+   "use": "moved to vesuvius.label_processing.refine_labels (git rename, 69 percent similar)",
+   "villa": "vesuvius/src/vesuvius/label_processing/refine_labels.py",
+   "commit": "baf5e605bb42a3d55a62b7c5c728e0908137225c",
+   "pr": 2440
+  },
+  {
+   "old": "vesuvius.image_proc.run.voxelize_objs",
+   "new_module": "vesuvius.label_processing.voxelize_objs",
+   "use": "moved to vesuvius.label_processing.voxelize_objs",
+   "villa": "vesuvius/src/vesuvius/label_processing/voxelize_objs.py",
+   "commit": "baf5e605bb42a3d55a62b7c5c728e0908137225c",
+   "pr": 2440
+  },
+  {
+   "old": "vesuvius.models.augmentation.transforms",
+   "new_module": "vc_reader.transforms",
+   "use": "import vc_reader.transforms as A and compose configs in A.Pipeline([...], targets=...): villa's training pipeline replaced MirrorTransform with A.Flip and Rot90Transform with A.Rotate90; by name, TransposeAxesTransform is A.Transpose, GaussianBlurTransform A.GaussianBlur, GaussianNoiseTransform A.GaussianNoise, GammaTransform A.Gamma, ContrastTransform A.Contrast, BrightnessAdditiveTransform A.BrightnessAdd, MultiplicativeBrightnessTransform A.BrightnessMultiply, SpatialTransform A.Affine and A.Elastic, SimulateLowResolutionTransform A.LowResolution, OneOfTransform A.OneOf; the class bases (BasicTransform, ImageOnlyTransform) have no counterpart",
+   "villa": "vc_reader/src/vc_reader/transforms/__init__.pyi",
+   "commit": "baf5e605bb42a3d55a62b7c5c728e0908137225c",
+   "pr": 2440
+  },
+  {
+   "old": "vesuvius.models.augmentation.helpers",
+   "new_module": "vc_reader.transforms",
+   "new_name": "Uniform",
+   "use": "random parameters are configs: A.Uniform(low, high), A.Normal(mean, std), A.Choice(values) from vc_reader.transforms in place of RandomScalar and sample_scalar",
+   "villa": "vc_reader/src/vc_reader/transforms/__init__.pyi",
+   "commit": "baf5e605bb42a3d55a62b7c5c728e0908137225c",
+   "pr": 2440
+  },
+  {
+   "old": "vesuvius.label_zarr",
+   "new_module": "vesuvius.ink_detection.label_zarr",
+   "use": "the label pyramid helpers moved to vesuvius.ink_detection.label_zarr (pyramid_shapes, CHUNK_SHAPE, LABEL_CODEC); zarr itself goes through vc_reader.reader",
+   "villa": "vesuvius/src/vesuvius/ink_detection/label_zarr.py",
+   "commit": "baf5e605bb42a3d55a62b7c5c728e0908137225c",
+   "pr": 2440
+  },
+  {
+   "old": "vesuvius.label_zarr",
+   "name": "open_v2_group",
+   "new_module": "vc_reader.reader",
+   "new_name": "create_group",
+   "use": "vc_reader.reader.create_group(path, attrs=..., overwrite=True, auth=None) in place of open_v2_group(path)",
+   "villa": "vc_reader/src/vc_reader/reader/__init__.py",
+   "commit": "baf5e605bb42a3d55a62b7c5c728e0908137225c",
+   "pr": 2440
+  },
+  {
+   "old": "vesuvius.label_zarr",
+   "name": "create_v2_array",
+   "new_module": "vc_reader.reader",
+   "new_name": "create_group",
+   "use": "group.create_array(name, shape=..., chunks=..., dtype=..., cname=\"zstd\", level=3, shuffle=2, separator=\"/\", skip_empty=True) on a vc_reader.reader.create_group group in place of create_v2_array(group, ...)",
+   "villa": "vc_reader/src/vc_reader/reader/__init__.py",
+   "commit": "baf5e605bb42a3d55a62b7c5c728e0908137225c",
+   "pr": 2440
+  },
+  {
+   "old": "vesuvius.label_zarr",
+   "name": "LABEL_COMPRESSOR",
+   "new_module": "vesuvius.ink_detection.label_zarr",
+   "new_name": "LABEL_CODEC",
+   "use": "LABEL_CODEC (a dict: cname zstd, level 3, shuffle 2) from vesuvius.ink_detection.label_zarr, passed as create_array(**LABEL_CODEC), in place of the Blosc LABEL_COMPRESSOR",
+   "villa": "vesuvius/src/vesuvius/ink_detection/label_zarr.py",
+   "commit": "baf5e605bb42a3d55a62b7c5c728e0908137225c",
+   "pr": 2440
+  },
+  {
+   "old": "vesuvius.neural_tracing.tracers.shared.crop_sampling.volume",
+   "name": "CTVolume",
+   "new_module": "vc_reader.reader",
+   "new_name": "open_zarr",
+   "use": "the CT is read with vc_reader.reader.open_zarr(spec.ct_zarr, level=spec.ct_level, cache_dir=spec.cache_dir, memory_cache=...); CTVolumeSpec stays in crop_sampling.volume",
+   "villa": "vesuvius/src/vesuvius/neural_tracing/tracers/shared/crop_sampling/volume.py",
+   "commit": "baf5e605bb42a3d55a62b7c5c728e0908137225c",
+   "pr": 2440
+  },
+  {
+   "old": "vesuvius.neural_tracing.zarr_support",
+   "new_module": "vc_reader.reader",
+   "new_name": "open_zarr",
+   "use": "zarr reads go through vc_reader.reader (open_zarr, open_group, ZarrReader, ZarrWriter)",
+   "villa": "vc_reader/src/vc_reader/reader/__init__.py",
+   "commit": "baf5e605bb42a3d55a62b7c5c728e0908137225c",
+   "pr": 2440
+  },
+  {
+   "old": "vesuvius.neural_tracing.s3_utils",
+   "new_module": "vc_reader.reader",
+   "new_name": "ObjectStore",
+   "use": "S3 access goes through vc_reader.reader (ObjectStore, open_zarr with auth)",
+   "villa": "vc_reader/src/vc_reader/reader/__init__.py",
+   "commit": "baf5e605bb42a3d55a62b7c5c728e0908137225c",
+   "pr": 2440
+  },
+  {
+   "old": "vesuvius.afv_spline_generator",
+   "new_module": "vesuvius.fiber_spline_generator",
+   "use": "renamed to vesuvius.fiber_spline_generator (same files)",
+   "villa": "vesuvius/src/vesuvius/fiber_spline_generator/__init__.py",
+   "commit": "baf5e605bb42a3d55a62b7c5c728e0908137225c",
+   "pr": 2440
+  }
+ ]
+}

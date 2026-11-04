@@ -500,11 +500,15 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **VC3D plugin**: A JSON manifest that adds one external tool to VC3D's Plugins menu: the program, its arguments with placeholders for what VC3D has open, and how VC3D loads what it writes. Proposed on villa branch `vc3d-plugins`; this repository's manifests are in [`plugins/`](plugins/README.md).
 
+**vc_reader**: villa's Python package for reading and writing zarr volumes and tifxyz surfaces and for image transforms, at `vc_reader/src/vc_reader` in villa. Villa PR [#2440](https://github.com/ScrollPrize/villa/pull/2440), the vc_reader takeover (merged 4 Nov 2026 as `baf5e605b`), moved this work out of the `vesuvius` package, which lost `vesuvius.tifxyz`, `vesuvius.image_proc` and `vesuvius.Volume`; `kit villaports` finds what that breaks in a folder of scripts ([`docs/tools/villaports.md`](docs/tools/villaports.md)).
+
 **verso**: The outer back side of a roll, where the fibers run vertically.
 
 **Vesuvius Challenge**: The public competition, with prizes, to read the Herculaneum scrolls from X-ray scans ([scrollprize.org](https://scrollprize.org/)).
 
 **villa**: The official ScrollPrize open-source repository ([ScrollPrize/villa](https://github.com/ScrollPrize/villa)), containing VC3D, ink detection and other tools. This repository plans runs of it and does not reimplement it.
+
+**villaports**: `kit villaports`, which scans a folder of scripts for references to villa's `vesuvius` and `vc_reader` packages and says which break at a villa commit and what replaces each ([`docs/tools/villaports.md`](docs/tools/villaports.md)).
 
 **virtual unwrapping**: Recovering the content of a rolled surface from a 3D scan without opening it.
 

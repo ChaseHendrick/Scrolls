@@ -794,6 +794,16 @@
           "command": "python3 scripts/offsetdiag/offsetdiag.py fetch 0841-w00 --work WORK",
           "page": "docs/tools/offsetdiag.md",
           "evidence": "[log](docs/logs/2026-10-30-ink-offset.md), [results](docs/results.json)"
+        },
+        {
+          "id": "villaports",
+          "name": "Villa port check for your scripts",
+          "line": "Says which references to villa's Python packages in your scripts break at a villa commit, and what replaces each.",
+          "area": "Releases and repository",
+          "released": "2026-11-04",
+          "summary": "Scans a folder of your scripts for references to villa's vesuvius and vc_reader packages and resolves each against villa's tree at a commit (default main), from git alone: villa PR #2440 removed vesuvius.tifxyz, vesuvius.image_proc and vesuvius.Volume. Each break gets a replacement from a map of 31 entries read from #2440, each citing a villa file at baf5e605b; diff compares any two villa commits. A resolved import is not proof a script runs.",
+          "command": "python -m kit villaports scan --root YOUR_FOLDER",
+          "page": "docs/tools/villaports.md"
         }
       ],
       "where": "main"

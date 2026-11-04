@@ -1,4 +1,4 @@
-"""Command line: python -m kit {start,help,prizes,submitcheck,live,style,stages,doctor,plan,cost,find,labels,centerline,cite,fetch,s3relay,vc3dcache,prclock,prtext,verify,rowscore,auc,hpscore,overlap,collate,stackcheck,tifxyz,sheetview,atlas,coverage,uvgate,windconsistency,axispolish,windlabel-box,hopbench,meshaudit,snap,labelsnap,finesnap,ensemble,fibertensor,sheetcheck,labelsuggest,altrain,gate,layers,shuffle,provenance,compute,run,surfacefix,phantom,view,strokenet,letterread,letterlines,letterdemo,greeklm,releases,spaceconnect,leaderboard,routines,stale,integrity,volumeview,segzoo,fibers,scroll2ink,vxsummary,zarrbox,expatlas,sentinel}.
+"""Command line: python -m kit {start,help,prizes,submitcheck,live,style,stages,doctor,plan,cost,find,labels,centerline,cite,fetch,s3relay,vc3dcache,prclock,prtext,villaports,verify,rowscore,auc,hpscore,overlap,collate,stackcheck,tifxyz,sheetview,atlas,coverage,uvgate,windconsistency,axispolish,windlabel-box,hopbench,meshaudit,snap,labelsnap,finesnap,ensemble,fibertensor,sheetcheck,labelsuggest,altrain,gate,layers,shuffle,provenance,compute,run,surfacefix,phantom,view,strokenet,letterread,letterlines,letterdemo,greeklm,releases,spaceconnect,leaderboard,routines,stale,integrity,volumeview,segzoo,fibers,scroll2ink,vxsummary,zarrbox,expatlas,sentinel}.
 
 An installed package (pyproject.toml) has the same commands as console scripts: scrolls-workbench (every command;
 gate, releases and leaderboard read the repository's docs/ and README.md, so they need a clone), and scrolls-letterread,
@@ -1038,7 +1038,7 @@ GROUPS = (
                                            "leaderboard", "labelsuggest", "altrain")),
     ("Letters and text", ("letterread", "letterlines", "letterdemo", "greeklm")),
     ("Runs and records", ("run", "provenance", "compute", "routines")),
-    ("villa pull requests and issues", ("prclock", "prtext")),
+    ("villa pull requests and issues", ("prclock", "prtext", "villaports")),
     ("This repository", ("releases", "spaceconnect", "vxsummary", "stale", "integrity")),
 )
 
@@ -1175,6 +1175,13 @@ def build_parser(prog="python -m kit", sub_progs=None):
     p = sub.add_parser("prtext", help="check a villa PR or issue body against villa's template before posting")
     villapr.build_parser(p, "prtext")
     p.set_defaults(func=villapr.cmd_prtext)
+
+    p = sub.add_parser("villaports", help="which references to villa's Python packages in your scripts break at a "
+                                          "villa commit (such as villa #2440's removals), and what replaces each "
+                                          "(kit/villaports.py; read-only)")
+    from . import villaports
+    villaports.add_arguments(p)
+    p.set_defaults(func=villaports.run)
 
     from . import vc3dfix
     p = sub.add_parser("s3relay", help="run VC3D through a local relay that keeps S3's false 404s from blanking "
