@@ -191,6 +191,10 @@
     <label><input type="checkbox" id="t-ct2"> live CT</label>
     <span class="dim">villa lasagna predict3d, model output</span>
   </div>
+  <div class="ctl" id="ctl-out">
+    <label title="Line ends whose control points lie outside the scroll in the CT are hidden by default; tick to draw them faded and dotted. The files are unchanged."><input type="checkbox" id="t-outside"> show ends outside the scroll</label>
+    <span class="dim">hidden by default: points the CT puts outside the scroll</span>
+  </div>
   <div class="data" id="data-links">
     <span class="dim">DATA</span>
     <a href="https://huggingface.co/datasets/SharpMeow/vesuvius-center-lines" target="_blank" rel="noopener">vesuvius-center-lines</a>
@@ -230,6 +234,7 @@
     </ol>
     <h3>Colors and grades</h3>
     <p>Each maker has its own color: <span style="color:#89f0ff">Vesuvius Challenge</span>, <span style="color:#ff7eb6">Alexey Drobkov</span>, <span style="color:#b69cff">Abd Elilah</span>, <span style="color:#f2f5f7">Iyan Dopico</span>, all made by people. <span class="amber">Amber</span> lines are model output from Chase Hendrick's Center Finder, made for the nine 1.2 m prize scans nobody had traced and for nine scans not on the prize page (seven since 1.8.0, PHerc1667 and PHerc0172 since 1.10.0); no person has checked their ends on CT. <span style="color:#c6f36b">Lime</span> lines are the Center Finder lines after the coverage polish (Scrolls <code>kit axispolish</code>), marked NEWEST: the twelve on 1.2 m scans since 1.9.0, and since 1.10.0 three on 2.4 µm scans (PHerc1299, PHercMAN5, PHercMANB), where the polish ran on level 2 and is untested. The originals stay on the page, faded and marked SUPERSEDED, so a later polish can replace a line without losing the one before: on all ten scans of a frozen test the 1.2 m polished lines sat deeper in villa's traced sheet than the line before the polish, and kit takes them first, but they are jumpier and their ends were not re-checked, so the grades below are the original line's. An automatic CT end check graded each end of each Center Finder line (release v2.2, 23 Oct 2026). It compares the end with the scroll center the CT itself shows there, estimated from the scan alone (sheet orientations in three slices, never the line), 0, 1 and 2 mm inside the end, with a 4 mm bar. A planted fake tilt is caught at all 18 ends. 14 of the 18 ends pass and 4 are flagged. The same check on the seven newer lines (24 Oct 2026) passes all 14 ends, 2 after a CT recap, but four of those scans are 2.4 µm scans the check was never tuned on, so their grades are marked untested and no end there is usable. Of the two lines added in release v2.6 (25 Oct 2026), PHerc1667's (a 2.4 µm scan) passes both ends, untested, and PHerc0172's (a 7.91 µm scan) is flagged at both ends, so treat its ends with care.</p>
+    <p>Since 1.13.0 a line is drawn from its first to its last point inside the scroll. Where its end runs outside the scroll in the CT (more than 4 mm outside the scroll's outline in that slice, or in a slice with no scroll at all), those end points are hidden, the scan card says how many at each end, and <b>show ends outside the scroll</b> at bottom left draws them faded and dotted. The files are unchanged; For researchers has the rule.</p>
     <p>Scan names and grades use a traffic light: <span class="grade lt-good">green</span> when both ends passed, <span class="grade lt-caution">yellow</span> for caution (a pass that rests on a CT recap, an end the check could not judge, or an untested scan), <span class="grade lt-bad">red</span> when an end was flagged.</p>
     <ul>
       <li><span class="grade PASS">PASS</span> both ends passed.</li>
@@ -267,25 +272,28 @@
       <tr><th>z start, end</th><td>first and last control point height, level-0 voxels</td></tr>
       <tr><th>height</th><td>z end minus z start, in mm</td></tr>
       <tr><th>coverage</th><td>height as a share of the scan's z extent</td></tr>
+      <tr><th>low out, high out</th><td>control points hidden at the low and the high end because the line runs outside the scroll there, from the line's end to its innermost point that lies outside (blank: not tested). A point lies outside when, in its own axial slice of the scan's masked CT at level 5 (32 times coarser than level 0; voxels outside the scroll are zero), it sits more than 4 mm outside the outline (convex hull) of the scroll, or the slice holds no scroll at all. Only the outer quarter of a line's points at each end can be hidden; the middle half never is. The test runs when the page is built (<code>tools/build_lines.py</code>) and passes two checks per line, or the line is drawn whole and marked untested: its middle point must be inside, and the slice corner farthest from it outside. The files, their points and sha256 stay the dataset's.</td></tr>
+      <tr><th>inside part</th><td>the line without its hidden end runs; every statistic below from mean x, y on uses it, so an end that runs off past the scroll does not count as drift</td></tr>
       <tr><th>median, max step</th><td>median and largest z gap between neighboring control points, voxels; a big max step is a stretch the line interpolates across</td></tr>
-      <tr><th>mean x, y</th><td>average position of the control points, voxels</td></tr>
+      <tr><th>mean x, y</th><td>average position of the inside part's control points, voxels</td></tr>
       <tr><th>off center</th><td>distance from that mean to the middle of the scan grid, mm</td></tr>
-      <tr><th>stray</th><td>largest distance of any control point from the mean, mm</td></tr>
-      <tr><th>tilt</th><td>angle from vertical of a least-squares straight line through the points, degrees</td></tr>
-      <tr><th>wiggle</th><td>RMS distance of the points from that straight line, mm</td></tr>
-      <tr><th>path</th><td>length along the line, mm; path over height above 1 means it wanders</td></tr>
+      <tr><th>stray</th><td>largest distance of any control point of the inside part from the mean, mm</td></tr>
+      <tr><th>tilt</th><td>angle from vertical of a least-squares straight line through the inside part's points, degrees</td></tr>
+      <tr><th>wiggle</th><td>RMS distance of the inside part's points from that straight line, mm</td></tr>
+      <tr><th>path</th><td>length along the inside part, mm; path over its height above 1 means it wanders</td></tr>
       <tr><th>stamped</th><td>whether the file's metadata names the voxel size and grid VC3D reads</td></tr>
-      <tr><th>pair gap</th><td>for two lines on one scan: median, min and max horizontal distance between them every 64 voxels where both exist, mm</td></tr>
+      <tr><th>pair gap</th><td>for two lines on one scan: median, min and max horizontal distance between them every 64 voxels where both inside parts exist, mm</td></tr>
     </table>
     <h3>How to read them</h3>
     <ul>
       <li>Where a scan has two lines, the gap shows how far two independent tracings disagree. It does not say which one is closer to the true center.</li>
+      <li>A hidden end (low out, high out) says only that those control points lie outside the scroll in the published mask at level 5; it does not say where the center is there. Some lines start their search over the mount or cap slices, where no scroll is, and run off sideways; people's lines can also overshoot a tapering end by a few millimeters. The raw files keep every point: the download links, <code>lines()</code> and the copied URLs give the dataset's file unchanged.</li>
       <li>A line's own spread (stray, wiggle) is not an error. Scrolls are crushed and bent, so the center can wander; a straight line through a bent scroll would be wrong.</li>
       <li>The end check grade applies only to Center Finder lines. Person-made lines have no grade here; that is not a pass.</li>
       <li>The radiograph is a view, not a measurement: it uses scan level 5 (32 times coarser than level 0), with a z stride, and a display curve.</li>
     </ul>
     <h3>For agents</h3>
-    <p>Everything is scriptable through <code>window.umbilici</code> in a browser or headless Chromium: <code>scans()</code>, <code>lines(scroll)</code>, <code>at(scroll, z)</code>, <code>stats(scroll)</code>, <code>table()</code>, <code>csv('lines' | 'scans' | 'points')</code>, <code>select(scroll, mode)</code>, <code>mode(m)</code>, <code>setZ(z)</code>, <code>state()</code>, <code>image()</code>, <code>slice()</code>. URL parameters: <code>?mode=scan&amp;scan=PHerc0191&amp;z=10400</code>, <code>?guide=vc3d</code>, <code>?data=lines</code>.</p>
+    <p>Everything is scriptable through <code>window.umbilici</code> in a browser or headless Chromium: <code>scans()</code>, <code>lines(scroll)</code>, <code>at(scroll, z)</code>, <code>stats(scroll)</code>, <code>table()</code>, <code>csv('lines' | 'scans' | 'points')</code>, <code>select(scroll, mode)</code>, <code>mode(m)</code>, <code>outside(on)</code>, <code>setZ(z)</code>, <code>state()</code>, <code>image()</code>, <code>slice()</code>. URL parameters: <code>?mode=scan&amp;scan=PHerc0191&amp;z=10400</code>, <code>&amp;outside=1</code> (show the ends outside the scroll), <code>?guide=vc3d</code>, <code>?data=lines</code>.</p>
   </section>
 
   <section data-pane="data" hidden>

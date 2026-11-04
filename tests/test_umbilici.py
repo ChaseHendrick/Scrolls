@@ -6,6 +6,7 @@ import re
 import sys
 import tempfile
 import unittest
+from contextlib import contextmanager
 from pathlib import Path
 from unittest import mock
 
@@ -70,13 +71,37 @@ def fake_get_json(url):
     raise AssertionError(url)
 
 
+def solid_tile(shape, chunks, inside):
+    """tile() for a synthetic level: inside(z, y, x) says which voxels are nonzero (value 7); others are zero."""
+    def tile(zi, cy, cx):
+        _, ch_y, ch_x = chunks
+        return bytes(7 if (y < shape[1] and x < shape[2] and inside(zi, y, x)) else 0
+                     for y in range(cy * ch_y, (cy + 1) * ch_y) for x in range(cx * ch_x, (cx + 1) * ch_x))
+    return tile
+
+
+def fake_open_slices(base, pyramid, um):
+    # the fake scans' material: a 30 by 30 voxel block in the corner of every slice, where all the fake lines run
+    shape, chunks = [400, 64, 64], [128, 32, 32]
+    vol = build_lines.Volume(shape, chunks, solid_tile(shape, chunks, lambda z, y, x: y < 30 and x < 30))
+    return build_lines.Slices(vol, 1, 1.0), 0
+
+
+@contextmanager
+def built(get_json=fake_get_json, open_slices=fake_open_slices):
+    """build_lines.main without the network: the bucket's metadata from get_json, each scan's CT from open_slices."""
+    with mock.patch.object(build_lines, "get_json", get_json), mock.patch.object(build_lines, "open_slices", open_slices), \
+            mock.patch("builtins.print"):
+        yield
+
+
 class BuildLines(unittest.TestCase):
     def build(self):
         with tempfile.TemporaryDirectory() as d:
             root = Path(d)
             fake_dataset(root)
             out = root / "lines.json"
-            with mock.patch.object(build_lines, "get_json", fake_get_json), mock.patch("builtins.print"):
+            with built():
                 build_lines.main(root, out)
             return json.loads(out.read_text())
 
@@ -115,6 +140,42 @@ class BuildLines(unittest.TestCase):
         self.assertEqual([l[PUBLISHED] for l in a["lines"]], ["MIT", "CC BY 4.0"])
         self.assertEqual(set(t["sources"]), {"bucket", "drobkov", "tauil", "dopico", "finder", "finder-polished", "finder-v2"})
 
+    def test_every_line_gets_the_ct_test_of_its_ends(self):
+        # 1.13.0: a tested line carries per-end counts; one the test cannot judge carries null and the reason
+        a, b = self.build()["scrolls"]
+        o = a["lines"][0]["outside"]
+        self.assertEqual((o["low"]["hidden"], o["high"]["hidden"]), (0, 0))
+        self.assertEqual((o["level"], o["far_mm"], o["end_share"]), (0, 4.0, 0.25))
+        self.assertIsNone(a["lines"][0]["outside_why"])
+        self.assertIsNone(b["lines"][0]["outside"])  # two points: nothing to test
+        self.assertIn("fewer than three points", b["lines"][0]["outside_why"])
+        # the test never changes a line's points, file or hash
+        self.assertEqual(a["lines"][0]["points"], [11, 21, 100, 12, 22, 200, 10, 20, 300])
+        self.assertEqual(a["lines"][0]["sha256"], "0" * 64)
+
+    def test_a_scan_the_test_cannot_read_is_marked_untested(self):
+        def no_codec(base, pyramid, um):
+            raise ImportError("numcodecs")
+        def offline(base, pyramid, um):
+            raise OSError("no network")
+        for opener, why in ((no_codec, "no numcodecs"), (offline, "could not be opened (OSError)")):
+            with tempfile.TemporaryDirectory() as d:
+                root = Path(d)
+                fake_dataset(root)
+                with built(open_slices=opener):
+                    build_lines.main(root, root / "lines.json")
+                line = json.loads((root / "lines.json").read_text())["scrolls"][0]["lines"][0]
+            self.assertIsNone(line["outside"])
+            self.assertIn(why, line["outside_why"])
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            fake_dataset(root)
+            with built(open_slices=mock.Mock(side_effect=AssertionError("opened"))):
+                build_lines.main(root, root / "lines.json", "--no-ct")
+            line = json.loads((root / "lines.json").read_text())["scrolls"][0]["lines"][0]
+        self.assertIsNone(line["outside"])
+        self.assertIn("--no-ct", line["outside_why"])
+
     def test_every_source_has_a_color_and_a_chip_style(self):
         app = (SPACE / "app.js").read_text()
         css = (SPACE / "style.css").read_text()
@@ -133,7 +194,7 @@ class BuildLines(unittest.TestCase):
         keys = app[app.index("const LINE_KEYS"):].split("\n", 1)[0]
         for k in ("source", "kind", "credit", "licence", "upstream", "file", "sha256", "z", "note"):
             self.assertIn(f"'{k}'", keys, k)
-        for k in ("grade", "ends", "untested", "usable", "stamp", "points", "superseded_by"):
+        for k in ("grade", "ends", "untested", "usable", "stamp", "points", "superseded_by", "outside", "outside_why"):
             self.assertIn(k, live, k)
         self.assertIn("data/lines.json", app[app.index("// ---------- boot"):])
 
@@ -153,7 +214,7 @@ class BuildLines(unittest.TestCase):
             doc["metadata"]["usable_ends"] = {"low": True, "high": False}
             f.write_text(json.dumps(doc))
             out = root / "lines.json"
-            with mock.patch.object(build_lines, "get_json", fake_get_json), mock.patch("builtins.print"):
+            with built():
                 build_lines.main(root, out)
             line = json.loads(out.read_text())["scrolls"][1]["lines"][0]
         self.assertEqual(line["grade"], "FLAG")
@@ -173,7 +234,7 @@ class BuildLines(unittest.TestCase):
             ix["files"][2].update(ct_untested_scan=True, ct_ends={"low": {"grade": "PASS", "recapped": False, "D_mm": 1.0}})
             (root / "index.json").write_text(json.dumps(ix))
             out = root / "lines.json"
-            with mock.patch.object(build_lines, "get_json", fake_get_json), mock.patch("builtins.print"):
+            with built():
                 build_lines.main(root, out)
             t = json.loads(out.read_text())
         self.assertEqual([s["scroll"] for s in t["scrolls"]], ["PHerc0002", "PHerc0000"])
@@ -190,10 +251,103 @@ class BuildLines(unittest.TestCase):
             root = Path(d)
             fake_dataset(root)
             out = root / "lines.json"
-            with mock.patch.object(build_lines, "get_json", blosc), mock.patch("builtins.print"):
+            with built(blosc):
                 build_lines.main(root, out)
             t = json.loads(out.read_text())
         self.assertEqual({p["compressor"] for s in t["scrolls"] for p in s["pyramid"]}, {"blosc"})
+
+
+class OutsideEnds(unittest.TestCase):
+    """The CT test of line ends (build_lines.outside_ends) on synthetic masked scans: no network, no numpy."""
+
+    SHAPE, CHUNKS = [200, 100, 100], [32, 32, 32]
+
+    def slices(self, inside, vox_mm=0.5):
+        vol = build_lines.Volume(self.SHAPE, self.CHUNKS, solid_tile(self.SHAPE, self.CHUNKS, inside))
+        return build_lines.Slices(vol, 1, vox_mm)
+
+    @staticmethod
+    def disc(z, y, x):  # a scroll 20 voxels (10 mm) in radius about (50, 50), from z 20 to 179; air elsewhere
+        return 20 <= z < 180 and (x + 0.5 - 50) ** 2 + (y + 0.5 - 50) ** 2 <= 400
+
+    def line(self, shift=lambda i: 0, z0=20, z1=180, step=4):
+        return [(50 + shift(i), 50, z) for i, z in enumerate(range(z0, z1, step))]
+
+    def test_a_line_inside_the_scroll_hides_nothing(self):
+        res, why = build_lines.outside_ends(self.line(), self.slices(self.disc))
+        self.assertIsNone(why)
+        self.assertEqual([res[k]["hidden"] for k in ("low", "high")], [0, 0])
+        self.assertEqual([res[k]["far"] for k in ("low", "high")], [0, 0])
+
+    def test_an_end_that_runs_off_sideways_is_hidden(self):
+        # the first three points sit 15 voxels (7.5 mm) past the disc's edge, more than the 4 mm bar
+        res, _ = build_lines.outside_ends(self.line(lambda i: 35 if i < 3 else 0), self.slices(self.disc))
+        self.assertEqual(res["low"]["hidden"], 3)
+        self.assertEqual(res["low"]["far"], 3)
+        self.assertAlmostEqual(res["low"]["max_mm"], 7.5, delta=0.3)
+        self.assertEqual(res["high"]["hidden"], 0)
+        # 3 mm past the edge is under the bar, so nothing is hidden
+        res, _ = build_lines.outside_ends(self.line(lambda i: 26 if i < 3 else 0), self.slices(self.disc))
+        self.assertEqual(res["low"]["hidden"], 0)
+
+    def test_an_excursion_that_comes_back_is_hidden_with_the_end(self):
+        # points 1 and 2 run off, the end point is inside again: the run from the end to the innermost one is hidden
+        res, _ = build_lines.outside_ends(self.line(lambda i: 35 if i in (1, 2) else 0), self.slices(self.disc))
+        self.assertEqual((res["low"]["hidden"], res["low"]["far"]), (3, 2))
+
+    def test_ends_in_slices_with_no_scroll(self):
+        # the line runs from z 0 to 199; the scroll fills z 20 to 179 only
+        res, _ = build_lines.outside_ends(self.line(z0=0, z1=200), self.slices(self.disc))
+        self.assertEqual((res["low"]["hidden"], res["low"]["empty"]), (5, 5))
+        self.assertEqual((res["high"]["hidden"], res["high"]["empty"]), (5, 5))
+        self.assertIsNone(res["low"]["max_mm"])
+
+    def test_a_gap_between_fragments_is_inside(self):
+        # a tapering end breaks into two fragments; a point between them is near no voxel but inside the outline
+        two = lambda z, y, x: 20 <= z < 180 and 30 <= y < 70 and (x < 35 or x >= 65)
+        sl = self.slices(two)
+        self.assertFalse(sl.material_near(50, 50, 40))
+        res, _ = build_lines.outside_ends(self.line(), sl)
+        self.assertEqual((res["low"]["hidden"], res["high"]["hidden"]), (0, 0))
+
+    def test_the_interior_is_never_hidden(self):
+        pts = self.line()
+        n = len(pts)
+        # every point but the middle one runs off: only the outer quarter at each end is hidden
+        res, _ = build_lines.outside_ends(self.line(lambda i: 0 if i == n // 2 else 40), self.slices(self.disc))
+        self.assertEqual((res["low"]["hidden"], res["high"]["hidden"]), (n // 4, n // 4))
+        # one point inside the middle half runs off: nothing is hidden
+        res, _ = build_lines.outside_ends(self.line(lambda i: 40 if i == n // 2 - 3 else 0), self.slices(self.disc))
+        self.assertEqual((res["low"]["hidden"], res["high"]["hidden"]), (0, 0))
+
+    def test_a_line_wholly_outside_is_untested(self):
+        res, why = build_lines.outside_ends(self.line(lambda i: 40), self.slices(self.disc))
+        self.assertIsNone(res)
+        self.assertIn("middle point", why)
+
+    def test_a_scan_whose_air_is_not_zero_is_untested(self):
+        # the corner control: an unmasked scan reads as scroll everywhere, so the test cannot tell
+        res, why = build_lines.outside_ends(self.line(), self.slices(lambda z, y, x: True))
+        self.assertIsNone(res)
+        self.assertIn("air is not zero", why)
+
+    def test_short_lines_are_untested(self):
+        res, why = build_lines.outside_ends(self.line()[:2], self.slices(self.disc))
+        self.assertIsNone(res)
+        self.assertIn("fewer than three", why)
+
+    def test_hull_and_distance(self):
+        h = build_lines.hull([(0, 0), (4, 0), (4, 4), (0, 4), (2, 2), (1, 3)])
+        self.assertEqual(sorted(h), [(0, 0), (0, 4), (4, 0), (4, 4)])
+        self.assertEqual(build_lines.hull_distance(h, (2, 2)), 0.0)
+        self.assertAlmostEqual(build_lines.hull_distance(h, (7, 2)), 3.0)
+        self.assertAlmostEqual(build_lines.hull_distance(h, (7, 8)), 5.0)
+        self.assertAlmostEqual(build_lines.hull_distance([(0, 0), (4, 0)], (2, 3)), 3.0)
+
+    def test_missing_chunks_read_as_air(self):
+        vol = build_lines.Volume(self.SHAPE, self.CHUNKS, lambda zi, cy, cx: None)
+        self.assertEqual(vol.rows(10, 0, 2, 95, 105), [bytes(10), bytes(10)])
+        self.assertIsNone(build_lines.Slices(vol, 1, 0.5).hull_of(10))
 
 
 @unittest.skipIf(np is None, "needs numpy")
@@ -234,7 +388,7 @@ class Page(unittest.TestCase):
         api = re.search(r"window\.umbilici = \{(.*?)\n\};", self.text("app.js"), re.S).group(1)
         names = set(re.findall(r"^\s+(\w+):", api, re.M))
         self.assertEqual(names, {"version", "scans", "lines", "at", "select", "mode", "setZ", "state", "image", "slice",
-                                 "stats", "table", "csv", "guide", "data", "settings", "bench", "show"})
+                                 "stats", "table", "csv", "guide", "data", "settings", "bench", "show", "outside"})
         readme = self.text("README.md")
         for n in names - {"version"}:
             self.assertIn(f"`{n}(", readme, n)
@@ -333,6 +487,25 @@ class Page(unittest.TestCase):
         self.assertIn("['license', 'license']", app)
         self.assertIn("${row('license', lic(l))}", app)
         self.assertIn("license: lic(l),", app)
+
+    def test_ends_outside_the_scroll_are_hidden_and_can_be_shown(self):
+        # 1.13.0: each line is drawn from its first to its last inside point; one named control (kept in the view link
+        # as outside=1) draws the hidden end runs faded and dotted; drift statistics use the inside part
+        app, html = self.text("app.js"), self.text("index.html")
+        self.assertIn('id="t-outside"> show ends outside the scroll', html)
+        self.assertIn("if (S.outside) q.set('outside', '1');", app)
+        self.assertIn("S.outside = q.get('outside') === '1';", app)
+        mesh = re.search(r"function lineMeshes\(.*?\n\}", app, re.S).group(0)
+        self.assertIn("tube(pts3.slice(a, b)", mesh)
+        self.assertIn("if (S.outside)", mesh)
+        self.assertEqual(app.count("...lineMeshes(l, "), 2)  # the Array and the X-ray views
+        self.assertNotRegex(app, r"tube\(linePts\(l\)")
+        for fn in ("lineMean", "drift"):
+            self.assertIn("insidePts(l)", re.search(rf"function {fn}\(.*", app).group(0), fn)
+        self.assertIn("['outside_low', 'low out'], ['outside_high', 'high out']", app)
+        self.assertIn("${outsideHTML(l)}", app)
+        # the raw downloads stay the dataset's own files
+        self.assertIn("const RAW = (l) => `${DATASET}/resolve/main/${l.file}`;", app)
 
     def test_card_links_both_datasets(self):
         readme = self.text("README.md")

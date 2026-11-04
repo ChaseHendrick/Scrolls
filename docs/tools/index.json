@@ -15906,8 +15906,8 @@
     "text": "Needed to make the Space public: Chase's yes, given 2026-10-23. Later redeploys from merged `main` with public data fall under the standing yes (rule 8). Not needed to use the page or run the builds"
    },
    "checked": {
-    "date": "2026-10-27",
-    "commit": "45836d9"
+    "date": "2026-11-04",
+    "commit": "ab3ab66"
    },
    "license": "Apache 2.0 for the page and tools ([`spaces/umbilici/LICENSE`](../../spaces/umbilici/LICENSE), [`NOTICE`](../../spaces/umbilici/NOTICE)); each line keeps its own license (MIT, CC BY 4.0, CC BY-NC 4.0), the lasagna derivative and the scans are CC BY-NC 4.0",
    "fields": {
@@ -15917,15 +15917,15 @@
     "Area": "Viewers and apps",
     "Run": "[huggingface.co/spaces/SharpMeow/umbilici](https://huggingface.co/spaces/SharpMeow/umbilici) (the page), `python3 spaces/umbilici/tools/build_lines.py DATASET_DIR OUT.json`, `python3 spaces/umbilici/tools/build_lasagna.py DATASET_DIR OUT_DIR`, `python3 -m http.server` in `spaces/umbilici/` (the page locally, after the two builds)",
     "Code": "`spaces/umbilici/app.js` (the page), `spaces/umbilici/index.html`, `spaces/umbilici/style.css`, `spaces/umbilici/tools/build_lines.py`, `spaces/umbilici/tools/build_lasagna.py`, `spaces/umbilici/README.md` (the Space card), `spaces/umbilici/NOTICE`, `spaces/umbilici/LICENSE`",
-    "Tests": "`tests/test_umbilici.py`, 18 tests, standard library (2 more need numpy, numcodecs and Pillow and skip without them)",
-    "Needs": "In the browser: WebGL 2 (3D textures), ES modules and import maps, three.js 0.160.0 from cdn.jsdelivr.net. `build_lines.py`: Python 3.10 or newer, standard library. `build_lasagna.py`: numpy, numcodecs (Blosc), Pillow",
-    "Runs on": "The visitor's browser. A whole-scan radiograph of PHerc0191 (119 heights, about 1,070 range reads of 16 KB) loaded in under 25 s in headless, software-rendered Chromium on a 4-core cloud container (2026-10-23); a GPU and a home connection are faster. `build_lasagna.py` read the 64 PHerc0175A parts (about 48 GB) in about 4 minutes with three downloads at once, about 12 s per part (cloud container, 2026-10-23)",
-    "Network": "The visitor's browser: `vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` (CT chunks by HTTP range request; the bucket allows any origin and the Range header), `cdn.jsdelivr.net` (three.js), `fonts.googleapis.com` and `fonts.gstatic.com` (fonts), `huggingface.co` (the center-lines dataset's newest revision, its `index.json` and line files, read on load), the Space itself. `build_lines.py`: the same bucket (each scan's `.zattrs` and the `.zarray` of all six levels). `build_lasagna.py`: none (reads a local copy)",
+    "Tests": "`tests/test_umbilici.py`, 33 tests, standard library (2 more need numpy, numcodecs and Pillow and skip without them)",
+    "Needs": "In the browser: WebGL 2 (3D textures), ES modules and import maps, three.js 0.160.0 from cdn.jsdelivr.net. `build_lines.py`: Python 3.10 or newer, standard library (numcodecs, when installed, lets its CT test read PHerc0172's Blosc chunks; without it that scan's lines are marked untested). `build_lasagna.py`: numpy, numcodecs (Blosc), Pillow",
+    "Runs on": "The visitor's browser. A whole-scan radiograph of PHerc0191 (119 heights, about 1,070 range reads of 16 KB) loaded in under 25 s in headless, software-rendered Chromium on a 4-core cloud container (2026-10-23); a GPU and a home connection are faster. `build_lines.py` with the CT test of line ends took 9 min for the 91 lines of v2.8 on a cloud container (2026-11-04; most lines 1 to 6 s, the slowest 14 s). `build_lasagna.py` read the 64 PHerc0175A parts (about 48 GB) in about 4 minutes with three downloads at once, about 12 s per part (cloud container, 2026-10-23)",
+    "Network": "The visitor's browser: `vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` (CT chunks by HTTP range request; the bucket allows any origin and the Range header), `cdn.jsdelivr.net` (three.js), `fonts.googleapis.com` and `fonts.gstatic.com` (fonts), `huggingface.co` (the center-lines dataset's newest revision, its `index.json` and line files, read on load), the Space itself. `build_lines.py`: the same bucket (each scan's `.zattrs` and the `.zarray` of all six levels, and for the CT test of line ends, range reads of 16 KB planes of level-5 chunks around each line's outer quarter of points, plus whole level-5 slices where a point has no scroll within 4 mm). `build_lasagna.py`: none (reads a local copy)",
     "Writes": "The page: nothing on any server (the URL bar holds the view; downloads are made in the browser; two `localStorage` keys: `umbilici.seen` hides the first-visit hint, `umbilici.settings` keeps the viewer settings). `build_lines.py`: `OUT.json`. `build_lasagna.py`: `OUT_DIR/cos_Z.webp` and `ori_Z.webp` for nine heights, `needles.bin`, `meta.json`",
     "Go-ahead": "Needed to make the Space public: Chase's yes, given 2026-10-23. Later redeploys from merged `main` with public data fall under the standing yes (rule 8). Not needed to use the page or run the builds",
-    "Released": "Space [`SharpMeow/umbilici`](https://huggingface.co/spaces/SharpMeow/umbilici) 1.12.0 (Space commit `998873d4`, deployed 2026-10-29 from `10c7ad0` on the branch of [PR #277](https://github.com/ChaseHendrick/Scrolls/pull/277), on Chase's ask; live recheck: RUNNING, read dataset revision `fdfb6103` (v2.8, 91 lines), glow 0.25, no card and control overlap at four widths); 1.11.1 was Space commit `08497deb` (from `30e0308` on the branch of [PR #254](https://github.com/ChaseHendrick/Scrolls/pull/254)); 1.11.0 was Space commit `ef8c85d3` (from `main` at `8250b23`); 1.10.0 was Space commit `3def64b4` (from `50020b3`, lines from dataset revision `51603382`, v2.6.1); 1.9.0 was Space commit `97e602a7` (from `2b5c820`, lines from `1b866db0`, v2.5), 1.8.0 Space commit `01ea09fd`. Public since 2026-10-23 (Chase switched it public); README \"Released tools\" entry `umbilici`",
+    "Released": "Space [`SharpMeow/umbilici`](https://huggingface.co/spaces/SharpMeow/umbilici) 1.12.0 (Space commit `998873d4`, deployed 2026-10-29 from `10c7ad0` on the branch of [PR #277](https://github.com/ChaseHendrick/Scrolls/pull/277), on Chase's ask; live recheck: RUNNING, read dataset revision `fdfb6103` (v2.8, 91 lines), glow 0.25, no card and control overlap at four widths); 1.11.1 was Space commit `08497deb` (from `30e0308` on the branch of [PR #254](https://github.com/ChaseHendrick/Scrolls/pull/254)); 1.11.0 was Space commit `ef8c85d3` (from `main` at `8250b23`); 1.10.0 was Space commit `3def64b4` (from `50020b3`, lines from dataset revision `51603382`, v2.6.1); 1.9.0 was Space commit `97e602a7` (from `2b5c820`, lines from `1b866db0`, v2.5), 1.8.0 Space commit `01ea09fd`. Public since 2026-10-23 (Chase switched it public); README \"Released tools\" entry `umbilici`. 1.13.0 (ends outside the scroll hidden) is on branch `claude/umbilici-outside-ends`, not yet deployed",
     "License": "Apache 2.0 for the page and tools ([`spaces/umbilici/LICENSE`](../../spaces/umbilici/LICENSE), [`NOTICE`](../../spaces/umbilici/NOTICE)); each line keeps its own license (MIT, CC BY 4.0, CC BY-NC 4.0), the lasagna derivative and the scans are CC BY-NC 4.0",
-    "Checked": "2026-10-27 against commit `45836d9`"
+    "Checked": "2026-11-04 against commit `ab3ab66`"
    },
    "page": "docs/tools/umbilici.md",
    "sections": [
@@ -15950,73 +15950,73 @@
     {
      "name": "Checks and controls",
      "start_line": 63,
-     "end_line": 71,
+     "end_line": 72,
      "applicable": true
     },
     {
      "name": "Commands and options",
-     "start_line": 72,
-     "end_line": 107,
+     "start_line": 73,
+     "end_line": 110,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 108,
-     "end_line": 116,
+     "start_line": 111,
+     "end_line": 121,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 117,
-     "end_line": 122,
+     "start_line": 122,
+     "end_line": 127,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 123,
-     "end_line": 147,
+     "start_line": 128,
+     "end_line": 154,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 148,
-     "end_line": 157,
+     "start_line": 155,
+     "end_line": 164,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 158,
-     "end_line": 166,
+     "start_line": 165,
+     "end_line": 174,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 167,
-     "end_line": 170,
+     "start_line": 175,
+     "end_line": 178,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 171,
-     "end_line": 180,
+     "start_line": 179,
+     "end_line": 188,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 181,
-     "end_line": 184,
+     "start_line": 189,
+     "end_line": 192,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 185,
-     "end_line": 206,
+     "start_line": 193,
+     "end_line": 216,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 207,
-     "end_line": 211,
+     "start_line": 217,
+     "end_line": 221,
      "applicable": true
     }
    ]
