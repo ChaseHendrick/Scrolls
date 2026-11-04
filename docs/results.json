@@ -13093,5 +13093,85 @@
    "date": "2026-10-30",
    "slices_scored": 142
   }
+ ],
+ "exposure_atlas_checks": [
+  {
+   "key": "expatlas_instrument_v1_attempt2_20261104",
+   "tool": "kit/expatlas.py (python -m kit expatlas)",
+   "catalog": "metadata.json Last-Modified 2 Nov 2026 11:32:29 GMT, ETag 274f64b9261982444dfd2881f48ae766",
+   "about": "Planted-duplicate instrument checks of the Exposure Atlas, rule version 1 (docs/prereg/2026-11-04-expatlas-instrument.md, frozen at 0ec8999; attempt 1 killed for memory before scoring), run at 34c3683 in Hugging Face Job 6aeaa27a0e0338d1bb7f85ec on 30 public PHerc0814 and PHerc0009B meshes",
+   "label": "Model output",
+   "verdict": "FAIL",
+   "rule": "PASS when (a) at least 29 of 30 planted copies are called exposed, (b) at least 29 of 30 copies moved a further 100 um along the normal are not, (c) all 30 cross-scroll pairs are not, and (d) both directions of the real positive pair are",
+   "a_exposed": 30,
+   "b_not_exposed": 21,
+   "c_not_exposed": 30,
+   "d_exposed": 2,
+   "of": 30,
+   "a_f_same_min": 0.804,
+   "a_f_same_median": 0.929,
+   "b_f_same_max": 0.25,
+   "c_f_same_max": 0.009,
+   "note": "all ten (b) failures (9 exposed, 1 trace) are large auto-grown PHerc0814 meshes on the 9.362 um scan; a post-hoc self-cover diagnostic (Interpretation) found 7 to 45 % of their vertices with another part of the same mesh 60 to 160 um away, so the 100 um copy lands on the mesh's own next winding; the matrix was not computed",
+   "source": "docs/data/expatlas/plant-v1-attempt2-2026-11-04.json"
+  },
+  {
+   "key": "expatlas_instrument_v2_20261104",
+   "tool": "kit/expatlas.py (python -m kit expatlas)",
+   "catalog": "metadata.json Last-Modified 2 Nov 2026 11:32:29 GMT, ETag 274f64b9261982444dfd2881f48ae766",
+   "about": "Planted-duplicate instrument checks, rule version 2 (docs/prereg/2026-11-04-expatlas-instrument-v2.md, frozen at 7741f8b; control (b) scored only on vertices with no other part of their own mesh within 160 um; new seed, 28 of 30 meshes shared with version 1's draw), Hugging Face Job 6aeaa4410e0338d1bb7f866e",
+   "label": "Model output",
+   "verdict": "PASS",
+   "rule": "as version 1, with (b) passing when at least 95 % of at least 25 scored meshes are not called exposed",
+   "a_exposed": 30,
+   "b_not_exposed": 30,
+   "b_scored": 30,
+   "c_not_exposed": 30,
+   "d_exposed": 2,
+   "of": 30,
+   "a_f_same_min": 0.804,
+   "a_f_same_median": 0.929,
+   "b_f_same_max": 0.037,
+   "b_trace": 9,
+   "c_f_same_max": 0.01,
+   "d_f_same": [
+    0.05,
+    0.901
+   ],
+   "note": "the nine (b) traces (0.005 to 0.037) are the multi-winding PHerc0814 meshes: on such meshes a matrix cell under about 0.04 is within what the control itself produced; free vertices were 54 to 100 % of each mesh",
+   "source": "docs/data/expatlas/plant-v2-2026-11-04.json"
+  },
+  {
+   "key": "expatlas_matrix_20261104",
+   "tool": "kit/expatlas.py (python -m kit expatlas)",
+   "catalog": "metadata.json Last-Modified 2 Nov 2026 11:32:29 GMT, ETag 274f64b9261982444dfd2881f48ae766",
+   "about": "Exposure Atlas matrix after the version 2 PASS: 20 labeled segments of PHerc0009B, PHerc0500P2, PHerc0814, PHerc0841, PHerc1667 and PHercParis4 against 10 released ink models (kit/data/expatlas-models.json), Hugging Face Job 6aeaa4cfc78863f9c6322578 at 7741f8b; no labels or CT read",
+   "label": "Model output (the calls); Sourced fact or Community report (the lists, per model)",
+   "cells": {
+    "trained": 92,
+    "exposed": 18,
+    "trace": 3,
+    "selected": 6,
+    "clear": 40,
+    "unknown": 41
+   },
+   "exposed_beyond_names": {
+    "d9v2 on PHerc0009B ag487 (its own test list)": 0.43,
+    "d9v2 on PHerc0500P2 -1 (its own test list)": 0.263,
+    "Reader v2 and Reader V3 on PHerc0009B ag487": 0.43,
+    "Reader v2 and Reader V3 on PHerc0500P2 -1": 0.086,
+    "v8in, v8in-1447, A-hn on PHercParis4 20230929220926": 0.146,
+    "v8in, v8in-1447, A-hn on PHercParis4 20231007101619": 0.101,
+    "v8in, v8in-1447, A-hn on PHerc1667 w023": 0.056,
+    "v8in, v8in-1447, A-hn on PHerc0500P2 -1": 0.056
+   },
+   "evaluation_pairs": {
+    "pairs": 92,
+    "exposed": 18,
+    "trace": 9,
+    "examples": "PHerc0841 w00 and ag896 0.35; PHercParis4 pairs 0.08 to 0.25; PHerc1667 w028 and w029 0.20 (named as neighboring windings: a sheet switch or windings closer than 60 um, the geometry cannot tell)"
+   },
+   "source": "docs/data/expatlas/matrix-2026-11-04.json"
+  }
  ]
 }

@@ -222,8 +222,8 @@ class Registry(unittest.TestCase):
 
     def test_no_dashes(self):
         text = (ROOT / "kit" / "data" / "expatlas-models.json").read_text(encoding="utf-8")
-        self.assertNotIn("—", text)
-        self.assertNotIn("–", text)
+        self.assertNotIn(chr(0x2014), text)
+        self.assertNotIn(chr(0x2013), text)
 
 
 def tiny_catalog():

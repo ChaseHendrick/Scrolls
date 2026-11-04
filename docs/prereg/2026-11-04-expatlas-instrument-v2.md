@@ -49,4 +49,23 @@ version 1's scope and readout (its section "The matrix, after a PASS"), in the s
 
 ## Results
 
-Not yet run.
+**PASS** (Model output of the instrument, 4 November 2026). Hugging Face Job `6aeaa4410e0338d1bb7f866e` (cpu-upgrade,
+50 s running) at commit `7741f8b`, same catalog as attempt 2 (ETag `274f64b9261982444dfd2881f48ae766`). Record:
+[`data/expatlas/plant-v2-2026-11-04.json`](../data/expatlas/plant-v2-2026-11-04.json).
+
+| Check | Result | Bar | Verdict |
+| --- | --- | --- | --- |
+| (a) recall | 30 of 30 exposed; f_same 0.804 to 0.973, median 0.929 | 29 | PASS |
+| (b) adjacent-winding control, free vertices | 30 of 30 scored, 30 not exposed; 9 trace (0.005 to 0.037), the rest clear | 95 % of at least 25 | PASS |
+| (c) cross-scroll negative | 30 of 30 not exposed; f_same at most 0.010 | 30 | PASS |
+| (d) real positive pair | 0.901 and 0.050, both exposed | 2 | PASS |
+
+The nine traces in (b) are the multi-winding PHerc0814 meshes again; free vertices were 54 to 100 % of each mesh.
+Read with it: on such meshes the instrument leaves up to about 0.04 within 60 um even where no sheet was planted, so
+a matrix cell under about 0.04 is not evidence of exposure, and one just over 0.05 is weak (Interpretation).
+
+The matrix step in the same Job stopped on a technical fault before computing anything: some catalog meshes are
+LZW-compressed TIFFs and the image lacked `imagecodecs`. The matrix then ran unchanged, at the same commit with
+`imagecodecs` added, in Job `6aeaa4cfc78863f9c6322578` (76 s running, exit 0). Matrix:
+[`data/expatlas/matrix-2026-11-04.json`](../data/expatlas/matrix-2026-11-04.json), summary in `exposure_atlas_checks`
+of [results.json](../results.json) and on the [tool page](../tools/expatlas.md).
