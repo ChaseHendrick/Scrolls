@@ -1,6 +1,6 @@
 # Preregistration: Bucket Sentinel, planted-defect controls and blind rediscovery of the published bucket defects
 
-**Status: Draft** (written 4 November 2026, before any check of Bucket Sentinel has read a canvas, mesh or CT window of the Hugging Face `ink/` folders it is tested on). It freezes at the commit that sets this line to "Frozen" and fills the dev-run result in section 4, which must come before the back-test job starts. Nothing in sections 2, 3, 5 and 6 may change after that commit except to record what happened, below the "Outcome" heading.
+**Status: Frozen** (4 November 2026, at the commit that fills section 4; written before any check of Bucket Sentinel had read a canvas, mesh or CT window of the Hugging Face `ink/` folders it is tested on). The back-test job starts after this commit and runs the code of this commit. Nothing in sections 2, 3, 5 and 6 may change after that commit except to record what happened, below the "Outcome" heading.
 
 Tool: `python -m kit sentinel` ([page](../tools/sentinel.md), code `kit/sentinel.py`). Owner's decision to build it: 4 November 2026.
 
@@ -45,7 +45,7 @@ A failed bar means the back-test does not run: report it and redesign. The bars 
 ## 4. Dev runs (filled at the freeze)
 
 - **Attempt 1** (4 November 2026, commit `09fd9b9`, Hugging Face CPU Job, 179 s): FAIL, as a smoke should when the code is wrong. Shifts and resamples were caught with errors of 0.05 to 0.73 px and the wrong-frame plant was caught, but three faults showed: a blank plane at level 0 was never caught (level 0 was its own reference), the correct-scale negative flagged on every segment (the plant multiplied an already correct scale by the pitch again), and four of six shards stopped on meshes whose cells span several voxels (a window spanned more CT than the reader allows). Fixed in commit `9fcc215` (interior blank planes count at every level; the plant sets the scale relative to level 0; the CT level follows the mesh's stretch, and a window that still spans too much is skipped and recorded). No bar or constant changed.
-- **Attempt 2** (commit `9fcc215`): <<DEV_RESULT>>
+- **Attempt 2** (4 November 2026, commit `9fcc215`, Hugging Face CPU Job, 173 s; Model output): PASS. 20 pool segments, 252 must-flag plants, recall 0.988 (249 caught): every shift (36), wrong frame (3), label grid (108), truncated level (36), blank plane (36) and reset scale (18) plant was caught; 12 of 15 resampled canvases were caught and 3 (scale 1.05 and 1.1 on two of the smaller canvases) read not measured. Shift and resample errors: median 0.34 px, 100 percent of caught plants within 2 px. Negatives and bases: 0 flags of 56. 18 of 20 base canvases read aligned (median offsets about +0.4 px on both axes, the renderer's half pixel) and 2 read not measured (too few windows on two stretched PHerc. 0814 meshes); not measured counts as no flag. The pass-first rule is met, so the back-test of section 5 runs once.
 
 ## 5. Back-test (live data, run once after the freeze)
 

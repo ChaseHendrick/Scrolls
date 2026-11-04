@@ -77,6 +77,11 @@
    "by": "the same check with Claude as the judge, asked in both orders, capped by --max-usd",
    "maturity": "experimental",
    "why": "Claude's fiber answers were valid on four public scrolls under the frozen fiber controls, but this checker form has no held-out run of its own recorded here",
-   "reach": "python3 scripts/fibercheck/fibercheck.py score --judge claude (ANTHROPIC_API_KEY), or the Space with your own key"}
+   "reach": "python3 scripts/fibercheck/fibercheck.py score --judge claude (ANTHROPIC_API_KEY), or the Space with your own key"},
+  {"stage": "inputs", "name": "bucket-sentinel", "origin": "ours", "licence": "Apache-2.0",
+   "by": "kit sentinel (docs/tools/sentinel.md): canvas offsets by CT phase correlation, truncated pyramids, unit scales, label grids and mesh frames on the organizers' public uploads, with an offset table loaders import (kit/sentinel_table.py)",
+   "maturity": "experimental",
+   "why": "its planted-defect controls passed on 20 public S3 segments; the preregistered back-test is docs/prereg/2026-11-04-bucket-sentinel.md",
+   "use": {"cli": {"args": ["sentinel", "check", "--image"]}}}
  ]
 }

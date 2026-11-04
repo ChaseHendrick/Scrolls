@@ -62,6 +62,14 @@
       "timeout_s": 300,
       "command": ["{python}", "-m", "unittest", "tests.test_repo"],
       "why": "tests/test_repo.py: size limits, no long dashes, relative links, every kit module in docs/MAP.md, documented kit commands exist (the workflow runs the whole suite instead)"
+    },
+    {
+      "name": "bucket-sentinel",
+      "cadence": "daily",
+      "timeout_s": 900,
+      "requires": ["kit/sentinel.py"],
+      "command": ["{python}", "-m", "kit", "sentinel", "scan", "--exit-code"],
+      "why": "docs/tools/sentinel.md: fingerprint every Hugging Face ink/ folder and S3 CT volume of the organizers' public data and queue the new and changed ones (exit 3) for kit sentinel check --queued; metadata only, state in work/sentinel/"
     }
   ]
 }
