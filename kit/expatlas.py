@@ -25,10 +25,13 @@ Community report as each model's entry says):
   exposed    at least EXPOSED_FRAC of the evaluation vertices lie within D_SAME_UM of a training surface
   trace      at least TRACE_FRAC but under EXPOSED_FRAC
   selected   the checkpoint was chosen on it (by name), or a validation segment covers it
-  clear      no training segment on that scroll, or the geometry finds less than TRACE_FRAC
-  unknown    no published list, or names on that scroll that match no catalog segment, and nothing above
+  clear      a fully published list with no training segment on that scroll, or the geometry finds less than
+             TRACE_FRAC; or a cited author's statement (a not_trained entry) that the model never saw the scroll
+  unknown    nothing above, and something leaves exposure open: a list not fully published, a name or id that
+             matches no catalog mesh, a train name with no scroll, an unreadable mesh, a route with no or too large
+             a landmark error
   not-run    outside the run's scope (a --scroll filter or a --skip pattern)
-Cross-scan pairs depend on the catalog's affine transforms (questioned in villa issues 1835 and 2312). Each such
+Cross-scan pairs depend on the catalog's affine transforms (villa issues 1835 and 2312 report problems with some). Each such
 cell carries the transform's landmark leave-one-out error from kit meshaudit; above TRANSFORM_FLAG_UM it is flagged
 "winding uncertain", and above TRANSFORM_LIMIT_UM (half a nominal 140 um winding) a geometric call reads unknown.
 

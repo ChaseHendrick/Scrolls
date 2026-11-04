@@ -377,6 +377,21 @@ class Matrix(unittest.TestCase):
         _, c = self.cell(self.reg([self.entry("train", "30000000000002")], lst="partial"))
         self.assertEqual(c["status"], "exposed")
 
+    def test_published_child_of_a_partial_parent_cannot_read_clear(self):
+        reg = self.reg([], inherits=["p"])
+        reg["models"][1]["list"] = "partial"
+        reg["models"][1]["entries"] = []
+        _, c = self.cell(reg)
+        self.assertEqual(c["status"], "unknown")
+        self.assertIn("not fully published: p", c["why"])
+
+    def test_statement_on_another_scroll_does_not_clear(self):
+        reg = self.reg([self.entry("not_trained", "*", name="never saw scroll B")], lst="partial")
+        reg["models"][0]["entries"][0]["scroll"] = "B"
+        reg["models"][0]["entries"][0]["match"] = "its card says scroll B was never seen"
+        _, c = self.cell(reg)
+        self.assertEqual(c["status"], "unknown")
+
     def test_missing_catalog_id_is_unknown(self):
         _, c = self.cell(self.reg([self.entry("train", "39999999999999")]))
         self.assertEqual(c["status"], "unknown")
