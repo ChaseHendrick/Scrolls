@@ -50,6 +50,7 @@ Full list: [Awesome Scroll Tools](https://scrollprize.org/community_projects) ([
 | [ScrollFiesta](https://github.com/Hob3rMallow/scrollfiesta_public) | Automatic surface mesher (July 2026 $20k progress prize) |
 | [vesuvius-browser](https://github.com/jrudolph/vesuvius-browser), [vesuvius-gui](https://github.com/jrudolph/vesuvius-gui) | Browse segments and render volumes |
 | [vesuvius-repro](https://github.com/TAUIL-Abd-Elilah/vesuvius-repro) | Reproducibility spot-checks of m7 surface predictions |
+| [scroll-label-snap](https://github.com/aqsnyder/scroll-label-snap) | A.Q. Snyder's snap of surface labels onto the papyrus face from the CT; compared with kit labelsnap on 108 PHerc0139 development sites in [`data/pherc0139-snap-sites/`](data/pherc0139-snap-sites/README.md) |
 
 Community code is untrusted until you read it. Clone into its own directory and read before running.
 
