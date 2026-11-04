@@ -2,6 +2,12 @@
 
 **This file is the one handoff for this repository.** Every agent (Claude, Codex, Grok, ChatGPT or any other) reads it first and updates it before stopping: change the open-items table when you start or finish something, link longer notes from their row, and merge the handoff change into `main` at once rather than leaving it on a work branch. Private work has its own single handoff in Scrolls-private's `docs/HANDOFF.md`; nothing private goes here. Read [AGENTS.md](../AGENTS.md), [the workflow](WORKFLOW.md) and the current Git/PR state before continuing. Use plain sentences and preserve historical evidence bytes and hashes. Older dated sections are in [HANDOFF-archive.md](HANDOFF-archive.md), newest first; when this file grows long, move its oldest dated sections there, unchanged (`tests/test_repo.py` fails past 40 KB).
 
+## Continuation, 4 November 2026
+
+| Item | State | Next step |
+| --- | --- | --- |
+| Bucket Sentinel: `kit sentinel`, standing checks on the organizers' public uploads with an offset table (4 Nov) | Branch `claude/bucket-sentinel`, PR open, not merged ([page](tools/sentinel.md), [preregistration](prereg/2026-11-04-bucket-sentinel.md)). Checks canvases against their tifxyz by CT phase correlation (affine or per-region model), pyramids, [1, 1, 1] scales (fallback from `metadata.min.json`), label grids and mesh frames; `preflight` before `vc_render_tifxyz`; `kit/sentinel_table.py` is the loader side. Planted-defect controls PASS on attempt 2 (attempt 1 failed on three code faults, fixed); frozen blind back-test PASS on the 14 `ink/` folders the reserved-data rule leaves open (9 of 9 #2370 misaligned flagged, 0 of 4 aligned, 5 of 5 #2107 pyramids, MAN5 labels 59 px short); offsets in `docs/sentinel/offsets.json` (Model output). Stage option `inputs bucket-sentinel` (experimental); daily routine `bucket-sentinel` (scan only) | Review and merge the PR. Then Chase decides on the villa #2370 comment draft ([`contrib/villa-2370-offset-table.md`](contrib/villa-2370-offset-table.md)); agents copy the private exclusion file to `work/sentinel/exclude.json` before scanning |
+
 ## Continuation, 3 November 2026
 
 | Item | State | Next step |

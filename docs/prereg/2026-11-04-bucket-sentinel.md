@@ -70,4 +70,26 @@ A PASS says the checker finds these defect classes on this bucket version withou
 
 ## Outcome
 
-<<OUTCOME>>
+### Back-test, 4 November 2026 (run once; Hugging Face CPU Job, code at commit `a7ecd62`; Model output)
+
+**PASS: all four bars.** Numbers are copied from the per-folder results (`checks[].verdict`, `kind`, `median_offset`, `affine`, `problems`), archived with the job's log in the workbench.
+
+| Bar | Result | Pass |
+| --- | --- | --- |
+| B1 canvas offsets | 9 of 9 misaligned folders flagged (8 Paris 4 `affine`, the PHerc. 0009B folder `constant`) | yes (at least 8) |
+| B2 canvas false flags | 0 of 4 aligned folders flagged (the three PHerc. 0841 folders at about +0.45 px on both axes, MAN5_outer_3 at about -1.0 px, all within 2 px) | yes |
+| B3 truncated pyramids | 5 of 5 affected flagged `missing_slices` on z; 0 of 9 others | yes |
+| B4 label grid | MAN5_outer_3's three label zarrs flagged, each short by 59 and 59 px | yes |
+
+The folder whose CT is not public read "not measured" (no candidate volume matched), as expected; its pyramid was flagged as #2107 reports.
+
+Reported, not decisive (the issue texts' values are a Community report):
+
+- PHerc. 0009B: constant offset (-19.20, -19.29) px, against about (-19.6, -19.6) in #2370.
+- PHerc. Paris 4 w01_r15: slopes 0.00427 (rows) and -0.00388 (columns), against 0.004263 and -0.003876 in #2370; largest offset over the measured windows 231 px.
+- The other seven Paris 4 folders: intercepts near (-21, +12) px where the mesh scale is 0.1 and near (-43, +23) px for the two at 0.05 (w05_4424, w07_1619), with slopes 0.0007 to 0.0011 and -0.0004 to -0.0007; #2370's audit comment gives about (-21, +12) and (-42, +23) for the same two groups. Affine residuals 0.08 to 0.19 px RMS, so no folder needed a per-region map.
+- The offset table of the 13 measured folders is `docs/sentinel/offsets.json`.
+
+Not claimed: anything about the folders the reserved-data rule kept closed, other defect kinds, or later bucket versions. The match to #2370 is agreement between two measurements of the same published files, not a check of the CT itself.
+
+<<SWEEP>>

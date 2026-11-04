@@ -11,7 +11,7 @@
 | Run | `python -m kit sentinel`, `python -m kit.sentinel`, `from kit import sentinel`, `from kit import sentinel_table`, `bash scripts/sentinel/job.sh` |
 | Code | `kit/sentinel.py`, `kit/sentinel_table.py`, `scripts/sentinel/`, `kit/cli.py` (`build_parser`); it reuses [tifxyz](tifxyz.md)'s chunk reader (`ZarrSource`) and [meshaudit](meshaudit.md)'s TIFF reader and catalog helpers |
 | Tests | `tests/test_sentinel.py` |
-| Needs | Python 3.10 or newer, numpy; numcodecs for Blosc-compressed stores (zarr installs it); tifffile for tifxyz meshes; huggingface_hub 1.33 or newer (bucket listings) for `scan` and `hf:` items. `kit/sentinel_table.py` alone needs only the standard library (numpy for array input) |
+| Needs | Python 3.10 or newer, numpy; numcodecs for Blosc-compressed stores (zarr installs it); tifffile for tifxyz meshes (and imagecodecs for LZW-compressed ones, such as some `ink/unused/manbp` meshes); huggingface_hub 1.33 or newer (bucket listings) for `scan` and `hf:` items. `kit/sentinel_table.py` alone needs only the standard library (numpy for array input) |
 | Runs on | Any CPU with network. One S3 segment with every check and `--image`: about 45 s and 200 MB read (measured 2026-11-04, 4-core Claude cloud container); metadata checks alone take a few seconds an item. Larger runs go to a Hugging Face CPU Job (`scripts/sentinel/job.sh`) |
 | Network | Hugging Face: the bucket API listing (anonymous) and the bucket's file URLs under `HF_ENDPOINT` (default `https://huggingface.co`), for `meta.json`, `x.tif`, `y.tif`, `z.tif`, zarr metadata and chunks. S3: `metadata.json` and `metadata.min.json` of `vesuvius-challenge-open-data`, and CT volume metadata and chunks. Plain HTTPS GETs; 429, 5xx and dropped connections are asked again up to 5 times |
 | Writes | `scan`: the state file (`work/sentinel/state.json` by default). `check --out DIR`: one JSON file per item. `table --out FILE`: the offset table. `controls --out DIR`: one base result per pool item and `controls.json` (or `controls-KofN.json`). Nothing is ever written to a bucket; planted copies live in memory |
@@ -83,7 +83,13 @@ Every check can fail, and `controls` shows that it does on public data before an
 python -m kit sentinel controls docs/sentinel/dev-pool.json --out CONTROLS
 ```
 
-A pass prints a summary with `"pass": true` and exits 0; a fail exits 3, and the rows in `controls.json` say which plant was missed. The preregistered back-test then checks the live `ink/` folders against the defects the issues report, without the reporters' tables; its result is in the preregistration's Outcome.
+A pass prints a summary with `"pass": true` and exits 0; a fail exits 3, and the rows in `controls.json` say which plant was missed.
+
+Results of 4 November 2026 (Model output; `results.json` `bucket_sentinel_checks`):
+
+- Controls, attempt 2 (attempt 1 failed on three faults in the code, fixed before attempt 2): 252 plants on 20 segments, recall 0.988, median offset error 0.34 px with every caught plant within 2 px, no flags on 56 negatives and bases. PASS.
+- Blind back-test on the 14 Hugging Face `ink/` folders our reserved-data rule leaves open, frozen before any of their canvases, meshes or CT was read: 9 of 9 canvases #2370 reports misaligned flagged, 0 of 4 it reports aligned; 5 of 5 pyramids #2107 reports truncated flagged and 0 of 9 others; MAN5_outer_3's labels flagged 59 px short (#2369). PASS on all four bars. The measured offsets agree with #2370's: (-19.20, -19.29) px against about (-19.6, -19.6) for PHerc. 0009B, and slopes 0.00427 and -0.00388 against 0.004263 and -0.003876 for Paris 4 w01_r15.
+- Live sweep: every one of the 67 CT volumes the catalog lists in the bucket declares [1, 1, 1] with no unit; `metadata.min.json` gives each one's pitch, and every name agrees with it. No CT volume pyramid has missing levels or slices.
 
 Claim label: Model output, for every offset, verdict and control number this tool prints; the defects it is tested against are a Community report.
 
@@ -205,8 +211,9 @@ usage: python -m kit sentinel summarize [-h] files [files ...]
 | `Level(src, path, zarray, workers=16, cache_mb=160)` | an array reader with `read(z0, z1, y0, y1, x0, x1)` | `SentinelError` | One array of a store, read by box with an in-memory chunk cache |
 | `check_pyramid(meta)` | check result | | Each level's shape against level 0 under its declared scale (#2107) |
 | `true_z_factor(meta, k)` | float | | The z factor level k really has: its declared one, or 1 when it is truncated |
-| `known_pitch(name, volume_id=None, minmeta=None, catalog=None)` | (um, source) | | From the store's name, then metadata.min.json, then metadata.json; else (None, None) |
-| `check_scale(meta, pitch=None, pitch_source=None, kind='volume')` | check result | | [1, 1, 1] with no unit, or a declared pitch that disagrees, on a store whose pitch is known |
+| `known_pitch(name, volume_id=None, minmeta=None, catalog=None)` | (um, source) | | From metadata.min.json, then metadata.json, then the store's name; else (None, None) |
+| `name_pitch(name)` | um or None | | The pitch a store's name states |
+| `check_scale(meta, pitch=None, pitch_source=None, kind='volume', named=None)` | check result | | [1, 1, 1] with no unit, or a declared pitch that disagrees, on a store whose pitch is known |
 | `check_labels(canvas_shape, labels, grid_shape=None)` | check result | | Label zarrs against the canvas (#2369), and the canvas against the tifxyz grid (#2370) |
 | `gaussian_blur(a, sigma)` | array | | separable Gaussian, reflected edges |
 | `prep(a, valid=None)` | array | | High-passed, mean-filled window for registration |
@@ -324,7 +331,7 @@ The offset table (`table`, schema `bucket-sentinel-offsets/1`) has `entries`, ea
 
 1. **Change detection.** `scan` lists the bucket's `ink/` folders through the Hub API and fingerprints each by its listing (names, sizes, Xet hashes) and every zarr's root and level metadata; it fingerprints each S3 CT volume by its metadata. New and changed items join the queue. A change only to chunk files under unchanged metadata is not seen.
 2. **Pyramid.** For each level, the declared scale against level 0 gives a factor per axis; a level whose shape times its factor covers less than level 0 by more than one step is `missing_slices` (#2107's 17 of 65 at z-scale 1). Such a level's true z factor is 1 (its planes are the first ones, not pooled), and the canvas check uses that to find the surface plane.
-3. **Scale.** A level-0 scale of [1, 1, 1] with no axis unit is `scale_reset` when the pitch is known: a pitch in the store's name, else `pixel_size_um` of the volume or its scan in `metadata.min.json`, else `metadata.json`. A canvas grid with no known pitch is info only.
+3. **Scale.** A level-0 scale of [1, 1, 1] with no axis unit is `scale_reset` when the pitch is known: `pixel_size_um` of the volume (or its scan) in `metadata.min.json`, else `metadata.json`, else a pitch in the store's name; the fallback is reported as `fallback_um`, and a name that disagrees with the manifest as `name_disagrees`. A store not found at its catalog path is `not_read`, not a defect. A canvas grid with no known pitch is info only.
 4. **Labels.** Every label zarr's level-0 rows and columns against the canvas's (`SHAPE_TOL` = 1 px), and the canvas against the tifxyz grid (rows / scale_y, cols / scale_x; `GRID_TOL` = 2 px), whose ratio minus 1 is the drift slope.
 5. **Frame.** Candidates are the sample's volumes whose level-0 shape holds the mesh's bounding box (5 percent margin). For each, three canvas windows at 16 px are registered against that volume's CT sampled through the mesh; the best median peak-to-sidelobe ratio (PSR), at least `PSR_MIN` = 8, is the mesh's frame. A mesh that declares another volume (an `-on-VOLUME` name, or meta.json's volume string matched by pitch, energy and masking) that does not match is `wrong_frame`.
 6. **Canvas offsets.** Coarse pass at 16 level-0 px per pixel: 3 x 3 windows of 96 px, peak within 40 px (640 level-0 px), started both from no offset and from the size-ratio prior (offset = slope times position), keeping the start with more accepted windows. Fine pass at 4 px: 5 x 5 windows of 128 px over the mesh's extent, peak within 24 px, each window's CT resampled at the coarse model's offset, then once more at the measured offset to refine near zero. Registration is phase correlation of high-passed (`SIGMA` = 4 px), mean-filled, Hann-tapered windows with a parabolic peak fit. A window counts with PSR at least 8, its peak inside the search, and at least `FILL_MIN` = 90 percent valid mesh and nonzero canvas. With at least `MIN_WINDOWS` = 6 windows an affine is fitted per axis (one trim at 3 MAD). Aligned when every window and the model at the windows' corners are within `ALIGN_TOL` = 2 px; else constant when the affine changes less than `CONST_SPAN` = 2 px over the windows; affine when its residual RMS is at most `RESID_TOL` = 2 px; else regions. The CT level follows the mesh's stretch (median voxels per full-resolution cell), so a stretched mesh reads a coarser level.
@@ -351,7 +358,7 @@ Measured 2026-11-04 in a 4-core Claude cloud container: one S3 segment with `--i
 
 ## History
 
-- 2026-11-04: first version on branch `claude/bucket-sentinel`: scan, check, table, preflight, controls and the loader table (`09fd9b9`); fixes from the first development run (`9fcc215`).
+- 2026-11-04: first version on branch `claude/bucket-sentinel`: scan, check, table, preflight, controls and the loader table (`09fd9b9`); fixes from the first development run (`9fcc215`); controls and back-test PASS, offset table of 13 folders; the scale check reads `metadata.min.json` first and skips stores not in the bucket.
 
 ## Related
 

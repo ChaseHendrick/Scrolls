@@ -13208,7 +13208,7 @@
     "Run": "`python -m kit sentinel`, `python -m kit.sentinel`, `from kit import sentinel`, `from kit import sentinel_table`, `bash scripts/sentinel/job.sh`",
     "Code": "`kit/sentinel.py`, `kit/sentinel_table.py`, `scripts/sentinel/`, `kit/cli.py` (`build_parser`); it reuses [tifxyz](tifxyz.md)'s chunk reader (`ZarrSource`) and [meshaudit](meshaudit.md)'s TIFF reader and catalog helpers",
     "Tests": "`tests/test_sentinel.py`",
-    "Needs": "Python 3.10 or newer, numpy; numcodecs for Blosc-compressed stores (zarr installs it); tifffile for tifxyz meshes; huggingface_hub 1.33 or newer (bucket listings) for `scan` and `hf:` items. `kit/sentinel_table.py` alone needs only the standard library (numpy for array input)",
+    "Needs": "Python 3.10 or newer, numpy; numcodecs for Blosc-compressed stores (zarr installs it); tifffile for tifxyz meshes (and imagecodecs for LZW-compressed ones, such as some `ink/unused/manbp` meshes); huggingface_hub 1.33 or newer (bucket listings) for `scan` and `hf:` items. `kit/sentinel_table.py` alone needs only the standard library (numpy for array input)",
     "Runs on": "Any CPU with network. One S3 segment with every check and `--image`: about 45 s and 200 MB read (measured 2026-11-04, 4-core Claude cloud container); metadata checks alone take a few seconds an item. Larger runs go to a Hugging Face CPU Job (`scripts/sentinel/job.sh`)",
     "Network": "Hugging Face: the bucket API listing (anonymous) and the bucket's file URLs under `HF_ENDPOINT` (default `https://huggingface.co`), for `meta.json`, `x.tif`, `y.tif`, `z.tif`, zarr metadata and chunks. S3: `metadata.json` and `metadata.min.json` of `vesuvius-challenge-open-data`, and CT volume metadata and chunks. Plain HTTPS GETs; 429, 5xx and dropped connections are asked again up to 5 times",
     "Writes": "`scan`: the state file (`work/sentinel/state.json` by default). `check --out DIR`: one JSON file per item. `table --out FILE`: the offset table. `controls --out DIR`: one base result per pool item and `controls.json` (or `controls-KofN.json`). Nothing is ever written to a bucket; planted copies live in memory",
@@ -13239,73 +13239,73 @@
     {
      "name": "Checks and controls",
      "start_line": 78,
-     "end_line": 89,
+     "end_line": 95,
      "applicable": true
     },
     {
      "name": "Commands and options",
-     "start_line": 90,
-     "end_line": 196,
+     "start_line": 96,
+     "end_line": 202,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 197,
-     "end_line": 259,
+     "start_line": 203,
+     "end_line": 266,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 260,
-     "end_line": 267,
+     "start_line": 267,
+     "end_line": 274,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 268,
-     "end_line": 297,
+     "start_line": 275,
+     "end_line": 304,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 298,
-     "end_line": 322,
+     "start_line": 305,
+     "end_line": 329,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 323,
-     "end_line": 333,
+     "start_line": 330,
+     "end_line": 340,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 334,
-     "end_line": 337,
+     "start_line": 341,
+     "end_line": 344,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 338,
-     "end_line": 347,
+     "start_line": 345,
+     "end_line": 354,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 348,
-     "end_line": 351,
+     "start_line": 355,
+     "end_line": 358,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 352,
-     "end_line": 355,
+     "start_line": 359,
+     "end_line": 362,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 356,
-     "end_line": 362,
+     "start_line": 363,
+     "end_line": 369,
      "applicable": true
     }
    ]

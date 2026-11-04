@@ -285,6 +285,18 @@ class Metadata(unittest.TestCase):
                                 "volumes": {"20250102000000": {"scan_id": "20250101000000"}}}}}
         self.assertEqual(sn.known_pitch("vol.zarr", "20250102000000", mm), (8.64, "metadata.min.json"))
         self.assertEqual(sn.known_pitch("vol.zarr", "1", mm), (None, None))
+        # the manifest comes first; a name that disagrees is reported beside the verdict
+        self.assertEqual(sn.known_pitch("20250102000000-2.4um.zarr", "20250102000000", mm), (8.64, "metadata.min.json"))
+        m = self.meta([[10, 10, 10]], [[1, 1, 1]])
+        out = sn.check_scale(m, 8.64, "metadata.min.json", named=2.4)
+        self.assertEqual((out["kind"], out["name_disagrees"]["name_um"]), ("scale_reset", 2.4))
+        self.assertEqual(sn.check_scale(self.meta([None], [[1, 1, 1]]), 8.64, "name")["verdict"], "skip")
+
+    def test_catalog_volumes_stay_in_the_bucket(self):
+        cat = {"samples": {"S": {"volumes": {"1": {"data": [{"origins": [
+            {"path": "samples/S/volumes/1-x.zarr/", "access_roots": [{"url": "https://data.aws.ash2txt.org"}]},
+            {"path": "S/volumes/1-x.zarr/", "access_roots": [{"url": "s3://vesuvius-challenge-open-data"}]}]}]}}}}}
+        self.assertEqual(sn.catalog_volumes(cat, "S")[0][1], sn.S3 + "/S/volumes/1-x.zarr")
 
     def test_issue_2369_label_shape(self):
         out = sn.check_labels((24120, 29900), {"MAN5_outer_3_inklabels.zarr": (24061, 29841),

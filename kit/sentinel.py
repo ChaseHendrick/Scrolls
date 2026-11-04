@@ -317,11 +317,23 @@ PITCH_IN_NAME = re.compile(r"(\d+\.\d+)\s*um", re.I)
 UNITS = {"micrometer": 1.0, "micrometre": 1.0, "um": 1.0, "µm": 1.0, "nanometer": 1e-3, "millimeter": 1e3}
 
 
-def known_pitch(name, volume_id=None, minmeta=None, catalog=None):
-    """(pitch in um, source) for a store, from its name, then metadata.min.json, then metadata.json; else (None, None)."""
+def name_pitch(name):
+    """The pitch a store's name states (2.400um, 9.362um, ...), or None."""
     m = PITCH_IN_NAME.search(name or "")
-    if m:
-        return float(m.group(1)), "name"
+    return float(m.group(1)) if m else None
+
+
+def known_pitch(name, volume_id=None, minmeta=None, catalog=None):
+    """(pitch in um, source) for a store: metadata.min.json (pixel_size_um of the volume or its scan), then
+    metadata.json, then the store's name; else (None, None)."""
+    p, src = _manifest_pitch(volume_id, minmeta, catalog)
+    if p:
+        return p, src
+    p = name_pitch(name)
+    return (p, "name") if p else (None, None)
+
+
+def _manifest_pitch(volume_id, minmeta, catalog):
     for doc, label in ((minmeta, "metadata.min.json"), (catalog, "metadata.json")):
         if not doc or not volume_id:
             continue
@@ -346,7 +358,7 @@ def known_pitch(name, volume_id=None, minmeta=None, catalog=None):
     return None, None
 
 
-def check_scale(meta, pitch=None, pitch_source=None, kind="volume"):
+def check_scale(meta, pitch=None, pitch_source=None, kind="volume", named=None):
     """A level-0 scale of [1, 1, 1] with no axis unit, or a declared pitch that disagrees, on a store whose pitch is
     known (#2137, #2220). A canvas grid with no known pitch is info, not a defect."""
     lv0 = meta["levels"][0]
@@ -354,6 +366,11 @@ def check_scale(meta, pitch=None, pitch_source=None, kind="volume"):
     units = [a.get("unit") if isinstance(a, dict) else None for a in meta.get("axes") or []][-3:]
     has_unit = any(u for u in units)
     out = {"check": "scale", "declared": s, "units": units, "known_pitch_um": pitch, "pitch_source": pitch_source}
+    if named and pitch and pitch_source != "name" and abs(named - pitch) > 0.01 * pitch:
+        out["name_disagrees"] = {"name_um": named, "manifest_um": pitch}   # reported, not a verdict
+    if lv0.get("shape") is None:
+        out.update(verdict="skip", kind="not_read", detail="no array at level 0 (the store was not found)")
+        return out
     if s is None:
         out.update(verdict="defect" if pitch else "info", kind="no_scale",
                    fallback_um=pitch, detail="no scale transform at level 0")
@@ -1019,7 +1036,9 @@ def catalog_volumes(catalog, sample):
         for d in v.get("data") or []:
             for o in d.get("origins") or []:
                 p = (o.get("path") or "").rstrip("/")
-                if p.endswith(".zarr") and not p.startswith("s3://"):
+                roots = [r.get("url", "") for r in o.get("access_roots") or []]
+                in_bucket = not roots or any("vesuvius-challenge-open-data" in r for r in roots)
+                if p.endswith(".zarr") and not p.startswith("s3://") and in_bucket:
                     out.append((vid, f"{S3}/{p}", (v.get("properties") or {}).get("pixel_size_um")))
                     break
     seen, uniq = set(), []
@@ -1222,7 +1241,7 @@ def check_item(item_id, rule=None, image=False, plant=None, catalog=None, minmet
             meta = plant_canvas(_MetaOnly(st, meta), plant)[0].meta
         vid = (re.match(r"(\d{14})", path.split("/")[-1]) or [None, None])[1]
         pitch, src = known_pitch(st.name, vid, minmeta, catalog)
-        res["checks"] = [check_pyramid(meta), check_scale(meta, pitch, src, "volume")]
+        res["checks"] = [check_pyramid(meta), check_scale(meta, pitch, src, "volume", named=name_pitch(st.name))]
         return _finish(res, t0)
     else:
         raise SentinelError(f"{item_id}: an item is hf:PATH, s3:PATH or s3vol:PATH")
