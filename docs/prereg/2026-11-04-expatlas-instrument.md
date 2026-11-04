@@ -93,10 +93,10 @@ tree were built.
 
 | Check | Result | Bar | Verdict |
 | --- | --- | --- | --- |
-| (a) recall | 30 of 30 exposed; f_same 0.804 to 0.973, median 0.929 | 29 | PASS |
+| (a) recall | 30 of 30 exposed; f_same 0.804 to 0.973, median 0.927 | 29 | PASS |
 | (b) adjacent-winding control | 21 of 30 not exposed (9 exposed, 1 trace); f_same up to 0.250 | 29 | **FAIL** |
 | (c) cross-scroll negative | 30 of 30 not exposed; f_same at most 0.009 | 30 | PASS |
-| (d) real positive pair | both directions exposed: `20250928235954` on `20250928235953` 0.901, the other way 0.050 (the copy covers about a ninth of the larger mesh) | 2 | PASS |
+| (d) real positive pair | both directions exposed: `20250928235954` on `20250928235953` 0.901, the other way 0.0505 against the 0.05 bar, a near miss (the copy covers about a ninth of the larger mesh) | 2 | PASS |
 
 All nine exposed copies in (b), and the one trace, are the ten large auto-grown PHerc0814 meshes traced on the
 9.362 um scan; every PHerc0009B copy and every PHerc0814 2.399 um copy passed. A diagnostic run after the result

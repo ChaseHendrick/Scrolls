@@ -233,14 +233,13 @@
    "model": "v8in",
    "segment": "20230702185753",
    "flags": [
-    "1 name(s) on PHercParis4 match no catalog segment: 20231012184423",
-    "1 name(s) with no scroll: Frag1"
+    "1 name(s) on PHercParis4 match no catalog segment: 20231012184423"
    ],
-   "covering": [],
    "f_same": 0.0,
    "f_band": 0.0,
    "median_offset_um": null,
    "transform_error_um": 0.0,
+   "covering": [],
    "status": "unknown",
    "why": "names on this scroll that match no catalog segment"
   },
@@ -248,14 +247,13 @@
    "model": "v8in-1447",
    "segment": "20230702185753",
    "flags": [
-    "1 name(s) on PHercParis4 match no catalog segment: 20231012184423",
-    "1 name(s) with no scroll: Frag1"
+    "1 name(s) on PHercParis4 match no catalog segment: 20231012184423"
    ],
-   "covering": [],
    "f_same": 0.0,
    "f_band": 0.0,
    "median_offset_um": null,
    "transform_error_um": 0.0,
+   "covering": [],
    "status": "unknown",
    "why": "names on this scroll that match no catalog segment"
   },
@@ -318,8 +316,8 @@
     "2 name(s) with no scroll: 500p2a, 658"
    ],
    "covering": [],
-   "status": "clear",
-   "why": "no training segment on PHercParis4 in its list"
+   "status": "unknown",
+   "why": "train names with no scroll, which could be this one"
   },
   {
    "model": "hecate",
@@ -341,20 +339,19 @@
    "flags": [],
    "covering": [],
    "status": "unknown",
-   "why": "training list not published: trace-v3b"
+   "why": "training list not fully published: trace-v3b"
   },
   {
    "model": "a-hn",
    "segment": "20230702185753",
    "flags": [
-    "1 name(s) on PHercParis4 match no catalog segment: 20231012184423",
-    "1 name(s) with no scroll: Frag1"
+    "1 name(s) on PHercParis4 match no catalog segment: 20231012184423"
    ],
-   "covering": [],
    "f_same": 0.0,
    "f_band": 0.0,
    "median_offset_um": null,
    "transform_error_um": 0.0,
+   "covering": [],
    "status": "unknown",
    "why": "names on this scroll that match no catalog segment"
   },
@@ -376,9 +373,12 @@
    "model": "v8in",
    "segment": "20230929220926",
    "flags": [
-    "1 name(s) on PHercParis4 match no catalog segment: 20231012184423",
-    "1 name(s) with no scroll: Frag1"
+    "1 name(s) on PHercParis4 match no catalog segment: 20231012184423"
    ],
+   "f_same": 0.1465,
+   "f_band": 0.2317,
+   "median_offset_um": 14.89,
+   "transform_error_um": 0.0,
    "covering": [
     {
      "segment": "20231005123336",
@@ -387,14 +387,11 @@
      "as": "train",
      "f_same": 0.1465,
      "f_band": 0.2317,
+     "call": "exposed",
      "transform_error_um": 0.0,
      "z_overlap": 1.0
     }
    ],
-   "f_same": 0.1465,
-   "f_band": 0.2317,
-   "median_offset_um": 14.89,
-   "transform_error_um": 0.0,
    "status": "exposed",
    "why": "training surfaces cover 14.6% of it within 60 um (largest: 20231005123336 via v8in, 14.6%)"
   },
@@ -402,9 +399,12 @@
    "model": "v8in-1447",
    "segment": "20230929220926",
    "flags": [
-    "1 name(s) on PHercParis4 match no catalog segment: 20231012184423",
-    "1 name(s) with no scroll: Frag1"
+    "1 name(s) on PHercParis4 match no catalog segment: 20231012184423"
    ],
+   "f_same": 0.1465,
+   "f_band": 0.2317,
+   "median_offset_um": 14.89,
+   "transform_error_um": 0.0,
    "covering": [
     {
      "segment": "20231005123336",
@@ -413,14 +413,11 @@
      "as": "train",
      "f_same": 0.1465,
      "f_band": 0.2317,
+     "call": "exposed",
      "transform_error_um": 0.0,
      "z_overlap": 1.0
     }
    ],
-   "f_same": 0.1465,
-   "f_band": 0.2317,
-   "median_offset_um": 14.89,
-   "transform_error_um": 0.0,
    "status": "exposed",
    "why": "training surfaces cover 14.6% of it within 60 um (largest: 20231005123336 via v8in-1447 < v8in, 14.6%)"
   },
@@ -483,8 +480,8 @@
     "2 name(s) with no scroll: 500p2a, 658"
    ],
    "covering": [],
-   "status": "clear",
-   "why": "no training segment on PHercParis4 in its list"
+   "status": "unknown",
+   "why": "train names with no scroll, which could be this one"
   },
   {
    "model": "hecate",
@@ -506,15 +503,18 @@
    "flags": [],
    "covering": [],
    "status": "unknown",
-   "why": "training list not published: trace-v3b"
+   "why": "training list not fully published: trace-v3b"
   },
   {
    "model": "a-hn",
    "segment": "20230929220926",
    "flags": [
-    "1 name(s) on PHercParis4 match no catalog segment: 20231012184423",
-    "1 name(s) with no scroll: Frag1"
+    "1 name(s) on PHercParis4 match no catalog segment: 20231012184423"
    ],
+   "f_same": 0.1465,
+   "f_band": 0.2317,
+   "median_offset_um": 14.89,
+   "transform_error_um": 0.0,
    "covering": [
     {
      "segment": "20231005123336",
@@ -523,14 +523,11 @@
      "as": "train",
      "f_same": 0.1465,
      "f_band": 0.2317,
+     "call": "exposed",
      "transform_error_um": 0.0,
      "z_overlap": 1.0
     }
    ],
-   "f_same": 0.1465,
-   "f_band": 0.2317,
-   "median_offset_um": 14.89,
-   "transform_error_um": 0.0,
    "status": "exposed",
    "why": "training surfaces cover 14.6% of it within 60 um (largest: 20231005123336 via a-hn < v8in, 14.6%)"
   },
@@ -552,9 +549,12 @@
    "model": "v8in",
    "segment": "20231007101619",
    "flags": [
-    "1 name(s) on PHercParis4 match no catalog segment: 20231012184423",
-    "1 name(s) with no scroll: Frag1"
+    "1 name(s) on PHercParis4 match no catalog segment: 20231012184423"
    ],
+   "f_same": 0.1007,
+   "f_band": 0.1243,
+   "median_offset_um": 11.17,
+   "transform_error_um": 0.0,
    "covering": [
     {
      "segment": "20231005123336",
@@ -563,14 +563,11 @@
      "as": "train",
      "f_same": 0.1007,
      "f_band": 0.1243,
+     "call": "exposed",
      "transform_error_um": 0.0,
      "z_overlap": 0.6382
     }
    ],
-   "f_same": 0.1007,
-   "f_band": 0.1243,
-   "median_offset_um": 11.17,
-   "transform_error_um": 0.0,
    "status": "exposed",
    "why": "training surfaces cover 10.1% of it within 60 um (largest: 20231005123336 via v8in, 10.1%)"
   },
@@ -578,9 +575,12 @@
    "model": "v8in-1447",
    "segment": "20231007101619",
    "flags": [
-    "1 name(s) on PHercParis4 match no catalog segment: 20231012184423",
-    "1 name(s) with no scroll: Frag1"
+    "1 name(s) on PHercParis4 match no catalog segment: 20231012184423"
    ],
+   "f_same": 0.1007,
+   "f_band": 0.1243,
+   "median_offset_um": 11.17,
+   "transform_error_um": 0.0,
    "covering": [
     {
      "segment": "20231005123336",
@@ -589,14 +589,11 @@
      "as": "train",
      "f_same": 0.1007,
      "f_band": 0.1243,
+     "call": "exposed",
      "transform_error_um": 0.0,
      "z_overlap": 0.6382
     }
    ],
-   "f_same": 0.1007,
-   "f_band": 0.1243,
-   "median_offset_um": 11.17,
-   "transform_error_um": 0.0,
    "status": "exposed",
    "why": "training surfaces cover 10.1% of it within 60 um (largest: 20231005123336 via v8in-1447 < v8in, 10.1%)"
   },
@@ -659,8 +656,8 @@
     "2 name(s) with no scroll: 500p2a, 658"
    ],
    "covering": [],
-   "status": "clear",
-   "why": "no training segment on PHercParis4 in its list"
+   "status": "unknown",
+   "why": "train names with no scroll, which could be this one"
   },
   {
    "model": "hecate",
@@ -682,15 +679,18 @@
    "flags": [],
    "covering": [],
    "status": "unknown",
-   "why": "training list not published: trace-v3b"
+   "why": "training list not fully published: trace-v3b"
   },
   {
    "model": "a-hn",
    "segment": "20231007101619",
    "flags": [
-    "1 name(s) on PHercParis4 match no catalog segment: 20231012184423",
-    "1 name(s) with no scroll: Frag1"
+    "1 name(s) on PHercParis4 match no catalog segment: 20231012184423"
    ],
+   "f_same": 0.1007,
+   "f_band": 0.1243,
+   "median_offset_um": 11.17,
+   "transform_error_um": 0.0,
    "covering": [
     {
      "segment": "20231005123336",
@@ -699,14 +699,11 @@
      "as": "train",
      "f_same": 0.1007,
      "f_band": 0.1243,
+     "call": "exposed",
      "transform_error_um": 0.0,
      "z_overlap": 0.6382
     }
    ],
-   "f_same": 0.1007,
-   "f_band": 0.1243,
-   "median_offset_um": 11.17,
-   "transform_error_um": 0.0,
    "status": "exposed",
    "why": "training surfaces cover 10.1% of it within 60 um (largest: 20231005123336 via a-hn < v8in, 10.1%)"
   },
@@ -728,14 +725,13 @@
    "model": "v8in",
    "segment": "20231012184424",
    "flags": [
-    "1 name(s) on PHercParis4 match no catalog segment: 20231012184423",
-    "1 name(s) with no scroll: Frag1"
+    "1 name(s) on PHercParis4 match no catalog segment: 20231012184423"
    ],
-   "covering": [],
    "f_same": 0.0,
    "f_band": 0.0,
    "median_offset_um": null,
    "transform_error_um": 0.0,
+   "covering": [],
    "status": "unknown",
    "why": "names on this scroll that match no catalog segment"
   },
@@ -743,14 +739,13 @@
    "model": "v8in-1447",
    "segment": "20231012184424",
    "flags": [
-    "1 name(s) on PHercParis4 match no catalog segment: 20231012184423",
-    "1 name(s) with no scroll: Frag1"
+    "1 name(s) on PHercParis4 match no catalog segment: 20231012184423"
    ],
-   "covering": [],
    "f_same": 0.0,
    "f_band": 0.0,
    "median_offset_um": null,
    "transform_error_um": 0.0,
+   "covering": [],
    "status": "unknown",
    "why": "names on this scroll that match no catalog segment"
   },
@@ -813,8 +808,8 @@
     "2 name(s) with no scroll: 500p2a, 658"
    ],
    "covering": [],
-   "status": "clear",
-   "why": "no training segment on PHercParis4 in its list"
+   "status": "unknown",
+   "why": "train names with no scroll, which could be this one"
   },
   {
    "model": "hecate",
@@ -836,20 +831,19 @@
    "flags": [],
    "covering": [],
    "status": "unknown",
-   "why": "training list not published: trace-v3b"
+   "why": "training list not fully published: trace-v3b"
   },
   {
    "model": "a-hn",
    "segment": "20231012184424",
    "flags": [
-    "1 name(s) on PHercParis4 match no catalog segment: 20231012184423",
-    "1 name(s) with no scroll: Frag1"
+    "1 name(s) on PHercParis4 match no catalog segment: 20231012184423"
    ],
-   "covering": [],
    "f_same": 0.0,
    "f_band": 0.0,
    "median_offset_um": null,
    "transform_error_um": 0.0,
+   "covering": [],
    "status": "unknown",
    "why": "names on this scroll that match no catalog segment"
   },
@@ -871,14 +865,13 @@
    "model": "v8in",
    "segment": "20231016151002",
    "flags": [
-    "1 name(s) on PHercParis4 match no catalog segment: 20231012184423",
-    "1 name(s) with no scroll: Frag1"
+    "1 name(s) on PHercParis4 match no catalog segment: 20231012184423"
    ],
-   "covering": [],
    "f_same": 0.0,
    "f_band": 0.0,
    "median_offset_um": null,
    "transform_error_um": 0.0,
+   "covering": [],
    "status": "unknown",
    "why": "names on this scroll that match no catalog segment"
   },
@@ -886,14 +879,13 @@
    "model": "v8in-1447",
    "segment": "20231016151002",
    "flags": [
-    "1 name(s) on PHercParis4 match no catalog segment: 20231012184423",
-    "1 name(s) with no scroll: Frag1"
+    "1 name(s) on PHercParis4 match no catalog segment: 20231012184423"
    ],
-   "covering": [],
    "f_same": 0.0,
    "f_band": 0.0,
    "median_offset_um": null,
    "transform_error_um": 0.0,
+   "covering": [],
    "status": "unknown",
    "why": "names on this scroll that match no catalog segment"
   },
@@ -956,8 +948,8 @@
     "2 name(s) with no scroll: 500p2a, 658"
    ],
    "covering": [],
-   "status": "clear",
-   "why": "no training segment on PHercParis4 in its list"
+   "status": "unknown",
+   "why": "train names with no scroll, which could be this one"
   },
   {
    "model": "hecate",
@@ -979,20 +971,19 @@
    "flags": [],
    "covering": [],
    "status": "unknown",
-   "why": "training list not published: trace-v3b"
+   "why": "training list not fully published: trace-v3b"
   },
   {
    "model": "a-hn",
    "segment": "20231016151002",
    "flags": [
-    "1 name(s) on PHercParis4 match no catalog segment: 20231012184423",
-    "1 name(s) with no scroll: Frag1"
+    "1 name(s) on PHercParis4 match no catalog segment: 20231012184423"
    ],
-   "covering": [],
    "f_same": 0.0,
    "f_band": 0.0,
    "median_offset_um": null,
    "transform_error_um": 0.0,
+   "covering": [],
    "status": "unknown",
    "why": "names on this scroll that match no catalog segment"
   },
@@ -1014,14 +1005,13 @@
    "model": "v8in",
    "segment": "20231031143852",
    "flags": [
-    "1 name(s) on PHercParis4 match no catalog segment: 20231012184423",
-    "1 name(s) with no scroll: Frag1"
+    "1 name(s) on PHercParis4 match no catalog segment: 20231012184423"
    ],
-   "covering": [],
    "f_same": 0.0,
    "f_band": 0.0,
    "median_offset_um": null,
    "transform_error_um": 0.0,
+   "covering": [],
    "status": "unknown",
    "why": "names on this scroll that match no catalog segment"
   },
@@ -1029,14 +1019,13 @@
    "model": "v8in-1447",
    "segment": "20231031143852",
    "flags": [
-    "1 name(s) on PHercParis4 match no catalog segment: 20231012184423",
-    "1 name(s) with no scroll: Frag1"
+    "1 name(s) on PHercParis4 match no catalog segment: 20231012184423"
    ],
-   "covering": [],
    "f_same": 0.0,
    "f_band": 0.0,
    "median_offset_um": null,
    "transform_error_um": 0.0,
+   "covering": [],
    "status": "unknown",
    "why": "names on this scroll that match no catalog segment"
   },
@@ -1099,8 +1088,8 @@
     "2 name(s) with no scroll: 500p2a, 658"
    ],
    "covering": [],
-   "status": "clear",
-   "why": "no training segment on PHercParis4 in its list"
+   "status": "unknown",
+   "why": "train names with no scroll, which could be this one"
   },
   {
    "model": "hecate",
@@ -1122,20 +1111,19 @@
    "flags": [],
    "covering": [],
    "status": "unknown",
-   "why": "training list not published: trace-v3b"
+   "why": "training list not fully published: trace-v3b"
   },
   {
    "model": "a-hn",
    "segment": "20231031143852",
    "flags": [
-    "1 name(s) on PHercParis4 match no catalog segment: 20231012184423",
-    "1 name(s) with no scroll: Frag1"
+    "1 name(s) on PHercParis4 match no catalog segment: 20231012184423"
    ],
-   "covering": [],
    "f_same": 0.0,
    "f_band": 0.0,
    "median_offset_um": null,
    "transform_error_um": 0.0,
+   "covering": [],
    "status": "unknown",
    "why": "names on this scroll that match no catalog segment"
   },
@@ -1157,14 +1145,13 @@
    "model": "v8in",
    "segment": "20231106155351",
    "flags": [
-    "1 name(s) on PHercParis4 match no catalog segment: 20231012184423",
-    "1 name(s) with no scroll: Frag1"
+    "1 name(s) on PHercParis4 match no catalog segment: 20231012184423"
    ],
-   "covering": [],
    "f_same": 0.0,
    "f_band": 0.0,
    "median_offset_um": null,
    "transform_error_um": 0.0,
+   "covering": [],
    "status": "unknown",
    "why": "names on this scroll that match no catalog segment"
   },
@@ -1172,14 +1159,13 @@
    "model": "v8in-1447",
    "segment": "20231106155351",
    "flags": [
-    "1 name(s) on PHercParis4 match no catalog segment: 20231012184423",
-    "1 name(s) with no scroll: Frag1"
+    "1 name(s) on PHercParis4 match no catalog segment: 20231012184423"
    ],
-   "covering": [],
    "f_same": 0.0,
    "f_band": 0.0,
    "median_offset_um": null,
    "transform_error_um": 0.0,
+   "covering": [],
    "status": "unknown",
    "why": "names on this scroll that match no catalog segment"
   },
@@ -1242,8 +1228,8 @@
     "2 name(s) with no scroll: 500p2a, 658"
    ],
    "covering": [],
-   "status": "clear",
-   "why": "no training segment on PHercParis4 in its list"
+   "status": "unknown",
+   "why": "train names with no scroll, which could be this one"
   },
   {
    "model": "hecate",
@@ -1265,20 +1251,19 @@
    "flags": [],
    "covering": [],
    "status": "unknown",
-   "why": "training list not published: trace-v3b"
+   "why": "training list not fully published: trace-v3b"
   },
   {
    "model": "a-hn",
    "segment": "20231106155351",
    "flags": [
-    "1 name(s) on PHercParis4 match no catalog segment: 20231012184423",
-    "1 name(s) with no scroll: Frag1"
+    "1 name(s) on PHercParis4 match no catalog segment: 20231012184423"
    ],
-   "covering": [],
    "f_same": 0.0,
    "f_band": 0.0,
    "median_offset_um": null,
    "transform_error_um": 0.0,
+   "covering": [],
    "status": "unknown",
    "why": "names on this scroll that match no catalog segment"
   },
@@ -1300,9 +1285,12 @@
    "model": "v8in",
    "segment": "20231210121321",
    "flags": [
-    "1 name(s) on PHercParis4 match no catalog segment: 20231012184423",
-    "1 name(s) with no scroll: Frag1"
+    "1 name(s) on PHercParis4 match no catalog segment: 20231012184423"
    ],
+   "f_same": 0.0001,
+   "f_band": 0.0002,
+   "median_offset_um": 20.98,
+   "transform_error_um": 0.0,
    "covering": [
     {
      "segment": "20231005123336",
@@ -1311,14 +1299,11 @@
      "as": "train",
      "f_same": 0.0001,
      "f_band": 0.0002,
+     "call": "clear",
      "transform_error_um": 0.0,
      "z_overlap": 0.6384
     }
    ],
-   "f_same": 0.0001,
-   "f_band": 0.0002,
-   "median_offset_um": 20.98,
-   "transform_error_um": 0.0,
    "status": "unknown",
    "why": "names on this scroll that match no catalog segment"
   },
@@ -1326,9 +1311,12 @@
    "model": "v8in-1447",
    "segment": "20231210121321",
    "flags": [
-    "1 name(s) on PHercParis4 match no catalog segment: 20231012184423",
-    "1 name(s) with no scroll: Frag1"
+    "1 name(s) on PHercParis4 match no catalog segment: 20231012184423"
    ],
+   "f_same": 0.0001,
+   "f_band": 0.0002,
+   "median_offset_um": 20.98,
+   "transform_error_um": 0.0,
    "covering": [
     {
      "segment": "20231005123336",
@@ -1337,14 +1325,11 @@
      "as": "train",
      "f_same": 0.0001,
      "f_band": 0.0002,
+     "call": "clear",
      "transform_error_um": 0.0,
      "z_overlap": 0.6384
     }
    ],
-   "f_same": 0.0001,
-   "f_band": 0.0002,
-   "median_offset_um": 20.98,
-   "transform_error_um": 0.0,
    "status": "unknown",
    "why": "names on this scroll that match no catalog segment"
   },
@@ -1407,8 +1392,8 @@
     "2 name(s) with no scroll: 500p2a, 658"
    ],
    "covering": [],
-   "status": "clear",
-   "why": "no training segment on PHercParis4 in its list"
+   "status": "unknown",
+   "why": "train names with no scroll, which could be this one"
   },
   {
    "model": "hecate",
@@ -1430,15 +1415,18 @@
    "flags": [],
    "covering": [],
    "status": "unknown",
-   "why": "training list not published: trace-v3b"
+   "why": "training list not fully published: trace-v3b"
   },
   {
    "model": "a-hn",
    "segment": "20231210121321",
    "flags": [
-    "1 name(s) on PHercParis4 match no catalog segment: 20231012184423",
-    "1 name(s) with no scroll: Frag1"
+    "1 name(s) on PHercParis4 match no catalog segment: 20231012184423"
    ],
+   "f_same": 0.0001,
+   "f_band": 0.0002,
+   "median_offset_um": 20.98,
+   "transform_error_um": 0.0,
    "covering": [
     {
      "segment": "20231005123336",
@@ -1447,14 +1435,11 @@
      "as": "train",
      "f_same": 0.0001,
      "f_band": 0.0002,
+     "call": "clear",
      "transform_error_um": 0.0,
      "z_overlap": 0.6384
     }
    ],
-   "f_same": 0.0001,
-   "f_band": 0.0002,
-   "median_offset_um": 20.98,
-   "transform_error_um": 0.0,
    "status": "unknown",
    "why": "names on this scroll that match no catalog segment"
   },
@@ -1475,9 +1460,11 @@
   {
    "model": "v8in",
    "segment": "20240304141531",
-   "flags": [
-    "1 name(s) with no scroll: Frag1"
-   ],
+   "flags": [],
+   "f_same": 0.0477,
+   "f_band": 0.0593,
+   "median_offset_um": 8.05,
+   "transform_error_um": 0.0,
    "covering": [
     {
      "segment": "20240304144031",
@@ -1486,23 +1473,22 @@
      "as": "train",
      "f_same": 0.0477,
      "f_band": 0.0593,
+     "call": "trace",
      "transform_error_um": 0.0,
      "z_overlap": 0.9997
     }
    ],
-   "f_same": 0.0477,
-   "f_band": 0.0593,
-   "median_offset_um": 8.05,
-   "transform_error_um": 0.0,
    "status": "trace",
    "why": "training surfaces cover 4.8% within 60 um"
   },
   {
    "model": "v8in-1447",
    "segment": "20240304141531",
-   "flags": [
-    "1 name(s) with no scroll: Frag1"
-   ],
+   "flags": [],
+   "f_same": 0.0477,
+   "f_band": 0.0593,
+   "median_offset_um": 8.05,
+   "transform_error_um": 0.0,
    "covering": [
     {
      "segment": "20240304144031",
@@ -1511,14 +1497,11 @@
      "as": "train",
      "f_same": 0.0477,
      "f_band": 0.0593,
+     "call": "trace",
      "transform_error_um": 0.0,
      "z_overlap": 0.9997
     }
    ],
-   "f_same": 0.0477,
-   "f_band": 0.0593,
-   "median_offset_um": 8.05,
-   "transform_error_um": 0.0,
    "status": "trace",
    "why": "training surfaces cover 4.8% within 60 um"
   },
@@ -1583,7 +1566,7 @@
    ],
    "covering": [],
    "status": "unknown",
-   "why": "names on this scroll that match no catalog segment"
+   "why": "names on this scroll that match no catalog segment; train names with no scroll, which could be this one"
   },
   {
    "model": "hecate",
@@ -1605,14 +1588,16 @@
    "flags": [],
    "covering": [],
    "status": "unknown",
-   "why": "training list not published: trace-v3b"
+   "why": "training list not fully published: trace-v3b"
   },
   {
    "model": "a-hn",
    "segment": "20240304141531",
-   "flags": [
-    "1 name(s) with no scroll: Frag1"
-   ],
+   "flags": [],
+   "f_same": 0.0477,
+   "f_band": 0.0593,
+   "median_offset_um": 8.05,
+   "transform_error_um": 0.0,
    "covering": [
     {
      "segment": "20240304144031",
@@ -1621,14 +1606,11 @@
      "as": "train",
      "f_same": 0.0477,
      "f_band": 0.0593,
+     "call": "trace",
      "transform_error_um": 0.0,
      "z_overlap": 0.9997
     }
    ],
-   "f_same": 0.0477,
-   "f_band": 0.0593,
-   "median_offset_um": 8.05,
-   "transform_error_um": 0.0,
    "status": "trace",
    "why": "training surfaces cover 4.8% within 60 um"
   },
@@ -1735,7 +1717,7 @@
    ],
    "covering": [],
    "status": "unknown",
-   "why": "names on this scroll that match no catalog segment"
+   "why": "names on this scroll that match no catalog segment; train names with no scroll, which could be this one"
   },
   {
    "model": "hecate",
@@ -1757,7 +1739,7 @@
    "flags": [],
    "covering": [],
    "status": "unknown",
-   "why": "training list not published: trace-v3b"
+   "why": "training list not fully published: trace-v3b"
   },
   {
    "model": "a-hn",
@@ -1790,9 +1772,11 @@
   {
    "model": "v8in",
    "segment": "20240304161941",
-   "flags": [
-    "1 name(s) with no scroll: Frag1"
-   ],
+   "flags": [],
+   "f_same": 0.0557,
+   "f_band": 0.0794,
+   "median_offset_um": 9.94,
+   "transform_error_um": 0.0,
    "covering": [
     {
      "segment": "20240304144031",
@@ -1801,23 +1785,22 @@
      "as": "train",
      "f_same": 0.0557,
      "f_band": 0.0794,
+     "call": "exposed",
      "transform_error_um": 0.0,
      "z_overlap": 0.9891
     }
    ],
-   "f_same": 0.0557,
-   "f_band": 0.0794,
-   "median_offset_um": 9.94,
-   "transform_error_um": 0.0,
    "status": "exposed",
    "why": "training surfaces cover 5.6% of it within 60 um (largest: 1667_20240304144031 via v8in, 5.6%)"
   },
   {
    "model": "v8in-1447",
    "segment": "20240304161941",
-   "flags": [
-    "1 name(s) with no scroll: Frag1"
-   ],
+   "flags": [],
+   "f_same": 0.0557,
+   "f_band": 0.0794,
+   "median_offset_um": 9.94,
+   "transform_error_um": 0.0,
    "covering": [
     {
      "segment": "20240304144031",
@@ -1826,14 +1809,11 @@
      "as": "train",
      "f_same": 0.0557,
      "f_band": 0.0794,
+     "call": "exposed",
      "transform_error_um": 0.0,
      "z_overlap": 0.9891
     }
    ],
-   "f_same": 0.0557,
-   "f_band": 0.0794,
-   "median_offset_um": 9.94,
-   "transform_error_um": 0.0,
    "status": "exposed",
    "why": "training surfaces cover 5.6% of it within 60 um (largest: 1667_20240304144031 via v8in-1447 < v8in, 5.6%)"
   },
@@ -1898,7 +1878,7 @@
    ],
    "covering": [],
    "status": "unknown",
-   "why": "names on this scroll that match no catalog segment"
+   "why": "names on this scroll that match no catalog segment; train names with no scroll, which could be this one"
   },
   {
    "model": "hecate",
@@ -1920,14 +1900,16 @@
    "flags": [],
    "covering": [],
    "status": "unknown",
-   "why": "training list not published: trace-v3b"
+   "why": "training list not fully published: trace-v3b"
   },
   {
    "model": "a-hn",
    "segment": "20240304161941",
-   "flags": [
-    "1 name(s) with no scroll: Frag1"
-   ],
+   "flags": [],
+   "f_same": 0.0557,
+   "f_band": 0.0794,
+   "median_offset_um": 9.94,
+   "transform_error_um": 0.0,
    "covering": [
     {
      "segment": "20240304144031",
@@ -1936,14 +1918,11 @@
      "as": "train",
      "f_same": 0.0557,
      "f_band": 0.0794,
+     "call": "exposed",
      "transform_error_um": 0.0,
      "z_overlap": 0.9891
     }
    ],
-   "f_same": 0.0557,
-   "f_band": 0.0794,
-   "median_offset_um": 9.94,
-   "transform_error_um": 0.0,
    "status": "exposed",
    "why": "training surfaces cover 5.6% of it within 60 um (largest: 1667_20240304144031 via a-hn < v8in, 5.6%)"
   },
@@ -1958,9 +1937,11 @@
   {
    "model": "v8in",
    "segment": "20250825181859",
-   "flags": [
-    "1 name(s) with no scroll: Frag1"
-   ],
+   "flags": [],
+   "f_same": 0.0563,
+   "f_band": 0.0836,
+   "median_offset_um": 27.64,
+   "transform_error_um": 0.0,
    "covering": [
     {
      "segment": "20250628074500",
@@ -1969,23 +1950,22 @@
      "as": "train",
      "f_same": 0.0563,
      "f_band": 0.0836,
+     "call": "exposed",
      "transform_error_um": 0.0,
      "z_overlap": 1.0
     }
    ],
-   "f_same": 0.0563,
-   "f_band": 0.0836,
-   "median_offset_um": 27.64,
-   "transform_error_um": 0.0,
    "status": "exposed",
    "why": "training surfaces cover 5.6% of it within 60 um (largest: 0500P2_front via v8in, 5.6%)"
   },
   {
    "model": "v8in-1447",
    "segment": "20250825181859",
-   "flags": [
-    "1 name(s) with no scroll: Frag1"
-   ],
+   "flags": [],
+   "f_same": 0.0563,
+   "f_band": 0.0836,
+   "median_offset_um": 27.64,
+   "transform_error_um": 0.0,
    "covering": [
     {
      "segment": "20250628074500",
@@ -1994,14 +1974,11 @@
      "as": "train",
      "f_same": 0.0563,
      "f_band": 0.0836,
+     "call": "exposed",
      "transform_error_um": 0.0,
      "z_overlap": 1.0
     }
    ],
-   "f_same": 0.0563,
-   "f_band": 0.0836,
-   "median_offset_um": 27.64,
-   "transform_error_um": 0.0,
    "status": "exposed",
    "why": "training surfaces cover 5.6% of it within 60 um (largest: 0500P2_front via v8in-1447 < v8in, 5.6%)"
   },
@@ -2011,6 +1988,10 @@
    "flags": [
     "d9v2: test (20250825181859--1)"
    ],
+   "f_same": 0.2628,
+   "f_band": 0.7071,
+   "median_offset_um": 37.07,
+   "transform_error_um": 0.0,
    "covering": [
     {
      "segment": "20250825181907",
@@ -2019,6 +2000,7 @@
      "as": "train",
      "f_same": 0.1245,
      "f_band": 0.42,
+     "call": "exposed",
      "transform_error_um": 0.0,
      "z_overlap": 0.9953
     },
@@ -2029,6 +2011,7 @@
      "as": "train",
      "f_same": 0.0775,
      "f_band": 0.3869,
+     "call": "exposed",
      "transform_error_um": 0.0,
      "z_overlap": 0.9434
     },
@@ -2039,6 +2022,7 @@
      "as": "train",
      "f_same": 0.0563,
      "f_band": 0.0836,
+     "call": "exposed",
      "transform_error_um": 0.0,
      "z_overlap": 1.0
     },
@@ -2049,6 +2033,7 @@
      "as": "train",
      "f_same": 0.0494,
      "f_band": 0.0755,
+     "call": "trace",
      "transform_error_um": 0.0,
      "z_overlap": 0.9896
     },
@@ -2059,14 +2044,11 @@
      "as": "train",
      "f_same": 0.0217,
      "f_band": 0.0396,
+     "call": "trace",
      "transform_error_um": 0.0,
      "z_overlap": 0.9541
     }
    ],
-   "f_same": 0.2628,
-   "f_band": 0.7071,
-   "median_offset_um": 37.07,
-   "transform_error_um": 0.0,
    "status": "exposed",
    "why": "training surfaces cover 26.3% of it within 60 um (largest: 20250825181907-0 via d9v2, 12.4%)"
   },
@@ -2074,6 +2056,10 @@
    "model": "reader-v2",
    "segment": "20250825181859",
    "flags": [],
+   "f_same": 0.086,
+   "f_band": 0.1464,
+   "median_offset_um": 28.13,
+   "transform_error_um": 0.0,
    "covering": [
     {
      "segment": "20250628074500",
@@ -2082,6 +2068,7 @@
      "as": "train",
      "f_same": 0.0563,
      "f_band": 0.0836,
+     "call": "exposed",
      "transform_error_um": 0.0,
      "z_overlap": 1.0
     },
@@ -2092,6 +2079,7 @@
      "as": "train",
      "f_same": 0.018,
      "f_band": 0.0466,
+     "call": "trace",
      "transform_error_um": 0.0,
      "z_overlap": 0.9366
     },
@@ -2102,6 +2090,7 @@
      "as": "train",
      "f_same": 0.0088,
      "f_band": 0.0139,
+     "call": "trace",
      "transform_error_um": 0.0,
      "z_overlap": 1.0
     },
@@ -2112,6 +2101,7 @@
      "as": "train",
      "f_same": 0.0053,
      "f_band": 0.0089,
+     "call": "trace",
      "transform_error_um": 0.0,
      "z_overlap": 0.8989
     },
@@ -2122,14 +2112,11 @@
      "as": "train",
      "f_same": 0.0027,
      "f_band": 0.0119,
+     "call": "clear",
      "transform_error_um": 0.0,
      "z_overlap": 0.8852
     }
    ],
-   "f_same": 0.086,
-   "f_band": 0.1464,
-   "median_offset_um": 28.13,
-   "transform_error_um": 0.0,
    "status": "exposed",
    "why": "training surfaces cover 8.6% of it within 60 um (largest: 20250628074500-500P2_front via reader-v2, 5.6%)"
   },
@@ -2137,6 +2124,10 @@
    "model": "reader-v3",
    "segment": "20250825181859",
    "flags": [],
+   "f_same": 0.086,
+   "f_band": 0.1464,
+   "median_offset_um": 28.13,
+   "transform_error_um": 0.0,
    "covering": [
     {
      "segment": "20250628074500",
@@ -2145,6 +2136,7 @@
      "as": "train",
      "f_same": 0.0563,
      "f_band": 0.0836,
+     "call": "exposed",
      "transform_error_um": 0.0,
      "z_overlap": 1.0
     },
@@ -2155,6 +2147,7 @@
      "as": "train",
      "f_same": 0.018,
      "f_band": 0.0466,
+     "call": "trace",
      "transform_error_um": 0.0,
      "z_overlap": 0.9366
     },
@@ -2165,6 +2158,7 @@
      "as": "train",
      "f_same": 0.0088,
      "f_band": 0.0139,
+     "call": "trace",
      "transform_error_um": 0.0,
      "z_overlap": 1.0
     },
@@ -2175,6 +2169,7 @@
      "as": "train",
      "f_same": 0.0053,
      "f_band": 0.0089,
+     "call": "trace",
      "transform_error_um": 0.0,
      "z_overlap": 0.8989
     },
@@ -2185,14 +2180,11 @@
      "as": "train",
      "f_same": 0.0027,
      "f_band": 0.0119,
+     "call": "clear",
      "transform_error_um": 0.0,
      "z_overlap": 0.8852
     }
    ],
-   "f_same": 0.086,
-   "f_band": 0.1464,
-   "median_offset_um": 28.13,
-   "transform_error_um": 0.0,
    "status": "exposed",
    "why": "training surfaces cover 8.6% of it within 60 um (largest: 20250628074500-500P2_front via reader-v3 < reader-v2, 5.6%)"
   },
@@ -2235,14 +2227,16 @@
    "flags": [],
    "covering": [],
    "status": "unknown",
-   "why": "training list not published: trace-v3b"
+   "why": "training list not fully published: trace-v3b"
   },
   {
    "model": "a-hn",
    "segment": "20250825181859",
-   "flags": [
-    "1 name(s) with no scroll: Frag1"
-   ],
+   "flags": [],
+   "f_same": 0.0563,
+   "f_band": 0.0836,
+   "median_offset_um": 27.64,
+   "transform_error_um": 0.0,
    "covering": [
     {
      "segment": "20250628074500",
@@ -2251,14 +2245,11 @@
      "as": "train",
      "f_same": 0.0563,
      "f_band": 0.0836,
+     "call": "exposed",
      "transform_error_um": 0.0,
      "z_overlap": 1.0
     }
    ],
-   "f_same": 0.0563,
-   "f_band": 0.0836,
-   "median_offset_um": 27.64,
-   "transform_error_um": 0.0,
    "status": "exposed",
    "why": "training surfaces cover 5.6% of it within 60 um (largest: 0500P2_front via a-hn < v8in, 5.6%)"
   },
@@ -2273,9 +2264,7 @@
   {
    "model": "v8in",
    "segment": "20250919125754",
-   "flags": [
-    "1 name(s) with no scroll: Frag1"
-   ],
+   "flags": [],
    "covering": [
     {
      "segment": "20250919132115",
@@ -2284,6 +2273,7 @@
      "as": "validation",
      "f_same": 0.1729,
      "f_band": 0.2258,
+     "call": "exposed",
      "transform_error_um": 0.0,
      "z_overlap": 1.0
     }
@@ -2294,9 +2284,7 @@
   {
    "model": "v8in-1447",
    "segment": "20250919125754",
-   "flags": [
-    "1 name(s) with no scroll: Frag1"
-   ],
+   "flags": [],
    "covering": [
     {
      "segment": "20250919132115",
@@ -2305,6 +2293,7 @@
      "as": "validation",
      "f_same": 0.1729,
      "f_band": 0.2258,
+     "call": "exposed",
      "transform_error_um": 0.0,
      "z_overlap": 1.0
     }
@@ -2318,6 +2307,10 @@
    "flags": [
     "d9v2: test (20250919125754-auto_grown_20250919055754487_inp_hr)"
    ],
+   "f_same": 0.4297,
+   "f_band": 0.4897,
+   "median_offset_um": 1.89,
+   "transform_error_um": 0.0,
    "covering": [
     {
      "segment": "20250919064353",
@@ -2326,6 +2319,7 @@
      "as": "train",
      "f_same": 0.2678,
      "f_band": 0.2856,
+     "call": "exposed",
      "transform_error_um": 0.0,
      "z_overlap": 0.9498
     },
@@ -2336,6 +2330,7 @@
      "as": "train",
      "f_same": 0.2643,
      "f_band": 0.3051,
+     "call": "exposed",
      "transform_error_um": 0.0,
      "z_overlap": 0.999
     },
@@ -2346,6 +2341,7 @@
      "as": "train",
      "f_same": 0.1729,
      "f_band": 0.2258,
+     "call": "exposed",
      "transform_error_um": 0.0,
      "z_overlap": 1.0
     },
@@ -2356,6 +2352,7 @@
      "as": "train",
      "f_same": 0.015,
      "f_band": 0.0269,
+     "call": "trace",
      "transform_error_um": 0.0,
      "z_overlap": 0.9656
     },
@@ -2366,14 +2363,11 @@
      "as": "train",
      "f_same": 0.0004,
      "f_band": 0.0011,
+     "call": "clear",
      "transform_error_um": 0.0,
      "z_overlap": 0.9308
     }
    ],
-   "f_same": 0.4297,
-   "f_band": 0.4897,
-   "median_offset_um": 1.89,
-   "transform_error_um": 0.0,
    "status": "exposed",
    "why": "training surfaces cover 43.0% of it within 60 um (largest: 20250919064353-auto_grown_20250918234353791 via d9v2, 26.8%)"
   },
@@ -2381,6 +2375,10 @@
    "model": "reader-v2",
    "segment": "20250919125754",
    "flags": [],
+   "f_same": 0.4295,
+   "f_band": 0.4895,
+   "median_offset_um": 1.89,
+   "transform_error_um": 0.0,
    "covering": [
     {
      "segment": "20250919064353",
@@ -2389,6 +2387,7 @@
      "as": "train",
      "f_same": 0.2678,
      "f_band": 0.2856,
+     "call": "exposed",
      "transform_error_um": 0.0,
      "z_overlap": 0.9498
     },
@@ -2399,6 +2398,7 @@
      "as": "train",
      "f_same": 0.2643,
      "f_band": 0.3051,
+     "call": "exposed",
      "transform_error_um": 0.0,
      "z_overlap": 0.999
     },
@@ -2409,6 +2409,7 @@
      "as": "train",
      "f_same": 0.1729,
      "f_band": 0.2258,
+     "call": "exposed",
      "transform_error_um": 0.0,
      "z_overlap": 1.0
     },
@@ -2419,6 +2420,7 @@
      "as": "train",
      "f_same": 0.015,
      "f_band": 0.0269,
+     "call": "trace",
      "transform_error_um": 0.0,
      "z_overlap": 0.9656
     },
@@ -2429,14 +2431,11 @@
      "as": "train",
      "f_same": 0.0004,
      "f_band": 0.0011,
+     "call": "clear",
      "transform_error_um": 0.0,
      "z_overlap": 0.9308
     }
    ],
-   "f_same": 0.4295,
-   "f_band": 0.4895,
-   "median_offset_um": 1.89,
-   "transform_error_um": 0.0,
    "status": "exposed",
    "why": "training surfaces cover 43.0% of it within 60 um (largest: 20250919064353 via reader-v2, 26.8%)"
   },
@@ -2444,6 +2443,10 @@
    "model": "reader-v3",
    "segment": "20250919125754",
    "flags": [],
+   "f_same": 0.4295,
+   "f_band": 0.4895,
+   "median_offset_um": 1.89,
+   "transform_error_um": 0.0,
    "covering": [
     {
      "segment": "20250919064353",
@@ -2452,6 +2455,7 @@
      "as": "train",
      "f_same": 0.2678,
      "f_band": 0.2856,
+     "call": "exposed",
      "transform_error_um": 0.0,
      "z_overlap": 0.9498
     },
@@ -2462,6 +2466,7 @@
      "as": "train",
      "f_same": 0.2643,
      "f_band": 0.3051,
+     "call": "exposed",
      "transform_error_um": 0.0,
      "z_overlap": 0.999
     },
@@ -2472,6 +2477,7 @@
      "as": "train",
      "f_same": 0.1729,
      "f_band": 0.2258,
+     "call": "exposed",
      "transform_error_um": 0.0,
      "z_overlap": 1.0
     },
@@ -2482,6 +2488,7 @@
      "as": "train",
      "f_same": 0.015,
      "f_band": 0.0269,
+     "call": "trace",
      "transform_error_um": 0.0,
      "z_overlap": 0.9656
     },
@@ -2492,14 +2499,11 @@
      "as": "train",
      "f_same": 0.0004,
      "f_band": 0.0011,
+     "call": "clear",
      "transform_error_um": 0.0,
      "z_overlap": 0.9308
     }
    ],
-   "f_same": 0.4295,
-   "f_band": 0.4895,
-   "median_offset_um": 1.89,
-   "transform_error_um": 0.0,
    "status": "exposed",
    "why": "training surfaces cover 43.0% of it within 60 um (largest: 20250919064353 via reader-v3 < reader-v2, 26.8%)"
   },
@@ -2542,14 +2546,12 @@
    "flags": [],
    "covering": [],
    "status": "unknown",
-   "why": "training list not published: trace-v3b"
+   "why": "training list not fully published: trace-v3b"
   },
   {
    "model": "a-hn",
    "segment": "20250919125754",
-   "flags": [
-    "1 name(s) with no scroll: Frag1"
-   ],
+   "flags": [],
    "covering": [
     {
      "segment": "20250919132115",
@@ -2558,6 +2560,7 @@
      "as": "validation",
      "f_same": 0.1729,
      "f_band": 0.2258,
+     "call": "exposed",
      "transform_error_um": 0.0,
      "z_overlap": 1.0
     }
@@ -2582,9 +2585,11 @@
   {
    "model": "v8in",
    "segment": "20251208130119",
-   "flags": [
-    "1 name(s) with no scroll: Frag1"
-   ],
+   "flags": [],
+   "f_same": 0.0006,
+   "f_band": 0.0009,
+   "median_offset_um": 25.86,
+   "transform_error_um": 0.0,
    "covering": [
     {
      "segment": "20240304144031",
@@ -2593,23 +2598,22 @@
      "as": "train",
      "f_same": 0.0006,
      "f_band": 0.0009,
+     "call": "clear",
      "transform_error_um": 0.0,
      "z_overlap": 0.9799
     }
    ],
-   "f_same": 0.0006,
-   "f_band": 0.0009,
-   "median_offset_um": 25.86,
-   "transform_error_um": 0.0,
    "status": "clear",
    "why": "training surfaces cover 0.06% within 60 um"
   },
   {
    "model": "v8in-1447",
    "segment": "20251208130119",
-   "flags": [
-    "1 name(s) with no scroll: Frag1"
-   ],
+   "flags": [],
+   "f_same": 0.0006,
+   "f_band": 0.0009,
+   "median_offset_um": 25.86,
+   "transform_error_um": 0.0,
    "covering": [
     {
      "segment": "20240304144031",
@@ -2618,14 +2622,11 @@
      "as": "train",
      "f_same": 0.0006,
      "f_band": 0.0009,
+     "call": "clear",
      "transform_error_um": 0.0,
      "z_overlap": 0.9799
     }
    ],
-   "f_same": 0.0006,
-   "f_band": 0.0009,
-   "median_offset_um": 25.86,
-   "transform_error_um": 0.0,
    "status": "clear",
    "why": "training surfaces cover 0.06% within 60 um"
   },
@@ -2690,7 +2691,7 @@
    ],
    "covering": [],
    "status": "unknown",
-   "why": "names on this scroll that match no catalog segment"
+   "why": "names on this scroll that match no catalog segment; train names with no scroll, which could be this one"
   },
   {
    "model": "hecate",
@@ -2712,14 +2713,16 @@
    "flags": [],
    "covering": [],
    "status": "unknown",
-   "why": "training list not published: trace-v3b"
+   "why": "training list not fully published: trace-v3b"
   },
   {
    "model": "a-hn",
    "segment": "20251208130119",
-   "flags": [
-    "1 name(s) with no scroll: Frag1"
-   ],
+   "flags": [],
+   "f_same": 0.0006,
+   "f_band": 0.0009,
+   "median_offset_um": 25.86,
+   "transform_error_um": 0.0,
    "covering": [
     {
      "segment": "20240304144031",
@@ -2728,14 +2731,11 @@
      "as": "train",
      "f_same": 0.0006,
      "f_band": 0.0009,
+     "call": "clear",
      "transform_error_um": 0.0,
      "z_overlap": 0.9799
     }
    ],
-   "f_same": 0.0006,
-   "f_band": 0.0009,
-   "median_offset_um": 25.86,
-   "transform_error_um": 0.0,
    "status": "clear",
    "why": "training surfaces cover 0.06% within 60 um"
   },
@@ -2756,9 +2756,11 @@
   {
    "model": "v8in",
    "segment": "20251212185248",
-   "flags": [
-    "1 name(s) with no scroll: Frag1"
-   ],
+   "flags": [],
+   "f_same": 0.0004,
+   "f_band": 0.0007,
+   "median_offset_um": 19.61,
+   "transform_error_um": 0.0,
    "covering": [
     {
      "segment": "20240304144031",
@@ -2767,23 +2769,22 @@
      "as": "train",
      "f_same": 0.0004,
      "f_band": 0.0007,
+     "call": "clear",
      "transform_error_um": 0.0,
      "z_overlap": 0.9793
     }
    ],
-   "f_same": 0.0004,
-   "f_band": 0.0007,
-   "median_offset_um": 19.61,
-   "transform_error_um": 0.0,
    "status": "clear",
    "why": "training surfaces cover 0.04% within 60 um"
   },
   {
    "model": "v8in-1447",
    "segment": "20251212185248",
-   "flags": [
-    "1 name(s) with no scroll: Frag1"
-   ],
+   "flags": [],
+   "f_same": 0.0004,
+   "f_band": 0.0007,
+   "median_offset_um": 19.61,
+   "transform_error_um": 0.0,
    "covering": [
     {
      "segment": "20240304144031",
@@ -2792,14 +2793,11 @@
      "as": "train",
      "f_same": 0.0004,
      "f_band": 0.0007,
+     "call": "clear",
      "transform_error_um": 0.0,
      "z_overlap": 0.9793
     }
    ],
-   "f_same": 0.0004,
-   "f_band": 0.0007,
-   "median_offset_um": 19.61,
-   "transform_error_um": 0.0,
    "status": "clear",
    "why": "training surfaces cover 0.04% within 60 um"
   },
@@ -2864,7 +2862,7 @@
    ],
    "covering": [],
    "status": "unknown",
-   "why": "names on this scroll that match no catalog segment"
+   "why": "names on this scroll that match no catalog segment; train names with no scroll, which could be this one"
   },
   {
    "model": "hecate",
@@ -2886,14 +2884,16 @@
    "flags": [],
    "covering": [],
    "status": "unknown",
-   "why": "training list not published: trace-v3b"
+   "why": "training list not fully published: trace-v3b"
   },
   {
    "model": "a-hn",
    "segment": "20251212185248",
-   "flags": [
-    "1 name(s) with no scroll: Frag1"
-   ],
+   "flags": [],
+   "f_same": 0.0004,
+   "f_band": 0.0007,
+   "median_offset_um": 19.61,
+   "transform_error_um": 0.0,
    "covering": [
     {
      "segment": "20240304144031",
@@ -2902,14 +2902,11 @@
      "as": "train",
      "f_same": 0.0004,
      "f_band": 0.0007,
+     "call": "clear",
      "transform_error_um": 0.0,
      "z_overlap": 0.9793
     }
    ],
-   "f_same": 0.0004,
-   "f_band": 0.0007,
-   "median_offset_um": 19.61,
-   "transform_error_um": 0.0,
    "status": "clear",
    "why": "training surfaces cover 0.04% within 60 um"
   },
@@ -2930,9 +2927,11 @@
   {
    "model": "v8in",
    "segment": "20251223230000",
-   "flags": [
-    "1 name(s) with no scroll: Frag1"
-   ],
+   "flags": [],
+   "f_same": 0.0008,
+   "f_band": 0.0013,
+   "median_offset_um": 28.91,
+   "transform_error_um": 0.0,
    "covering": [
     {
      "segment": "20240304144031",
@@ -2941,23 +2940,22 @@
      "as": "train",
      "f_same": 0.0008,
      "f_band": 0.0013,
+     "call": "clear",
      "transform_error_um": 0.0,
      "z_overlap": 0.9744
     }
    ],
-   "f_same": 0.0008,
-   "f_band": 0.0013,
-   "median_offset_um": 28.91,
-   "transform_error_um": 0.0,
    "status": "clear",
    "why": "training surfaces cover 0.08% within 60 um"
   },
   {
    "model": "v8in-1447",
    "segment": "20251223230000",
-   "flags": [
-    "1 name(s) with no scroll: Frag1"
-   ],
+   "flags": [],
+   "f_same": 0.0008,
+   "f_band": 0.0013,
+   "median_offset_um": 28.91,
+   "transform_error_um": 0.0,
    "covering": [
     {
      "segment": "20240304144031",
@@ -2966,14 +2964,11 @@
      "as": "train",
      "f_same": 0.0008,
      "f_band": 0.0013,
+     "call": "clear",
      "transform_error_um": 0.0,
      "z_overlap": 0.9744
     }
    ],
-   "f_same": 0.0008,
-   "f_band": 0.0013,
-   "median_offset_um": 28.91,
-   "transform_error_um": 0.0,
    "status": "clear",
    "why": "training surfaces cover 0.08% within 60 um"
   },
@@ -3038,7 +3033,7 @@
    ],
    "covering": [],
    "status": "unknown",
-   "why": "names on this scroll that match no catalog segment"
+   "why": "names on this scroll that match no catalog segment; train names with no scroll, which could be this one"
   },
   {
    "model": "hecate",
@@ -3060,14 +3055,16 @@
    "flags": [],
    "covering": [],
    "status": "unknown",
-   "why": "training list not published: trace-v3b"
+   "why": "training list not fully published: trace-v3b"
   },
   {
    "model": "a-hn",
    "segment": "20251223230000",
-   "flags": [
-    "1 name(s) with no scroll: Frag1"
-   ],
+   "flags": [],
+   "f_same": 0.0008,
+   "f_band": 0.0013,
+   "median_offset_um": 28.91,
+   "transform_error_um": 0.0,
    "covering": [
     {
      "segment": "20240304144031",
@@ -3076,14 +3073,11 @@
      "as": "train",
      "f_same": 0.0008,
      "f_band": 0.0013,
+     "call": "clear",
      "transform_error_um": 0.0,
      "z_overlap": 0.9744
     }
    ],
-   "f_same": 0.0008,
-   "f_band": 0.0013,
-   "median_offset_um": 28.91,
-   "transform_error_um": 0.0,
    "status": "clear",
    "why": "training surfaces cover 0.08% within 60 um"
   },
@@ -3098,9 +3092,7 @@
   {
    "model": "v8in",
    "segment": "20260220213127",
-   "flags": [
-    "1 name(s) with no scroll: Frag1"
-   ],
+   "flags": [],
    "covering": [],
    "status": "clear",
    "why": "no training segment on PHerc0841 in its list"
@@ -3108,9 +3100,7 @@
   {
    "model": "v8in-1447",
    "segment": "20260220213127",
-   "flags": [
-    "1 name(s) with no scroll: Frag1"
-   ],
+   "flags": [],
    "covering": [],
    "status": "clear",
    "why": "no training segment on PHerc0841 in its list"
@@ -3136,10 +3126,12 @@
   {
    "model": "reader-v3",
    "segment": "20260220213127",
-   "flags": [],
+   "flags": [
+    "clear rests on that statement; open otherwise: training list not fully published: reader-v3"
+   ],
    "covering": [],
    "status": "clear",
-   "why": "no training segment on PHerc0841 in its list"
+   "why": "reader-v3: its card at aee1d64 shows PHerc0841 w00 as a never-seen scroll and says every result is on data the model never trained on (Community report) (readerv3-card)"
   },
   {
    "model": "canonical-2um",
@@ -3175,14 +3167,12 @@
    "flags": [],
    "covering": [],
    "status": "selected",
-   "why": "trace-v3b: checkpoint chosen on PHerc0841"
+   "why": "trace-v3b: checkpoint chosen on PHerc0841 (the A-hn card: TRACE v3B's authors used PHerc0841 to choose their checkpoint)"
   },
   {
    "model": "a-hn",
    "segment": "20260220213127",
-   "flags": [
-    "1 name(s) with no scroll: Frag1"
-   ],
+   "flags": [],
    "covering": [],
    "status": "clear",
    "why": "no training segment on PHerc0841 in its list"
@@ -3198,9 +3188,7 @@
   {
    "model": "v8in",
    "segment": "20260220214732",
-   "flags": [
-    "1 name(s) with no scroll: Frag1"
-   ],
+   "flags": [],
    "covering": [],
    "status": "clear",
    "why": "no training segment on PHerc0841 in its list"
@@ -3208,9 +3196,7 @@
   {
    "model": "v8in-1447",
    "segment": "20260220214732",
-   "flags": [
-    "1 name(s) with no scroll: Frag1"
-   ],
+   "flags": [],
    "covering": [],
    "status": "clear",
    "why": "no training segment on PHerc0841 in its list"
@@ -3236,10 +3222,12 @@
   {
    "model": "reader-v3",
    "segment": "20260220214732",
-   "flags": [],
+   "flags": [
+    "clear rests on that statement; open otherwise: training list not fully published: reader-v3"
+   ],
    "covering": [],
    "status": "clear",
-   "why": "no training segment on PHerc0841 in its list"
+   "why": "reader-v3: its card at aee1d64 shows PHerc0841 w00 as a never-seen scroll and says every result is on data the model never trained on (Community report) (readerv3-card)"
   },
   {
    "model": "canonical-2um",
@@ -3275,14 +3263,12 @@
    "flags": [],
    "covering": [],
    "status": "selected",
-   "why": "trace-v3b: checkpoint chosen on PHerc0841"
+   "why": "trace-v3b: checkpoint chosen on PHerc0841 (the A-hn card: TRACE v3B's authors used PHerc0841 to choose their checkpoint)"
   },
   {
    "model": "a-hn",
    "segment": "20260220214732",
-   "flags": [
-    "1 name(s) with no scroll: Frag1"
-   ],
+   "flags": [],
    "covering": [],
    "status": "clear",
    "why": "no training segment on PHerc0841 in its list"
@@ -3298,9 +3284,7 @@
   {
    "model": "v8in",
    "segment": "20260221022814",
-   "flags": [
-    "1 name(s) with no scroll: Frag1"
-   ],
+   "flags": [],
    "covering": [],
    "status": "clear",
    "why": "no training segment on PHerc0841 in its list"
@@ -3308,9 +3292,7 @@
   {
    "model": "v8in-1447",
    "segment": "20260221022814",
-   "flags": [
-    "1 name(s) with no scroll: Frag1"
-   ],
+   "flags": [],
    "covering": [],
    "status": "clear",
    "why": "no training segment on PHerc0841 in its list"
@@ -3336,10 +3318,12 @@
   {
    "model": "reader-v3",
    "segment": "20260221022814",
-   "flags": [],
+   "flags": [
+    "clear rests on that statement; open otherwise: training list not fully published: reader-v3"
+   ],
    "covering": [],
    "status": "clear",
-   "why": "no training segment on PHerc0841 in its list"
+   "why": "reader-v3: its card at aee1d64 shows PHerc0841 w00 as a never-seen scroll and says every result is on data the model never trained on (Community report) (readerv3-card)"
   },
   {
    "model": "canonical-2um",
@@ -3375,14 +3359,12 @@
    "flags": [],
    "covering": [],
    "status": "selected",
-   "why": "trace-v3b: checkpoint chosen on PHerc0841"
+   "why": "trace-v3b: checkpoint chosen on PHerc0841 (the A-hn card: TRACE v3B's authors used PHerc0841 to choose their checkpoint)"
   },
   {
    "model": "a-hn",
    "segment": "20260221022814",
-   "flags": [
-    "1 name(s) with no scroll: Frag1"
-   ],
+   "flags": [],
    "covering": [],
    "status": "clear",
    "why": "no training segment on PHerc0841 in its list"
@@ -3520,7 +3502,7 @@
    "flags": [],
    "covering": [],
    "status": "unknown",
-   "why": "training list not published: trace-v3b"
+   "why": "training list not fully published: trace-v3b"
   },
   {
    "model": "a-hn",
@@ -3543,10 +3525,10 @@
    "other": "20230929220926",
    "points": 95339,
    "f_same": 0.0,
+   "call": "clear",
    "f_band": 0.0,
    "f_reach": 0.0,
    "median_offset_um": null,
-   "call": "clear",
    "transform_error_um": 0.0
   },
   {
@@ -3554,10 +3536,10 @@
    "other": "20231007101619",
    "points": 95339,
    "f_same": 0.0,
+   "call": "clear",
    "f_band": 0.0,
    "f_reach": 0.0,
    "median_offset_um": null,
-   "call": "clear",
    "transform_error_um": 0.0
   },
   {
@@ -3565,10 +3547,10 @@
    "other": "20231012184424",
    "points": 95339,
    "f_same": 0.0,
+   "call": "clear",
    "f_band": 0.0,
    "f_reach": 0.0,
    "median_offset_um": null,
-   "call": "clear",
    "transform_error_um": 0.0
   },
   {
@@ -3576,10 +3558,10 @@
    "other": "20231016151002",
    "points": 95339,
    "f_same": 0.2078,
+   "call": "exposed",
    "f_band": 0.2264,
    "f_reach": 0.4268,
    "median_offset_um": 13.59,
-   "call": "exposed",
    "transform_error_um": 0.0
   },
   {
@@ -3587,10 +3569,10 @@
    "other": "20231031143852",
    "points": 95339,
    "f_same": 0.1056,
+   "call": "exposed",
    "f_band": 0.1526,
    "f_reach": 0.4143,
    "median_offset_um": 10.53,
-   "call": "exposed",
    "transform_error_um": 0.0
   },
   {
@@ -3598,10 +3580,10 @@
    "other": "20231106155351",
    "points": 95339,
    "f_same": 0.0001,
+   "call": "clear",
    "f_band": 0.0002,
    "f_reach": 0.0387,
    "median_offset_um": 28.04,
-   "call": "clear",
    "transform_error_um": 0.0
   },
   {
@@ -3609,10 +3591,10 @@
    "other": "20231210121321",
    "points": 95339,
    "f_same": 0.0,
+   "call": "clear",
    "f_band": 0.0,
    "f_reach": 0.0,
    "median_offset_um": null,
-   "call": "clear",
    "transform_error_um": 0.0
   },
   {
@@ -3620,10 +3602,10 @@
    "other": "20230702185753",
    "points": 124206,
    "f_same": 0.0,
+   "call": "clear",
    "f_band": 0.0,
    "f_reach": 0.0,
    "median_offset_um": null,
-   "call": "clear",
    "transform_error_um": 0.0
   },
   {
@@ -3631,10 +3613,10 @@
    "other": "20231007101619",
    "points": 124206,
    "f_same": 0.0007,
+   "call": "clear",
    "f_band": 0.0009,
    "f_reach": 0.0118,
    "median_offset_um": 24.97,
-   "call": "clear",
    "transform_error_um": 0.0
   },
   {
@@ -3642,10 +3624,10 @@
    "other": "20231012184424",
    "points": 124206,
    "f_same": 0.0,
+   "call": "clear",
    "f_band": 0.0001,
    "f_reach": 0.0001,
    "median_offset_um": 19.18,
-   "call": "clear",
    "transform_error_um": 0.0
   },
   {
@@ -3653,10 +3635,10 @@
    "other": "20231016151002",
    "points": 124206,
    "f_same": 0.0,
+   "call": "clear",
    "f_band": 0.0,
    "f_reach": 0.0,
    "median_offset_um": null,
-   "call": "clear",
    "transform_error_um": 0.0
   },
   {
@@ -3664,10 +3646,10 @@
    "other": "20231031143852",
    "points": 124206,
    "f_same": 0.0,
+   "call": "clear",
    "f_band": 0.0,
    "f_reach": 0.0,
    "median_offset_um": null,
-   "call": "clear",
    "transform_error_um": 0.0
   },
   {
@@ -3675,10 +3657,10 @@
    "other": "20231106155351",
    "points": 124206,
    "f_same": 0.0,
+   "call": "clear",
    "f_band": 0.0,
    "f_reach": 0.0,
    "median_offset_um": null,
-   "call": "clear",
    "transform_error_um": 0.0
   },
   {
@@ -3686,10 +3668,10 @@
    "other": "20231210121321",
    "points": 124206,
    "f_same": 0.0001,
+   "call": "clear",
    "f_band": 0.0002,
    "f_reach": 0.0004,
    "median_offset_um": 15.46,
-   "call": "clear",
    "transform_error_um": 0.0
   },
   {
@@ -3697,10 +3679,10 @@
    "other": "20230702185753",
    "points": 73212,
    "f_same": 0.0,
+   "call": "clear",
    "f_band": 0.0,
    "f_reach": 0.0,
    "median_offset_um": null,
-   "call": "clear",
    "transform_error_um": 0.0
   },
   {
@@ -3708,10 +3690,10 @@
    "other": "20230929220926",
    "points": 73212,
    "f_same": 0.0002,
+   "call": "clear",
    "f_band": 0.0003,
    "f_reach": 0.0047,
    "median_offset_um": 22.11,
-   "call": "clear",
    "transform_error_um": 0.0
   },
   {
@@ -3719,10 +3701,10 @@
    "other": "20231012184424",
    "points": 73212,
    "f_same": 0.0019,
+   "call": "clear",
    "f_band": 0.0038,
    "f_reach": 0.1212,
    "median_offset_um": 24.05,
-   "call": "clear",
    "transform_error_um": 0.0
   },
   {
@@ -3730,10 +3712,10 @@
    "other": "20231016151002",
    "points": 73212,
    "f_same": 0.0,
+   "call": "clear",
    "f_band": 0.0,
    "f_reach": 0.0,
    "median_offset_um": null,
-   "call": "clear",
    "transform_error_um": 0.0
   },
   {
@@ -3741,10 +3723,10 @@
    "other": "20231031143852",
    "points": 73212,
    "f_same": 0.0,
+   "call": "clear",
    "f_band": 0.0,
    "f_reach": 0.0,
    "median_offset_um": null,
-   "call": "clear",
    "transform_error_um": 0.0
   },
   {
@@ -3752,10 +3734,10 @@
    "other": "20231106155351",
    "points": 73212,
    "f_same": 0.0,
+   "call": "clear",
    "f_band": 0.0,
    "f_reach": 0.0,
    "median_offset_um": null,
-   "call": "clear",
    "transform_error_um": 0.0
   },
   {
@@ -3763,10 +3745,10 @@
    "other": "20231210121321",
    "points": 73212,
    "f_same": 0.0777,
+   "call": "exposed",
    "f_band": 0.1202,
    "f_reach": 0.3793,
    "median_offset_um": 13.39,
-   "call": "exposed",
    "transform_error_um": 0.0
   },
   {
@@ -3774,10 +3756,10 @@
    "other": "20230702185753",
    "points": 50790,
    "f_same": 0.0,
+   "call": "clear",
    "f_band": 0.0,
    "f_reach": 0.0,
    "median_offset_um": null,
-   "call": "clear",
    "transform_error_um": 0.0
   },
   {
@@ -3785,10 +3767,10 @@
    "other": "20230929220926",
    "points": 50790,
    "f_same": 0.0,
+   "call": "clear",
    "f_band": 0.0,
    "f_reach": 0.0,
    "median_offset_um": null,
-   "call": "clear",
    "transform_error_um": 0.0
   },
   {
@@ -3796,10 +3778,10 @@
    "other": "20231007101619",
    "points": 50790,
    "f_same": 0.0031,
+   "call": "clear",
    "f_band": 0.0057,
    "f_reach": 0.1666,
    "median_offset_um": 21.17,
-   "call": "clear",
    "transform_error_um": 0.0
   },
   {
@@ -3807,10 +3789,10 @@
    "other": "20231016151002",
    "points": 50790,
    "f_same": 0.0,
+   "call": "clear",
    "f_band": 0.0,
    "f_reach": 0.0,
    "median_offset_um": null,
-   "call": "clear",
    "transform_error_um": 0.0
   },
   {
@@ -3818,10 +3800,10 @@
    "other": "20231031143852",
    "points": 50790,
    "f_same": 0.0,
+   "call": "clear",
    "f_band": 0.0,
    "f_reach": 0.0002,
    "median_offset_um": null,
-   "call": "clear",
    "transform_error_um": 0.0
   },
   {
@@ -3829,10 +3811,10 @@
    "other": "20231106155351",
    "points": 50790,
    "f_same": 0.0008,
+   "call": "clear",
    "f_band": 0.0027,
    "f_reach": 0.0756,
    "median_offset_um": 32.81,
-   "call": "clear",
    "transform_error_um": 0.0
   },
   {
@@ -3840,10 +3822,10 @@
    "other": "20231210121321",
    "points": 50790,
    "f_same": 0.1312,
+   "call": "exposed",
    "f_band": 0.1776,
    "f_reach": 0.5048,
    "median_offset_um": 8.19,
-   "call": "exposed",
    "transform_error_um": 0.0
   },
   {
@@ -3851,10 +3833,10 @@
    "other": "20230702185753",
    "points": 82908,
    "f_same": 0.2389,
+   "call": "exposed",
    "f_band": 0.2649,
    "f_reach": 0.5144,
    "median_offset_um": 14.12,
-   "call": "exposed",
    "transform_error_um": 0.0
   },
   {
@@ -3862,10 +3844,10 @@
    "other": "20230929220926",
    "points": 82908,
    "f_same": 0.0,
+   "call": "clear",
    "f_band": 0.0,
    "f_reach": 0.0,
    "median_offset_um": null,
-   "call": "clear",
    "transform_error_um": 0.0
   },
   {
@@ -3873,10 +3855,10 @@
    "other": "20231007101619",
    "points": 82908,
    "f_same": 0.0,
+   "call": "clear",
    "f_band": 0.0,
    "f_reach": 0.0,
    "median_offset_um": null,
-   "call": "clear",
    "transform_error_um": 0.0
   },
   {
@@ -3884,10 +3866,10 @@
    "other": "20231012184424",
    "points": 82908,
    "f_same": 0.0,
+   "call": "clear",
    "f_band": 0.0,
    "f_reach": 0.0,
    "median_offset_um": null,
-   "call": "clear",
    "transform_error_um": 0.0
   },
   {
@@ -3895,10 +3877,10 @@
    "other": "20231031143852",
    "points": 82908,
    "f_same": 0.0002,
+   "call": "clear",
    "f_band": 0.0006,
    "f_reach": 0.0275,
    "median_offset_um": 36.97,
-   "call": "clear",
    "transform_error_um": 0.0
   },
   {
@@ -3906,10 +3888,10 @@
    "other": "20231106155351",
    "points": 82908,
    "f_same": 0.0,
+   "call": "clear",
    "f_band": 0.0,
    "f_reach": 0.0001,
    "median_offset_um": null,
-   "call": "clear",
    "transform_error_um": 0.0
   },
   {
@@ -3917,10 +3899,10 @@
    "other": "20231210121321",
    "points": 82908,
    "f_same": 0.0,
+   "call": "clear",
    "f_band": 0.0,
    "f_reach": 0.0,
    "median_offset_um": null,
-   "call": "clear",
    "transform_error_um": 0.0
   },
   {
@@ -3928,10 +3910,10 @@
    "other": "20230702185753",
    "points": 74820,
    "f_same": 0.1426,
+   "call": "exposed",
    "f_band": 0.216,
    "f_reach": 0.6197,
    "median_offset_um": 11.74,
-   "call": "exposed",
    "transform_error_um": 0.0
   },
   {
@@ -3939,10 +3921,10 @@
    "other": "20230929220926",
    "points": 74820,
    "f_same": 0.0,
+   "call": "clear",
    "f_band": 0.0,
    "f_reach": 0.0,
    "median_offset_um": null,
-   "call": "clear",
    "transform_error_um": 0.0
   },
   {
@@ -3950,10 +3932,10 @@
    "other": "20231007101619",
    "points": 74820,
    "f_same": 0.0,
+   "call": "clear",
    "f_band": 0.0,
    "f_reach": 0.0,
    "median_offset_um": null,
-   "call": "clear",
    "transform_error_um": 0.0
   },
   {
@@ -3961,10 +3943,10 @@
    "other": "20231012184424",
    "points": 74820,
    "f_same": 0.0,
+   "call": "clear",
    "f_band": 0.0,
    "f_reach": 0.0005,
    "median_offset_um": null,
-   "call": "clear",
    "transform_error_um": 0.0
   },
   {
@@ -3972,10 +3954,10 @@
    "other": "20231016151002",
    "points": 74820,
    "f_same": 0.0002,
+   "call": "clear",
    "f_band": 0.0005,
    "f_reach": 0.0299,
    "median_offset_um": 27.3,
-   "call": "clear",
    "transform_error_um": 0.0
   },
   {
@@ -3983,10 +3965,10 @@
    "other": "20231106155351",
    "points": 74820,
    "f_same": 0.1214,
+   "call": "exposed",
    "f_band": 0.2109,
    "f_reach": 0.6761,
    "median_offset_um": 12.56,
-   "call": "exposed",
    "transform_error_um": 0.0
   },
   {
@@ -3994,10 +3976,10 @@
    "other": "20231210121321",
    "points": 74820,
    "f_same": 0.0,
+   "call": "clear",
    "f_band": 0.0,
    "f_reach": 0.0,
    "median_offset_um": null,
-   "call": "clear",
    "transform_error_um": 0.0
   },
   {
@@ -4005,10 +3987,10 @@
    "other": "20230702185753",
    "points": 93014,
    "f_same": 0.0001,
+   "call": "clear",
    "f_band": 0.0002,
    "f_reach": 0.0421,
    "median_offset_um": 27.31,
-   "call": "clear",
    "transform_error_um": 0.0
   },
   {
@@ -4016,10 +3998,10 @@
    "other": "20230929220926",
    "points": 93014,
    "f_same": 0.0,
+   "call": "clear",
    "f_band": 0.0,
    "f_reach": 0.0,
    "median_offset_um": null,
-   "call": "clear",
    "transform_error_um": 0.0
   },
   {
@@ -4027,10 +4009,10 @@
    "other": "20231007101619",
    "points": 93014,
    "f_same": 0.0,
+   "call": "clear",
    "f_band": 0.0,
    "f_reach": 0.0,
    "median_offset_um": null,
-   "call": "clear",
    "transform_error_um": 0.0
   },
   {
@@ -4038,10 +4020,10 @@
    "other": "20231012184424",
    "points": 93014,
    "f_same": 0.002,
+   "call": "clear",
    "f_band": 0.0068,
    "f_reach": 0.1829,
    "median_offset_um": 31.09,
-   "call": "clear",
    "transform_error_um": 0.0
   },
   {
@@ -4049,10 +4031,10 @@
    "other": "20231016151002",
    "points": 93014,
    "f_same": 0.0,
+   "call": "clear",
    "f_band": 0.0,
    "f_reach": 0.0001,
    "median_offset_um": null,
-   "call": "clear",
    "transform_error_um": 0.0
   },
   {
@@ -4060,10 +4042,10 @@
    "other": "20231031143852",
    "points": 93014,
    "f_same": 0.1016,
+   "call": "exposed",
    "f_band": 0.1782,
    "f_reach": 0.5966,
    "median_offset_um": 13.48,
-   "call": "exposed",
    "transform_error_um": 0.0
   },
   {
@@ -4071,10 +4053,10 @@
    "other": "20231210121321",
    "points": 93014,
    "f_same": 0.0,
+   "call": "clear",
    "f_band": 0.0,
    "f_reach": 0.0,
    "median_offset_um": null,
-   "call": "clear",
    "transform_error_um": 0.0
   },
   {
@@ -4082,10 +4064,10 @@
    "other": "20230702185753",
    "points": 105419,
    "f_same": 0.0,
+   "call": "clear",
    "f_band": 0.0,
    "f_reach": 0.0,
    "median_offset_um": null,
-   "call": "clear",
    "transform_error_um": 0.0
   },
   {
@@ -4093,10 +4075,10 @@
    "other": "20230929220926",
    "points": 105419,
    "f_same": 0.0001,
+   "call": "clear",
    "f_band": 0.0001,
    "f_reach": 0.0002,
    "median_offset_um": 16.26,
-   "call": "clear",
    "transform_error_um": 0.0
   },
   {
@@ -4104,10 +4086,10 @@
    "other": "20231007101619",
    "points": 105419,
    "f_same": 0.2175,
+   "call": "exposed",
    "f_band": 0.3398,
    "f_reach": 0.8443,
    "median_offset_um": 13.32,
-   "call": "exposed",
    "transform_error_um": 0.0
   },
   {
@@ -4115,10 +4097,10 @@
    "other": "20231012184424",
    "points": 105419,
    "f_same": 0.2524,
+   "call": "exposed",
    "f_band": 0.3551,
    "f_reach": 0.8439,
    "median_offset_um": 8.35,
-   "call": "exposed",
    "transform_error_um": 0.0
   },
   {
@@ -4126,10 +4108,10 @@
    "other": "20231016151002",
    "points": 105419,
    "f_same": 0.0,
+   "call": "clear",
    "f_band": 0.0,
    "f_reach": 0.0,
    "median_offset_um": null,
-   "call": "clear",
    "transform_error_um": 0.0
   },
   {
@@ -4137,10 +4119,10 @@
    "other": "20231031143852",
    "points": 105419,
    "f_same": 0.0,
+   "call": "clear",
    "f_band": 0.0,
    "f_reach": 0.0,
    "median_offset_um": null,
-   "call": "clear",
    "transform_error_um": 0.0
   },
   {
@@ -4148,10 +4130,10 @@
    "other": "20231106155351",
    "points": 105419,
    "f_same": 0.0,
+   "call": "clear",
    "f_band": 0.0,
    "f_reach": 0.0,
    "median_offset_um": null,
-   "call": "clear",
    "transform_error_um": 0.0
   },
   {
@@ -4159,10 +4141,10 @@
    "other": "20240304144031",
    "points": 45521,
    "f_same": 0.0477,
+   "call": "trace",
    "f_band": 0.0593,
    "f_reach": 0.1888,
    "median_offset_um": 8.05,
-   "call": "trace",
    "transform_error_um": 0.0
   },
   {
@@ -4170,10 +4152,10 @@
    "other": "20240304161941",
    "points": 45521,
    "f_same": 0.0,
+   "call": "clear",
    "f_band": 0.0,
    "f_reach": 0.0,
    "median_offset_um": null,
-   "call": "clear",
    "transform_error_um": 0.0
   },
   {
@@ -4181,10 +4163,10 @@
    "other": "20251208130119",
    "points": 45521,
    "f_same": 0.0,
+   "call": "clear",
    "f_band": 0.0,
    "f_reach": 0.0,
    "median_offset_um": null,
-   "call": "clear",
    "transform_error_um": 0.0
   },
   {
@@ -4192,10 +4174,10 @@
    "other": "20251212185248",
    "points": 45521,
    "f_same": 0.0,
+   "call": "clear",
    "f_band": 0.0,
    "f_reach": 0.0,
    "median_offset_um": null,
-   "call": "clear",
    "transform_error_um": 0.0
   },
   {
@@ -4203,10 +4185,10 @@
    "other": "20251223230000",
    "points": 45521,
    "f_same": 0.0,
+   "call": "clear",
    "f_band": 0.0,
    "f_reach": 0.0,
    "median_offset_um": null,
-   "call": "clear",
    "transform_error_um": 0.0
   },
   {
@@ -4214,10 +4196,10 @@
    "other": "20240304141531",
    "points": 56404,
    "f_same": 0.0391,
+   "call": "trace",
    "f_band": 0.0537,
    "f_reach": 0.177,
    "median_offset_um": 9.07,
-   "call": "trace",
    "transform_error_um": 0.0
   },
   {
@@ -4225,10 +4207,10 @@
    "other": "20240304161941",
    "points": 56404,
    "f_same": 0.055,
+   "call": "exposed",
    "f_band": 0.076,
    "f_reach": 0.2328,
    "median_offset_um": 9.32,
-   "call": "exposed",
    "transform_error_um": 0.0
   },
   {
@@ -4236,10 +4218,10 @@
    "other": "20251208130119",
    "points": 56404,
    "f_same": 0.0001,
+   "call": "clear",
    "f_band": 0.0002,
    "f_reach": 0.0005,
    "median_offset_um": 14.11,
-   "call": "clear",
    "transform_error_um": 0.0
   },
   {
@@ -4247,10 +4229,10 @@
    "other": "20251212185248",
    "points": 56404,
    "f_same": 0.0001,
+   "call": "clear",
    "f_band": 0.0002,
    "f_reach": 0.0005,
    "median_offset_um": 11.06,
-   "call": "clear",
    "transform_error_um": 0.0
   },
   {
@@ -4258,10 +4240,10 @@
    "other": "20251223230000",
    "points": 56404,
    "f_same": 0.0001,
+   "call": "clear",
    "f_band": 0.0003,
    "f_reach": 0.0008,
    "median_offset_um": 47.42,
-   "call": "clear",
    "transform_error_um": 0.0
   },
   {
@@ -4269,10 +4251,10 @@
    "other": "20240304141531",
    "points": 57322,
    "f_same": 0.0,
+   "call": "clear",
    "f_band": 0.0,
    "f_reach": 0.0,
    "median_offset_um": null,
-   "call": "clear",
    "transform_error_um": 0.0
   },
   {
@@ -4280,10 +4262,10 @@
    "other": "20240304144031",
    "points": 57322,
    "f_same": 0.0557,
+   "call": "exposed",
    "f_band": 0.0794,
    "f_reach": 0.2416,
    "median_offset_um": 9.94,
-   "call": "exposed",
    "transform_error_um": 0.0
   },
   {
@@ -4291,10 +4273,10 @@
    "other": "20251208130119",
    "points": 57322,
    "f_same": 0.0571,
+   "call": "exposed",
    "f_band": 0.0784,
    "f_reach": 0.2504,
    "median_offset_um": 10.63,
-   "call": "exposed",
    "transform_error_um": 0.0
   },
   {
@@ -4302,10 +4284,10 @@
    "other": "20251212185248",
    "points": 57322,
    "f_same": 0.0034,
+   "call": "clear",
    "f_band": 0.0104,
    "f_reach": 0.1095,
    "median_offset_um": 41.59,
-   "call": "clear",
    "transform_error_um": 0.0
   },
   {
@@ -4313,10 +4295,10 @@
    "other": "20251223230000",
    "points": 57322,
    "f_same": 0.0006,
+   "call": "clear",
    "f_band": 0.0012,
    "f_reach": 0.0048,
    "median_offset_um": 25.18,
-   "call": "clear",
    "transform_error_um": 0.0
   },
   {
@@ -4324,10 +4306,10 @@
    "other": "20240304141531",
    "points": 57003,
    "f_same": 0.0,
+   "call": "clear",
    "f_band": 0.0,
    "f_reach": 0.0,
    "median_offset_um": null,
-   "call": "clear",
    "transform_error_um": 0.0
   },
   {
@@ -4335,10 +4317,10 @@
    "other": "20240304144031",
    "points": 57003,
    "f_same": 0.0006,
+   "call": "clear",
    "f_band": 0.0009,
    "f_reach": 0.0015,
    "median_offset_um": 25.86,
-   "call": "clear",
    "transform_error_um": 0.0
   },
   {
@@ -4346,10 +4328,10 @@
    "other": "20240304161941",
    "points": 57003,
    "f_same": 0.2468,
+   "call": "exposed",
    "f_band": 0.346,
    "f_reach": 0.8318,
    "median_offset_um": 11.52,
-   "call": "exposed",
    "transform_error_um": 0.0
   },
   {
@@ -4357,10 +4339,10 @@
    "other": "20251212185248",
    "points": 57003,
    "f_same": 0.2014,
+   "call": "exposed",
    "f_band": 0.312,
    "f_reach": 0.8146,
    "median_offset_um": 12.83,
-   "call": "exposed",
    "transform_error_um": 0.0
   },
   {
@@ -4368,10 +4350,10 @@
    "other": "20251223230000",
    "points": 57003,
    "f_same": 0.0027,
+   "call": "clear",
    "f_band": 0.005,
    "f_reach": 0.066,
    "median_offset_um": 34.39,
-   "call": "clear",
    "transform_error_um": 0.0
   },
   {
@@ -4379,10 +4361,10 @@
    "other": "20240304141531",
    "points": 59264,
    "f_same": 0.0,
+   "call": "clear",
    "f_band": 0.0,
    "f_reach": 0.0001,
    "median_offset_um": 54.82,
-   "call": "clear",
    "transform_error_um": 0.0
   },
   {
@@ -4390,10 +4372,10 @@
    "other": "20240304144031",
    "points": 59264,
    "f_same": 0.0004,
+   "call": "clear",
    "f_band": 0.0007,
    "f_reach": 0.0012,
    "median_offset_um": 19.61,
-   "call": "clear",
    "transform_error_um": 0.0
   },
   {
@@ -4401,10 +4383,10 @@
    "other": "20240304161941",
    "points": 59264,
    "f_same": 0.0192,
+   "call": "trace",
    "f_band": 0.0508,
    "f_reach": 0.4054,
    "median_offset_um": 37.73,
-   "call": "trace",
    "transform_error_um": 0.0
   },
   {
@@ -4412,10 +4394,10 @@
    "other": "20251208130119",
    "points": 59264,
    "f_same": 0.1954,
+   "call": "exposed",
    "f_band": 0.3082,
    "f_reach": 0.7961,
    "median_offset_um": 13.18,
-   "call": "exposed",
    "transform_error_um": 0.0
   },
   {
@@ -4423,10 +4405,10 @@
    "other": "20251223230000",
    "points": 59264,
    "f_same": 0.0117,
+   "call": "trace",
    "f_band": 0.0305,
    "f_reach": 0.3075,
    "median_offset_um": 30.74,
-   "call": "trace",
    "transform_error_um": 0.0
   },
   {
@@ -4434,10 +4416,10 @@
    "other": "20240304141531",
    "points": 54017,
    "f_same": 0.0001,
+   "call": "clear",
    "f_band": 0.0001,
    "f_reach": 0.0003,
    "median_offset_um": 30.79,
-   "call": "clear",
    "transform_error_um": 0.0
   },
   {
@@ -4445,10 +4427,10 @@
    "other": "20240304144031",
    "points": 54017,
    "f_same": 0.0008,
+   "call": "clear",
    "f_band": 0.0013,
    "f_reach": 0.0025,
    "median_offset_um": 28.91,
-   "call": "clear",
    "transform_error_um": 0.0
   },
   {
@@ -4456,10 +4438,10 @@
    "other": "20240304161941",
    "points": 54017,
    "f_same": 0.0036,
+   "call": "clear",
    "f_band": 0.0052,
    "f_reach": 0.0157,
    "median_offset_um": 26.23,
-   "call": "clear",
    "transform_error_um": 0.0
   },
   {
@@ -4467,10 +4449,10 @@
    "other": "20251208130119",
    "points": 54017,
    "f_same": 0.0027,
+   "call": "clear",
    "f_band": 0.0051,
    "f_reach": 0.0718,
    "median_offset_um": 34.48,
-   "call": "clear",
    "transform_error_um": 0.0
   },
   {
@@ -4478,10 +4460,10 @@
    "other": "20251212185248",
    "points": 54017,
    "f_same": 0.013,
+   "call": "trace",
    "f_band": 0.0338,
    "f_reach": 0.3449,
    "median_offset_um": 33.89,
-   "call": "trace",
    "transform_error_um": 0.0
   },
   {
@@ -4489,10 +4471,10 @@
    "other": "20260220214732",
    "points": 36829,
    "f_same": 0.3527,
+   "call": "exposed",
    "f_band": 0.6948,
    "f_reach": 0.9803,
    "median_offset_um": 37.7,
-   "call": "exposed",
    "transform_error_um": 0.0
   },
   {
@@ -4500,10 +4482,10 @@
    "other": "20260221022814",
    "points": 36829,
    "f_same": 0.0254,
+   "call": "trace",
    "f_band": 0.0501,
    "f_reach": 0.3518,
    "median_offset_um": 29.97,
-   "call": "trace",
    "transform_error_um": 0.0
   },
   {
@@ -4511,10 +4493,10 @@
    "other": "20260220213127",
    "points": 37027,
    "f_same": 0.3492,
+   "call": "exposed",
    "f_band": 0.6884,
    "f_reach": 0.9735,
    "median_offset_um": 38.28,
-   "call": "exposed",
    "transform_error_um": 0.0
   },
   {
@@ -4522,10 +4504,10 @@
    "other": "20260221022814",
    "points": 37027,
    "f_same": 0.0095,
+   "call": "trace",
    "f_band": 0.0168,
    "f_reach": 0.1993,
    "median_offset_um": 28.64,
-   "call": "trace",
    "transform_error_um": 0.0
   },
   {
@@ -4533,10 +4515,10 @@
    "other": "20260220213127",
    "points": 34875,
    "f_same": 0.0301,
+   "call": "trace",
    "f_band": 0.0585,
    "f_reach": 0.3937,
    "median_offset_um": 28.2,
-   "call": "trace",
    "transform_error_um": 0.0
   },
   {
@@ -4544,10 +4526,10 @@
    "other": "20260220214732",
    "points": 34875,
    "f_same": 0.0114,
+   "call": "trace",
    "f_band": 0.0194,
    "f_reach": 0.2286,
    "median_offset_um": 29.53,
-   "call": "trace",
    "transform_error_um": 0.0
   }
  ],
@@ -4666,7 +4648,7 @@
   }
  ],
  "rounding": {
-  "note": "floats rounded to 4 decimal places from the Job output",
-  "raw_sha256": "4cfc9048ae1823965f583cdc81c280422fa7d8fee4151a0ccfc76c8c29a28d87"
+  "note": "floats rounded to 4 decimal places from the run output",
+  "raw_sha256": "7771252ada101024f0eb196b4556709cdc91ce7766a019c81ecdf759cbd1dc74"
  }
 }

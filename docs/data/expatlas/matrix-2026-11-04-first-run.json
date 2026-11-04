@@ -1,0 +1,4672 @@
+{
+ "schema": "expatlas/1",
+ "settings": {
+  "d_same_um": 60.0,
+  "band_um": 100.0,
+  "reach_um": 300.0,
+  "exposed_frac": 0.05,
+  "trace_frac": 0.005,
+  "transform_flag_um": 30.0,
+  "transform_limit_um": 70.0,
+  "max_eval_points": 150000,
+  "footprint_steps": 0.8,
+  "k_nearest": 8
+ },
+ "segments": [
+  {
+   "segment": "20230702185753",
+   "scroll": "PHercParis4",
+   "suffix": "",
+   "frame": "20230205180739",
+   "px_um": 7.91,
+   "points": 95339,
+   "stride": 2,
+   "status": "run"
+  },
+  {
+   "segment": "20230929220926",
+   "scroll": "PHercParis4",
+   "suffix": "",
+   "frame": "20230205180739",
+   "px_um": 7.91,
+   "points": 124206,
+   "stride": 1,
+   "status": "run"
+  },
+  {
+   "segment": "20231007101619",
+   "scroll": "PHercParis4",
+   "suffix": "",
+   "frame": "20230205180739",
+   "px_um": 7.91,
+   "points": 73212,
+   "stride": 2,
+   "status": "run"
+  },
+  {
+   "segment": "20231012184424",
+   "scroll": "PHercParis4",
+   "suffix": "",
+   "frame": "20230205180739",
+   "px_um": 7.91,
+   "points": 50790,
+   "stride": 2,
+   "status": "run"
+  },
+  {
+   "segment": "20231016151002",
+   "scroll": "PHercParis4",
+   "suffix": "",
+   "frame": "20230205180739",
+   "px_um": 7.91,
+   "points": 82908,
+   "stride": 2,
+   "status": "run"
+  },
+  {
+   "segment": "20231031143852",
+   "scroll": "PHercParis4",
+   "suffix": "",
+   "frame": "20230205180739",
+   "px_um": 7.91,
+   "points": 74820,
+   "stride": 2,
+   "status": "run"
+  },
+  {
+   "segment": "20231106155351",
+   "scroll": "PHercParis4",
+   "suffix": "",
+   "frame": "20230205180739",
+   "px_um": 7.91,
+   "points": 93014,
+   "stride": 2,
+   "status": "run"
+  },
+  {
+   "segment": "20231210121321",
+   "scroll": "PHercParis4",
+   "suffix": "",
+   "frame": "20230205180739",
+   "px_um": 7.91,
+   "points": 105419,
+   "stride": 1,
+   "status": "run"
+  },
+  {
+   "segment": "20240304141531",
+   "scroll": "PHerc1667",
+   "suffix": "w013_20240304141531_flatboi",
+   "frame": "20231117161658",
+   "px_um": 7.91,
+   "points": 45521,
+   "stride": 2,
+   "status": "run"
+  },
+  {
+   "segment": "20240304144031",
+   "scroll": "PHerc1667",
+   "suffix": "w018_20240304144031_flatboi",
+   "frame": "20231117161658",
+   "px_um": 7.91,
+   "points": 56404,
+   "stride": 2,
+   "status": "run"
+  },
+  {
+   "segment": "20240304161941",
+   "scroll": "PHerc1667",
+   "suffix": "w023_20240304161941_flatboi",
+   "frame": "20231117161658",
+   "px_um": 7.91,
+   "points": 57322,
+   "stride": 2,
+   "status": "run"
+  },
+  {
+   "segment": "20250825181859",
+   "scroll": "PHerc0500P2",
+   "suffix": "-1",
+   "frame": "20250528085330",
+   "px_um": 4.317,
+   "points": 37699,
+   "stride": 2,
+   "status": "run"
+  },
+  {
+   "segment": "20250919125754",
+   "scroll": "PHerc0009B",
+   "suffix": "auto_grown_20250919055754487_inp_hr",
+   "frame": "20250521125136",
+   "px_um": 8.64,
+   "points": 87961,
+   "stride": 1,
+   "status": "run"
+  },
+  {
+   "segment": "20251208130119",
+   "scroll": "PHerc1667",
+   "suffix": "w028_20251208130119156_flatboi",
+   "frame": "20231117161658",
+   "px_um": 7.91,
+   "points": 57003,
+   "stride": 2,
+   "status": "run"
+  },
+  {
+   "segment": "20251212185248",
+   "scroll": "PHerc1667",
+   "suffix": "w029_20251212185248662_flatboi",
+   "frame": "20231117161658",
+   "px_um": 7.91,
+   "points": 59264,
+   "stride": 2,
+   "status": "run"
+  },
+  {
+   "segment": "20251223230000",
+   "scroll": "PHerc1667",
+   "suffix": "w031_2025122323_flatboi",
+   "frame": "20231117161658",
+   "px_um": 7.91,
+   "points": 54017,
+   "stride": 2,
+   "status": "run"
+  },
+  {
+   "segment": "20260220213127",
+   "scroll": "PHerc0841",
+   "suffix": "w00",
+   "frame": "20250821151531",
+   "px_um": 9.366,
+   "points": 36829,
+   "stride": 1,
+   "status": "run"
+  },
+  {
+   "segment": "20260220214732",
+   "scroll": "PHerc0841",
+   "suffix": "auto_grown_20260220144552896",
+   "frame": "20250821151531",
+   "px_um": 9.366,
+   "points": 37027,
+   "stride": 1,
+   "status": "run"
+  },
+  {
+   "segment": "20260221022814",
+   "scroll": "PHerc0841",
+   "suffix": "auto_grown_20260220174252405",
+   "frame": "20250821151531",
+   "px_um": 9.366,
+   "points": 34875,
+   "stride": 1,
+   "status": "run"
+  },
+  {
+   "segment": "20260226000000",
+   "scroll": "PHerc0814",
+   "suffix": "46527_2um_try2",
+   "frame": "20260309142202",
+   "px_um": 2.399,
+   "points": 43873,
+   "stride": 2,
+   "status": "run"
+  }
+ ],
+ "cells": [
+  {
+   "model": "ink_9um",
+   "segment": "20230702185753",
+   "flags": [],
+   "status": "trained",
+   "why": "named in ink_9um's list as phercparis4-w01 (train)",
+   "names": [
+    {
+     "name": "phercparis4-w01",
+     "via": "ink_9um",
+     "role": "train"
+    }
+   ]
+  },
+  {
+   "model": "v8in",
+   "segment": "20230702185753",
+   "flags": [
+    "1 name(s) on PHercParis4 match no catalog segment: 20231012184423",
+    "1 name(s) with no scroll: Frag1"
+   ],
+   "covering": [],
+   "f_same": 0.0,
+   "f_band": 0.0,
+   "median_offset_um": null,
+   "transform_error_um": 0.0,
+   "status": "unknown",
+   "why": "names on this scroll that match no catalog segment"
+  },
+  {
+   "model": "v8in-1447",
+   "segment": "20230702185753",
+   "flags": [
+    "1 name(s) on PHercParis4 match no catalog segment: 20231012184423",
+    "1 name(s) with no scroll: Frag1"
+   ],
+   "covering": [],
+   "f_same": 0.0,
+   "f_band": 0.0,
+   "median_offset_um": null,
+   "transform_error_um": 0.0,
+   "status": "unknown",
+   "why": "names on this scroll that match no catalog segment"
+  },
+  {
+   "model": "d9v2",
+   "segment": "20230702185753",
+   "flags": [],
+   "status": "trained",
+   "why": "named in d9v2 < ink_9um's list as phercparis4-w01 (train)",
+   "names": [
+    {
+     "name": "phercparis4-w01",
+     "via": "d9v2 < ink_9um",
+     "role": "train"
+    }
+   ]
+  },
+  {
+   "model": "reader-v2",
+   "segment": "20230702185753",
+   "flags": [],
+   "status": "trained",
+   "why": "named in reader-v2's list as phercparis4-w01 (train)",
+   "names": [
+    {
+     "name": "phercparis4-w01",
+     "via": "reader-v2",
+     "role": "train"
+    },
+    {
+     "name": "phercparis4-w01",
+     "via": "reader-v2 < ink_9um",
+     "role": "train"
+    }
+   ]
+  },
+  {
+   "model": "reader-v3",
+   "segment": "20230702185753",
+   "flags": [],
+   "status": "trained",
+   "why": "named in reader-v3 < reader-v2's list as phercparis4-w01 (train)",
+   "names": [
+    {
+     "name": "phercparis4-w01",
+     "via": "reader-v3 < reader-v2",
+     "role": "train"
+    },
+    {
+     "name": "phercparis4-w01",
+     "via": "reader-v3 < reader-v2 < ink_9um",
+     "role": "train"
+    }
+   ]
+  },
+  {
+   "model": "canonical-2um",
+   "segment": "20230702185753",
+   "flags": [
+    "2 name(s) with no scroll: 500p2a, 658"
+   ],
+   "covering": [],
+   "status": "clear",
+   "why": "no training segment on PHercParis4 in its list"
+  },
+  {
+   "model": "hecate",
+   "segment": "20230702185753",
+   "flags": [],
+   "status": "trained",
+   "why": "named in hecate's list as w01_20230702185753_r15 (train_split)",
+   "names": [
+    {
+     "name": "w01_20230702185753_r15",
+     "via": "hecate",
+     "role": "train_split"
+    }
+   ]
+  },
+  {
+   "model": "trace-v3b",
+   "segment": "20230702185753",
+   "flags": [],
+   "covering": [],
+   "status": "unknown",
+   "why": "training list not published: trace-v3b"
+  },
+  {
+   "model": "a-hn",
+   "segment": "20230702185753",
+   "flags": [
+    "1 name(s) on PHercParis4 match no catalog segment: 20231012184423",
+    "1 name(s) with no scroll: Frag1"
+   ],
+   "covering": [],
+   "f_same": 0.0,
+   "f_band": 0.0,
+   "median_offset_um": null,
+   "transform_error_um": 0.0,
+   "status": "unknown",
+   "why": "names on this scroll that match no catalog segment"
+  },
+  {
+   "model": "ink_9um",
+   "segment": "20230929220926",
+   "flags": [],
+   "status": "trained",
+   "why": "named in ink_9um's list as phercparis4-w09 (train)",
+   "names": [
+    {
+     "name": "phercparis4-w09",
+     "via": "ink_9um",
+     "role": "train"
+    }
+   ]
+  },
+  {
+   "model": "v8in",
+   "segment": "20230929220926",
+   "flags": [
+    "1 name(s) on PHercParis4 match no catalog segment: 20231012184423",
+    "1 name(s) with no scroll: Frag1"
+   ],
+   "covering": [
+    {
+     "segment": "20231005123336",
+     "name": "20231005123336",
+     "via": "v8in",
+     "as": "train",
+     "f_same": 0.1465,
+     "f_band": 0.2317,
+     "transform_error_um": 0.0,
+     "z_overlap": 1.0
+    }
+   ],
+   "f_same": 0.1465,
+   "f_band": 0.2317,
+   "median_offset_um": 14.89,
+   "transform_error_um": 0.0,
+   "status": "exposed",
+   "why": "training surfaces cover 14.6% of it within 60 um (largest: 20231005123336 via v8in, 14.6%)"
+  },
+  {
+   "model": "v8in-1447",
+   "segment": "20230929220926",
+   "flags": [
+    "1 name(s) on PHercParis4 match no catalog segment: 20231012184423",
+    "1 name(s) with no scroll: Frag1"
+   ],
+   "covering": [
+    {
+     "segment": "20231005123336",
+     "name": "20231005123336",
+     "via": "v8in-1447 < v8in",
+     "as": "train",
+     "f_same": 0.1465,
+     "f_band": 0.2317,
+     "transform_error_um": 0.0,
+     "z_overlap": 1.0
+    }
+   ],
+   "f_same": 0.1465,
+   "f_band": 0.2317,
+   "median_offset_um": 14.89,
+   "transform_error_um": 0.0,
+   "status": "exposed",
+   "why": "training surfaces cover 14.6% of it within 60 um (largest: 20231005123336 via v8in-1447 < v8in, 14.6%)"
+  },
+  {
+   "model": "d9v2",
+   "segment": "20230929220926",
+   "flags": [],
+   "status": "trained",
+   "why": "named in d9v2 < ink_9um's list as phercparis4-w09 (train)",
+   "names": [
+    {
+     "name": "phercparis4-w09",
+     "via": "d9v2 < ink_9um",
+     "role": "train"
+    }
+   ]
+  },
+  {
+   "model": "reader-v2",
+   "segment": "20230929220926",
+   "flags": [],
+   "status": "trained",
+   "why": "named in reader-v2's list as phercparis4-w09 (train)",
+   "names": [
+    {
+     "name": "phercparis4-w09",
+     "via": "reader-v2",
+     "role": "train"
+    },
+    {
+     "name": "phercparis4-w09",
+     "via": "reader-v2 < ink_9um",
+     "role": "train"
+    }
+   ]
+  },
+  {
+   "model": "reader-v3",
+   "segment": "20230929220926",
+   "flags": [],
+   "status": "trained",
+   "why": "named in reader-v3 < reader-v2's list as phercparis4-w09 (train)",
+   "names": [
+    {
+     "name": "phercparis4-w09",
+     "via": "reader-v3 < reader-v2",
+     "role": "train"
+    },
+    {
+     "name": "phercparis4-w09",
+     "via": "reader-v3 < reader-v2 < ink_9um",
+     "role": "train"
+    }
+   ]
+  },
+  {
+   "model": "canonical-2um",
+   "segment": "20230929220926",
+   "flags": [
+    "2 name(s) with no scroll: 500p2a, 658"
+   ],
+   "covering": [],
+   "status": "clear",
+   "why": "no training segment on PHercParis4 in its list"
+  },
+  {
+   "model": "hecate",
+   "segment": "20230929220926",
+   "flags": [],
+   "status": "trained",
+   "why": "named in hecate's list as w09_20230929220926 (train_split)",
+   "names": [
+    {
+     "name": "w09_20230929220926",
+     "via": "hecate",
+     "role": "train_split"
+    }
+   ]
+  },
+  {
+   "model": "trace-v3b",
+   "segment": "20230929220926",
+   "flags": [],
+   "covering": [],
+   "status": "unknown",
+   "why": "training list not published: trace-v3b"
+  },
+  {
+   "model": "a-hn",
+   "segment": "20230929220926",
+   "flags": [
+    "1 name(s) on PHercParis4 match no catalog segment: 20231012184423",
+    "1 name(s) with no scroll: Frag1"
+   ],
+   "covering": [
+    {
+     "segment": "20231005123336",
+     "name": "20231005123336",
+     "via": "a-hn < v8in",
+     "as": "train",
+     "f_same": 0.1465,
+     "f_band": 0.2317,
+     "transform_error_um": 0.0,
+     "z_overlap": 1.0
+    }
+   ],
+   "f_same": 0.1465,
+   "f_band": 0.2317,
+   "median_offset_um": 14.89,
+   "transform_error_um": 0.0,
+   "status": "exposed",
+   "why": "training surfaces cover 14.6% of it within 60 um (largest: 20231005123336 via a-hn < v8in, 14.6%)"
+  },
+  {
+   "model": "ink_9um",
+   "segment": "20231007101619",
+   "flags": [],
+   "status": "trained",
+   "why": "named in ink_9um's list as phercparis4-w07 (train)",
+   "names": [
+    {
+     "name": "phercparis4-w07",
+     "via": "ink_9um",
+     "role": "train"
+    }
+   ]
+  },
+  {
+   "model": "v8in",
+   "segment": "20231007101619",
+   "flags": [
+    "1 name(s) on PHercParis4 match no catalog segment: 20231012184423",
+    "1 name(s) with no scroll: Frag1"
+   ],
+   "covering": [
+    {
+     "segment": "20231005123336",
+     "name": "20231005123336",
+     "via": "v8in",
+     "as": "train",
+     "f_same": 0.1007,
+     "f_band": 0.1243,
+     "transform_error_um": 0.0,
+     "z_overlap": 0.6382
+    }
+   ],
+   "f_same": 0.1007,
+   "f_band": 0.1243,
+   "median_offset_um": 11.17,
+   "transform_error_um": 0.0,
+   "status": "exposed",
+   "why": "training surfaces cover 10.1% of it within 60 um (largest: 20231005123336 via v8in, 10.1%)"
+  },
+  {
+   "model": "v8in-1447",
+   "segment": "20231007101619",
+   "flags": [
+    "1 name(s) on PHercParis4 match no catalog segment: 20231012184423",
+    "1 name(s) with no scroll: Frag1"
+   ],
+   "covering": [
+    {
+     "segment": "20231005123336",
+     "name": "20231005123336",
+     "via": "v8in-1447 < v8in",
+     "as": "train",
+     "f_same": 0.1007,
+     "f_band": 0.1243,
+     "transform_error_um": 0.0,
+     "z_overlap": 0.6382
+    }
+   ],
+   "f_same": 0.1007,
+   "f_band": 0.1243,
+   "median_offset_um": 11.17,
+   "transform_error_um": 0.0,
+   "status": "exposed",
+   "why": "training surfaces cover 10.1% of it within 60 um (largest: 20231005123336 via v8in-1447 < v8in, 10.1%)"
+  },
+  {
+   "model": "d9v2",
+   "segment": "20231007101619",
+   "flags": [],
+   "status": "trained",
+   "why": "named in d9v2 < ink_9um's list as phercparis4-w07 (train)",
+   "names": [
+    {
+     "name": "phercparis4-w07",
+     "via": "d9v2 < ink_9um",
+     "role": "train"
+    }
+   ]
+  },
+  {
+   "model": "reader-v2",
+   "segment": "20231007101619",
+   "flags": [],
+   "status": "trained",
+   "why": "named in reader-v2's list as phercparis4-w07 (train)",
+   "names": [
+    {
+     "name": "phercparis4-w07",
+     "via": "reader-v2",
+     "role": "train"
+    },
+    {
+     "name": "phercparis4-w07",
+     "via": "reader-v2 < ink_9um",
+     "role": "train"
+    }
+   ]
+  },
+  {
+   "model": "reader-v3",
+   "segment": "20231007101619",
+   "flags": [],
+   "status": "trained",
+   "why": "named in reader-v3 < reader-v2's list as phercparis4-w07 (train)",
+   "names": [
+    {
+     "name": "phercparis4-w07",
+     "via": "reader-v3 < reader-v2",
+     "role": "train"
+    },
+    {
+     "name": "phercparis4-w07",
+     "via": "reader-v3 < reader-v2 < ink_9um",
+     "role": "train"
+    }
+   ]
+  },
+  {
+   "model": "canonical-2um",
+   "segment": "20231007101619",
+   "flags": [
+    "2 name(s) with no scroll: 500p2a, 658"
+   ],
+   "covering": [],
+   "status": "clear",
+   "why": "no training segment on PHercParis4 in its list"
+  },
+  {
+   "model": "hecate",
+   "segment": "20231007101619",
+   "flags": [],
+   "status": "trained",
+   "why": "named in hecate's list as w07_1619 (train_split)",
+   "names": [
+    {
+     "name": "w07_1619",
+     "via": "hecate",
+     "role": "train_split"
+    }
+   ]
+  },
+  {
+   "model": "trace-v3b",
+   "segment": "20231007101619",
+   "flags": [],
+   "covering": [],
+   "status": "unknown",
+   "why": "training list not published: trace-v3b"
+  },
+  {
+   "model": "a-hn",
+   "segment": "20231007101619",
+   "flags": [
+    "1 name(s) on PHercParis4 match no catalog segment: 20231012184423",
+    "1 name(s) with no scroll: Frag1"
+   ],
+   "covering": [
+    {
+     "segment": "20231005123336",
+     "name": "20231005123336",
+     "via": "a-hn < v8in",
+     "as": "train",
+     "f_same": 0.1007,
+     "f_band": 0.1243,
+     "transform_error_um": 0.0,
+     "z_overlap": 0.6382
+    }
+   ],
+   "f_same": 0.1007,
+   "f_band": 0.1243,
+   "median_offset_um": 11.17,
+   "transform_error_um": 0.0,
+   "status": "exposed",
+   "why": "training surfaces cover 10.1% of it within 60 um (largest: 20231005123336 via a-hn < v8in, 10.1%)"
+  },
+  {
+   "model": "ink_9um",
+   "segment": "20231012184424",
+   "flags": [],
+   "status": "trained",
+   "why": "named in ink_9um's list as phercparis4-w05 (train)",
+   "names": [
+    {
+     "name": "phercparis4-w05",
+     "via": "ink_9um",
+     "role": "train"
+    }
+   ]
+  },
+  {
+   "model": "v8in",
+   "segment": "20231012184424",
+   "flags": [
+    "1 name(s) on PHercParis4 match no catalog segment: 20231012184423",
+    "1 name(s) with no scroll: Frag1"
+   ],
+   "covering": [],
+   "f_same": 0.0,
+   "f_band": 0.0,
+   "median_offset_um": null,
+   "transform_error_um": 0.0,
+   "status": "unknown",
+   "why": "names on this scroll that match no catalog segment"
+  },
+  {
+   "model": "v8in-1447",
+   "segment": "20231012184424",
+   "flags": [
+    "1 name(s) on PHercParis4 match no catalog segment: 20231012184423",
+    "1 name(s) with no scroll: Frag1"
+   ],
+   "covering": [],
+   "f_same": 0.0,
+   "f_band": 0.0,
+   "median_offset_um": null,
+   "transform_error_um": 0.0,
+   "status": "unknown",
+   "why": "names on this scroll that match no catalog segment"
+  },
+  {
+   "model": "d9v2",
+   "segment": "20231012184424",
+   "flags": [],
+   "status": "trained",
+   "why": "named in d9v2 < ink_9um's list as phercparis4-w05 (train)",
+   "names": [
+    {
+     "name": "phercparis4-w05",
+     "via": "d9v2 < ink_9um",
+     "role": "train"
+    }
+   ]
+  },
+  {
+   "model": "reader-v2",
+   "segment": "20231012184424",
+   "flags": [],
+   "status": "trained",
+   "why": "named in reader-v2's list as phercparis4-w05 (train)",
+   "names": [
+    {
+     "name": "phercparis4-w05",
+     "via": "reader-v2",
+     "role": "train"
+    },
+    {
+     "name": "phercparis4-w05",
+     "via": "reader-v2 < ink_9um",
+     "role": "train"
+    }
+   ]
+  },
+  {
+   "model": "reader-v3",
+   "segment": "20231012184424",
+   "flags": [],
+   "status": "trained",
+   "why": "named in reader-v3 < reader-v2's list as phercparis4-w05 (train)",
+   "names": [
+    {
+     "name": "phercparis4-w05",
+     "via": "reader-v3 < reader-v2",
+     "role": "train"
+    },
+    {
+     "name": "phercparis4-w05",
+     "via": "reader-v3 < reader-v2 < ink_9um",
+     "role": "train"
+    }
+   ]
+  },
+  {
+   "model": "canonical-2um",
+   "segment": "20231012184424",
+   "flags": [
+    "2 name(s) with no scroll: 500p2a, 658"
+   ],
+   "covering": [],
+   "status": "clear",
+   "why": "no training segment on PHercParis4 in its list"
+  },
+  {
+   "model": "hecate",
+   "segment": "20231012184424",
+   "flags": [],
+   "status": "trained",
+   "why": "named in hecate's list as w05_4424 (train_split)",
+   "names": [
+    {
+     "name": "w05_4424",
+     "via": "hecate",
+     "role": "train_split"
+    }
+   ]
+  },
+  {
+   "model": "trace-v3b",
+   "segment": "20231012184424",
+   "flags": [],
+   "covering": [],
+   "status": "unknown",
+   "why": "training list not published: trace-v3b"
+  },
+  {
+   "model": "a-hn",
+   "segment": "20231012184424",
+   "flags": [
+    "1 name(s) on PHercParis4 match no catalog segment: 20231012184423",
+    "1 name(s) with no scroll: Frag1"
+   ],
+   "covering": [],
+   "f_same": 0.0,
+   "f_band": 0.0,
+   "median_offset_um": null,
+   "transform_error_um": 0.0,
+   "status": "unknown",
+   "why": "names on this scroll that match no catalog segment"
+  },
+  {
+   "model": "ink_9um",
+   "segment": "20231016151002",
+   "flags": [],
+   "status": "trained",
+   "why": "named in ink_9um's list as phercparis4-w00 (train)",
+   "names": [
+    {
+     "name": "phercparis4-w00",
+     "via": "ink_9um",
+     "role": "train"
+    }
+   ]
+  },
+  {
+   "model": "v8in",
+   "segment": "20231016151002",
+   "flags": [
+    "1 name(s) on PHercParis4 match no catalog segment: 20231012184423",
+    "1 name(s) with no scroll: Frag1"
+   ],
+   "covering": [],
+   "f_same": 0.0,
+   "f_band": 0.0,
+   "median_offset_um": null,
+   "transform_error_um": 0.0,
+   "status": "unknown",
+   "why": "names on this scroll that match no catalog segment"
+  },
+  {
+   "model": "v8in-1447",
+   "segment": "20231016151002",
+   "flags": [
+    "1 name(s) on PHercParis4 match no catalog segment: 20231012184423",
+    "1 name(s) with no scroll: Frag1"
+   ],
+   "covering": [],
+   "f_same": 0.0,
+   "f_band": 0.0,
+   "median_offset_um": null,
+   "transform_error_um": 0.0,
+   "status": "unknown",
+   "why": "names on this scroll that match no catalog segment"
+  },
+  {
+   "model": "d9v2",
+   "segment": "20231016151002",
+   "flags": [],
+   "status": "trained",
+   "why": "named in d9v2 < ink_9um's list as phercparis4-w00 (train)",
+   "names": [
+    {
+     "name": "phercparis4-w00",
+     "via": "d9v2 < ink_9um",
+     "role": "train"
+    }
+   ]
+  },
+  {
+   "model": "reader-v2",
+   "segment": "20231016151002",
+   "flags": [],
+   "status": "trained",
+   "why": "named in reader-v2's list as phercparis4-w00 (train)",
+   "names": [
+    {
+     "name": "phercparis4-w00",
+     "via": "reader-v2",
+     "role": "train"
+    },
+    {
+     "name": "phercparis4-w00",
+     "via": "reader-v2 < ink_9um",
+     "role": "train"
+    }
+   ]
+  },
+  {
+   "model": "reader-v3",
+   "segment": "20231016151002",
+   "flags": [],
+   "status": "trained",
+   "why": "named in reader-v3 < reader-v2's list as phercparis4-w00 (train)",
+   "names": [
+    {
+     "name": "phercparis4-w00",
+     "via": "reader-v3 < reader-v2",
+     "role": "train"
+    },
+    {
+     "name": "phercparis4-w00",
+     "via": "reader-v3 < reader-v2 < ink_9um",
+     "role": "train"
+    }
+   ]
+  },
+  {
+   "model": "canonical-2um",
+   "segment": "20231016151002",
+   "flags": [
+    "2 name(s) with no scroll: 500p2a, 658"
+   ],
+   "covering": [],
+   "status": "clear",
+   "why": "no training segment on PHercParis4 in its list"
+  },
+  {
+   "model": "hecate",
+   "segment": "20231016151002",
+   "flags": [],
+   "status": "trained",
+   "why": "named in hecate's list as w00_20231016151002 (train_split)",
+   "names": [
+    {
+     "name": "w00_20231016151002",
+     "via": "hecate",
+     "role": "train_split"
+    }
+   ]
+  },
+  {
+   "model": "trace-v3b",
+   "segment": "20231016151002",
+   "flags": [],
+   "covering": [],
+   "status": "unknown",
+   "why": "training list not published: trace-v3b"
+  },
+  {
+   "model": "a-hn",
+   "segment": "20231016151002",
+   "flags": [
+    "1 name(s) on PHercParis4 match no catalog segment: 20231012184423",
+    "1 name(s) with no scroll: Frag1"
+   ],
+   "covering": [],
+   "f_same": 0.0,
+   "f_band": 0.0,
+   "median_offset_um": null,
+   "transform_error_um": 0.0,
+   "status": "unknown",
+   "why": "names on this scroll that match no catalog segment"
+  },
+  {
+   "model": "ink_9um",
+   "segment": "20231031143852",
+   "flags": [],
+   "status": "trained",
+   "why": "named in ink_9um's list as phercparis4-w02 (train)",
+   "names": [
+    {
+     "name": "phercparis4-w02",
+     "via": "ink_9um",
+     "role": "train"
+    }
+   ]
+  },
+  {
+   "model": "v8in",
+   "segment": "20231031143852",
+   "flags": [
+    "1 name(s) on PHercParis4 match no catalog segment: 20231012184423",
+    "1 name(s) with no scroll: Frag1"
+   ],
+   "covering": [],
+   "f_same": 0.0,
+   "f_band": 0.0,
+   "median_offset_um": null,
+   "transform_error_um": 0.0,
+   "status": "unknown",
+   "why": "names on this scroll that match no catalog segment"
+  },
+  {
+   "model": "v8in-1447",
+   "segment": "20231031143852",
+   "flags": [
+    "1 name(s) on PHercParis4 match no catalog segment: 20231012184423",
+    "1 name(s) with no scroll: Frag1"
+   ],
+   "covering": [],
+   "f_same": 0.0,
+   "f_band": 0.0,
+   "median_offset_um": null,
+   "transform_error_um": 0.0,
+   "status": "unknown",
+   "why": "names on this scroll that match no catalog segment"
+  },
+  {
+   "model": "d9v2",
+   "segment": "20231031143852",
+   "flags": [],
+   "status": "trained",
+   "why": "named in d9v2 < ink_9um's list as phercparis4-w02 (train)",
+   "names": [
+    {
+     "name": "phercparis4-w02",
+     "via": "d9v2 < ink_9um",
+     "role": "train"
+    }
+   ]
+  },
+  {
+   "model": "reader-v2",
+   "segment": "20231031143852",
+   "flags": [],
+   "status": "trained",
+   "why": "named in reader-v2's list as phercparis4-w02 (train)",
+   "names": [
+    {
+     "name": "phercparis4-w02",
+     "via": "reader-v2",
+     "role": "train"
+    },
+    {
+     "name": "phercparis4-w02",
+     "via": "reader-v2 < ink_9um",
+     "role": "train"
+    }
+   ]
+  },
+  {
+   "model": "reader-v3",
+   "segment": "20231031143852",
+   "flags": [],
+   "status": "trained",
+   "why": "named in reader-v3 < reader-v2's list as phercparis4-w02 (train)",
+   "names": [
+    {
+     "name": "phercparis4-w02",
+     "via": "reader-v3 < reader-v2",
+     "role": "train"
+    },
+    {
+     "name": "phercparis4-w02",
+     "via": "reader-v3 < reader-v2 < ink_9um",
+     "role": "train"
+    }
+   ]
+  },
+  {
+   "model": "canonical-2um",
+   "segment": "20231031143852",
+   "flags": [
+    "2 name(s) with no scroll: 500p2a, 658"
+   ],
+   "covering": [],
+   "status": "clear",
+   "why": "no training segment on PHercParis4 in its list"
+  },
+  {
+   "model": "hecate",
+   "segment": "20231031143852",
+   "flags": [],
+   "status": "trained",
+   "why": "named in hecate's list as w02_20231031143852 (train_split)",
+   "names": [
+    {
+     "name": "w02_20231031143852",
+     "via": "hecate",
+     "role": "train_split"
+    }
+   ]
+  },
+  {
+   "model": "trace-v3b",
+   "segment": "20231031143852",
+   "flags": [],
+   "covering": [],
+   "status": "unknown",
+   "why": "training list not published: trace-v3b"
+  },
+  {
+   "model": "a-hn",
+   "segment": "20231031143852",
+   "flags": [
+    "1 name(s) on PHercParis4 match no catalog segment: 20231012184423",
+    "1 name(s) with no scroll: Frag1"
+   ],
+   "covering": [],
+   "f_same": 0.0,
+   "f_band": 0.0,
+   "median_offset_um": null,
+   "transform_error_um": 0.0,
+   "status": "unknown",
+   "why": "names on this scroll that match no catalog segment"
+  },
+  {
+   "model": "ink_9um",
+   "segment": "20231106155351",
+   "flags": [],
+   "status": "trained",
+   "why": "named in ink_9um's list as phercparis4-w03 (train)",
+   "names": [
+    {
+     "name": "phercparis4-w03",
+     "via": "ink_9um",
+     "role": "train"
+    }
+   ]
+  },
+  {
+   "model": "v8in",
+   "segment": "20231106155351",
+   "flags": [
+    "1 name(s) on PHercParis4 match no catalog segment: 20231012184423",
+    "1 name(s) with no scroll: Frag1"
+   ],
+   "covering": [],
+   "f_same": 0.0,
+   "f_band": 0.0,
+   "median_offset_um": null,
+   "transform_error_um": 0.0,
+   "status": "unknown",
+   "why": "names on this scroll that match no catalog segment"
+  },
+  {
+   "model": "v8in-1447",
+   "segment": "20231106155351",
+   "flags": [
+    "1 name(s) on PHercParis4 match no catalog segment: 20231012184423",
+    "1 name(s) with no scroll: Frag1"
+   ],
+   "covering": [],
+   "f_same": 0.0,
+   "f_band": 0.0,
+   "median_offset_um": null,
+   "transform_error_um": 0.0,
+   "status": "unknown",
+   "why": "names on this scroll that match no catalog segment"
+  },
+  {
+   "model": "d9v2",
+   "segment": "20231106155351",
+   "flags": [],
+   "status": "trained",
+   "why": "named in d9v2 < ink_9um's list as phercparis4-w03 (train)",
+   "names": [
+    {
+     "name": "phercparis4-w03",
+     "via": "d9v2 < ink_9um",
+     "role": "train"
+    }
+   ]
+  },
+  {
+   "model": "reader-v2",
+   "segment": "20231106155351",
+   "flags": [],
+   "status": "trained",
+   "why": "named in reader-v2's list as phercparis4-w03 (train)",
+   "names": [
+    {
+     "name": "phercparis4-w03",
+     "via": "reader-v2",
+     "role": "train"
+    },
+    {
+     "name": "phercparis4-w03",
+     "via": "reader-v2 < ink_9um",
+     "role": "train"
+    }
+   ]
+  },
+  {
+   "model": "reader-v3",
+   "segment": "20231106155351",
+   "flags": [],
+   "status": "trained",
+   "why": "named in reader-v3 < reader-v2's list as phercparis4-w03 (train)",
+   "names": [
+    {
+     "name": "phercparis4-w03",
+     "via": "reader-v3 < reader-v2",
+     "role": "train"
+    },
+    {
+     "name": "phercparis4-w03",
+     "via": "reader-v3 < reader-v2 < ink_9um",
+     "role": "train"
+    }
+   ]
+  },
+  {
+   "model": "canonical-2um",
+   "segment": "20231106155351",
+   "flags": [
+    "2 name(s) with no scroll: 500p2a, 658"
+   ],
+   "covering": [],
+   "status": "clear",
+   "why": "no training segment on PHercParis4 in its list"
+  },
+  {
+   "model": "hecate",
+   "segment": "20231106155351",
+   "flags": [],
+   "status": "trained",
+   "why": "named in hecate's list as w03_20231106155351 (train_split)",
+   "names": [
+    {
+     "name": "w03_20231106155351",
+     "via": "hecate",
+     "role": "train_split"
+    }
+   ]
+  },
+  {
+   "model": "trace-v3b",
+   "segment": "20231106155351",
+   "flags": [],
+   "covering": [],
+   "status": "unknown",
+   "why": "training list not published: trace-v3b"
+  },
+  {
+   "model": "a-hn",
+   "segment": "20231106155351",
+   "flags": [
+    "1 name(s) on PHercParis4 match no catalog segment: 20231012184423",
+    "1 name(s) with no scroll: Frag1"
+   ],
+   "covering": [],
+   "f_same": 0.0,
+   "f_band": 0.0,
+   "median_offset_um": null,
+   "transform_error_um": 0.0,
+   "status": "unknown",
+   "why": "names on this scroll that match no catalog segment"
+  },
+  {
+   "model": "ink_9um",
+   "segment": "20231210121321",
+   "flags": [],
+   "status": "trained",
+   "why": "named in ink_9um's list as phercparis4-w06 (train)",
+   "names": [
+    {
+     "name": "phercparis4-w06",
+     "via": "ink_9um",
+     "role": "train"
+    }
+   ]
+  },
+  {
+   "model": "v8in",
+   "segment": "20231210121321",
+   "flags": [
+    "1 name(s) on PHercParis4 match no catalog segment: 20231012184423",
+    "1 name(s) with no scroll: Frag1"
+   ],
+   "covering": [
+    {
+     "segment": "20231005123336",
+     "name": "20231005123336",
+     "via": "v8in",
+     "as": "train",
+     "f_same": 0.0001,
+     "f_band": 0.0002,
+     "transform_error_um": 0.0,
+     "z_overlap": 0.6384
+    }
+   ],
+   "f_same": 0.0001,
+   "f_band": 0.0002,
+   "median_offset_um": 20.98,
+   "transform_error_um": 0.0,
+   "status": "unknown",
+   "why": "names on this scroll that match no catalog segment"
+  },
+  {
+   "model": "v8in-1447",
+   "segment": "20231210121321",
+   "flags": [
+    "1 name(s) on PHercParis4 match no catalog segment: 20231012184423",
+    "1 name(s) with no scroll: Frag1"
+   ],
+   "covering": [
+    {
+     "segment": "20231005123336",
+     "name": "20231005123336",
+     "via": "v8in-1447 < v8in",
+     "as": "train",
+     "f_same": 0.0001,
+     "f_band": 0.0002,
+     "transform_error_um": 0.0,
+     "z_overlap": 0.6384
+    }
+   ],
+   "f_same": 0.0001,
+   "f_band": 0.0002,
+   "median_offset_um": 20.98,
+   "transform_error_um": 0.0,
+   "status": "unknown",
+   "why": "names on this scroll that match no catalog segment"
+  },
+  {
+   "model": "d9v2",
+   "segment": "20231210121321",
+   "flags": [],
+   "status": "trained",
+   "why": "named in d9v2 < ink_9um's list as phercparis4-w06 (train)",
+   "names": [
+    {
+     "name": "phercparis4-w06",
+     "via": "d9v2 < ink_9um",
+     "role": "train"
+    }
+   ]
+  },
+  {
+   "model": "reader-v2",
+   "segment": "20231210121321",
+   "flags": [],
+   "status": "trained",
+   "why": "named in reader-v2's list as phercparis4-w06 (train)",
+   "names": [
+    {
+     "name": "phercparis4-w06",
+     "via": "reader-v2",
+     "role": "train"
+    },
+    {
+     "name": "phercparis4-w06",
+     "via": "reader-v2 < ink_9um",
+     "role": "train"
+    }
+   ]
+  },
+  {
+   "model": "reader-v3",
+   "segment": "20231210121321",
+   "flags": [],
+   "status": "trained",
+   "why": "named in reader-v3 < reader-v2's list as phercparis4-w06 (train)",
+   "names": [
+    {
+     "name": "phercparis4-w06",
+     "via": "reader-v3 < reader-v2",
+     "role": "train"
+    },
+    {
+     "name": "phercparis4-w06",
+     "via": "reader-v3 < reader-v2 < ink_9um",
+     "role": "train"
+    }
+   ]
+  },
+  {
+   "model": "canonical-2um",
+   "segment": "20231210121321",
+   "flags": [
+    "2 name(s) with no scroll: 500p2a, 658"
+   ],
+   "covering": [],
+   "status": "clear",
+   "why": "no training segment on PHercParis4 in its list"
+  },
+  {
+   "model": "hecate",
+   "segment": "20231210121321",
+   "flags": [],
+   "status": "trained",
+   "why": "named in hecate's list as w06_1321 (train_split)",
+   "names": [
+    {
+     "name": "w06_1321",
+     "via": "hecate",
+     "role": "train_split"
+    }
+   ]
+  },
+  {
+   "model": "trace-v3b",
+   "segment": "20231210121321",
+   "flags": [],
+   "covering": [],
+   "status": "unknown",
+   "why": "training list not published: trace-v3b"
+  },
+  {
+   "model": "a-hn",
+   "segment": "20231210121321",
+   "flags": [
+    "1 name(s) on PHercParis4 match no catalog segment: 20231012184423",
+    "1 name(s) with no scroll: Frag1"
+   ],
+   "covering": [
+    {
+     "segment": "20231005123336",
+     "name": "20231005123336",
+     "via": "a-hn < v8in",
+     "as": "train",
+     "f_same": 0.0001,
+     "f_band": 0.0002,
+     "transform_error_um": 0.0,
+     "z_overlap": 0.6384
+    }
+   ],
+   "f_same": 0.0001,
+   "f_band": 0.0002,
+   "median_offset_um": 20.98,
+   "transform_error_um": 0.0,
+   "status": "unknown",
+   "why": "names on this scroll that match no catalog segment"
+  },
+  {
+   "model": "ink_9um",
+   "segment": "20240304141531",
+   "flags": [],
+   "status": "trained",
+   "why": "named in ink_9um's list as pherc1667-w013 (train)",
+   "names": [
+    {
+     "name": "pherc1667-w013",
+     "via": "ink_9um",
+     "role": "train"
+    }
+   ]
+  },
+  {
+   "model": "v8in",
+   "segment": "20240304141531",
+   "flags": [
+    "1 name(s) with no scroll: Frag1"
+   ],
+   "covering": [
+    {
+     "segment": "20240304144031",
+     "name": "1667_20240304144031",
+     "via": "v8in",
+     "as": "train",
+     "f_same": 0.0477,
+     "f_band": 0.0593,
+     "transform_error_um": 0.0,
+     "z_overlap": 0.9997
+    }
+   ],
+   "f_same": 0.0477,
+   "f_band": 0.0593,
+   "median_offset_um": 8.05,
+   "transform_error_um": 0.0,
+   "status": "trace",
+   "why": "training surfaces cover 4.8% within 60 um"
+  },
+  {
+   "model": "v8in-1447",
+   "segment": "20240304141531",
+   "flags": [
+    "1 name(s) with no scroll: Frag1"
+   ],
+   "covering": [
+    {
+     "segment": "20240304144031",
+     "name": "1667_20240304144031",
+     "via": "v8in-1447 < v8in",
+     "as": "train",
+     "f_same": 0.0477,
+     "f_band": 0.0593,
+     "transform_error_um": 0.0,
+     "z_overlap": 0.9997
+    }
+   ],
+   "f_same": 0.0477,
+   "f_band": 0.0593,
+   "median_offset_um": 8.05,
+   "transform_error_um": 0.0,
+   "status": "trace",
+   "why": "training surfaces cover 4.8% within 60 um"
+  },
+  {
+   "model": "d9v2",
+   "segment": "20240304141531",
+   "flags": [],
+   "status": "trained",
+   "why": "named in d9v2 < ink_9um's list as pherc1667-w013 (train)",
+   "names": [
+    {
+     "name": "pherc1667-w013",
+     "via": "d9v2 < ink_9um",
+     "role": "train"
+    }
+   ]
+  },
+  {
+   "model": "reader-v2",
+   "segment": "20240304141531",
+   "flags": [],
+   "status": "trained",
+   "why": "named in reader-v2's list as pherc1667-w013 (train)",
+   "names": [
+    {
+     "name": "pherc1667-w013",
+     "via": "reader-v2",
+     "role": "train"
+    },
+    {
+     "name": "pherc1667-w013",
+     "via": "reader-v2 < ink_9um",
+     "role": "train"
+    }
+   ]
+  },
+  {
+   "model": "reader-v3",
+   "segment": "20240304141531",
+   "flags": [],
+   "status": "trained",
+   "why": "named in reader-v3 < reader-v2's list as pherc1667-w013 (train)",
+   "names": [
+    {
+     "name": "pherc1667-w013",
+     "via": "reader-v3 < reader-v2",
+     "role": "train"
+    },
+    {
+     "name": "pherc1667-w013",
+     "via": "reader-v3 < reader-v2 < ink_9um",
+     "role": "train"
+    }
+   ]
+  },
+  {
+   "model": "canonical-2um",
+   "segment": "20240304141531",
+   "flags": [
+    "4 name(s) on PHerc1667 match no catalog segment: l_2, l_3, l_4, l_6",
+    "2 name(s) with no scroll: 500p2a, 658"
+   ],
+   "covering": [],
+   "status": "unknown",
+   "why": "names on this scroll that match no catalog segment"
+  },
+  {
+   "model": "hecate",
+   "segment": "20240304141531",
+   "flags": [],
+   "status": "trained",
+   "why": "named in hecate's list as w013_20240304141531_2um (train_split)",
+   "names": [
+    {
+     "name": "w013_20240304141531_2um",
+     "via": "hecate",
+     "role": "train_split"
+    }
+   ]
+  },
+  {
+   "model": "trace-v3b",
+   "segment": "20240304141531",
+   "flags": [],
+   "covering": [],
+   "status": "unknown",
+   "why": "training list not published: trace-v3b"
+  },
+  {
+   "model": "a-hn",
+   "segment": "20240304141531",
+   "flags": [
+    "1 name(s) with no scroll: Frag1"
+   ],
+   "covering": [
+    {
+     "segment": "20240304144031",
+     "name": "1667_20240304144031",
+     "via": "a-hn < v8in",
+     "as": "train",
+     "f_same": 0.0477,
+     "f_band": 0.0593,
+     "transform_error_um": 0.0,
+     "z_overlap": 0.9997
+    }
+   ],
+   "f_same": 0.0477,
+   "f_band": 0.0593,
+   "median_offset_um": 8.05,
+   "transform_error_um": 0.0,
+   "status": "trace",
+   "why": "training surfaces cover 4.8% within 60 um"
+  },
+  {
+   "model": "ink_9um",
+   "segment": "20240304144031",
+   "flags": [],
+   "status": "trained",
+   "why": "named in ink_9um's list as pherc1667-w018 (train)",
+   "names": [
+    {
+     "name": "pherc1667-w018",
+     "via": "ink_9um",
+     "role": "train"
+    }
+   ]
+  },
+  {
+   "model": "v8in",
+   "segment": "20240304144031",
+   "flags": [],
+   "status": "trained",
+   "why": "named in v8in's list as 1667_20240304144031 (train)",
+   "names": [
+    {
+     "name": "1667_20240304144031",
+     "via": "v8in",
+     "role": "train"
+    }
+   ]
+  },
+  {
+   "model": "v8in-1447",
+   "segment": "20240304144031",
+   "flags": [],
+   "status": "trained",
+   "why": "named in v8in-1447 < v8in's list as 1667_20240304144031 (train)",
+   "names": [
+    {
+     "name": "1667_20240304144031",
+     "via": "v8in-1447 < v8in",
+     "role": "train"
+    }
+   ]
+  },
+  {
+   "model": "d9v2",
+   "segment": "20240304144031",
+   "flags": [],
+   "status": "trained",
+   "why": "named in d9v2 < ink_9um's list as pherc1667-w018 (train)",
+   "names": [
+    {
+     "name": "pherc1667-w018",
+     "via": "d9v2 < ink_9um",
+     "role": "train"
+    }
+   ]
+  },
+  {
+   "model": "reader-v2",
+   "segment": "20240304144031",
+   "flags": [],
+   "status": "trained",
+   "why": "named in reader-v2's list as pherc1667-w018 (train)",
+   "names": [
+    {
+     "name": "pherc1667-w018",
+     "via": "reader-v2",
+     "role": "train"
+    },
+    {
+     "name": "pherc1667-w018",
+     "via": "reader-v2 < ink_9um",
+     "role": "train"
+    }
+   ]
+  },
+  {
+   "model": "reader-v3",
+   "segment": "20240304144031",
+   "flags": [],
+   "status": "trained",
+   "why": "named in reader-v3 < reader-v2's list as pherc1667-w018 (train)",
+   "names": [
+    {
+     "name": "pherc1667-w018",
+     "via": "reader-v3 < reader-v2",
+     "role": "train"
+    },
+    {
+     "name": "pherc1667-w018",
+     "via": "reader-v3 < reader-v2 < ink_9um",
+     "role": "train"
+    }
+   ]
+  },
+  {
+   "model": "canonical-2um",
+   "segment": "20240304144031",
+   "flags": [
+    "4 name(s) on PHerc1667 match no catalog segment: l_2, l_3, l_4, l_6",
+    "2 name(s) with no scroll: 500p2a, 658"
+   ],
+   "covering": [],
+   "status": "unknown",
+   "why": "names on this scroll that match no catalog segment"
+  },
+  {
+   "model": "hecate",
+   "segment": "20240304144031",
+   "flags": [],
+   "status": "trained",
+   "why": "named in hecate's list as w018_20240304144031_2um (train_split)",
+   "names": [
+    {
+     "name": "w018_20240304144031_2um",
+     "via": "hecate",
+     "role": "train_split"
+    }
+   ]
+  },
+  {
+   "model": "trace-v3b",
+   "segment": "20240304144031",
+   "flags": [],
+   "covering": [],
+   "status": "unknown",
+   "why": "training list not published: trace-v3b"
+  },
+  {
+   "model": "a-hn",
+   "segment": "20240304144031",
+   "flags": [],
+   "status": "trained",
+   "why": "named in a-hn < v8in's list as 1667_20240304144031 (train)",
+   "names": [
+    {
+     "name": "1667_20240304144031",
+     "via": "a-hn < v8in",
+     "role": "train"
+    }
+   ]
+  },
+  {
+   "model": "ink_9um",
+   "segment": "20240304161941",
+   "flags": [],
+   "status": "trained",
+   "why": "named in ink_9um's list as pherc1667-w023 (train)",
+   "names": [
+    {
+     "name": "pherc1667-w023",
+     "via": "ink_9um",
+     "role": "train"
+    }
+   ]
+  },
+  {
+   "model": "v8in",
+   "segment": "20240304161941",
+   "flags": [
+    "1 name(s) with no scroll: Frag1"
+   ],
+   "covering": [
+    {
+     "segment": "20240304144031",
+     "name": "1667_20240304144031",
+     "via": "v8in",
+     "as": "train",
+     "f_same": 0.0557,
+     "f_band": 0.0794,
+     "transform_error_um": 0.0,
+     "z_overlap": 0.9891
+    }
+   ],
+   "f_same": 0.0557,
+   "f_band": 0.0794,
+   "median_offset_um": 9.94,
+   "transform_error_um": 0.0,
+   "status": "exposed",
+   "why": "training surfaces cover 5.6% of it within 60 um (largest: 1667_20240304144031 via v8in, 5.6%)"
+  },
+  {
+   "model": "v8in-1447",
+   "segment": "20240304161941",
+   "flags": [
+    "1 name(s) with no scroll: Frag1"
+   ],
+   "covering": [
+    {
+     "segment": "20240304144031",
+     "name": "1667_20240304144031",
+     "via": "v8in-1447 < v8in",
+     "as": "train",
+     "f_same": 0.0557,
+     "f_band": 0.0794,
+     "transform_error_um": 0.0,
+     "z_overlap": 0.9891
+    }
+   ],
+   "f_same": 0.0557,
+   "f_band": 0.0794,
+   "median_offset_um": 9.94,
+   "transform_error_um": 0.0,
+   "status": "exposed",
+   "why": "training surfaces cover 5.6% of it within 60 um (largest: 1667_20240304144031 via v8in-1447 < v8in, 5.6%)"
+  },
+  {
+   "model": "d9v2",
+   "segment": "20240304161941",
+   "flags": [],
+   "status": "trained",
+   "why": "named in d9v2 < ink_9um's list as pherc1667-w023 (train)",
+   "names": [
+    {
+     "name": "pherc1667-w023",
+     "via": "d9v2 < ink_9um",
+     "role": "train"
+    }
+   ]
+  },
+  {
+   "model": "reader-v2",
+   "segment": "20240304161941",
+   "flags": [],
+   "status": "trained",
+   "why": "named in reader-v2's list as pherc1667-w023 (train)",
+   "names": [
+    {
+     "name": "pherc1667-w023",
+     "via": "reader-v2",
+     "role": "train"
+    },
+    {
+     "name": "pherc1667-w023",
+     "via": "reader-v2 < ink_9um",
+     "role": "train"
+    }
+   ]
+  },
+  {
+   "model": "reader-v3",
+   "segment": "20240304161941",
+   "flags": [],
+   "status": "trained",
+   "why": "named in reader-v3 < reader-v2's list as pherc1667-w023 (train)",
+   "names": [
+    {
+     "name": "pherc1667-w023",
+     "via": "reader-v3 < reader-v2",
+     "role": "train"
+    },
+    {
+     "name": "pherc1667-w023",
+     "via": "reader-v3 < reader-v2 < ink_9um",
+     "role": "train"
+    }
+   ]
+  },
+  {
+   "model": "canonical-2um",
+   "segment": "20240304161941",
+   "flags": [
+    "4 name(s) on PHerc1667 match no catalog segment: l_2, l_3, l_4, l_6",
+    "2 name(s) with no scroll: 500p2a, 658"
+   ],
+   "covering": [],
+   "status": "unknown",
+   "why": "names on this scroll that match no catalog segment"
+  },
+  {
+   "model": "hecate",
+   "segment": "20240304161941",
+   "flags": [],
+   "status": "trained",
+   "why": "named in hecate's list as w023_20240304161941_2um (train_split)",
+   "names": [
+    {
+     "name": "w023_20240304161941_2um",
+     "via": "hecate",
+     "role": "train_split"
+    }
+   ]
+  },
+  {
+   "model": "trace-v3b",
+   "segment": "20240304161941",
+   "flags": [],
+   "covering": [],
+   "status": "unknown",
+   "why": "training list not published: trace-v3b"
+  },
+  {
+   "model": "a-hn",
+   "segment": "20240304161941",
+   "flags": [
+    "1 name(s) with no scroll: Frag1"
+   ],
+   "covering": [
+    {
+     "segment": "20240304144031",
+     "name": "1667_20240304144031",
+     "via": "a-hn < v8in",
+     "as": "train",
+     "f_same": 0.0557,
+     "f_band": 0.0794,
+     "transform_error_um": 0.0,
+     "z_overlap": 0.9891
+    }
+   ],
+   "f_same": 0.0557,
+   "f_band": 0.0794,
+   "median_offset_um": 9.94,
+   "transform_error_um": 0.0,
+   "status": "exposed",
+   "why": "training surfaces cover 5.6% of it within 60 um (largest: 1667_20240304144031 via a-hn < v8in, 5.6%)"
+  },
+  {
+   "model": "ink_9um",
+   "segment": "20250825181859",
+   "flags": [],
+   "covering": [],
+   "status": "clear",
+   "why": "no training segment on PHerc0500P2 in its list"
+  },
+  {
+   "model": "v8in",
+   "segment": "20250825181859",
+   "flags": [
+    "1 name(s) with no scroll: Frag1"
+   ],
+   "covering": [
+    {
+     "segment": "20250628074500",
+     "name": "0500P2_front",
+     "via": "v8in",
+     "as": "train",
+     "f_same": 0.0563,
+     "f_band": 0.0836,
+     "transform_error_um": 0.0,
+     "z_overlap": 1.0
+    }
+   ],
+   "f_same": 0.0563,
+   "f_band": 0.0836,
+   "median_offset_um": 27.64,
+   "transform_error_um": 0.0,
+   "status": "exposed",
+   "why": "training surfaces cover 5.6% of it within 60 um (largest: 0500P2_front via v8in, 5.6%)"
+  },
+  {
+   "model": "v8in-1447",
+   "segment": "20250825181859",
+   "flags": [
+    "1 name(s) with no scroll: Frag1"
+   ],
+   "covering": [
+    {
+     "segment": "20250628074500",
+     "name": "0500P2_front",
+     "via": "v8in-1447 < v8in",
+     "as": "train",
+     "f_same": 0.0563,
+     "f_band": 0.0836,
+     "transform_error_um": 0.0,
+     "z_overlap": 1.0
+    }
+   ],
+   "f_same": 0.0563,
+   "f_band": 0.0836,
+   "median_offset_um": 27.64,
+   "transform_error_um": 0.0,
+   "status": "exposed",
+   "why": "training surfaces cover 5.6% of it within 60 um (largest: 0500P2_front via v8in-1447 < v8in, 5.6%)"
+  },
+  {
+   "model": "d9v2",
+   "segment": "20250825181859",
+   "flags": [
+    "d9v2: test (20250825181859--1)"
+   ],
+   "covering": [
+    {
+     "segment": "20250825181907",
+     "name": "20250825181907-0",
+     "via": "d9v2",
+     "as": "train",
+     "f_same": 0.1245,
+     "f_band": 0.42,
+     "transform_error_um": 0.0,
+     "z_overlap": 0.9953
+    },
+    {
+     "segment": "20250825181917",
+     "name": "20250825181917--2",
+     "via": "d9v2",
+     "as": "train",
+     "f_same": 0.0775,
+     "f_band": 0.3869,
+     "transform_error_um": 0.0,
+     "z_overlap": 0.9434
+    },
+    {
+     "segment": "20250628074500",
+     "name": "20250628074500-500P2_front",
+     "via": "d9v2",
+     "as": "train",
+     "f_same": 0.0563,
+     "f_band": 0.0836,
+     "transform_error_um": 0.0,
+     "z_overlap": 1.0
+    },
+    {
+     "segment": "20250825181922",
+     "name": "20250825181922-1",
+     "via": "d9v2",
+     "as": "train",
+     "f_same": 0.0494,
+     "f_band": 0.0755,
+     "transform_error_um": 0.0,
+     "z_overlap": 0.9896
+    },
+    {
+     "segment": "20250716055235",
+     "name": "20250716055235-z_dbg_gen_00779_inp_hr",
+     "via": "d9v2",
+     "as": "train",
+     "f_same": 0.0217,
+     "f_band": 0.0396,
+     "transform_error_um": 0.0,
+     "z_overlap": 0.9541
+    }
+   ],
+   "f_same": 0.2628,
+   "f_band": 0.7071,
+   "median_offset_um": 37.07,
+   "transform_error_um": 0.0,
+   "status": "exposed",
+   "why": "training surfaces cover 26.3% of it within 60 um (largest: 20250825181907-0 via d9v2, 12.4%)"
+  },
+  {
+   "model": "reader-v2",
+   "segment": "20250825181859",
+   "flags": [],
+   "covering": [
+    {
+     "segment": "20250628074500",
+     "name": "20250628074500-500P2_front",
+     "via": "reader-v2",
+     "as": "train",
+     "f_same": 0.0563,
+     "f_band": 0.0836,
+     "transform_error_um": 0.0,
+     "z_overlap": 1.0
+    },
+    {
+     "segment": "20250611134135",
+     "name": "20250611134135-z_dbg_gen_00331_inp_hr",
+     "via": "reader-v2",
+     "as": "train",
+     "f_same": 0.018,
+     "f_band": 0.0466,
+     "transform_error_um": 0.0,
+     "z_overlap": 0.9366
+    },
+    {
+     "segment": "20250611170257",
+     "name": "20250611170257-z_dbg_gen_00308_inp_hr",
+     "via": "reader-v2",
+     "as": "train",
+     "f_same": 0.0088,
+     "f_band": 0.0139,
+     "transform_error_um": 0.0,
+     "z_overlap": 1.0
+    },
+    {
+     "segment": "20250611154256",
+     "name": "20250611154256-z_dbg_gen_00354_inp_hr",
+     "via": "reader-v2",
+     "as": "train",
+     "f_same": 0.0053,
+     "f_band": 0.0089,
+     "transform_error_um": 0.0,
+     "z_overlap": 0.8989
+    },
+    {
+     "segment": "20250611161023",
+     "name": "20250611161023-z_dbg_gen_00205_inp_hr",
+     "via": "reader-v2",
+     "as": "train",
+     "f_same": 0.0027,
+     "f_band": 0.0119,
+     "transform_error_um": 0.0,
+     "z_overlap": 0.8852
+    }
+   ],
+   "f_same": 0.086,
+   "f_band": 0.1464,
+   "median_offset_um": 28.13,
+   "transform_error_um": 0.0,
+   "status": "exposed",
+   "why": "training surfaces cover 8.6% of it within 60 um (largest: 20250628074500-500P2_front via reader-v2, 5.6%)"
+  },
+  {
+   "model": "reader-v3",
+   "segment": "20250825181859",
+   "flags": [],
+   "covering": [
+    {
+     "segment": "20250628074500",
+     "name": "20250628074500-500P2_front",
+     "via": "reader-v3 < reader-v2",
+     "as": "train",
+     "f_same": 0.0563,
+     "f_band": 0.0836,
+     "transform_error_um": 0.0,
+     "z_overlap": 1.0
+    },
+    {
+     "segment": "20250611134135",
+     "name": "20250611134135-z_dbg_gen_00331_inp_hr",
+     "via": "reader-v3 < reader-v2",
+     "as": "train",
+     "f_same": 0.018,
+     "f_band": 0.0466,
+     "transform_error_um": 0.0,
+     "z_overlap": 0.9366
+    },
+    {
+     "segment": "20250611170257",
+     "name": "20250611170257-z_dbg_gen_00308_inp_hr",
+     "via": "reader-v3 < reader-v2",
+     "as": "train",
+     "f_same": 0.0088,
+     "f_band": 0.0139,
+     "transform_error_um": 0.0,
+     "z_overlap": 1.0
+    },
+    {
+     "segment": "20250611154256",
+     "name": "20250611154256-z_dbg_gen_00354_inp_hr",
+     "via": "reader-v3 < reader-v2",
+     "as": "train",
+     "f_same": 0.0053,
+     "f_band": 0.0089,
+     "transform_error_um": 0.0,
+     "z_overlap": 0.8989
+    },
+    {
+     "segment": "20250611161023",
+     "name": "20250611161023-z_dbg_gen_00205_inp_hr",
+     "via": "reader-v3 < reader-v2",
+     "as": "train",
+     "f_same": 0.0027,
+     "f_band": 0.0119,
+     "transform_error_um": 0.0,
+     "z_overlap": 0.8852
+    }
+   ],
+   "f_same": 0.086,
+   "f_band": 0.1464,
+   "median_offset_um": 28.13,
+   "transform_error_um": 0.0,
+   "status": "exposed",
+   "why": "training surfaces cover 8.6% of it within 60 um (largest: 20250628074500-500P2_front via reader-v3 < reader-v2, 5.6%)"
+  },
+  {
+   "model": "canonical-2um",
+   "segment": "20250825181859",
+   "flags": [],
+   "status": "trained",
+   "why": "named in canonical-2um's list as -1 (train)",
+   "names": [
+    {
+     "name": "-1",
+     "via": "canonical-2um",
+     "role": "train"
+    }
+   ]
+  },
+  {
+   "model": "hecate",
+   "segment": "20250825181859",
+   "flags": [],
+   "status": "trained",
+   "why": "named in hecate's list as -1 (train_split)",
+   "names": [
+    {
+     "name": "-1",
+     "via": "hecate",
+     "role": "train_split"
+    },
+    {
+     "name": "-1",
+     "via": "hecate < canonical-2um",
+     "role": "train"
+    }
+   ]
+  },
+  {
+   "model": "trace-v3b",
+   "segment": "20250825181859",
+   "flags": [],
+   "covering": [],
+   "status": "unknown",
+   "why": "training list not published: trace-v3b"
+  },
+  {
+   "model": "a-hn",
+   "segment": "20250825181859",
+   "flags": [
+    "1 name(s) with no scroll: Frag1"
+   ],
+   "covering": [
+    {
+     "segment": "20250628074500",
+     "name": "0500P2_front",
+     "via": "a-hn < v8in",
+     "as": "train",
+     "f_same": 0.0563,
+     "f_band": 0.0836,
+     "transform_error_um": 0.0,
+     "z_overlap": 1.0
+    }
+   ],
+   "f_same": 0.0563,
+   "f_band": 0.0836,
+   "median_offset_um": 27.64,
+   "transform_error_um": 0.0,
+   "status": "exposed",
+   "why": "training surfaces cover 5.6% of it within 60 um (largest: 0500P2_front via a-hn < v8in, 5.6%)"
+  },
+  {
+   "model": "ink_9um",
+   "segment": "20250919125754",
+   "flags": [],
+   "covering": [],
+   "status": "clear",
+   "why": "no training segment on PHerc0009B in its list"
+  },
+  {
+   "model": "v8in",
+   "segment": "20250919125754",
+   "flags": [
+    "1 name(s) with no scroll: Frag1"
+   ],
+   "covering": [
+    {
+     "segment": "20250919132115",
+     "name": "0009B_ag132115",
+     "via": "v8in",
+     "as": "validation",
+     "f_same": 0.1729,
+     "f_band": 0.2258,
+     "transform_error_um": 0.0,
+     "z_overlap": 1.0
+    }
+   ],
+   "status": "selected",
+   "why": "validation segment 0009B_ag132115 covers 17.3%"
+  },
+  {
+   "model": "v8in-1447",
+   "segment": "20250919125754",
+   "flags": [
+    "1 name(s) with no scroll: Frag1"
+   ],
+   "covering": [
+    {
+     "segment": "20250919132115",
+     "name": "0009B_ag132115",
+     "via": "v8in-1447 < v8in",
+     "as": "validation",
+     "f_same": 0.1729,
+     "f_band": 0.2258,
+     "transform_error_um": 0.0,
+     "z_overlap": 1.0
+    }
+   ],
+   "status": "selected",
+   "why": "validation segment 0009B_ag132115 covers 17.3%"
+  },
+  {
+   "model": "d9v2",
+   "segment": "20250919125754",
+   "flags": [
+    "d9v2: test (20250919125754-auto_grown_20250919055754487_inp_hr)"
+   ],
+   "covering": [
+    {
+     "segment": "20250919064353",
+     "name": "20250919064353-auto_grown_20250918234353791",
+     "via": "d9v2",
+     "as": "train",
+     "f_same": 0.2678,
+     "f_band": 0.2856,
+     "transform_error_um": 0.0,
+     "z_overlap": 0.9498
+    },
+    {
+     "segment": "20250919131352",
+     "name": "20250919131352-auto_grown_20250919061352722_inp_hr",
+     "via": "d9v2",
+     "as": "train",
+     "f_same": 0.2643,
+     "f_band": 0.3051,
+     "transform_error_um": 0.0,
+     "z_overlap": 0.999
+    },
+    {
+     "segment": "20250919132115",
+     "name": "20250919132115-auto_grown_20250919062115592_inp_hr",
+     "via": "d9v2",
+     "as": "train",
+     "f_same": 0.1729,
+     "f_band": 0.2258,
+     "transform_error_um": 0.0,
+     "z_overlap": 1.0
+    },
+    {
+     "segment": "20250919130642",
+     "name": "20250919130642-auto_grown_20250919060642061",
+     "via": "d9v2",
+     "as": "train",
+     "f_same": 0.015,
+     "f_band": 0.0269,
+     "transform_error_um": 0.0,
+     "z_overlap": 0.9656
+    },
+    {
+     "segment": "20250919131642",
+     "name": "20250919131642-auto_grown_20250919061642215_inp_hr",
+     "via": "d9v2",
+     "as": "train",
+     "f_same": 0.0004,
+     "f_band": 0.0011,
+     "transform_error_um": 0.0,
+     "z_overlap": 0.9308
+    }
+   ],
+   "f_same": 0.4297,
+   "f_band": 0.4897,
+   "median_offset_um": 1.89,
+   "transform_error_um": 0.0,
+   "status": "exposed",
+   "why": "training surfaces cover 43.0% of it within 60 um (largest: 20250919064353-auto_grown_20250918234353791 via d9v2, 26.8%)"
+  },
+  {
+   "model": "reader-v2",
+   "segment": "20250919125754",
+   "flags": [],
+   "covering": [
+    {
+     "segment": "20250919064353",
+     "name": "20250919064353",
+     "via": "reader-v2",
+     "as": "train",
+     "f_same": 0.2678,
+     "f_band": 0.2856,
+     "transform_error_um": 0.0,
+     "z_overlap": 0.9498
+    },
+    {
+     "segment": "20250919131352",
+     "name": "20250919131352",
+     "via": "reader-v2",
+     "as": "train",
+     "f_same": 0.2643,
+     "f_band": 0.3051,
+     "transform_error_um": 0.0,
+     "z_overlap": 0.999
+    },
+    {
+     "segment": "20250919132115",
+     "name": "20250919132115",
+     "via": "reader-v2",
+     "as": "train",
+     "f_same": 0.1729,
+     "f_band": 0.2258,
+     "transform_error_um": 0.0,
+     "z_overlap": 1.0
+    },
+    {
+     "segment": "20250919130642",
+     "name": "20250919130642",
+     "via": "reader-v2",
+     "as": "train",
+     "f_same": 0.015,
+     "f_band": 0.0269,
+     "transform_error_um": 0.0,
+     "z_overlap": 0.9656
+    },
+    {
+     "segment": "20250919131642",
+     "name": "20250919131642",
+     "via": "reader-v2",
+     "as": "train",
+     "f_same": 0.0004,
+     "f_band": 0.0011,
+     "transform_error_um": 0.0,
+     "z_overlap": 0.9308
+    }
+   ],
+   "f_same": 0.4295,
+   "f_band": 0.4895,
+   "median_offset_um": 1.89,
+   "transform_error_um": 0.0,
+   "status": "exposed",
+   "why": "training surfaces cover 43.0% of it within 60 um (largest: 20250919064353 via reader-v2, 26.8%)"
+  },
+  {
+   "model": "reader-v3",
+   "segment": "20250919125754",
+   "flags": [],
+   "covering": [
+    {
+     "segment": "20250919064353",
+     "name": "20250919064353",
+     "via": "reader-v3 < reader-v2",
+     "as": "train",
+     "f_same": 0.2678,
+     "f_band": 0.2856,
+     "transform_error_um": 0.0,
+     "z_overlap": 0.9498
+    },
+    {
+     "segment": "20250919131352",
+     "name": "20250919131352",
+     "via": "reader-v3 < reader-v2",
+     "as": "train",
+     "f_same": 0.2643,
+     "f_band": 0.3051,
+     "transform_error_um": 0.0,
+     "z_overlap": 0.999
+    },
+    {
+     "segment": "20250919132115",
+     "name": "20250919132115",
+     "via": "reader-v3 < reader-v2",
+     "as": "train",
+     "f_same": 0.1729,
+     "f_band": 0.2258,
+     "transform_error_um": 0.0,
+     "z_overlap": 1.0
+    },
+    {
+     "segment": "20250919130642",
+     "name": "20250919130642",
+     "via": "reader-v3 < reader-v2",
+     "as": "train",
+     "f_same": 0.015,
+     "f_band": 0.0269,
+     "transform_error_um": 0.0,
+     "z_overlap": 0.9656
+    },
+    {
+     "segment": "20250919131642",
+     "name": "20250919131642",
+     "via": "reader-v3 < reader-v2",
+     "as": "train",
+     "f_same": 0.0004,
+     "f_band": 0.0011,
+     "transform_error_um": 0.0,
+     "z_overlap": 0.9308
+    }
+   ],
+   "f_same": 0.4295,
+   "f_band": 0.4895,
+   "median_offset_um": 1.89,
+   "transform_error_um": 0.0,
+   "status": "exposed",
+   "why": "training surfaces cover 43.0% of it within 60 um (largest: 20250919064353 via reader-v3 < reader-v2, 26.8%)"
+  },
+  {
+   "model": "canonical-2um",
+   "segment": "20250919125754",
+   "flags": [],
+   "status": "trained",
+   "why": "named in canonical-2um's list as auto_grown_20250919055754487_inp_hr (train)",
+   "names": [
+    {
+     "name": "auto_grown_20250919055754487_inp_hr",
+     "via": "canonical-2um",
+     "role": "train"
+    }
+   ]
+  },
+  {
+   "model": "hecate",
+   "segment": "20250919125754",
+   "flags": [],
+   "status": "trained",
+   "why": "named in hecate's list as auto_grown_20250919055754487_inp_hr_2um (train_split)",
+   "names": [
+    {
+     "name": "auto_grown_20250919055754487_inp_hr_2um",
+     "via": "hecate",
+     "role": "train_split"
+    },
+    {
+     "name": "auto_grown_20250919055754487_inp_hr",
+     "via": "hecate < canonical-2um",
+     "role": "train"
+    }
+   ]
+  },
+  {
+   "model": "trace-v3b",
+   "segment": "20250919125754",
+   "flags": [],
+   "covering": [],
+   "status": "unknown",
+   "why": "training list not published: trace-v3b"
+  },
+  {
+   "model": "a-hn",
+   "segment": "20250919125754",
+   "flags": [
+    "1 name(s) with no scroll: Frag1"
+   ],
+   "covering": [
+    {
+     "segment": "20250919132115",
+     "name": "0009B_ag132115",
+     "via": "a-hn < v8in",
+     "as": "validation",
+     "f_same": 0.1729,
+     "f_band": 0.2258,
+     "transform_error_um": 0.0,
+     "z_overlap": 1.0
+    }
+   ],
+   "status": "selected",
+   "why": "validation segment 0009B_ag132115 covers 17.3%"
+  },
+  {
+   "model": "ink_9um",
+   "segment": "20251208130119",
+   "flags": [],
+   "status": "trained",
+   "why": "named in ink_9um's list as pherc1667-w028 (train)",
+   "names": [
+    {
+     "name": "pherc1667-w028",
+     "via": "ink_9um",
+     "role": "train"
+    }
+   ]
+  },
+  {
+   "model": "v8in",
+   "segment": "20251208130119",
+   "flags": [
+    "1 name(s) with no scroll: Frag1"
+   ],
+   "covering": [
+    {
+     "segment": "20240304144031",
+     "name": "1667_20240304144031",
+     "via": "v8in",
+     "as": "train",
+     "f_same": 0.0006,
+     "f_band": 0.0009,
+     "transform_error_um": 0.0,
+     "z_overlap": 0.9799
+    }
+   ],
+   "f_same": 0.0006,
+   "f_band": 0.0009,
+   "median_offset_um": 25.86,
+   "transform_error_um": 0.0,
+   "status": "clear",
+   "why": "training surfaces cover 0.06% within 60 um"
+  },
+  {
+   "model": "v8in-1447",
+   "segment": "20251208130119",
+   "flags": [
+    "1 name(s) with no scroll: Frag1"
+   ],
+   "covering": [
+    {
+     "segment": "20240304144031",
+     "name": "1667_20240304144031",
+     "via": "v8in-1447 < v8in",
+     "as": "train",
+     "f_same": 0.0006,
+     "f_band": 0.0009,
+     "transform_error_um": 0.0,
+     "z_overlap": 0.9799
+    }
+   ],
+   "f_same": 0.0006,
+   "f_band": 0.0009,
+   "median_offset_um": 25.86,
+   "transform_error_um": 0.0,
+   "status": "clear",
+   "why": "training surfaces cover 0.06% within 60 um"
+  },
+  {
+   "model": "d9v2",
+   "segment": "20251208130119",
+   "flags": [],
+   "status": "trained",
+   "why": "named in d9v2 < ink_9um's list as pherc1667-w028 (train)",
+   "names": [
+    {
+     "name": "pherc1667-w028",
+     "via": "d9v2 < ink_9um",
+     "role": "train"
+    }
+   ]
+  },
+  {
+   "model": "reader-v2",
+   "segment": "20251208130119",
+   "flags": [],
+   "status": "trained",
+   "why": "named in reader-v2's list as pherc1667-w028 (train)",
+   "names": [
+    {
+     "name": "pherc1667-w028",
+     "via": "reader-v2",
+     "role": "train"
+    },
+    {
+     "name": "pherc1667-w028",
+     "via": "reader-v2 < ink_9um",
+     "role": "train"
+    }
+   ]
+  },
+  {
+   "model": "reader-v3",
+   "segment": "20251208130119",
+   "flags": [],
+   "status": "trained",
+   "why": "named in reader-v3 < reader-v2's list as pherc1667-w028 (train)",
+   "names": [
+    {
+     "name": "pherc1667-w028",
+     "via": "reader-v3 < reader-v2",
+     "role": "train"
+    },
+    {
+     "name": "pherc1667-w028",
+     "via": "reader-v3 < reader-v2 < ink_9um",
+     "role": "train"
+    }
+   ]
+  },
+  {
+   "model": "canonical-2um",
+   "segment": "20251208130119",
+   "flags": [
+    "4 name(s) on PHerc1667 match no catalog segment: l_2, l_3, l_4, l_6",
+    "2 name(s) with no scroll: 500p2a, 658"
+   ],
+   "covering": [],
+   "status": "unknown",
+   "why": "names on this scroll that match no catalog segment"
+  },
+  {
+   "model": "hecate",
+   "segment": "20251208130119",
+   "flags": [],
+   "status": "trained",
+   "why": "named in hecate's list as w028_20251208130119156_2um (train_split)",
+   "names": [
+    {
+     "name": "w028_20251208130119156_2um",
+     "via": "hecate",
+     "role": "train_split"
+    }
+   ]
+  },
+  {
+   "model": "trace-v3b",
+   "segment": "20251208130119",
+   "flags": [],
+   "covering": [],
+   "status": "unknown",
+   "why": "training list not published: trace-v3b"
+  },
+  {
+   "model": "a-hn",
+   "segment": "20251208130119",
+   "flags": [
+    "1 name(s) with no scroll: Frag1"
+   ],
+   "covering": [
+    {
+     "segment": "20240304144031",
+     "name": "1667_20240304144031",
+     "via": "a-hn < v8in",
+     "as": "train",
+     "f_same": 0.0006,
+     "f_band": 0.0009,
+     "transform_error_um": 0.0,
+     "z_overlap": 0.9799
+    }
+   ],
+   "f_same": 0.0006,
+   "f_band": 0.0009,
+   "median_offset_um": 25.86,
+   "transform_error_um": 0.0,
+   "status": "clear",
+   "why": "training surfaces cover 0.06% within 60 um"
+  },
+  {
+   "model": "ink_9um",
+   "segment": "20251212185248",
+   "flags": [],
+   "status": "trained",
+   "why": "named in ink_9um's list as pherc1667-w029 (train)",
+   "names": [
+    {
+     "name": "pherc1667-w029",
+     "via": "ink_9um",
+     "role": "train"
+    }
+   ]
+  },
+  {
+   "model": "v8in",
+   "segment": "20251212185248",
+   "flags": [
+    "1 name(s) with no scroll: Frag1"
+   ],
+   "covering": [
+    {
+     "segment": "20240304144031",
+     "name": "1667_20240304144031",
+     "via": "v8in",
+     "as": "train",
+     "f_same": 0.0004,
+     "f_band": 0.0007,
+     "transform_error_um": 0.0,
+     "z_overlap": 0.9793
+    }
+   ],
+   "f_same": 0.0004,
+   "f_band": 0.0007,
+   "median_offset_um": 19.61,
+   "transform_error_um": 0.0,
+   "status": "clear",
+   "why": "training surfaces cover 0.04% within 60 um"
+  },
+  {
+   "model": "v8in-1447",
+   "segment": "20251212185248",
+   "flags": [
+    "1 name(s) with no scroll: Frag1"
+   ],
+   "covering": [
+    {
+     "segment": "20240304144031",
+     "name": "1667_20240304144031",
+     "via": "v8in-1447 < v8in",
+     "as": "train",
+     "f_same": 0.0004,
+     "f_band": 0.0007,
+     "transform_error_um": 0.0,
+     "z_overlap": 0.9793
+    }
+   ],
+   "f_same": 0.0004,
+   "f_band": 0.0007,
+   "median_offset_um": 19.61,
+   "transform_error_um": 0.0,
+   "status": "clear",
+   "why": "training surfaces cover 0.04% within 60 um"
+  },
+  {
+   "model": "d9v2",
+   "segment": "20251212185248",
+   "flags": [],
+   "status": "trained",
+   "why": "named in d9v2 < ink_9um's list as pherc1667-w029 (train)",
+   "names": [
+    {
+     "name": "pherc1667-w029",
+     "via": "d9v2 < ink_9um",
+     "role": "train"
+    }
+   ]
+  },
+  {
+   "model": "reader-v2",
+   "segment": "20251212185248",
+   "flags": [],
+   "status": "trained",
+   "why": "named in reader-v2's list as pherc1667-w029 (train)",
+   "names": [
+    {
+     "name": "pherc1667-w029",
+     "via": "reader-v2",
+     "role": "train"
+    },
+    {
+     "name": "pherc1667-w029",
+     "via": "reader-v2 < ink_9um",
+     "role": "train"
+    }
+   ]
+  },
+  {
+   "model": "reader-v3",
+   "segment": "20251212185248",
+   "flags": [],
+   "status": "trained",
+   "why": "named in reader-v3 < reader-v2's list as pherc1667-w029 (train)",
+   "names": [
+    {
+     "name": "pherc1667-w029",
+     "via": "reader-v3 < reader-v2",
+     "role": "train"
+    },
+    {
+     "name": "pherc1667-w029",
+     "via": "reader-v3 < reader-v2 < ink_9um",
+     "role": "train"
+    }
+   ]
+  },
+  {
+   "model": "canonical-2um",
+   "segment": "20251212185248",
+   "flags": [
+    "4 name(s) on PHerc1667 match no catalog segment: l_2, l_3, l_4, l_6",
+    "2 name(s) with no scroll: 500p2a, 658"
+   ],
+   "covering": [],
+   "status": "unknown",
+   "why": "names on this scroll that match no catalog segment"
+  },
+  {
+   "model": "hecate",
+   "segment": "20251212185248",
+   "flags": [],
+   "status": "trained",
+   "why": "named in hecate's list as w029_20251212185248662_2um (train_split)",
+   "names": [
+    {
+     "name": "w029_20251212185248662_2um",
+     "via": "hecate",
+     "role": "train_split"
+    }
+   ]
+  },
+  {
+   "model": "trace-v3b",
+   "segment": "20251212185248",
+   "flags": [],
+   "covering": [],
+   "status": "unknown",
+   "why": "training list not published: trace-v3b"
+  },
+  {
+   "model": "a-hn",
+   "segment": "20251212185248",
+   "flags": [
+    "1 name(s) with no scroll: Frag1"
+   ],
+   "covering": [
+    {
+     "segment": "20240304144031",
+     "name": "1667_20240304144031",
+     "via": "a-hn < v8in",
+     "as": "train",
+     "f_same": 0.0004,
+     "f_band": 0.0007,
+     "transform_error_um": 0.0,
+     "z_overlap": 0.9793
+    }
+   ],
+   "f_same": 0.0004,
+   "f_band": 0.0007,
+   "median_offset_um": 19.61,
+   "transform_error_um": 0.0,
+   "status": "clear",
+   "why": "training surfaces cover 0.04% within 60 um"
+  },
+  {
+   "model": "ink_9um",
+   "segment": "20251223230000",
+   "flags": [],
+   "status": "trained",
+   "why": "named in ink_9um's list as pherc1667-w031 (train)",
+   "names": [
+    {
+     "name": "pherc1667-w031",
+     "via": "ink_9um",
+     "role": "train"
+    }
+   ]
+  },
+  {
+   "model": "v8in",
+   "segment": "20251223230000",
+   "flags": [
+    "1 name(s) with no scroll: Frag1"
+   ],
+   "covering": [
+    {
+     "segment": "20240304144031",
+     "name": "1667_20240304144031",
+     "via": "v8in",
+     "as": "train",
+     "f_same": 0.0008,
+     "f_band": 0.0013,
+     "transform_error_um": 0.0,
+     "z_overlap": 0.9744
+    }
+   ],
+   "f_same": 0.0008,
+   "f_band": 0.0013,
+   "median_offset_um": 28.91,
+   "transform_error_um": 0.0,
+   "status": "clear",
+   "why": "training surfaces cover 0.08% within 60 um"
+  },
+  {
+   "model": "v8in-1447",
+   "segment": "20251223230000",
+   "flags": [
+    "1 name(s) with no scroll: Frag1"
+   ],
+   "covering": [
+    {
+     "segment": "20240304144031",
+     "name": "1667_20240304144031",
+     "via": "v8in-1447 < v8in",
+     "as": "train",
+     "f_same": 0.0008,
+     "f_band": 0.0013,
+     "transform_error_um": 0.0,
+     "z_overlap": 0.9744
+    }
+   ],
+   "f_same": 0.0008,
+   "f_band": 0.0013,
+   "median_offset_um": 28.91,
+   "transform_error_um": 0.0,
+   "status": "clear",
+   "why": "training surfaces cover 0.08% within 60 um"
+  },
+  {
+   "model": "d9v2",
+   "segment": "20251223230000",
+   "flags": [],
+   "status": "trained",
+   "why": "named in d9v2 < ink_9um's list as pherc1667-w031 (train)",
+   "names": [
+    {
+     "name": "pherc1667-w031",
+     "via": "d9v2 < ink_9um",
+     "role": "train"
+    }
+   ]
+  },
+  {
+   "model": "reader-v2",
+   "segment": "20251223230000",
+   "flags": [],
+   "status": "trained",
+   "why": "named in reader-v2's list as pherc1667-w031 (train)",
+   "names": [
+    {
+     "name": "pherc1667-w031",
+     "via": "reader-v2",
+     "role": "train"
+    },
+    {
+     "name": "pherc1667-w031",
+     "via": "reader-v2 < ink_9um",
+     "role": "train"
+    }
+   ]
+  },
+  {
+   "model": "reader-v3",
+   "segment": "20251223230000",
+   "flags": [],
+   "status": "trained",
+   "why": "named in reader-v3 < reader-v2's list as pherc1667-w031 (train)",
+   "names": [
+    {
+     "name": "pherc1667-w031",
+     "via": "reader-v3 < reader-v2",
+     "role": "train"
+    },
+    {
+     "name": "pherc1667-w031",
+     "via": "reader-v3 < reader-v2 < ink_9um",
+     "role": "train"
+    }
+   ]
+  },
+  {
+   "model": "canonical-2um",
+   "segment": "20251223230000",
+   "flags": [
+    "4 name(s) on PHerc1667 match no catalog segment: l_2, l_3, l_4, l_6",
+    "2 name(s) with no scroll: 500p2a, 658"
+   ],
+   "covering": [],
+   "status": "unknown",
+   "why": "names on this scroll that match no catalog segment"
+  },
+  {
+   "model": "hecate",
+   "segment": "20251223230000",
+   "flags": [],
+   "status": "trained",
+   "why": "named in hecate's list as w031_2025122323_2um (train_split)",
+   "names": [
+    {
+     "name": "w031_2025122323_2um",
+     "via": "hecate",
+     "role": "train_split"
+    }
+   ]
+  },
+  {
+   "model": "trace-v3b",
+   "segment": "20251223230000",
+   "flags": [],
+   "covering": [],
+   "status": "unknown",
+   "why": "training list not published: trace-v3b"
+  },
+  {
+   "model": "a-hn",
+   "segment": "20251223230000",
+   "flags": [
+    "1 name(s) with no scroll: Frag1"
+   ],
+   "covering": [
+    {
+     "segment": "20240304144031",
+     "name": "1667_20240304144031",
+     "via": "a-hn < v8in",
+     "as": "train",
+     "f_same": 0.0008,
+     "f_band": 0.0013,
+     "transform_error_um": 0.0,
+     "z_overlap": 0.9744
+    }
+   ],
+   "f_same": 0.0008,
+   "f_band": 0.0013,
+   "median_offset_um": 28.91,
+   "transform_error_um": 0.0,
+   "status": "clear",
+   "why": "training surfaces cover 0.08% within 60 um"
+  },
+  {
+   "model": "ink_9um",
+   "segment": "20260220213127",
+   "flags": [],
+   "covering": [],
+   "status": "clear",
+   "why": "no training segment on PHerc0841 in its list"
+  },
+  {
+   "model": "v8in",
+   "segment": "20260220213127",
+   "flags": [
+    "1 name(s) with no scroll: Frag1"
+   ],
+   "covering": [],
+   "status": "clear",
+   "why": "no training segment on PHerc0841 in its list"
+  },
+  {
+   "model": "v8in-1447",
+   "segment": "20260220213127",
+   "flags": [
+    "1 name(s) with no scroll: Frag1"
+   ],
+   "covering": [],
+   "status": "clear",
+   "why": "no training segment on PHerc0841 in its list"
+  },
+  {
+   "model": "d9v2",
+   "segment": "20260220213127",
+   "flags": [
+    "d9v2: test (20260220213127-w00)"
+   ],
+   "covering": [],
+   "status": "clear",
+   "why": "no training segment on PHerc0841 in its list"
+  },
+  {
+   "model": "reader-v2",
+   "segment": "20260220213127",
+   "flags": [],
+   "covering": [],
+   "status": "clear",
+   "why": "no training segment on PHerc0841 in its list"
+  },
+  {
+   "model": "reader-v3",
+   "segment": "20260220213127",
+   "flags": [],
+   "covering": [],
+   "status": "clear",
+   "why": "no training segment on PHerc0841 in its list"
+  },
+  {
+   "model": "canonical-2um",
+   "segment": "20260220213127",
+   "flags": [],
+   "status": "trained",
+   "why": "named in canonical-2um's list as w00 (train)",
+   "names": [
+    {
+     "name": "w00",
+     "via": "canonical-2um",
+     "role": "train"
+    }
+   ]
+  },
+  {
+   "model": "hecate",
+   "segment": "20260220213127",
+   "flags": [],
+   "status": "trained",
+   "why": "named in hecate < canonical-2um's list as w00 (train)",
+   "names": [
+    {
+     "name": "w00",
+     "via": "hecate < canonical-2um",
+     "role": "train"
+    }
+   ]
+  },
+  {
+   "model": "trace-v3b",
+   "segment": "20260220213127",
+   "flags": [],
+   "covering": [],
+   "status": "selected",
+   "why": "trace-v3b: checkpoint chosen on PHerc0841"
+  },
+  {
+   "model": "a-hn",
+   "segment": "20260220213127",
+   "flags": [
+    "1 name(s) with no scroll: Frag1"
+   ],
+   "covering": [],
+   "status": "clear",
+   "why": "no training segment on PHerc0841 in its list"
+  },
+  {
+   "model": "ink_9um",
+   "segment": "20260220214732",
+   "flags": [],
+   "covering": [],
+   "status": "clear",
+   "why": "no training segment on PHerc0841 in its list"
+  },
+  {
+   "model": "v8in",
+   "segment": "20260220214732",
+   "flags": [
+    "1 name(s) with no scroll: Frag1"
+   ],
+   "covering": [],
+   "status": "clear",
+   "why": "no training segment on PHerc0841 in its list"
+  },
+  {
+   "model": "v8in-1447",
+   "segment": "20260220214732",
+   "flags": [
+    "1 name(s) with no scroll: Frag1"
+   ],
+   "covering": [],
+   "status": "clear",
+   "why": "no training segment on PHerc0841 in its list"
+  },
+  {
+   "model": "d9v2",
+   "segment": "20260220214732",
+   "flags": [
+    "d9v2: test (20260220214732-auto_grown_20260220144552896)"
+   ],
+   "covering": [],
+   "status": "clear",
+   "why": "no training segment on PHerc0841 in its list"
+  },
+  {
+   "model": "reader-v2",
+   "segment": "20260220214732",
+   "flags": [],
+   "covering": [],
+   "status": "clear",
+   "why": "no training segment on PHerc0841 in its list"
+  },
+  {
+   "model": "reader-v3",
+   "segment": "20260220214732",
+   "flags": [],
+   "covering": [],
+   "status": "clear",
+   "why": "no training segment on PHerc0841 in its list"
+  },
+  {
+   "model": "canonical-2um",
+   "segment": "20260220214732",
+   "flags": [],
+   "status": "trained",
+   "why": "named in canonical-2um's list as auto_grown_20260220144552896 (train)",
+   "names": [
+    {
+     "name": "auto_grown_20260220144552896",
+     "via": "canonical-2um",
+     "role": "train"
+    }
+   ]
+  },
+  {
+   "model": "hecate",
+   "segment": "20260220214732",
+   "flags": [],
+   "status": "trained",
+   "why": "named in hecate < canonical-2um's list as auto_grown_20260220144552896 (train)",
+   "names": [
+    {
+     "name": "auto_grown_20260220144552896",
+     "via": "hecate < canonical-2um",
+     "role": "train"
+    }
+   ]
+  },
+  {
+   "model": "trace-v3b",
+   "segment": "20260220214732",
+   "flags": [],
+   "covering": [],
+   "status": "selected",
+   "why": "trace-v3b: checkpoint chosen on PHerc0841"
+  },
+  {
+   "model": "a-hn",
+   "segment": "20260220214732",
+   "flags": [
+    "1 name(s) with no scroll: Frag1"
+   ],
+   "covering": [],
+   "status": "clear",
+   "why": "no training segment on PHerc0841 in its list"
+  },
+  {
+   "model": "ink_9um",
+   "segment": "20260221022814",
+   "flags": [],
+   "covering": [],
+   "status": "clear",
+   "why": "no training segment on PHerc0841 in its list"
+  },
+  {
+   "model": "v8in",
+   "segment": "20260221022814",
+   "flags": [
+    "1 name(s) with no scroll: Frag1"
+   ],
+   "covering": [],
+   "status": "clear",
+   "why": "no training segment on PHerc0841 in its list"
+  },
+  {
+   "model": "v8in-1447",
+   "segment": "20260221022814",
+   "flags": [
+    "1 name(s) with no scroll: Frag1"
+   ],
+   "covering": [],
+   "status": "clear",
+   "why": "no training segment on PHerc0841 in its list"
+  },
+  {
+   "model": "d9v2",
+   "segment": "20260221022814",
+   "flags": [
+    "d9v2: test (20260221022814-auto_grown_20260220174252405)"
+   ],
+   "covering": [],
+   "status": "clear",
+   "why": "no training segment on PHerc0841 in its list"
+  },
+  {
+   "model": "reader-v2",
+   "segment": "20260221022814",
+   "flags": [],
+   "covering": [],
+   "status": "clear",
+   "why": "no training segment on PHerc0841 in its list"
+  },
+  {
+   "model": "reader-v3",
+   "segment": "20260221022814",
+   "flags": [],
+   "covering": [],
+   "status": "clear",
+   "why": "no training segment on PHerc0841 in its list"
+  },
+  {
+   "model": "canonical-2um",
+   "segment": "20260221022814",
+   "flags": [],
+   "status": "trained",
+   "why": "named in canonical-2um's list as auto_grown_20260220174252405 (train)",
+   "names": [
+    {
+     "name": "auto_grown_20260220174252405",
+     "via": "canonical-2um",
+     "role": "train"
+    }
+   ]
+  },
+  {
+   "model": "hecate",
+   "segment": "20260221022814",
+   "flags": [],
+   "status": "trained",
+   "why": "named in hecate < canonical-2um's list as auto_grown_20260220174252405 (train)",
+   "names": [
+    {
+     "name": "auto_grown_20260220174252405",
+     "via": "hecate < canonical-2um",
+     "role": "train"
+    }
+   ]
+  },
+  {
+   "model": "trace-v3b",
+   "segment": "20260221022814",
+   "flags": [],
+   "covering": [],
+   "status": "selected",
+   "why": "trace-v3b: checkpoint chosen on PHerc0841"
+  },
+  {
+   "model": "a-hn",
+   "segment": "20260221022814",
+   "flags": [
+    "1 name(s) with no scroll: Frag1"
+   ],
+   "covering": [],
+   "status": "clear",
+   "why": "no training segment on PHerc0841 in its list"
+  },
+  {
+   "model": "ink_9um",
+   "segment": "20260226000000",
+   "flags": [],
+   "status": "trained",
+   "why": "named in ink_9um's list as pherc0814-46527 (train)",
+   "names": [
+    {
+     "name": "pherc0814-46527",
+     "via": "ink_9um",
+     "role": "train"
+    }
+   ]
+  },
+  {
+   "model": "v8in",
+   "segment": "20260226000000",
+   "flags": [],
+   "status": "trained",
+   "why": "named in v8in's list as 0814_46527n9 (train)",
+   "names": [
+    {
+     "name": "0814_46527n9",
+     "via": "v8in",
+     "role": "train"
+    }
+   ]
+  },
+  {
+   "model": "v8in-1447",
+   "segment": "20260226000000",
+   "flags": [],
+   "status": "trained",
+   "why": "named in v8in-1447 < v8in's list as 0814_46527n9 (train)",
+   "names": [
+    {
+     "name": "0814_46527n9",
+     "via": "v8in-1447 < v8in",
+     "role": "train"
+    }
+   ]
+  },
+  {
+   "model": "d9v2",
+   "segment": "20260226000000",
+   "flags": [],
+   "status": "trained",
+   "why": "named in d9v2 < ink_9um's list as pherc0814-46527 (train)",
+   "names": [
+    {
+     "name": "pherc0814-46527",
+     "via": "d9v2 < ink_9um",
+     "role": "train"
+    }
+   ]
+  },
+  {
+   "model": "reader-v2",
+   "segment": "20260226000000",
+   "flags": [],
+   "status": "trained",
+   "why": "named in reader-v2's list as pherc0814-46527 (train)",
+   "names": [
+    {
+     "name": "pherc0814-46527",
+     "via": "reader-v2",
+     "role": "train"
+    },
+    {
+     "name": "pherc0814-46527",
+     "via": "reader-v2 < ink_9um",
+     "role": "train"
+    }
+   ]
+  },
+  {
+   "model": "reader-v3",
+   "segment": "20260226000000",
+   "flags": [],
+   "status": "trained",
+   "why": "named in reader-v3 < reader-v2's list as pherc0814-46527 (train)",
+   "names": [
+    {
+     "name": "pherc0814-46527",
+     "via": "reader-v3 < reader-v2",
+     "role": "train"
+    },
+    {
+     "name": "pherc0814-46527",
+     "via": "reader-v3 < reader-v2 < ink_9um",
+     "role": "train"
+    }
+   ]
+  },
+  {
+   "model": "canonical-2um",
+   "segment": "20260226000000",
+   "flags": [],
+   "status": "trained",
+   "why": "named in canonical-2um's list as 46527_2um_try2 (train)",
+   "names": [
+    {
+     "name": "46527_2um_try2",
+     "via": "canonical-2um",
+     "role": "train"
+    }
+   ]
+  },
+  {
+   "model": "hecate",
+   "segment": "20260226000000",
+   "flags": [],
+   "status": "trained",
+   "why": "named in hecate's list as 814_46527_2um_try2 (train_split)",
+   "names": [
+    {
+     "name": "814_46527_2um_try2",
+     "via": "hecate",
+     "role": "train_split"
+    },
+    {
+     "name": "46527_2um_try2",
+     "via": "hecate < canonical-2um",
+     "role": "train"
+    }
+   ]
+  },
+  {
+   "model": "trace-v3b",
+   "segment": "20260226000000",
+   "flags": [],
+   "covering": [],
+   "status": "unknown",
+   "why": "training list not published: trace-v3b"
+  },
+  {
+   "model": "a-hn",
+   "segment": "20260226000000",
+   "flags": [],
+   "status": "trained",
+   "why": "named in a-hn < v8in's list as 0814_46527n9 (train)",
+   "names": [
+    {
+     "name": "0814_46527n9",
+     "via": "a-hn < v8in",
+     "role": "train"
+    }
+   ]
+  }
+ ],
+ "duplicates": [
+  {
+   "segment": "20230702185753",
+   "other": "20230929220926",
+   "points": 95339,
+   "f_same": 0.0,
+   "f_band": 0.0,
+   "f_reach": 0.0,
+   "median_offset_um": null,
+   "call": "clear",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20230702185753",
+   "other": "20231007101619",
+   "points": 95339,
+   "f_same": 0.0,
+   "f_band": 0.0,
+   "f_reach": 0.0,
+   "median_offset_um": null,
+   "call": "clear",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20230702185753",
+   "other": "20231012184424",
+   "points": 95339,
+   "f_same": 0.0,
+   "f_band": 0.0,
+   "f_reach": 0.0,
+   "median_offset_um": null,
+   "call": "clear",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20230702185753",
+   "other": "20231016151002",
+   "points": 95339,
+   "f_same": 0.2078,
+   "f_band": 0.2264,
+   "f_reach": 0.4268,
+   "median_offset_um": 13.59,
+   "call": "exposed",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20230702185753",
+   "other": "20231031143852",
+   "points": 95339,
+   "f_same": 0.1056,
+   "f_band": 0.1526,
+   "f_reach": 0.4143,
+   "median_offset_um": 10.53,
+   "call": "exposed",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20230702185753",
+   "other": "20231106155351",
+   "points": 95339,
+   "f_same": 0.0001,
+   "f_band": 0.0002,
+   "f_reach": 0.0387,
+   "median_offset_um": 28.04,
+   "call": "clear",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20230702185753",
+   "other": "20231210121321",
+   "points": 95339,
+   "f_same": 0.0,
+   "f_band": 0.0,
+   "f_reach": 0.0,
+   "median_offset_um": null,
+   "call": "clear",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20230929220926",
+   "other": "20230702185753",
+   "points": 124206,
+   "f_same": 0.0,
+   "f_band": 0.0,
+   "f_reach": 0.0,
+   "median_offset_um": null,
+   "call": "clear",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20230929220926",
+   "other": "20231007101619",
+   "points": 124206,
+   "f_same": 0.0007,
+   "f_band": 0.0009,
+   "f_reach": 0.0118,
+   "median_offset_um": 24.97,
+   "call": "clear",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20230929220926",
+   "other": "20231012184424",
+   "points": 124206,
+   "f_same": 0.0,
+   "f_band": 0.0001,
+   "f_reach": 0.0001,
+   "median_offset_um": 19.18,
+   "call": "clear",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20230929220926",
+   "other": "20231016151002",
+   "points": 124206,
+   "f_same": 0.0,
+   "f_band": 0.0,
+   "f_reach": 0.0,
+   "median_offset_um": null,
+   "call": "clear",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20230929220926",
+   "other": "20231031143852",
+   "points": 124206,
+   "f_same": 0.0,
+   "f_band": 0.0,
+   "f_reach": 0.0,
+   "median_offset_um": null,
+   "call": "clear",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20230929220926",
+   "other": "20231106155351",
+   "points": 124206,
+   "f_same": 0.0,
+   "f_band": 0.0,
+   "f_reach": 0.0,
+   "median_offset_um": null,
+   "call": "clear",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20230929220926",
+   "other": "20231210121321",
+   "points": 124206,
+   "f_same": 0.0001,
+   "f_band": 0.0002,
+   "f_reach": 0.0004,
+   "median_offset_um": 15.46,
+   "call": "clear",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20231007101619",
+   "other": "20230702185753",
+   "points": 73212,
+   "f_same": 0.0,
+   "f_band": 0.0,
+   "f_reach": 0.0,
+   "median_offset_um": null,
+   "call": "clear",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20231007101619",
+   "other": "20230929220926",
+   "points": 73212,
+   "f_same": 0.0002,
+   "f_band": 0.0003,
+   "f_reach": 0.0047,
+   "median_offset_um": 22.11,
+   "call": "clear",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20231007101619",
+   "other": "20231012184424",
+   "points": 73212,
+   "f_same": 0.0019,
+   "f_band": 0.0038,
+   "f_reach": 0.1212,
+   "median_offset_um": 24.05,
+   "call": "clear",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20231007101619",
+   "other": "20231016151002",
+   "points": 73212,
+   "f_same": 0.0,
+   "f_band": 0.0,
+   "f_reach": 0.0,
+   "median_offset_um": null,
+   "call": "clear",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20231007101619",
+   "other": "20231031143852",
+   "points": 73212,
+   "f_same": 0.0,
+   "f_band": 0.0,
+   "f_reach": 0.0,
+   "median_offset_um": null,
+   "call": "clear",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20231007101619",
+   "other": "20231106155351",
+   "points": 73212,
+   "f_same": 0.0,
+   "f_band": 0.0,
+   "f_reach": 0.0,
+   "median_offset_um": null,
+   "call": "clear",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20231007101619",
+   "other": "20231210121321",
+   "points": 73212,
+   "f_same": 0.0777,
+   "f_band": 0.1202,
+   "f_reach": 0.3793,
+   "median_offset_um": 13.39,
+   "call": "exposed",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20231012184424",
+   "other": "20230702185753",
+   "points": 50790,
+   "f_same": 0.0,
+   "f_band": 0.0,
+   "f_reach": 0.0,
+   "median_offset_um": null,
+   "call": "clear",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20231012184424",
+   "other": "20230929220926",
+   "points": 50790,
+   "f_same": 0.0,
+   "f_band": 0.0,
+   "f_reach": 0.0,
+   "median_offset_um": null,
+   "call": "clear",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20231012184424",
+   "other": "20231007101619",
+   "points": 50790,
+   "f_same": 0.0031,
+   "f_band": 0.0057,
+   "f_reach": 0.1666,
+   "median_offset_um": 21.17,
+   "call": "clear",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20231012184424",
+   "other": "20231016151002",
+   "points": 50790,
+   "f_same": 0.0,
+   "f_band": 0.0,
+   "f_reach": 0.0,
+   "median_offset_um": null,
+   "call": "clear",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20231012184424",
+   "other": "20231031143852",
+   "points": 50790,
+   "f_same": 0.0,
+   "f_band": 0.0,
+   "f_reach": 0.0002,
+   "median_offset_um": null,
+   "call": "clear",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20231012184424",
+   "other": "20231106155351",
+   "points": 50790,
+   "f_same": 0.0008,
+   "f_band": 0.0027,
+   "f_reach": 0.0756,
+   "median_offset_um": 32.81,
+   "call": "clear",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20231012184424",
+   "other": "20231210121321",
+   "points": 50790,
+   "f_same": 0.1312,
+   "f_band": 0.1776,
+   "f_reach": 0.5048,
+   "median_offset_um": 8.19,
+   "call": "exposed",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20231016151002",
+   "other": "20230702185753",
+   "points": 82908,
+   "f_same": 0.2389,
+   "f_band": 0.2649,
+   "f_reach": 0.5144,
+   "median_offset_um": 14.12,
+   "call": "exposed",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20231016151002",
+   "other": "20230929220926",
+   "points": 82908,
+   "f_same": 0.0,
+   "f_band": 0.0,
+   "f_reach": 0.0,
+   "median_offset_um": null,
+   "call": "clear",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20231016151002",
+   "other": "20231007101619",
+   "points": 82908,
+   "f_same": 0.0,
+   "f_band": 0.0,
+   "f_reach": 0.0,
+   "median_offset_um": null,
+   "call": "clear",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20231016151002",
+   "other": "20231012184424",
+   "points": 82908,
+   "f_same": 0.0,
+   "f_band": 0.0,
+   "f_reach": 0.0,
+   "median_offset_um": null,
+   "call": "clear",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20231016151002",
+   "other": "20231031143852",
+   "points": 82908,
+   "f_same": 0.0002,
+   "f_band": 0.0006,
+   "f_reach": 0.0275,
+   "median_offset_um": 36.97,
+   "call": "clear",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20231016151002",
+   "other": "20231106155351",
+   "points": 82908,
+   "f_same": 0.0,
+   "f_band": 0.0,
+   "f_reach": 0.0001,
+   "median_offset_um": null,
+   "call": "clear",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20231016151002",
+   "other": "20231210121321",
+   "points": 82908,
+   "f_same": 0.0,
+   "f_band": 0.0,
+   "f_reach": 0.0,
+   "median_offset_um": null,
+   "call": "clear",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20231031143852",
+   "other": "20230702185753",
+   "points": 74820,
+   "f_same": 0.1426,
+   "f_band": 0.216,
+   "f_reach": 0.6197,
+   "median_offset_um": 11.74,
+   "call": "exposed",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20231031143852",
+   "other": "20230929220926",
+   "points": 74820,
+   "f_same": 0.0,
+   "f_band": 0.0,
+   "f_reach": 0.0,
+   "median_offset_um": null,
+   "call": "clear",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20231031143852",
+   "other": "20231007101619",
+   "points": 74820,
+   "f_same": 0.0,
+   "f_band": 0.0,
+   "f_reach": 0.0,
+   "median_offset_um": null,
+   "call": "clear",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20231031143852",
+   "other": "20231012184424",
+   "points": 74820,
+   "f_same": 0.0,
+   "f_band": 0.0,
+   "f_reach": 0.0005,
+   "median_offset_um": null,
+   "call": "clear",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20231031143852",
+   "other": "20231016151002",
+   "points": 74820,
+   "f_same": 0.0002,
+   "f_band": 0.0005,
+   "f_reach": 0.0299,
+   "median_offset_um": 27.3,
+   "call": "clear",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20231031143852",
+   "other": "20231106155351",
+   "points": 74820,
+   "f_same": 0.1214,
+   "f_band": 0.2109,
+   "f_reach": 0.6761,
+   "median_offset_um": 12.56,
+   "call": "exposed",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20231031143852",
+   "other": "20231210121321",
+   "points": 74820,
+   "f_same": 0.0,
+   "f_band": 0.0,
+   "f_reach": 0.0,
+   "median_offset_um": null,
+   "call": "clear",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20231106155351",
+   "other": "20230702185753",
+   "points": 93014,
+   "f_same": 0.0001,
+   "f_band": 0.0002,
+   "f_reach": 0.0421,
+   "median_offset_um": 27.31,
+   "call": "clear",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20231106155351",
+   "other": "20230929220926",
+   "points": 93014,
+   "f_same": 0.0,
+   "f_band": 0.0,
+   "f_reach": 0.0,
+   "median_offset_um": null,
+   "call": "clear",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20231106155351",
+   "other": "20231007101619",
+   "points": 93014,
+   "f_same": 0.0,
+   "f_band": 0.0,
+   "f_reach": 0.0,
+   "median_offset_um": null,
+   "call": "clear",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20231106155351",
+   "other": "20231012184424",
+   "points": 93014,
+   "f_same": 0.002,
+   "f_band": 0.0068,
+   "f_reach": 0.1829,
+   "median_offset_um": 31.09,
+   "call": "clear",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20231106155351",
+   "other": "20231016151002",
+   "points": 93014,
+   "f_same": 0.0,
+   "f_band": 0.0,
+   "f_reach": 0.0001,
+   "median_offset_um": null,
+   "call": "clear",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20231106155351",
+   "other": "20231031143852",
+   "points": 93014,
+   "f_same": 0.1016,
+   "f_band": 0.1782,
+   "f_reach": 0.5966,
+   "median_offset_um": 13.48,
+   "call": "exposed",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20231106155351",
+   "other": "20231210121321",
+   "points": 93014,
+   "f_same": 0.0,
+   "f_band": 0.0,
+   "f_reach": 0.0,
+   "median_offset_um": null,
+   "call": "clear",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20231210121321",
+   "other": "20230702185753",
+   "points": 105419,
+   "f_same": 0.0,
+   "f_band": 0.0,
+   "f_reach": 0.0,
+   "median_offset_um": null,
+   "call": "clear",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20231210121321",
+   "other": "20230929220926",
+   "points": 105419,
+   "f_same": 0.0001,
+   "f_band": 0.0001,
+   "f_reach": 0.0002,
+   "median_offset_um": 16.26,
+   "call": "clear",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20231210121321",
+   "other": "20231007101619",
+   "points": 105419,
+   "f_same": 0.2175,
+   "f_band": 0.3398,
+   "f_reach": 0.8443,
+   "median_offset_um": 13.32,
+   "call": "exposed",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20231210121321",
+   "other": "20231012184424",
+   "points": 105419,
+   "f_same": 0.2524,
+   "f_band": 0.3551,
+   "f_reach": 0.8439,
+   "median_offset_um": 8.35,
+   "call": "exposed",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20231210121321",
+   "other": "20231016151002",
+   "points": 105419,
+   "f_same": 0.0,
+   "f_band": 0.0,
+   "f_reach": 0.0,
+   "median_offset_um": null,
+   "call": "clear",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20231210121321",
+   "other": "20231031143852",
+   "points": 105419,
+   "f_same": 0.0,
+   "f_band": 0.0,
+   "f_reach": 0.0,
+   "median_offset_um": null,
+   "call": "clear",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20231210121321",
+   "other": "20231106155351",
+   "points": 105419,
+   "f_same": 0.0,
+   "f_band": 0.0,
+   "f_reach": 0.0,
+   "median_offset_um": null,
+   "call": "clear",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20240304141531",
+   "other": "20240304144031",
+   "points": 45521,
+   "f_same": 0.0477,
+   "f_band": 0.0593,
+   "f_reach": 0.1888,
+   "median_offset_um": 8.05,
+   "call": "trace",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20240304141531",
+   "other": "20240304161941",
+   "points": 45521,
+   "f_same": 0.0,
+   "f_band": 0.0,
+   "f_reach": 0.0,
+   "median_offset_um": null,
+   "call": "clear",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20240304141531",
+   "other": "20251208130119",
+   "points": 45521,
+   "f_same": 0.0,
+   "f_band": 0.0,
+   "f_reach": 0.0,
+   "median_offset_um": null,
+   "call": "clear",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20240304141531",
+   "other": "20251212185248",
+   "points": 45521,
+   "f_same": 0.0,
+   "f_band": 0.0,
+   "f_reach": 0.0,
+   "median_offset_um": null,
+   "call": "clear",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20240304141531",
+   "other": "20251223230000",
+   "points": 45521,
+   "f_same": 0.0,
+   "f_band": 0.0,
+   "f_reach": 0.0,
+   "median_offset_um": null,
+   "call": "clear",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20240304144031",
+   "other": "20240304141531",
+   "points": 56404,
+   "f_same": 0.0391,
+   "f_band": 0.0537,
+   "f_reach": 0.177,
+   "median_offset_um": 9.07,
+   "call": "trace",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20240304144031",
+   "other": "20240304161941",
+   "points": 56404,
+   "f_same": 0.055,
+   "f_band": 0.076,
+   "f_reach": 0.2328,
+   "median_offset_um": 9.32,
+   "call": "exposed",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20240304144031",
+   "other": "20251208130119",
+   "points": 56404,
+   "f_same": 0.0001,
+   "f_band": 0.0002,
+   "f_reach": 0.0005,
+   "median_offset_um": 14.11,
+   "call": "clear",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20240304144031",
+   "other": "20251212185248",
+   "points": 56404,
+   "f_same": 0.0001,
+   "f_band": 0.0002,
+   "f_reach": 0.0005,
+   "median_offset_um": 11.06,
+   "call": "clear",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20240304144031",
+   "other": "20251223230000",
+   "points": 56404,
+   "f_same": 0.0001,
+   "f_band": 0.0003,
+   "f_reach": 0.0008,
+   "median_offset_um": 47.42,
+   "call": "clear",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20240304161941",
+   "other": "20240304141531",
+   "points": 57322,
+   "f_same": 0.0,
+   "f_band": 0.0,
+   "f_reach": 0.0,
+   "median_offset_um": null,
+   "call": "clear",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20240304161941",
+   "other": "20240304144031",
+   "points": 57322,
+   "f_same": 0.0557,
+   "f_band": 0.0794,
+   "f_reach": 0.2416,
+   "median_offset_um": 9.94,
+   "call": "exposed",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20240304161941",
+   "other": "20251208130119",
+   "points": 57322,
+   "f_same": 0.0571,
+   "f_band": 0.0784,
+   "f_reach": 0.2504,
+   "median_offset_um": 10.63,
+   "call": "exposed",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20240304161941",
+   "other": "20251212185248",
+   "points": 57322,
+   "f_same": 0.0034,
+   "f_band": 0.0104,
+   "f_reach": 0.1095,
+   "median_offset_um": 41.59,
+   "call": "clear",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20240304161941",
+   "other": "20251223230000",
+   "points": 57322,
+   "f_same": 0.0006,
+   "f_band": 0.0012,
+   "f_reach": 0.0048,
+   "median_offset_um": 25.18,
+   "call": "clear",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20251208130119",
+   "other": "20240304141531",
+   "points": 57003,
+   "f_same": 0.0,
+   "f_band": 0.0,
+   "f_reach": 0.0,
+   "median_offset_um": null,
+   "call": "clear",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20251208130119",
+   "other": "20240304144031",
+   "points": 57003,
+   "f_same": 0.0006,
+   "f_band": 0.0009,
+   "f_reach": 0.0015,
+   "median_offset_um": 25.86,
+   "call": "clear",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20251208130119",
+   "other": "20240304161941",
+   "points": 57003,
+   "f_same": 0.2468,
+   "f_band": 0.346,
+   "f_reach": 0.8318,
+   "median_offset_um": 11.52,
+   "call": "exposed",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20251208130119",
+   "other": "20251212185248",
+   "points": 57003,
+   "f_same": 0.2014,
+   "f_band": 0.312,
+   "f_reach": 0.8146,
+   "median_offset_um": 12.83,
+   "call": "exposed",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20251208130119",
+   "other": "20251223230000",
+   "points": 57003,
+   "f_same": 0.0027,
+   "f_band": 0.005,
+   "f_reach": 0.066,
+   "median_offset_um": 34.39,
+   "call": "clear",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20251212185248",
+   "other": "20240304141531",
+   "points": 59264,
+   "f_same": 0.0,
+   "f_band": 0.0,
+   "f_reach": 0.0001,
+   "median_offset_um": 54.82,
+   "call": "clear",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20251212185248",
+   "other": "20240304144031",
+   "points": 59264,
+   "f_same": 0.0004,
+   "f_band": 0.0007,
+   "f_reach": 0.0012,
+   "median_offset_um": 19.61,
+   "call": "clear",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20251212185248",
+   "other": "20240304161941",
+   "points": 59264,
+   "f_same": 0.0192,
+   "f_band": 0.0508,
+   "f_reach": 0.4054,
+   "median_offset_um": 37.73,
+   "call": "trace",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20251212185248",
+   "other": "20251208130119",
+   "points": 59264,
+   "f_same": 0.1954,
+   "f_band": 0.3082,
+   "f_reach": 0.7961,
+   "median_offset_um": 13.18,
+   "call": "exposed",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20251212185248",
+   "other": "20251223230000",
+   "points": 59264,
+   "f_same": 0.0117,
+   "f_band": 0.0305,
+   "f_reach": 0.3075,
+   "median_offset_um": 30.74,
+   "call": "trace",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20251223230000",
+   "other": "20240304141531",
+   "points": 54017,
+   "f_same": 0.0001,
+   "f_band": 0.0001,
+   "f_reach": 0.0003,
+   "median_offset_um": 30.79,
+   "call": "clear",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20251223230000",
+   "other": "20240304144031",
+   "points": 54017,
+   "f_same": 0.0008,
+   "f_band": 0.0013,
+   "f_reach": 0.0025,
+   "median_offset_um": 28.91,
+   "call": "clear",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20251223230000",
+   "other": "20240304161941",
+   "points": 54017,
+   "f_same": 0.0036,
+   "f_band": 0.0052,
+   "f_reach": 0.0157,
+   "median_offset_um": 26.23,
+   "call": "clear",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20251223230000",
+   "other": "20251208130119",
+   "points": 54017,
+   "f_same": 0.0027,
+   "f_band": 0.0051,
+   "f_reach": 0.0718,
+   "median_offset_um": 34.48,
+   "call": "clear",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20251223230000",
+   "other": "20251212185248",
+   "points": 54017,
+   "f_same": 0.013,
+   "f_band": 0.0338,
+   "f_reach": 0.3449,
+   "median_offset_um": 33.89,
+   "call": "trace",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20260220213127",
+   "other": "20260220214732",
+   "points": 36829,
+   "f_same": 0.3527,
+   "f_band": 0.6948,
+   "f_reach": 0.9803,
+   "median_offset_um": 37.7,
+   "call": "exposed",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20260220213127",
+   "other": "20260221022814",
+   "points": 36829,
+   "f_same": 0.0254,
+   "f_band": 0.0501,
+   "f_reach": 0.3518,
+   "median_offset_um": 29.97,
+   "call": "trace",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20260220214732",
+   "other": "20260220213127",
+   "points": 37027,
+   "f_same": 0.3492,
+   "f_band": 0.6884,
+   "f_reach": 0.9735,
+   "median_offset_um": 38.28,
+   "call": "exposed",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20260220214732",
+   "other": "20260221022814",
+   "points": 37027,
+   "f_same": 0.0095,
+   "f_band": 0.0168,
+   "f_reach": 0.1993,
+   "median_offset_um": 28.64,
+   "call": "trace",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20260221022814",
+   "other": "20260220213127",
+   "points": 34875,
+   "f_same": 0.0301,
+   "f_band": 0.0585,
+   "f_reach": 0.3937,
+   "median_offset_um": 28.2,
+   "call": "trace",
+   "transform_error_um": 0.0
+  },
+  {
+   "segment": "20260221022814",
+   "other": "20260220214732",
+   "points": 34875,
+   "f_same": 0.0114,
+   "f_band": 0.0194,
+   "f_reach": 0.2286,
+   "median_offset_um": 29.53,
+   "call": "trace",
+   "transform_error_um": 0.0
+  }
+ ],
+ "models": [
+  {
+   "id": "ink_9um",
+   "title": "ink_9um (seeds 42 and 43)",
+   "by": "Vesuvius Challenge team",
+   "weights": "https://huggingface.co/scrollprize/ink_9um",
+   "label": "Sourced fact",
+   "list": "published",
+   "inherits": [],
+   "note": "24 aligned segments (2.399 um renders pooled to 9.6 um) and 5 native 9.362 um PHerc0139 segments; pherc0139-w016, pherc0814-46527 and pherc1667-w029 also carry validation masks (the README's online-validation cases), so part of each was held for validation"
+  },
+  {
+   "id": "v8in",
+   "title": "v8in (ink-8um-v8in)",
+   "by": "Youssef Nader",
+   "weights": "https://huggingface.co/YoussefMoNader/ink-8um-v8in",
+   "label": "Sourced fact",
+   "list": "published",
+   "inherits": [],
+   "note": "training/configs/v8in.json at d89166b; the validation segments chose its checkpoint"
+  },
+  {
+   "id": "v8in-1447",
+   "title": "v8in-1447 (loo-w062 fine-tune)",
+   "by": "Youssef Nader",
+   "weights": "https://huggingface.co/YoussefMoNader/ink-8um-v8in-pherc1447-loo-w062",
+   "label": "Sourced fact",
+   "list": "published",
+   "inherits": [
+    "v8in"
+   ],
+   "note": "training/configs/loo_w062.json at 2bf9f42: v8in fine-tuned on PHerc1447 w058 and w060"
+  },
+  {
+   "id": "d9v2",
+   "title": "d9v2",
+   "by": "TAUIL-Abd-Elilah",
+   "weights": "https://github.com/TAUIL-Abd-Elilah/pherc0826-first-letters-search",
+   "label": "Community report",
+   "list": "published",
+   "inherits": [
+    "ink_9um"
+   ],
+   "note": "reader/train.txt (124 segments) and reader/test.txt (8) at c156944; a fine-tune of ink_9um"
+  },
+  {
+   "id": "reader-v2",
+   "title": "Reader v2",
+   "by": "Domenico Russo",
+   "weights": "https://huggingface.co/domenicor046/reader-v2",
+   "label": "Community report",
+   "list": "published",
+   "inherits": [
+    "ink_9um"
+   ],
+   "note": "train_config.json at 72633d8, 13 dataset blocks; a fine-tune of ink_9um"
+  },
+  {
+   "id": "reader-v3",
+   "title": "Reader V3",
+   "by": "Domenico Russo",
+   "weights": "https://huggingface.co/domenicor046/reader-v3",
+   "label": "Community report",
+   "list": "partial",
+   "inherits": [
+    "reader-v2"
+   ],
+   "note": "its card calls it the upgrade to Reader v2; the repository at aee1d64 (read 4 Nov 2026) holds no training list, so anything it added beyond Reader v2 is unknown"
+  },
+  {
+   "id": "canonical-2um",
+   "title": "ink_canonical_2um (the team's new_canon maps)",
+   "by": "Vesuvius Challenge team",
+   "weights": "https://huggingface.co/scrollprize/ink_canonical_2um",
+   "label": "Sourced fact",
+   "list": "published",
+   "inherits": [],
+   "note": "TRAIN_FRAGMENT_IDS of its committed trainer, villa 94602c91 ink-detection/train_resnet3d_3d_decoder.py lines 200-207, with each id's folder from lines 264-325; that the released checkpoint used this list is Interpretation (matching name, epoch and steps)"
+  },
+  {
+   "id": "hecate",
+   "title": "Hecate (2.4 um and 9.6 um)",
+   "by": "Vesuvius Challenge team (Giorgio Angelotti)",
+   "weights": "https://huggingface.co/scrollprize/hecate",
+   "label": "Sourced fact",
+   "list": "dataset and split rule published, run manifest not",
+   "inherits": [
+    "canonical-2um"
+   ],
+   "note": "every folder of the ink dataset its card cites (team bucket scrollprize/datasets, folder ink; all but unused) is drawn by the published split rule (villa distilled_3d_ink 5ff00ca0); PHerc0841's three sets get 0 training patches (validation only), the others a share (PHerc0009B ag487 56.5 %, PHerc0814 46527 62.6 % of supervised pixels, docs/logs/2026-10-16-reader-exposure.md); starts from ink_canonical_2um, whose list it inherits; the 9.6 um student learned from the 2.4 um model"
+  },
+  {
+   "id": "trace-v3b",
+   "title": "TRACE v3B",
+   "by": "Jashann",
+   "weights": null,
+   "label": "Community report",
+   "list": "not published",
+   "inherits": [],
+   "note": "no training list located (4 Nov 2026); every other cell is unknown"
+  },
+  {
+   "id": "a-hn",
+   "title": "A-hn (PHerc0306B First Letters winners)",
+   "by": "Liam Warner and Nicola Bodill",
+   "weights": "https://huggingface.co/Prodigle/pherc0306b-ink-ahn",
+   "label": "Community report",
+   "list": "published",
+   "inherits": [
+    "v8in"
+   ],
+   "note": "mean of three v8-in fine-tunes (card at e57c4d54); its machine labels came from v8-in, Reader V3, TRACE v3B and Reader v2 on PHerc0306B only"
+  }
+ ],
+ "rounding": {
+  "note": "floats rounded to 4 decimal places from the Job output",
+  "raw_sha256": "4cfc9048ae1823965f583cdc81c280422fa7d8fee4151a0ccfc76c8c29a28d87"
+ }
+}

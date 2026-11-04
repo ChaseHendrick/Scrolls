@@ -55,17 +55,25 @@ version 1's scope and readout (its section "The matrix, after a PASS"), in the s
 
 | Check | Result | Bar | Verdict |
 | --- | --- | --- | --- |
-| (a) recall | 30 of 30 exposed; f_same 0.804 to 0.973, median 0.929 | 29 | PASS |
+| (a) recall | 30 of 30 exposed; f_same 0.804 to 0.973, median 0.927 | 29 | PASS |
 | (b) adjacent-winding control, free vertices | 30 of 30 scored, 30 not exposed; 9 trace (0.005 to 0.037), the rest clear | 95 % of at least 25 | PASS |
 | (c) cross-scroll negative | 30 of 30 not exposed; f_same at most 0.010 | 30 | PASS |
-| (d) real positive pair | 0.901 and 0.050, both exposed | 2 | PASS |
+| (d) real positive pair | 0.901 and 0.0505, both exposed; the second is a near miss against the 0.05 bar | 2 | PASS |
 
 The nine traces in (b) are the multi-winding PHerc0814 meshes again; free vertices were 54 to 100 % of each mesh.
-Read with it: on such meshes the instrument leaves up to about 0.04 within 60 um even where no sheet was planted, so
-a matrix cell under about 0.04 is not evidence of exposure, and one just over 0.05 is weak (Interpretation).
+Read with it: on such meshes the instrument leaves up to 0.037 within 60 um on free vertices even where no sheet was
+planted, and on all their vertices, as matrix cells are scored, the same copies give 0.039 to 0.259; so on
+multi-winding meshes a cell under about 0.04 is no evidence of exposure and one just over 0.05 is weak
+(Interpretation). This PASS is not independent of version 1: the free-vertex rule came from a diagnostic of version
+1's failed meshes, and 28 of the 30 source meshes are version 1's. Check (a) sends each copy forward and back through
+the same catalog matrix, so it tests the instrument, not the transforms' accuracy; only the fit-RMS jitter stands in
+for transform error (PHerc0009B's route has a landmark leave-one-out error of 188.8 um, over the 70 um limit a matrix
+cell applies; the plant check does not apply that limit).
 
 The matrix step in the same Job stopped on a technical fault before computing anything: some catalog meshes are
 LZW-compressed TIFFs and the image lacked `imagecodecs`. The matrix then ran unchanged, at the same commit with
-`imagecodecs` added, in Job `6aeaa4cfc78863f9c6322578` (76 s running, exit 0). Matrix:
+`imagecodecs` added, in Job `6aeaa4cfc78863f9c6322578` (76 s running, exit 0). After an independent review the
+cell logic was corrected so that a list not fully published, or a name with no scroll, reads unknown instead of clear
+(`913e932`), and the matrix was rerun locally: the same shares, 8 cells changed from clear to unknown. Matrix:
 [`data/expatlas/matrix-2026-11-04.json`](../data/expatlas/matrix-2026-11-04.json), summary in `exposure_atlas_checks`
 of [results.json](../results.json) and on the [tool page](../tools/expatlas.md).
