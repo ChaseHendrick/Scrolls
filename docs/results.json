@@ -13215,5 +13215,209 @@
    "limits": "14 of the bucket's ink/ folders; the folders the reserved-data rule keeps closed were not opened; one bucket version",
    "source": "docs/prereg/2026-11-04-bucket-sentinel.md#outcome"
   }
+ ],
+ "spiral_smoothing_checks": [
+  {
+   "key": "spiral_smoothing_0172_l3_20261030",
+   "date": "2026-10-30",
+   "about": "villa's spiral fit (villa commit e2254ebe) with optimizer_flow_grad_smoothing on (sigma 32 voxels, no labels) against villa's defaults, plus a same-seed repeat of the defaults, seeds 1 to 3, on held-out PHerc0172 (volume 20241024131838, 7.91 um), fit window z 9,984 to 10,560, scored in the +x sector (y 2,112 to 4,416, x 5,952 to 7,488) against the organizers' hand windings w052 to w095: seam switches per 1000 sheet neighbor pairs (kit.seamswitch defaults) and exact share of truth pairs",
+   "label": "Model output",
+   "verdict": "PASS",
+   "rule": "fixed before the read, read once: PASS when D = S(smoothing) - S(defaults) is at most -7.5 per 1000 at every seed and the exact-share guard G = mean(E(smoothing) - E(defaults)) is at least -0.02; VOID unless the same-seed repeat moves S by less than 7.5 at every seed",
+   "switches_per_1000": {
+    "defaults": [
+     228.258,
+     230.568,
+     230.638
+    ],
+    "smoothing": [
+     220.733,
+     218.562,
+     215.233
+    ],
+    "repeat": [
+     227.979,
+     232.327,
+     236.271
+    ]
+   },
+   "D_per_seed": [
+    -7.525,
+    -12.006,
+    -15.406
+   ],
+   "bar_D": -7.5,
+   "repeat_shift_per_seed": [
+    -0.279,
+    1.759,
+    5.633
+   ],
+   "exact_share": {
+    "defaults": [
+     0.3217,
+     0.3429,
+     0.3576
+    ],
+    "smoothing": [
+     0.3466,
+     0.3484,
+     0.35
+    ]
+   },
+   "G": 0.0076,
+   "G_ci95_cluster_bootstrap": [
+    -0.02,
+    0.0339
+   ],
+   "guard": -0.02,
+   "truth_pairs": 3826,
+   "neighbor_pairs_per_fit": 143259,
+   "windings_scored": 32,
+   "independent_rerun": "MATCH",
+   "limits": "one scroll, one band, one sector, three seeds; seed 1 clears the bar by 0.025 per 1000 (about 3 switches of 143,259 neighbor pairs); the same-seed repeat moved up to 5.633, 75 % of the bar; the switch measure was chosen as primary after the exact-share primary failed on another scroll in development",
+   "disclosure": "found after the read (30 Oct 2026, development): the center line this test used for its truth lines and both fits, the PHerc0172 line of release umbilicus-lines-v1, sits 3.9 to 12.6 mm off the hand windings' center in this band (two methods). Both arms shared it, so the comparison is fair and the PASS stands, but it shows the smoothing helping a straining fit with a misplaced center line (45 to 58 winding jumps per 1000 at the defaults), not a general switch cut (Interpretation)",
+   "source": "docs/FINDINGS.md",
+   "fit_window_z": [
+    9984,
+    10560
+   ]
+  },
+  {
+   "key": "spiral_smoothing_0332_l4_20261030",
+   "date": "2026-10-30",
+   "about": "the same comparison on a second scroll, PHerc0332 (scan 20251211183505, 2.399 um, fitted at level 2, 9.596 um), fit window level 2 z 3,200 to 3,712 on the organizers' open-data level 2 lasagna field and their hand center line, scored in level 2 x 678 to 3,254, y 1,127 to 3,075 against the organizers' meshes 20240711124827-20240618142020 and 20240828190516-20240716140050",
+   "label": "Model output",
+   "verdict": "FAIL (the repeat control held; the smoothing added switches at every seed; the guard held)",
+   "rule": "the level 3 rule above, fixed before the read, read once",
+   "switches_per_1000": {
+    "defaults": [
+     124.711,
+     119.003,
+     124.693
+    ],
+    "smoothing": [
+     125.018,
+     133.026,
+     129.32
+    ],
+    "repeat": [
+     122.944,
+     117.028,
+     131.574
+    ]
+   },
+   "D_per_seed": [
+    0.307,
+    14.023,
+    4.626
+   ],
+   "repeat_shift_per_seed": [
+    -1.768,
+    -1.975,
+    6.881
+   ],
+   "G": -0.0013,
+   "G_ci95_cluster_bootstrap": [
+    -0.0134,
+    0.0112
+   ],
+   "truth_pairs": 3676,
+   "neighbor_pairs_per_fit": 110888,
+   "independent_rerun": "MATCH",
+   "limits": "one band on one scroll; truth from two organizer meshes; the center line checks out here and the default fits had about 1.5 winding jumps per 1000",
+   "source": "docs/FINDINGS.md"
+  }
+ ],
+ "inkside_checks": [
+  {
+   "key": "inkside_is0_20261104",
+   "date": "2026-11-04",
+   "about": "Reader V3 (domenicor046/reader-v3) ink maps at six depth windows (-6 to +4 layers) on four labeled development boxes, PHerc0841 w00 and ag896, PHerc0500P2 -1 and PHerc0009B ag487, each made as stored and with depth reversed, AUC by the published human labels",
+   "label": "Model output, development",
+   "verdict": "PASS",
+   "rule": "preregistered before any number: kill if any reversed arm on any box reaches 0.65; pass if every reversed arm is at most 0.60",
+   "reversed_auc_range": [
+    0.501,
+    0.595
+   ],
+   "max_reversed": 0.5954,
+   "as_stored_auc_range": [
+    0.72,
+    0.95
+   ],
+   "source": "docs/FINDINGS.md"
+  },
+  {
+   "key": "inkside_is1_20261104",
+   "date": "2026-11-04",
+   "about": "In the 1536 x 1536 window with the most labeled ink per box, the CT's air gap beside the sheet (the first dip of the layer-mean profile on each side of the sheet center) was closed and the edited CT read by Reader V3 at depth 0, as stored and reversed; attempt 1 (fill) replaced the five layers around each pixel's dip with a blend of the layers three away; attempt 2 (squeeze) removed the three layers at the dip and moved everything beyond in by three, keeping the inked face's voxels; a destroy control blended out the sheet itself and had to cost more than 0.10 AUC for a box to count",
+   "label": "Model output, development",
+   "verdict": "FAIL in both attempts (a high-side closure cost more than the 0.10 kill bar on both valid boxes)",
+   "rule": "preregistered before any map: PASS when every closure keeps the as-stored AUC within 0.05 of the unedited base and every reversed reading is at most 0.60; FAIL when any closure lowers it by more than 0.10 or any reversed reading reaches 0.65",
+   "boxes": {
+    "PHerc0841 w00": {
+     "base": 0.889,
+     "destroy": 0.734,
+     "fill_high": 0.76,
+     "squeeze_high": 0.778,
+     "low_side": "no gap"
+    },
+    "PHerc0500P2 -1": {
+     "base": 0.906,
+     "destroy": 0.632,
+     "fill_high": 0.768,
+     "fill_low": 0.893,
+     "squeeze_high": 0.805,
+     "squeeze_low": 0.842
+    },
+    "PHerc0841 ag896": {
+     "base": 0.796,
+     "destroy": 0.758,
+     "note": "not valid: destroy cost 0.038; no gap found"
+    }
+   },
+   "drops": {
+    "fill_high": [
+     0.129,
+     0.138
+    ],
+    "fill_low": 0.013,
+    "squeeze_high": [
+     0.111,
+     0.101
+    ],
+    "squeeze_low": 0.064
+   },
+   "max_reversed": {
+    "fill": 0.618,
+    "squeeze": 0.606
+   },
+   "limits": "development only, synthetic contacts made by editing the CT, two valid boxes on two scrolls, one reader at one depth window; not a test of real pressed contacts; that the high-layer side is the side the ink faces is Interpretation",
+   "source": "docs/FINDINGS.md"
+  }
+ ],
+ "villa_sheet_tracer_checks": [
+  {
+   "key": "villa_sheet_tracer_20261104",
+   "date": "2026-11-04",
+   "about": "villa's released sheet tracer scrollprize/sheet_tracer_7pt_gap60 (rev 443497f0, last.pt): its held-out bands and fine-tuning on a small patch set (villa main baf5e60; prepare_scroll.py read at 4eecd08)",
+   "label": "Sourced fact (villa source and checkpoint config), reported upstream",
+   "heldout_rule": "middle 20 % of each scroll's z extent of the segments listed in metadata.json on the day prepare_scroll.py ran, with a 256 voxel gap; the bands themselves are not published and villa #2440 deleted prepare_scroll.py",
+   "heldout_fraction": 0.2,
+   "gap_voxels": 256,
+   "pherc1667_level2_band_from_todays_metadata": [
+    3987,
+    5790
+   ],
+   "small_set_repro": "one PHerc0841 w00 patch (z 13,440 to 14,336, 3,293 nodes) with the checkpoint's split_block 1024 and val_fraction 0.1 stops before the first step: RuntimeError: Could not draw 64 val episodes; with villa PR 2445 and train.val_episodes=0 it trained 3 steps on CPU and wrote last.pt",
+   "issue": "https://github.com/ScrollPrize/villa/issues/2444",
+   "pull_request": "https://github.com/ScrollPrize/villa/pull/2445",
+   "source": "docs/FINDINGS.md",
+   "patch_nodes": 3293,
+   "patch_z": [
+    13440,
+    14336
+   ]
+  }
  ]
 }

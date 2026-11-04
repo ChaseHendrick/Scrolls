@@ -204,14 +204,14 @@
   "labelsnap-moved-published-surface-labels-closer-to-the": {
    "line": 264,
    "sources": {
-    "docs/results.json": "fa9efd0a4cbdda1788dd96184f2c01a6ae330b8249ac5653210ffbd976debb7e",
+    "docs/results.json": "9c34a8b5d5b6645c8cb1da363311b1910bdf5f985e65e2d53997a2619e61bf82",
     "docs/tools/snapped-labels.md": "3369d672268fb54e79d37f1c1bdf4bbb39ca96560361b7762855be0d31d65116"
    }
   },
   "labelsnap-moved-published-surface-labels-closer-to-the-2": {
    "line": 15,
    "sources": {
-    "docs/results.json": "fa9efd0a4cbdda1788dd96184f2c01a6ae330b8249ac5653210ffbd976debb7e",
+    "docs/results.json": "9c34a8b5d5b6645c8cb1da363311b1910bdf5f985e65e2d53997a2619e61bf82",
     "docs/tools/snapped-labels.md": "3369d672268fb54e79d37f1c1bdf4bbb39ca96560361b7762855be0d31d65116"
    },
    "doc": "docs/FINDINGS.md"
@@ -341,6 +341,21 @@
    },
    "doc": "docs/FINDINGS.md"
   },
+  "reader-v3-needs-the-air-gap-in-front": {
+   "line": 287,
+   "sources": {
+    "r:inkside_checks/0": "73519b3710c08b574935fad554b3d03009ee7990791f07c305d365dbfbcbb12f",
+    "r:inkside_checks/1": "98b0b43984fe8d9b17384e1b4b56cd0182722f89a8be962bf621d60b90aee3d2"
+   }
+  },
+  "reader-v3-needs-the-air-gap-in-front-2": {
+   "line": 30,
+   "sources": {
+    "r:inkside_checks/0": "73519b3710c08b574935fad554b3d03009ee7990791f07c305d365dbfbcbb12f",
+    "r:inkside_checks/1": "98b0b43984fe8d9b17384e1b4b56cd0182722f89a8be962bf621d60b90aee3d2"
+   },
+   "doc": "docs/FINDINGS.md"
+  },
   "real-runs-need-villa-s-vc3d-tools-python3": {
    "line": 43,
    "sources": {
@@ -386,6 +401,21 @@
     "640": "setting: the crop is a 640 px window (the glossary's Crop)",
     "0.03": "derived: 0.821 minus 0.793 is 0.028, rounded"
    }
+  },
+  "sqrecipe-on-pherc0332-a-finer-dls-scan-brought": {
+   "line": 276,
+   "sources": {
+    "r:sqrecipe_checks/0": "5f8b1360665421c1a273e151498ce9f470969cddcf1b59a099fefd6f11f9c781",
+    "docs/tools/sqrecipe.md": "90e2aa14bf01b85aae3cc6b282127b36b510afc1991008fd6c1c2b585289d6d7"
+   }
+  },
+  "sqrecipe-on-pherc0332-a-finer-dls-scan-brought-2": {
+   "line": 19,
+   "sources": {
+    "r:sqrecipe_checks/0": "5f8b1360665421c1a273e151498ce9f470969cddcf1b59a099fefd6f11f9c781",
+    "docs/tools/sqrecipe.md": "90e2aa14bf01b85aae3cc6b282127b36b510afc1991008fd6c1c2b585289d6d7"
+   },
+   "doc": "docs/FINDINGS.md"
   },
   "step-stage-what-it-reads-what-it-writes": {
    "line": 25,
@@ -496,6 +526,28 @@
     "docs/media/windlabel-box-heldout.json": "e9586e3bd1af816ee6a7c6ecff564463ed7b9683655cb0c1d6ac5c2ac9cc1d52"
    },
    "doc": "docs/pipeline-october-2026.md"
+  },
+  "villa-s-flow-gradient-smoothing-cut-its-spiral": {
+   "line": 277,
+   "sources": {
+    "r:spiral_smoothing_checks/0": "a6b1e315d3209e1ba6c49ce172fab29796480aaa1a6d76f26cf015b273cf401d",
+    "r:spiral_smoothing_checks/1": "5da3cd0b2cdeb00192a75eaf06f0315d3a0b84916e7d8db0c365b4776fb6a1e7"
+   }
+  },
+  "villa-s-flow-gradient-smoothing-cut-its-spiral-2": {
+   "line": 20,
+   "sources": {
+    "r:spiral_smoothing_checks/0": "a6b1e315d3209e1ba6c49ce172fab29796480aaa1a6d76f26cf015b273cf401d",
+    "r:spiral_smoothing_checks/1": "5da3cd0b2cdeb00192a75eaf06f0315d3a0b84916e7d8db0c365b4776fb6a1e7"
+   },
+   "doc": "docs/FINDINGS.md"
+  },
+  "villa-s-released-sheet-tracer-does-not-record-2": {
+   "line": 31,
+   "sources": {
+    "r:villa_sheet_tracer_checks/0": "db3a03d8e0960fcd3262c60679288679f795b1f9d09c8f3e34d481df51d9b14d"
+   },
+   "doc": "docs/FINDINGS.md"
   },
   "villa-s-tracer-does-not-hold-an-explicit": {
    "line": 283,
