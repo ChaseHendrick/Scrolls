@@ -1,0 +1,124 @@
+{
+ "schema": "space-connect/1",
+ "space": "SharpMeow/paris4-ink-map",
+ "title": "Paris 4 Ink Map",
+ "checked": "2026-10-29",
+ "intro": "The map on this page is the organizers' published ink map of PHerc. Paris 4; this Space streams it and reads the published mesh and CT, so every file below is linked at the Vesuvius Challenge open data, never copied here. The page's own API and its MCP server turn a map pixel into a winding and scan coordinates, cut crops, draw the spiral at one height, compare a place with the turns beside it and build a VC3D project. The Space is public and needs no account.",
+ "sources": [
+  {
+   "id": "mcp",
+   "title": "MCP Server for Agents",
+   "kind": "page-api",
+   "url": "https://sharpmeow-paris4-ink-map.hf.space/mcp",
+   "license": "Vesuvius Challenge open data, CC BY-NC 4.0; the map and fit are the organizers'",
+   "note": "Streamable HTTP, no session, JSON replies. Seven tools: get_info, find_winding, point_info, crop_image (returns a PNG), cross_section (optionally with the CT slice), neighbor_turns (optionally with the three windows) and view_link.",
+   "links": [
+    {
+     "label": "MCP endpoint (Streamable HTTP, POST)",
+     "url": "https://sharpmeow-paris4-ink-map.hf.space/mcp"
+    }
+   ]
+  },
+  {
+   "id": "api",
+   "title": "The Page's API",
+   "kind": "page-api",
+   "url": "https://sharpmeow-paris4-ink-map.hf.space/api/info",
+   "license": "Vesuvius Challenge open data, CC BY-NC 4.0; the map and fit are the organizers'",
+   "note": "Map pixels: x 0 to 142,282 from the outer end, y 0 to 2,389 from the top, 0.0768 mm each.",
+   "links": [
+    {
+     "label": "Size, scale, orientation, windings and every source with its SHA-256 (JSON)",
+     "url": "https://sharpmeow-paris4-ink-map.hf.space/api/info"
+    },
+    {
+     "label": "One map pixel: winding, distance from each end, scan height, voxel (JSON)",
+     "url": "https://sharpmeow-paris4-ink-map.hf.space/api/point?x=71000&y=1200"
+    },
+    {
+     "label": "One winding's pixel range (JSON)",
+     "url": "https://sharpmeow-paris4-ink-map.hf.space/api/winding/60"
+    },
+    {
+     "label": "A region as a raw TIFF of any size (scale 1, 2, 4, 8 or 16; fmt png adds colors, up to 60 Mpx)",
+     "url": "https://sharpmeow-paris4-ink-map.hf.space/api/crop?x0=70000&y0=600&x1=72000&y1=1800&scale=1&fmt=tif"
+    },
+    {
+     "label": "Where the sheet crosses one scan height (JSON)",
+     "url": "https://sharpmeow-paris4-ink-map.hf.space/api/section?z_mm=105&step=2"
+    },
+    {
+     "label": "The turns just outside and inside one place: where, how far, how alike, against a baseline (JSON)",
+     "url": "https://sharpmeow-paris4-ink-map.hf.space/api/neighbors?x=120000&y=1800"
+    },
+    {
+     "label": "A VC3D project: the 2.4 um CT streamed from the open data, the spiral fit as a tifxyz segment (zip)",
+     "url": "https://sharpmeow-paris4-ink-map.hf.space/api/vc3d.zip"
+    },
+    {
+     "label": "The fit's mesh as a point cloud for 3D views: layout and counts (JSON); binary at /api/mesh3d.bin",
+     "url": "https://sharpmeow-paris4-ink-map.hf.space/api/mesh3d.json?stride=8"
+    },
+    {
+     "label": "The map as a streamable OME-Zarr 0.4 (zarr v2, 9 levels, 512 px zlib chunks)",
+     "url": "https://sharpmeow-paris4-ink-map.hf.space/zarr/.zattrs"
+    },
+    {
+     "label": "Every endpoint with an example (JSON); interactive docs at /docs",
+     "url": "https://sharpmeow-paris4-ink-map.hf.space/api"
+    },
+    {
+     "label": "Deep-zoom descriptor of the map (DZI, 256 px JPEG tiles)",
+     "url": "https://sharpmeow-paris4-ink-map.hf.space/tiles/ink.dzi"
+    },
+    {
+     "label": "The whole map wrapped into rows (PNG)",
+     "url": "https://sharpmeow-paris4-ink-map.hf.space/api/overview.png?rows=4&width=1600"
+    }
+   ]
+  },
+  {
+   "id": "ink",
+   "title": "Ink Map, Full Resolution",
+   "kind": "file",
+   "format": "bytes",
+   "url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHercParis4/segments/20260926044226-spiral-output-generation-19/ink-detection/PHercParis4-20260926044226-2.4um-0.22m-78keV-volume-20260411134726-ink3d-20260926084000-student-v12A-25000-c7766be9-l128-accmax4-max-52-76-scale0.0625-nearest.tif",
+   "license": "Vesuvius Challenge open data, CC BY-NC 4.0",
+   "note": "BigTIFF, 142,283 by 2,390 pixels, uint8, deflate, 64 px tiles, no overviews, 236 MB. tifffile reads it."
+  },
+  {
+   "id": "segment",
+   "title": "The Whole Segment Folder: Ink, Mesh, Spiral Fit",
+   "kind": "s3-prefix",
+   "url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com",
+   "prefix": "PHercParis4/segments/20260926044226-spiral-output-generation-19/",
+   "browse": "https://vesuvius-challenge-open-data.s3.amazonaws.com/index.html#PHercParis4/segments/20260926044226-spiral-output-generation-19/",
+   "license": "Vesuvius Challenge open data, CC BY-NC 4.0"
+  },
+  {
+   "id": "mesh",
+   "title": "The Fit's Mesh (tifxyz, 9.6 um Voxels of Scan 20260411134726)",
+   "kind": "tifxyz",
+   "url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHercParis4/segments/20260926044226-spiral-output-generation-19/mesh/intermediate/tifxyz_normalized/",
+   "license": "Vesuvius Challenge open data, CC BY-NC 4.0",
+   "note": "956 by 56,913 nodes at 0.192 mm. This grid is already the fit rotated 180 degrees, as the map is (grid_transform in meta.json): map x = 2.5 times the column, map y = 2.5 times the row. Multiply the coordinates by 4 for 2.4 um voxels."
+  },
+  {
+   "id": "ct",
+   "title": "CT, 2.4 um 78 keV Scan 20260411134726",
+   "kind": "ome-zarr",
+   "url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHercParis4/volumes/20260411134726-2.400um-0.2m-78keV-masked.zarr/",
+   "zarr_format": 2,
+   "example": {
+    "level": "4",
+    "start": [
+     2688,
+     896,
+     896
+    ]
+   },
+   "license": "Vesuvius Challenge open data, CC BY-NC 4.0",
+   "note": "Uncompressed, 128 cubed chunks; level 4 is 38.4 um, the level the scroll map on this page reads."
+  }
+ ]
+}

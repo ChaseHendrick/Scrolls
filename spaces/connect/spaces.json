@@ -14,6 +14,7 @@
   {"space": "SharpMeow/ink-atlas", "dir": "spaces/ink-atlas", "sdk": "gradio", "source": "here"},
   {"space": "SharpMeow/afv-fibers", "dir": "spaces/afv-fibers", "sdk": "gradio", "source": "here"},
   {"space": "SharpMeow/snapped-labels", "dir": "spaces/snapped-labels", "sdk": "static", "source": "here"},
-  {"space": "SharpMeow/vesuvius-radar", "dir": "spaces/vesuvius-radar", "sdk": "docker", "source": "here"}
+  {"space": "SharpMeow/vesuvius-radar", "dir": "spaces/vesuvius-radar", "sdk": "docker", "source": "here"},
+  {"space": "SharpMeow/paris4-ink-map", "dir": "spaces/connect/paris4-ink-map", "sdk": "docker", "source": "Scrolls-private"}
  ]
 }
