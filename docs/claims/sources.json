@@ -344,7 +344,7 @@
   "real-runs-need-villa-s-vc3d-tools-python3": {
    "line": 43,
    "sources": {
-    "docs/releases.json": "1efd78cc1731538d7d364be6072c6022d5f868e1ae798e5913529f59da5bda56"
+    "docs/releases.json": "e8aa6bd7780c88c8b1f3256996d3ba74b9cada8798249e4ff8f232cb5aa1f4a0"
    },
    "doc": "docs/pipeline-october-2026.md",
    "reasons": {

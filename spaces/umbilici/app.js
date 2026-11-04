@@ -116,7 +116,7 @@ const isOld = (l) => !!l.superseded_by || l.note.includes('withdrawn');
 const isNewest = (s, l) => s.lines.some((o) => o.superseded_by === l.file);
 // One line per scan glows: its best line, the one Scrolls `kit centerline get` and AutoPipeline take by default
 // (kit/centerline.py order(): a person's or the organizers' line first, then the newest version, then the polished
-// Center Finder line, then by source name); a withdrawn line counts as an old one. Every other line is drawn grey,
+// Center Finder line, then by source name); a withdrawn line counts as an old one. Every other line is drawn gray,
 // without glow, and labeled: alternate (a current line the default passes over) or unused (superseded or withdrawn).
 const KIND_RANK = { person: 0, bucket: 1, model: 2 };
 const rankOf = (l) => [KIND_RANK[l.kind] ?? 3, isOld(l) ? 1 : 0, l.source === 'finder-polished' ? 0 : 1, l.source];
@@ -124,8 +124,8 @@ function byRank(a, b) { const u = rankOf(a), v = rankOf(b); for (let i = 0; i < 
 const bestOf = (s) => [...s.lines].sort(byRank)[0] || null;
 const ROLE_TEXT = {
   best: 'the best line for this scan: the one Scrolls kit and AutoPipeline take by default, drawn glowing',
-  alternate: 'a current line the default passes over (a person\'s line comes first, then the newest Center Finder line), drawn grey',
-  unused: 'not used: a newer version of this line exists, or its author withdrew it; kept for comparison and drawn grey',
+  alternate: 'a current line the default passes over (a person\'s line comes first, then the newest Center Finder line), drawn gray',
+  unused: 'not used: a newer version of this line exists, or its author withdrew it; kept for comparison and drawn gray',
 };
 function assignRoles(data) {
   for (const s of data.scrolls) { const b = bestOf(s); for (const l of s.lines) l.role = l === b ? 'best' : isOld(l) ? 'unused' : 'alternate'; }
@@ -285,12 +285,12 @@ function dots(points3, color, radius, opacity) {
   for (let i = 0; i < n; i++) mesh.setMatrixAt(i, at.makeTranslation(curve.getPointAt(i / (n - 1))));
   mesh.renderOrder = 3; mesh.userData.base = opacity; return mesh;
 }
-// how a line looks: the best line in its maker's color, bright enough to glow; the others grey with a trace of the
+// how a line looks: the best line in its maker's color, bright enough to glow; the others gray with a trace of the
 // maker's color, thinner and below the glow's threshold, alternates a little stronger than unused lines
-const GREY = new THREE.Color('#4f5961'), GREY_HEX = '#7b868e';
+const GRAY = new THREE.Color('#4f5961'), GRAY_HEX = '#7b868e';
 function lookOf(l) {
   if (isBest(l) || !l.role) return { color: colOf(l).clone().multiplyScalar(1.35), opacity: 1, radius: 1 };
-  return { color: GREY.clone().lerp(colOf(l), 0.25), opacity: l.role === 'alternate' ? 0.85 : 0.5, radius: 0.6 };
+  return { color: GRAY.clone().lerp(colOf(l), 0.25), opacity: l.role === 'alternate' ? 0.85 : 0.5, radius: 0.6 };
 }
 // a line as drawn: its inside part as a tube, and, when S.outside, each hidden end run as dots from the last inside point
 function lineMeshes(l, pts3, radius) {
@@ -624,7 +624,7 @@ function drawMarks(sx, s, z, a = 0) {
     if (!shown(s, l)) continue;
     const p = lineAt(l, z); if (!p) continue;
     const off = outsideAt(l, z); if (off && !S.outside) continue; // an end run outside the scroll: faded and dashed when shown
-    const u = p[0] * kx - c, v = p[1] * ky - c; const x = c + u * ca - v * sa, y = c + u * sa + v * ca; const best = isBest(l) || !l.role, col = best ? hexOf(l) : GREY_HEX;
+    const u = p[0] * kx - c, v = p[1] * ky - c; const x = c + u * ca - v * sa, y = c + u * sa + v * ca; const best = isBest(l) || !l.role, col = best ? hexOf(l) : GRAY_HEX;
     sx.globalAlpha = (off ? 0.45 : 1) * (best ? 1 : l.role === 'alternate' ? 0.75 : 0.5); sx.setLineDash(off ? [3, 3] : []);
     sx.strokeStyle = col; sx.lineWidth = best ? 1.6 : 1.1; sx.shadowColor = col; sx.shadowBlur = best ? 10 : 0;
     sx.beginPath(); sx.arc(x, y, 9, 0, Math.PI * 2); sx.stroke();
@@ -693,7 +693,7 @@ sc.addEventListener('wheel', (e) => { if (!S.sel) return; e.preventDefault(); co
 function buildLegend() {
   const used = Object.keys(S.data.sources).filter((k) => S.data.scrolls.some((s) => s.lines.some((l) => l.source === k)));
   $('legend').innerHTML = used.map((k) => `<button class="lg${OFF.src.has(k) ? ' off' : ''}" data-src="${k}" aria-pressed="${!OFF.src.has(k)}" title="show or hide every line by ${S.data.sources[k].label}"><i class="sw" style="background:${SRC_HEX[k]};box-shadow:0 0 6px ${SRC_HEX[k]}"></i>${k === 'finder' ? 'Center Finder (model output)' : k === 'finder-polished' ? 'Center Finder, polished (model output)' : k === 'finder-v2' ? 'Center Finder v2 (model output)' : S.data.sources[k].label}</button>`).join('')
-    + '<div class="lg-role" title="One line per scan glows: the one Scrolls kit and AutoPipeline take by default. The rest are grey: alternate (a current line the default passes over) or unused (superseded or withdrawn)."><i class="sw glow"></i>glowing: best line per scan<br><i class="sw grey"></i>grey: alternate or unused</div>';
+    + '<div class="lg-role" title="One line per scan glows: the one Scrolls kit and AutoPipeline take by default. The rest are gray: alternate (a current line the default passes over) or unused (superseded or withdrawn)."><i class="sw glow"></i>glowing: best line per scan<br><i class="sw gray"></i>gray: alternate or unused</div>';
 }
 function linesChanged() {
   buildLegend(); buildArray(); if (S.sel) { buildScanLines(S.sel); buildCard(S.sel); drawSlice(); }
@@ -782,14 +782,14 @@ function buildCard(s) {
     const ends = endsText(l);
     const ver = `<span class="role ${l.role}" title="${ROLE_TEXT[l.role]}">${l.role.toUpperCase()}</span>` + (l.superseded_by ? '<span class="ver old" title="a newer version of this line exists; it is kept for comparison">SUPERSEDED</span>' : (isNewest(s, l) ? '<span class="ver new" title="the newest version of this line">NEWEST</span>' : ''));
     const was = isBest(l) ? '<div class="note">Best: the line Scrolls kit and AutoPipeline take by default for this scan, so it alone glows.</div>'
-      : l.superseded_by ? '<div class="note">Unused: superseded by the newer version of this line on this card (NEWEST). Kept for comparison and drawn grey.</div>'
-      : l.role === 'unused' ? '<div class="note">Unused: its author withdrew it. Kept for comparison and drawn grey.</div>'
-      : '<div class="note">Alternate: a current line that the default passes over; a person\'s line comes first, then the newest Center Finder line. Drawn grey.</div>';
+      : l.superseded_by ? '<div class="note">Unused: superseded by the newer version of this line on this card (NEWEST). Kept for comparison and drawn gray.</div>'
+      : l.role === 'unused' ? '<div class="note">Unused: its author withdrew it. Kept for comparison and drawn gray.</div>'
+      : '<div class="note">Alternate: a current line that the default passes over; a person\'s line comes first, then the newest Center Finder line. Drawn gray.</div>';
     const note = f ? `<div class="note">${ends ? `CT end check: ${endsHTML(l)}` : `${GRADE_TEXT[l.grade] || 'No CT end check'}.`}</div><div class="note">${l.untested ? `Untested: ${UNTESTED}. ` : ''}Usable ends: ${usable(l) || 'see note'}. Model output: no end has been checked on CT by a person.</div>`
       : (l.note ? `<div class="note">${l.note}${/[.!?]$/.test(l.note.trim()) ? '' : '.'}</div>` : '');
     const row = (k, v) => `<tr><th>${k}</th><td>${v}</td></tr>`;
     const k = lineKey(s, l);
-    return `<div class="ln${shown(s, l) ? '' : ' off'}"><div class="who"><span class="name"><label class="show" title="show or hide this line"><input type="checkbox" data-line="${k}"${OFF.line.has(k) ? '' : ' checked'}${OFF.src.has(l.source) ? ' disabled' : ''}></label><b style="color:${isBest(l) ? hexOf(l) : GREY_HEX}">${src.label}</b></span><span class="tags">${ver}${grade}</span></div>
+    return `<div class="ln${shown(s, l) ? '' : ' off'}"><div class="who"><span class="name"><label class="show" title="show or hide this line"><input type="checkbox" data-line="${k}"${OFF.line.has(k) ? '' : ' checked'}${OFF.src.has(l.source) ? ' disabled' : ''}></label><b style="color:${isBest(l) ? hexOf(l) : GRAY_HEX}">${src.label}</b></span><span class="tags">${ver}${grade}</span></div>
       <div class="meta">${t.points} points · z ${t.z_start} to ${t.z_end} (${fmt(t.height_mm, 0)} mm, ${fmt(t.coverage * 100, 0)}% of the scan) · strays up to ${fmt(t.stray_mm, 1)} mm from its mean · ${lic(l)}</div>${was}${note}${outsideHTML(l)}
       <div class="links"><a href="${RAW(l)}" download>download</a><button class="lk" data-copy="${RAW(l)}" data-what="file URL copied">copy URL</button><button class="lk" data-copy="python -m kit centerline get ${s.scroll} --source ${l.source} --into YOUR_PROJECT_FOLDER" data-what="kit command copied: it writes YOUR_PROJECT_FOLDER/umbilicus.json" title="A command for the Scrolls kit that downloads this line, checks its sha256 and writes it as umbilicus.json where VC3D looks">copy kit command</button><a href="${DATASET}/blob/main/${l.file}" target="_blank" rel="noopener">view</a>${up}</div>
       <details class="full"><summary>every number</summary><table class="kv">
