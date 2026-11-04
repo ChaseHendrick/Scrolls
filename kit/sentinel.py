@@ -205,12 +205,23 @@ class Level:
         pre = (self.path + "/") if self.path else ""
         return pre + self.sep.join(str(int(i)) for i in idx)
 
+    def _read(self, key, tries=4):
+        """One chunk's bytes; a transfer cut short (http.client.IncompleteRead) or a reset is asked again."""
+        import http.client
+        for i in range(tries):
+            try:
+                return self.src.read(key)
+            except (http.client.HTTPException, ConnectionError, TimeoutError):
+                if i == tries - 1:
+                    raise
+                time.sleep(0.5 * 2 ** i)
+
     def chunk(self, idx):
         np = _np()
         idx = tuple(int(i) for i in idx)
         if idx in self.cache:
             return self.cache[idx]
-        raw = self.src.read(self.key(idx))
+        raw = self._read(self.key(idx))
         if raw is None:
             arr = None
         else:

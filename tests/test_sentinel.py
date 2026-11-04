@@ -219,6 +219,22 @@ class Synthetic(unittest.TestCase):
         self.assertTrue((a[:2] == 0).all())            # outside the array
         self.assertTrue((a[2:, 68:] == 0).all())       # beyond y 768
 
+    def test_cut_transfer_is_retried(self):
+        import http.client
+        lv = sn.Store(str(self.ct)).level(0)
+        real, calls = lv.src.read, []
+
+        def flaky(key):
+            calls.append(key)
+            if len(calls) == 1:
+                raise http.client.IncompleteRead(b"", 10)
+            return real(key)
+        lv.src.read = flaky
+        with mock.patch.object(sn.time, "sleep"):
+            a = lv.read(0, 1, 0, 4, 0, 4)
+        self.assertEqual(len(calls), 2)
+        self.assertEqual(a.shape, (1, 4, 4))
+
     def test_compressed_store(self):
         try:
             import numcodecs
