@@ -166,9 +166,15 @@ def write_box_afv(scan, box, dest):
     if not ts:
         raise FiberError("no fibers there")
     src = _download(scan, f"tiles/{ts[0]['id']}.afv")
-    db = sqlite3.connect(str(dest))
-    schema = [r[0] for r in sqlite3.connect(f"file:{src}?mode=ro", uri=True).execute(
-        "SELECT sql FROM sqlite_master WHERE type = 'table' AND sql IS NOT NULL AND name NOT LIKE 'block_bounds_%'")]
+    # uri=True on the writer too: ATTACH reads its "file:...?mode=ro" argument as a URI only on a URI connection,
+    # and Python's sqlite3 does not enable URIs by default (on Linux the ATTACH failed with "unable to open")
+    db = sqlite3.connect(Path(dest).resolve().as_uri(), uri=True)
+    src_db = sqlite3.connect(Path(src).resolve().as_uri() + "?mode=ro", uri=True)
+    try:
+        schema = [r[0] for r in src_db.execute(
+            "SELECT sql FROM sqlite_master WHERE type = 'table' AND sql IS NOT NULL AND name NOT LIKE 'block_bounds_%'")]
+    finally:
+        src_db.close()
     for sql in schema:
         db.execute(sql)
     db.execute("PRAGMA application_id=0x56434643")
@@ -176,7 +182,7 @@ def write_box_afv(scan, box, dest):
     meta = None
     for t in ts:
         path = _download(scan, f"tiles/{t['id']}.afv")
-        db.execute("ATTACH DATABASE ? AS s", (f"file:{path}?mode=ro",))
+        db.execute("ATTACH DATABASE ? AS s", (Path(path).resolve().as_uri() + "?mode=ro",))
         if meta is None:
             meta = {k: json.loads(v) for k, v in db.execute("SELECT key, value FROM s.metadata")}
         db.execute("CREATE TEMP TABLE IF NOT EXISTS pick(id INTEGER PRIMARY KEY)")
