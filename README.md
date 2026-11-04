@@ -278,8 +278,8 @@ Every command is in [`docs/tools/cli.md`](docs/tools/cli.md), and every tool has
 
 **Pipeline and reader checks** ([details](docs/FINDINGS.md#pipeline-and-reader-checks))
 
-12. **A transient S3 404 becomes a permanent hole of zeros in VC3D's renders and traces** ([villa #2058](https://github.com/ScrollPrize/villa/issues/2058), draft fix [villa #2060](https://github.com/ScrollPrize/villa/pull/2060); 8 to 12 October 2026).
-13. **villa's tracer does not hold an explicit seed, so a trace can start on the next winding** ([villa #2059](https://github.com/ScrollPrize/villa/issues/2059); one seed on PHerc0139, 11 and 12 October 2026).
+12. **A transient S3 404 becomes a permanent hole of zeros in VC3D's renders and traces** ([villa #2058](https://github.com/ScrollPrize/villa/issues/2058); our fix, [villa #2060](https://github.com/ScrollPrize/villa/pull/2060), was closed unmerged on 30 October because VC3D's rendering is moving to vc_reader; 8 to 12 October 2026).
+13. **villa's tracer did not hold an explicit seed, so a trace could start on the next winding** ([villa #2059](https://github.com/ScrollPrize/villa/issues/2059); one seed on PHerc0139, 11 and 12 October 2026); fixed by our `seed_anchor_xyz` option, merged in [villa #2063](https://github.com/ScrollPrize/villa/pull/2063) on 30 October.
 14. **A traced surface's render comes out turned, and `ink_9um` reads it much worse until it is turned upright** (one trace, development data, 13 October 2026); Reader v2 did not replicate it cleanly, so `ink.orient` stays opt in.
 
 <!-- New block so GitHub keeps the number 28. -->

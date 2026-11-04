@@ -204,14 +204,14 @@
   "labelsnap-moved-published-surface-labels-closer-to-the": {
    "line": 264,
    "sources": {
-    "docs/results.json": "3f9316aded8a3dcf66545126f029a942f300b9720296e9674679c77bbb36d87d",
+    "docs/results.json": "6ebe4d379707a23b2c2a68dc0639df819e04b438e9bf79e6df32c855650a0b36",
     "docs/tools/snapped-labels.md": "3369d672268fb54e79d37f1c1bdf4bbb39ca96560361b7762855be0d31d65116"
    }
   },
   "labelsnap-moved-published-surface-labels-closer-to-the-2": {
    "line": 15,
    "sources": {
-    "docs/results.json": "3f9316aded8a3dcf66545126f029a942f300b9720296e9674679c77bbb36d87d",
+    "docs/results.json": "6ebe4d379707a23b2c2a68dc0639df819e04b438e9bf79e6df32c855650a0b36",
     "docs/tools/snapped-labels.md": "3369d672268fb54e79d37f1c1bdf4bbb39ca96560361b7762855be0d31d65116"
    },
    "doc": "docs/FINDINGS.md"
@@ -534,13 +534,13 @@
    },
    "doc": "docs/FINDINGS.md"
   },
-  "villa-s-tracer-does-not-hold-an-explicit": {
+  "villa-s-tracer-did-not-hold-an-explicit": {
    "line": 283,
    "sources": {
     "docs/logs/2026-10-12-upstream-reports.md": "57f81a96d5871d496ef9d88b97192cc53d5a99f383f5bf97e4e7e69f0bebe5f2"
    }
   },
-  "villa-s-tracer-does-not-hold-an-explicit-2": {
+  "villa-s-tracer-did-not-hold-an-explicit-2": {
    "line": 17,
    "sources": {
     "docs/logs/2026-10-12-upstream-reports.md": "57f81a96d5871d496ef9d88b97192cc53d5a99f383f5bf97e4e7e69f0bebe5f2"
