@@ -248,7 +248,7 @@ def validate(entry):
     if not isinstance(entry["id"], str) or not ID.fullmatch(entry["id"]):
         raise ReleaseListError(f"id {entry['id']!r} must be lowercase letters, digits and hyphens")
     _text(entry, "title", 80)
-    for key, limit in (("summary", 1500), ("details", 500)):
+    for key, limit in (("summary", 1700), ("details", 500)):
         value = _text(entry, key, limit, required=key == "summary")
         if value is not None and BLOCK_OPENER.match(value):
             raise ReleaseListError(f"{entry['id']}: {key} may not start with a space, a code fence or an HTML tag")

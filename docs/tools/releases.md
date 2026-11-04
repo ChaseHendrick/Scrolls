@@ -230,7 +230,7 @@ No other top-level key is allowed.
 | `id` | str | Required. Lowercase letters, digits and hyphens, starting with a letter or digit, at most 63 characters (`[a-z0-9][a-z0-9-]{0,62}`). A new version of a released tool keeps its id |
 | `title` | str | Required. One line, at most 80 characters. The name in the README's table, and the `### ` heading that `render_entry` gives (a grouped entry's heading in the README) |
 | `released` | str | Required. A real date, `YYYY-MM-DD`. Shown as, say, `16 October 2026` |
-| `summary` | str | Required. One paragraph (no line breaks), at most 1,500 characters: what it does, the measured result with its claim label, the main limit |
+| `summary` | str | Required. One paragraph (no line breaks), at most 1,700 characters (1,500 until 4 November 2026, raised so a disclosure fits): what it does, the measured result with its claim label, the main limit |
 | `commands` | list of str | Optional. At most 12 lines, each one non-empty line of at most 300 characters with no code fence; shown as a `bash` block |
 | `details` | str | Optional. One line of at most 500 characters, such as links to the guide |
 | `image` | object | Optional. `{"src": S, "alt": A, "caption": C}`, exactly those keys: the entry's hero picture, which `render_entry` shows under the title with the caption in italics below it and the tool page shows too; the README's table shows no pictures. `src` is a path under `docs/assets/` (resolved from the README, so it serves package entries too: the README that shows it is on `main`) or a full `https://` URL, ending in `.webp`, `.png`, `.jpg`, `.jpeg` or `.gif`, with no `..` part. `alt` is one line of at most 300 characters with no square brackets, asterisks or backticks. `caption` is one line of at most 500 characters, with no asterisk and no leading or trailing space, that starts with its media label, one of `LABELS`: `Concept illustration`, `Real data render`, `Model output` or `Synthetic demo` ([media labels](../assets/README.md)). Both follow the rules for every text value below; a package's caption links are full `https://` URLs |
@@ -314,7 +314,7 @@ Messages of `add`, `render`, `list`, `pin` and `unpin` start with `releases: ` (
 | `ID: missing [...]` | A required field is missing | Add `id`, `title`, `released`, `summary` and `where` |
 | `id 'X' must be lowercase letters, digits and hyphens` | The id has capitals, underscores, a leading hyphen, or is over 63 characters | Use a short id such as `letter-reader` |
 | `ID: KEY must be a non-empty string` | A title, summary or details that is empty, blank or not a string | Write the text |
-| `ID: KEY is longer than N characters` | Title over 80, summary over 1,500 or details over 500 characters | Shorten it; move detail to the tool's guide and link it |
+| `ID: KEY is longer than N characters` | Title over 80, summary over 1,700 or details over 500 characters | Shorten it; move detail to the tool's guide and link it |
 | `ID: KEY must be one line or one paragraph` | A line break in the title, summary or details | Make it one paragraph |
 | `ID: KEY may not hold an HTML comment` | `<!--` or `-->` in a value, which could fake or break the markers | Remove it |
 | `ID: KEY has a long dash (house style: none)` | U+2014 or U+2013 in a value (the style rule, hard rule 10) | Use a comma, a colon or "to" |
@@ -386,7 +386,7 @@ Constants that matter, from `kit/releases.py`:
 | `LINK_TARGET`, `URL_SCHEME` | A link target, inline or in a reference definition, and the scheme, `//` or backslash that makes it refused unless it starts with `https://` |
 | `IMAGE_FIELDS`, `IMAGE_SRC`, `LABELS` | An image's three keys; its `src` pattern (a `docs/assets/` path or an `https://` URL, ending in `.webp`, `.png`, `.jpg`, `.jpeg` or `.gif`); the four media labels a caption starts with |
 | `TOOL_FIELDS`, `TOOL_REQUIRED`, `TOOL_PAGE`, `MAX_TOOLS` | A tool's ten fields and the six required ones; its page pattern (`docs/tools/NAME.md`); at most 96 tools in a grouped entry |
-| Limits | id 63 characters, title 80, summary 1,500, details 500, 12 commands of 300 characters; a tool's name 80, version 120, summary 800, command 300, evidence 400 |
+| Limits | id 63 characters, title 80, summary 1,700, details 500, 12 commands of 300 characters; a tool's name 80, version 120, summary 800, command 300, evidence 400 |
 
 The write is not atomic across the two files: the list is written first, then the README. If the README write failed, `check` would report the mismatch and `render` would repair it.
 

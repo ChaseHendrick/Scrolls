@@ -62,7 +62,7 @@
   "against-the-1-129-m-scan-alone-the": {
    "line": 163,
    "sources": {
-    "docs/tools/snapped-labels.md": "3da92dca823c53779149f1aa9f7699e0e9ee7533b5767956b1c4bae539b977ed"
+    "docs/tools/snapped-labels.md": "3369d672268fb54e79d37f1c1bdf4bbb39ca96560361b7762855be0d31d65116"
    },
    "doc": "docs/pipeline-october-2026.md"
   },
@@ -99,7 +99,7 @@
    "sources": {
     "docs/tools/umbilicus.md": "c2c8d7ba5017ebe1cc2efd5a81aabd80391738f4bc12aee0427f857f16812a8c",
     "docs/tools/contact-barrier.md": "1f7409ebb26b4f34af7cb8dc15175f8440b9b68d80c65424c1351bba4f23cca4",
-    "docs/tools/snapped-labels.md": "3da92dca823c53779149f1aa9f7699e0e9ee7533b5767956b1c4bae539b977ed",
+    "docs/tools/snapped-labels.md": "3369d672268fb54e79d37f1c1bdf4bbb39ca96560361b7762855be0d31d65116",
     "docs/tools/windlabel-box.md": "5e89f8376f0968df0385f75dfa9cc802f3e14970dc829c05e4e1a90fe41ae9fd",
     "docs/tools/labelsuggest.md": "4d93cd8dbe31106498a16ed7b8efdab8c38e5f7fb26c0715aec8e9a5bb56709d",
     "docs/logs/2026-10-29-parting-fragment-contact.md": "43f809fbb25dcb0bf3defa37e9df8fe7ccf127b01d87653892a2d96580746443"
@@ -204,15 +204,15 @@
   "labelsnap-moved-published-surface-labels-closer-to-the": {
    "line": 264,
    "sources": {
-    "docs/results.json": "1faae62611052ae9af664f511312718aa3688618cc59d0151b500a341357de0c",
-    "docs/tools/snapped-labels.md": "3da92dca823c53779149f1aa9f7699e0e9ee7533b5767956b1c4bae539b977ed"
+    "docs/results.json": "fa9efd0a4cbdda1788dd96184f2c01a6ae330b8249ac5653210ffbd976debb7e",
+    "docs/tools/snapped-labels.md": "3369d672268fb54e79d37f1c1bdf4bbb39ca96560361b7762855be0d31d65116"
    }
   },
   "labelsnap-moved-published-surface-labels-closer-to-the-2": {
    "line": 15,
    "sources": {
-    "docs/results.json": "1faae62611052ae9af664f511312718aa3688618cc59d0151b500a341357de0c",
-    "docs/tools/snapped-labels.md": "3da92dca823c53779149f1aa9f7699e0e9ee7533b5767956b1c4bae539b977ed"
+    "docs/results.json": "fa9efd0a4cbdda1788dd96184f2c01a6ae330b8249ac5653210ffbd976debb7e",
+    "docs/tools/snapped-labels.md": "3369d672268fb54e79d37f1c1bdf4bbb39ca96560361b7762855be0d31d65116"
    },
    "doc": "docs/FINDINGS.md"
   },
@@ -232,7 +232,7 @@
   "moves-each-traced-surface-onto-the-recto-face": {
    "line": 70,
    "sources": {
-    "docs/tools/snapped-labels.md": "3da92dca823c53779149f1aa9f7699e0e9ee7533b5767956b1c4bae539b977ed"
+    "docs/tools/snapped-labels.md": "3369d672268fb54e79d37f1c1bdf4bbb39ca96560361b7762855be0d31d65116"
    },
    "doc": "docs/pipeline-october-2026.md",
    "reasons": {
@@ -252,7 +252,7 @@
   "on-pherc0814-finesnap-which-places-the-dataset-s": {
    "line": 162,
    "sources": {
-    "docs/tools/snapped-labels.md": "3da92dca823c53779149f1aa9f7699e0e9ee7533b5767956b1c4bae539b977ed"
+    "docs/tools/snapped-labels.md": "3369d672268fb54e79d37f1c1bdf4bbb39ca96560361b7762855be0d31d65116"
    },
    "doc": "docs/pipeline-october-2026.md"
   },
@@ -344,7 +344,7 @@
   "real-runs-need-villa-s-vc3d-tools-python3": {
    "line": 43,
    "sources": {
-    "docs/releases.json": "ac08bbaecf554b3f2593d78abd438e79a95cf9ec59c70c19a2716a981ce1c516"
+    "docs/releases.json": "1efd78cc1731538d7d364be6072c6022d5f868e1ae798e5913529f59da5bda56"
    },
    "doc": "docs/pipeline-october-2026.md",
    "reasons": {
@@ -455,7 +455,7 @@
   "the-two-scan-result-holds-on-the-share": {
    "line": 175,
    "sources": {
-    "docs/tools/snapped-labels.md": "3da92dca823c53779149f1aa9f7699e0e9ee7533b5767956b1c4bae539b977ed"
+    "docs/tools/snapped-labels.md": "3369d672268fb54e79d37f1c1bdf4bbb39ca96560361b7762855be0d31d65116"
    },
    "doc": "docs/pipeline-october-2026.md"
   },
