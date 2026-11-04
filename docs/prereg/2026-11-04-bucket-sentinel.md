@@ -92,4 +92,10 @@ Reported, not decisive (the issue texts' values are a Community report):
 
 Not claimed: anything about the folders the reserved-data rule kept closed, other defect kinds, or later bucket versions. The match to #2370 is agreement between two measurements of the same published files, not a check of the CT itself.
 
-<<SWEEP>>
+### Live sweep, 4 November 2026 (not a preregistered test; Model output)
+
+After the back-test, the same checks ran on everything else the reserved-data rule leaves open: 15 folders under `ink/unused/` (PHerc. 0332, PHerc. 0343P, PHerc. MANBp) and the metadata of the 67 CT volumes the catalog lists in the open-data bucket. Of the bucket's 92 `ink/` segment folders, 29 were opened and 63 skipped by rule. Every flagged defect is in `docs/sentinel/findings.json`.
+
+- No defect beyond those already reported. Ten of the eleven MANBp folders read aligned (median offsets +0.36 to +0.66 px) and one not measured (5 accepted windows, fewer than 6); the PHerc. 0332 folders have no canvas zarr and the PHerc. 0343P folder no matching CT volume, so only their metadata was checked. The PHerc. 0841, 0009B and 0814 pyramids are short at levels 1 to 5, not only level 2, as #2107's comment says.
+- All 67 CT volumes declare a level-0 scale of [1, 1, 1] with no unit (#2137); `metadata.min.json` gives every one its pitch and every store name agrees with it. No CT volume has a missing level or truncated axis.
+- Changes after the freeze, for the sweep only: the scale check reads `metadata.min.json` before the store name and skips catalog paths outside the bucket (an earlier run had counted 8 such paths as missing scales), and a chunk whose transfer is cut short is asked again (one MANBp folder failed that way and was rerun). Four MANBp meshes are LZW-compressed and need imagecodecs; they ran in a cloud container that has it.
