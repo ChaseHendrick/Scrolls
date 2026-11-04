@@ -31,7 +31,7 @@ traces), and several labeled segments overlap each other, so a split between the
 geometry numbers, not proof either way, and anything that crosses scans depends on the catalog transforms, which
 #1835 and #2312 question. Each cross-scan cell carries the transform's landmark error.
 
-Code, the matrix and the planted checks: LINK (Apache-2.0). If it helps I'm happy to port the core into inkcheck, or
+Code, the matrix and the planted checks: https://github.com/ChaseHendrick/Scrolls/pull/321 (Apache-2.0). If it helps I'm happy to port the core into inkcheck, or
 match whatever output format you already use for NO_HELD_OUT so the two can be read together. I'd also really like
 to know how you'd set the distance. 60 um was chosen to sit under half a winding, and where windings are pressed
 together that may be too wide.
