@@ -12259,6 +12259,119 @@
    ],
    "compared": "vc_objrefine (villa 382e48d35ae8) as shipped and with thresholds tuned on PHerc0139, recto-offset r2 (commit 16bc31f) with and without its gate, surface_placement_audit (villa PR #2147), RectoRefine's midline, a surface prediction snap",
    "limits": "two scrolls and these sites only; PHerc0814 is held out by site, not by scroll; the planted toward-verso control was weak; midline and nearest-peak snaps aim at the sheet center by design; on PHerc0841 the truth scan is the one the release's finesnap read, so the released PHerc0841 meshes were not scored; one-voxel exactness is not claimed"
+  },
+  {
+   "date": "2026-11-03",
+   "tool": "kit labelsnap snap against scroll-label-snap on real drift",
+   "source": "scripts/experiments/lsnap-realdrift/chart.py",
+   "claim": "Model output: a preregistered real drift test, scored once (Hugging Face Job 6aea627fc78863f9c6320c59). On 43 fresh PHerc0139 sites in one band (z 6194 to 7890), per-vertex distance along the published normal, in 9.362 um label voxels, to the recto face where the 2.403 um region scan and the 2.399 um scan agree within 1 voxel; 95 % cluster bootstrap intervals over 150-voxel cells; both snaps read only the label scan; geometry only, never a reading",
+   "compared": "A.Q. Snyder's scroll-label-snap, https://github.com/aqsnyder/scroll-label-snap (MIT), pinned at 347ea5b4f3f7e346197034b7df599a4709aa0bbe, untuned, run on 13 x 13 vertex crops",
+   "sites_drawn": 43,
+   "sites_covered": 28,
+   "vertices": 387,
+   "vertices_scored": 173,
+   "within_1_voxel": {
+    "published": [
+     0.173,
+     0.105,
+     0.257
+    ],
+    "labelsnap": [
+     0.798,
+     0.732,
+     0.859
+    ],
+    "m7_snap": [
+     0.214,
+     0.132,
+     0.317
+    ],
+    "scroll_label_snap_defaults": [
+     0.179,
+     0.093,
+     0.257
+    ],
+    "scroll_label_snap_target_offset_0": [
+     0.353,
+     0.252,
+     0.463
+    ],
+    "scroll_label_snap_target_offset_0_template_weight_0": [
+     0.434,
+     0.31,
+     0.56
+    ],
+    "scroll_label_snap_authors_settings": [
+     0.393,
+     0.268,
+     0.518
+    ]
+   },
+   "median_signed_distance_voxels": {
+    "published": [
+     3.21,
+     2.05,
+     4.78
+    ],
+    "labelsnap": [
+     0.02,
+     -0.12,
+     0.08
+    ],
+    "m7_snap": [
+     1.89,
+     0.88,
+     3.19
+    ],
+    "scroll_label_snap_defaults": [
+     2.69,
+     2.16,
+     3.16
+    ],
+    "scroll_label_snap_target_offset_0": [
+     1.34,
+     1.01,
+     2.59
+    ],
+    "scroll_label_snap_target_offset_0_template_weight_0": [
+     0.91,
+     0.35,
+     2.32
+    ],
+    "scroll_label_snap_authors_settings": [
+     1.19,
+     0.93,
+     2.21
+    ]
+   },
+   "interval_format": "[value, low, high]; signed distance positive means inside the sheet",
+   "readout": "labelsnap ahead of all four scroll-label-snap settings (frozen rule, Bonferroni intervals over the four)",
+   "controls": "the label scan's own face 0.954 within 1 voxel, 0.069 and 0.104 with the reference moved 1.5 voxels either way; the two reference scans agree within 1 voxel on 0.861 of 201 vertices where both name a face",
+   "labelsnap_abstain_share": 0.191,
+   "self_consistency_planted_shift": {
+    "about": "108 earlier development sites (972 vertices): share returned within 1 voxel of the tool's own unshifted result after a planted 3 voxel shift inward (+3) or outward (-3); not accuracy; author's settings not run",
+    "labelsnap": {
+     "+3": 0.694,
+     "-3": 0.563
+    },
+    "m7_snap": {
+     "+3": 0.872,
+     "-3": 0.867
+    },
+    "scroll_label_snap_defaults": {
+     "+3": 0.079,
+     "-3": 0.061
+    },
+    "scroll_label_snap_target_offset_0": {
+     "+3": 0.202,
+     "-3": 0.303
+    },
+    "scroll_label_snap_target_offset_0_template_weight_0": {
+     "+3": 0.493,
+     "-3": 0.717
+    }
+   },
+   "limits": "one scroll and one band, 128 of the 173 scored vertices on w038; the two reference scans are both about 2.4 um at a similar energy and may share a face bias; scroll-label-snap is built for whole segments and ran untuned on small crops, and its default keeps the mesh's own offset by design; labelsnap's defaults were set on other PHerc0139 sites; a within-1 hit shows agreement with two other scans, not that the placement is on the papyrus"
   }
  ],
  "parting_checks": [
