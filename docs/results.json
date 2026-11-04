@@ -13392,7 +13392,7 @@
     "fill": 0.618,
     "squeeze": 0.606
    },
-   "limits": "development only, synthetic contacts made by editing the CT, two valid boxes on two scrolls, one reader at one depth window; not a test of real pressed contacts; that the high-layer side is the side the ink faces is Interpretation",
+   "limits": "development only, synthetic contacts made by editing the CT, two valid boxes on two scrolls, one reader at one depth window; not a test of real pressed contacts; that the high-layer side is the side the ink faces is Interpretation; not yet independently reviewed; a Reader V3 fine-tune on synthetic contacts against a matched control was being tested on 4 Nov 2026",
    "source": "docs/FINDINGS.md"
   }
  ],

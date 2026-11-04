@@ -204,14 +204,14 @@
   "labelsnap-moved-published-surface-labels-closer-to-the": {
    "line": 264,
    "sources": {
-    "docs/results.json": "9c34a8b5d5b6645c8cb1da363311b1910bdf5f985e65e2d53997a2619e61bf82",
+    "docs/results.json": "a95d4855f06da2dc115cb839f05e4a511434eada08304b8ac747c1bdf07dcfcb",
     "docs/tools/snapped-labels.md": "3369d672268fb54e79d37f1c1bdf4bbb39ca96560361b7762855be0d31d65116"
    }
   },
   "labelsnap-moved-published-surface-labels-closer-to-the-2": {
    "line": 15,
    "sources": {
-    "docs/results.json": "9c34a8b5d5b6645c8cb1da363311b1910bdf5f985e65e2d53997a2619e61bf82",
+    "docs/results.json": "a95d4855f06da2dc115cb839f05e4a511434eada08304b8ac747c1bdf07dcfcb",
     "docs/tools/snapped-labels.md": "3369d672268fb54e79d37f1c1bdf4bbb39ca96560361b7762855be0d31d65116"
    },
    "doc": "docs/FINDINGS.md"
@@ -345,14 +345,14 @@
    "line": 287,
    "sources": {
     "r:inkside_checks/0": "73519b3710c08b574935fad554b3d03009ee7990791f07c305d365dbfbcbb12f",
-    "r:inkside_checks/1": "98b0b43984fe8d9b17384e1b4b56cd0182722f89a8be962bf621d60b90aee3d2"
+    "r:inkside_checks/1": "3afdb33ef4eae9baac5ed24e3e49348140179078030073da68c36c2a670bb2ac"
    }
   },
   "reader-v3-needs-the-air-gap-in-front-2": {
    "line": 30,
    "sources": {
     "r:inkside_checks/0": "73519b3710c08b574935fad554b3d03009ee7990791f07c305d365dbfbcbb12f",
-    "r:inkside_checks/1": "98b0b43984fe8d9b17384e1b4b56cd0182722f89a8be962bf621d60b90aee3d2"
+    "r:inkside_checks/1": "3afdb33ef4eae9baac5ed24e3e49348140179078030073da68c36c2a670bb2ac"
    },
    "doc": "docs/FINDINGS.md"
   },
