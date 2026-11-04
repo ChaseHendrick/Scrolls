@@ -186,7 +186,7 @@ python scripts/umbilicus/lineends.py trim FILE [FILE ...] --out DIR     # DIR/<f
 
 It reads level 5 of the line's masked scan (named by `metadata.source_volume`, or `--volume`). A point is outside when no papyrus lies within 4 mm of it in its slice and it sits more than 4 mm outside the convex hull of the scroll there, or the slice has no scroll. Only the outer quarter of points at each end can be cut, from the end to the innermost outside point, so the middle half is never touched; a line whose middle point is not inside, or whose far slice corner is not outside, is left whole and reported untested. The Umbilici Space hides the same end runs with the same code.
 
-On center lines v2.8 (4 November 2026) it cuts 12 of the 39 Center Finder v2 lines: 155 points, 167.3 mm of height in all, up to 62.1 mm past the scroll's outline (PHerc0257, low end). The finder's own first and polished lines have no point outside. This is a measurement against the published mask, not a check of where the center is.
+On center lines v2.8 (4 November 2026) it cuts 12 of the 39 Center Finder v2 lines: 155 points, 167.3 mm of height in all, up to 62.1 mm past the scroll's outline (PHerc0257, low end). The finder's own first and polished lines have no point outside. This is a measurement against the published mask, not a check of where the center is. Center lines v2.9 (dataset commit `705c2996`, 4 November 2026) publishes the trimmed copies of those 12 lines beside the originals.
 
 ## Reproduce the held-out results
 

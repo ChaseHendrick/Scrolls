@@ -428,6 +428,7 @@ They cover the first stage's coordinate frame and augmentation, the zoom crops a
 
 ## History
 
+- 2026-11-04: center lines v2.9 on Hugging Face (dataset commit `705c2996`): trimmed copies of the 12 Center Finder v2 lines that `lineends.py` cuts, beside the originals, which carry `superseded_by` and are unchanged.
 - 2026-11-04: ([PR #325](https://github.com/ChaseHendrick/Scrolls/pull/325)) `lineends.py` (`check`, `trim`) cuts the end runs of a center line that leave the scroll in the masked CT; the test moved here from Umbilici's `build_lines.py`, which now loads it, so the Space hides exactly what a trim cuts. On center lines v2.8 it cuts 12 of the 39 Center Finder v2 lines (155 points, 167.3 mm of height); see Checks and controls.
 - 2026-11-03: VC3D section follows villa #2358 (29 Oct 2026 UTC): the umbilicus is imported through File, Import Umbilicus... into the object store, with no file-name search; the pre-#2358 citations stay, pinned to `8aa507c12`.
 - 2026-10-22: held-out comparison with villa's `vc_gen_umbilicus` on PHerc0139 and PHerc1451: closer on PHerc0139, level on PHerc1451 ([#154](https://github.com/ChaseHendrick/Scrolls/pull/154)).
