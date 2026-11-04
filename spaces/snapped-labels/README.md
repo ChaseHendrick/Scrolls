@@ -26,6 +26,7 @@ On fresh test sites, 91% of snapped PHerc0139 vertices sit within one voxel of t
 1.129 µm scan, against 24% for the published labels.
 On 71 fresh PHerc0814 and PHerc0841 sites, the single-scan snap moved labels 2.15 voxels closer to the recto face of
 a finer scan than the published labels, and closer than seven community snaps run on the same sites.
+Scored against a finer scan's face found with labelsnap's own band rule; with a face rule sharing neither, the lead held at about half the size (+1.04, +1.23 voxels).
 
 - **Viewer**: pick a segment and a z plane; orange is the published label, blue the snapped one, gray strokes join
   matching points; Animate snap moves each vertex from its published position to its snapped one, slowly. Arrow keys

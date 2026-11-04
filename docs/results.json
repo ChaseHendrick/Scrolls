@@ -12257,6 +12257,7 @@
     0.53,
     1.32
    ],
+   "note": "Scored against a finer scan's face found with labelsnap's own band rule; with a face rule sharing neither, the lead held at about half the size (+1.04, +1.23 voxels).",
    "compared": "vc_objrefine (villa 382e48d35ae8) as shipped and with thresholds tuned on PHerc0139, recto-offset r2 (commit 16bc31f) with and without its gate, surface_placement_audit (villa PR #2147), RectoRefine's midline, a surface prediction snap",
    "limits": "two scrolls and these sites only; PHerc0814 is held out by site, not by scroll; the planted toward-verso control was weak; midline and nearest-peak snaps aim at the sheet center by design; on PHerc0841 the truth scan is the one the release's finesnap read, so the released PHerc0841 meshes were not scored; one-voxel exactness is not claimed"
   },

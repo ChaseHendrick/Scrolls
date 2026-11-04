@@ -58,10 +58,11 @@ class ValidateTest(unittest.TestCase):
         r.validate(entry(commands=["python -m kit prizes"], summary="Under 5 minutes, see <https://example.org>."))
         r.validate(entry(summary="AUC 0.94 < 0.95 and x<3; see [guide](docs/a.md#b), [site](https://a.b) and [top](#x)."))
         r.validate(entry(commands=["python x.py > out.txt <in.txt", "echo '<b>'"]))
+        r.validate(entry(summary="x" * 1700))
 
     def test_bad_entries_fail(self):
         bad = [entry(id="Demo"), entry(id="-x"), entry(id="a" * 64), entry(title=""), entry(title="a\nb"),
-               entry(title="x" * 81), entry(summary="two\n\nparagraphs"), entry(summary=7), entry(released="14 Oct 2026"),
+               entry(title="x" * 81), entry(summary="x" * 1701), entry(summary="two\n\nparagraphs"), entry(summary=7), entry(released="14 Oct 2026"),
                entry(released="2026-02-30"), entry(commands="python x"), entry(commands=["a\nb"]),
                entry(commands=["```"]), entry(commands=[""]), entry(commands=["x"] * 13), entry(details="a\nb"),
                entry(summary="a" + chr(0x2014) + "b"), entry(details="en" + chr(0x2013) + "dash"),
