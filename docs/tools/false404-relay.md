@@ -226,7 +226,7 @@ Eight tests, about 3 s, standard library only, against a local S3-like server ov
 
 ## History
 
-- 2026-10-12: first version, used for the renders behind villa #2058 and its draft fix #2060 (`6be238e`).
+- 2026-10-12: first version, used for the renders behind villa #2058 and its proposed fix #2060 (`6be238e`; closed unmerged 30 Oct 2026).
 - 2026-10-17: each answer carries one `Server` and one `Date` header; before, the standard library's handler sent its own `Server: fault-relay ...` and `Date` ahead of the relayed or replayed ones, so a client reading the first `Server` header saw the relay's (`4277e97`).
 - 2026-10-17: false 404s are counted per chunk key; before, the count was per path with its query string, so `KEY?x-id=GetObject` and `KEY` each got their own `--bad` false 404s (`e2f4cc5`).
 
@@ -235,4 +235,4 @@ Eight tests, about 3 s, standard library only, against a local S3-like server ov
 - [The upstream reports log](../logs/2026-10-12-upstream-reports.md): what S3 sent, the bug, the fix and its limits.
 - [The false-404 receipts](../evidence/2026-10-12-false-404/README.md): test logs, render summaries and `relay.jsonl` from the published runs (frozen; do not edit).
 - [`fetch`](fetch.md): downloads from the same bucket directly.
-- [villa #2058](https://github.com/ScrollPrize/villa/issues/2058) and [villa #2060](https://github.com/ScrollPrize/villa/pull/2060): the issue and the draft fix.
+- [villa #2058](https://github.com/ScrollPrize/villa/issues/2058) and [villa #2060](https://github.com/ScrollPrize/villa/pull/2060): the issue and the proposed fix (closed unmerged 30 Oct 2026).

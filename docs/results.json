@@ -5517,7 +5517,7 @@
    ],
    "issue": "https://github.com/ScrollPrize/villa/issues/2058",
    "pr": "https://github.com/ScrollPrize/villa/pull/2060",
-   "pr_state": "draft, 2026-10-12",
+   "pr_state": "closed unmerged, 2026-10-30 (rendering moving to vc_reader)",
    "source": "docs/evidence/2026-10-12-false-404/README.md",
    "date": "2026-10-12"
   },
