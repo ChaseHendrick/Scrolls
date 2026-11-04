@@ -73,6 +73,12 @@ class RegistryTest(unittest.TestCase):
             self.assertEqual(r["command"][:2], ["{python}", "-m"])
             self.assertIn(" ".join(r["command"][2:]), READ_ONLY, f"{r['name']}: a new command; review it first")
 
+    def test_sentinel_scan_needs_the_local_exclusion_file(self):
+        # reserved folders are never listed or read: the daily scan runs only where the exclusion file exists
+        for r in routines.load(routines.REGISTRY):
+            if "sentinel" in r["command"]:
+                self.assertIn("work/sentinel/exclude.json", r["requires"], r["name"])
+
     def test_no_villa_pull_request_keep_alive_or_watcher(self):
         # Chase rejected keeping villa pull requests alive by machine (16 Oct 2026).
         for r in routines.load(routines.REGISTRY):

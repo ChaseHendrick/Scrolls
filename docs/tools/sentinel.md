@@ -33,7 +33,7 @@ Bucket Sentinel runs these checks on every item, keeps a fingerprint of each so 
 
 It never reads label voxels: the label check compares shapes only, and alignment uses CT and the canvas. It makes no ink map and reads nothing of any scroll's text; an offset is a data correction. A folder with no table entry is unmeasured, not aligned.
 
-Reserved data. A local exclusion file lists item ids or glob patterns that are never opened (`--exclude FILE`, else `$KIT_SENTINEL_EXCLUDE`, else `work/sentinel/exclude.json` when it exists). Skipped items are reported only as a count, "skipped by rule", with a 16-hex sha256 of their sorted ids, so coverage is stated without naming them. This repository ships no such list.
+Reserved data. A local exclusion file lists item ids or glob patterns that are never opened (`--exclude FILE`, else `$KIT_SENTINEL_EXCLUDE`, else `work/sentinel/exclude.json` when it exists). Skipped items are reported only as a count, "skipped by rule", with a 16-hex sha256 of their sorted ids, so coverage is stated without naming them. This repository ships no such list. The daily `bucket-sentinel` routine (`docs/routines.json`) runs `scan` only where `work/sentinel/exclude.json` exists and is skipped elsewhere; run `scan` by hand where no folder is reserved.
 
 ## When to use it
 
