@@ -175,6 +175,19 @@ All of these are our measurement of the published lines. The radius figures come
 
 How the rule changes the held-out scores is under "With the end trims" above. `python scripts/umbilicus/endcheck.py score RUN_DIR` measures it from a run's held-out answers, one stage per folder (it refuses a folder that holds both `fold*.json` and `refine_*.json`); its `pooled.all` must first reproduce the held-out table.
 
+## Ends that leave the scroll (`lineends.py`)
+
+A line made some other way, or polished on from a start that was never trimmed, can run off past the scroll at an end. `lineends.py` finds and cuts those end runs on any line in the published format:
+
+```sh
+python scripts/umbilicus/lineends.py check FILE [FILE ...]              # what each end would lose; writes nothing
+python scripts/umbilicus/lineends.py trim FILE [FILE ...] --out DIR     # DIR/<file name>, ends cut, metadata.papyrus_trim
+```
+
+It reads level 5 of the line's masked scan (named by `metadata.source_volume`, or `--volume`). A point is outside when no papyrus lies within 4 mm of it in its slice and it sits more than 4 mm outside the convex hull of the scroll there, or the slice has no scroll. Only the outer quarter of points at each end can be cut, from the end to the innermost outside point, so the middle half is never touched; a line whose middle point is not inside, or whose far slice corner is not outside, is left whole and reported untested. The Umbilici Space hides the same end runs with the same code.
+
+On center lines v2.8 (4 November 2026) it cuts 12 of the 39 Center Finder v2 lines: 155 points, 167.3 mm of height in all, up to 62.1 mm past the scroll's outline (PHerc0257, low end). The finder's own first and polished lines have no point outside. This is a measurement against the published mask, not a check of where the center is.
+
 ## Reproduce the held-out results
 
 Training needs a GPU. Each first-stage job trained for about 2.7 to 4.2 minutes (162 to 253 s) on a B300 and each zoom job for about 1 minute (46 to 76 s) on an L40S (our run records). Both stopped at their epoch count, not their 300 s time cap; on a slower card raise `--time-s` so the same epochs finish.
@@ -210,6 +223,7 @@ Training is not bit-for-bit repeatable on GPUs; expect small differences from th
 | `predict.py` | Center line for a scroll from trained weights |
 | `endcheck.py` | Calibrate the end-point rule on published scrolls, score it on held-out answers, apply it to written files |
 | `ctcheck.py` | Draw center lines on CT slices for a person to check; also needs matplotlib (`pip install matplotlib`, which brings Pillow) |
+| `lineends.py` | Find and cut the end runs of any center line that leave the scroll in the masked CT (`check`, `trim`); standard library only, numcodecs for compressed scans. The Umbilici Space imports its test |
 
 ## Licenses, credits and citation
 

@@ -15916,7 +15916,7 @@
     "Kind": "app, agent tool, script",
     "Area": "Viewers and apps",
     "Run": "[huggingface.co/spaces/SharpMeow/umbilici](https://huggingface.co/spaces/SharpMeow/umbilici) (the page), `python3 spaces/umbilici/tools/build_lines.py DATASET_DIR OUT.json`, `python3 spaces/umbilici/tools/build_lasagna.py DATASET_DIR OUT_DIR`, `python3 -m http.server` in `spaces/umbilici/` (the page locally, after the two builds)",
-    "Code": "`spaces/umbilici/app.js` (the page), `spaces/umbilici/index.html`, `spaces/umbilici/style.css`, `spaces/umbilici/tools/build_lines.py`, `spaces/umbilici/tools/build_lasagna.py`, `spaces/umbilici/README.md` (the Space card), `spaces/umbilici/NOTICE`, `spaces/umbilici/LICENSE`",
+    "Code": "`spaces/umbilici/app.js` (the page), `spaces/umbilici/index.html`, `spaces/umbilici/style.css`, `spaces/umbilici/tools/build_lines.py` (its CT test of line ends is the Center Finder's, loaded from that tool's lineends module), `spaces/umbilici/tools/build_lasagna.py`, `spaces/umbilici/README.md` (the Space card), `spaces/umbilici/NOTICE`, `spaces/umbilici/LICENSE`",
     "Tests": "`tests/test_umbilici.py`, 33 tests, standard library (2 more need numpy, numcodecs and Pillow and skip without them)",
     "Needs": "In the browser: WebGL 2 (3D textures), ES modules and import maps, three.js 0.160.0 from cdn.jsdelivr.net. `build_lines.py`: Python 3.10 or newer, standard library (numcodecs, when installed, lets its CT test read PHerc0172's Blosc chunks; without it that scan's lines are marked untested). `build_lasagna.py`: numpy, numcodecs (Blosc), Pillow",
     "Runs on": "The visitor's browser. A whole-scan radiograph of PHerc0191 (119 heights, about 1,070 range reads of 16 KB) loaded in under 25 s in headless, software-rendered Chromium on a 4-core cloud container (2026-10-23); a GPU and a home connection are faster. `build_lines.py` with the CT test of line ends took 9 min for the 91 lines of v2.8 on a cloud container (2026-11-04; most lines 1 to 6 s, the slowest 14 s). `build_lasagna.py` read the 64 PHerc0175A parts (about 48 GB) in about 4 minutes with three downloads at once, about 12 s per part (cloud container, 2026-10-23)",
@@ -16037,7 +16037,8 @@
     "python scripts/umbilicus/pipeline.py",
     "python scripts/umbilicus/refine.py",
     "python scripts/umbilicus/endcheck.py",
-    "python scripts/umbilicus/ctcheck.py"
+    "python scripts/umbilicus/ctcheck.py",
+    "python scripts/umbilicus/lineends.py"
    ],
    "imports": [],
    "code": [
@@ -16048,7 +16049,8 @@
    ],
    "tests": [
     "tests/test_umbilicus.py",
-    "tests/test_centerfinder_io.py"
+    "tests/test_centerfinder_io.py",
+    "tests/test_umbilicus_lineends.py"
    ],
    "go_ahead": {
     "needed": false,
@@ -16064,13 +16066,13 @@
     "Status": "Current",
     "Kind": "script folder",
     "Area": "Surfaces and tracing",
-    "Run": "`python scripts/umbilicus/predict.py`, `python scripts/umbilicus/slices.py`, `python scripts/umbilicus/pipeline.py`, `python scripts/umbilicus/refine.py`, `python scripts/umbilicus/endcheck.py`, `python scripts/umbilicus/ctcheck.py`",
+    "Run": "`python scripts/umbilicus/predict.py`, `python scripts/umbilicus/slices.py`, `python scripts/umbilicus/pipeline.py`, `python scripts/umbilicus/refine.py`, `python scripts/umbilicus/endcheck.py`, `python scripts/umbilicus/ctcheck.py`, `python scripts/umbilicus/lineends.py`",
     "Code": "`scripts/umbilicus/`",
-    "Tests": "`tests/test_umbilicus.py`; `tests/test_centerfinder_io.py`",
-    "Needs": "Python 3.10 or newer, numpy, scipy, requests; torch for `predict.py`, `centrenet.py`, `refine.py` and training; numcodecs only for `slices.extract` (the whole-chunk reader); matplotlib and Pillow for `ctcheck.py`. The released weights `umbilicus-first-all.pt` and `umbilicus-zoom-all.pt` (release `umbilicus-v1`) for `predict.py`",
-    "Runs on": "`predict.py` runs on a CPU or an NVIDIA GPU (`--device cuda`; `mps` is untested). On 4 CPU cores the smallest published scan, PHerc1203, took about 13 minutes, 7 of them reading its slices ([guide](../../scripts/umbilicus/README.md#quick-start)). Training needs a GPU: about 162 to 253 s per first-stage job on a B300 and 46 to 76 s per zoom job on an L40S ([guide](../../scripts/umbilicus/README.md#reproduce-the-held-out-results)). `pipeline.py trim` on a synthetic 60-slice scroll took 0.6 s (measured 2026-10-16, 4-core cloud container)",
-    "Network": "vesuvius-challenge-open-data.s3.amazonaws.com: HTTP range reads of level-3 planes (about 0.8 to 2.4 MB per slice, 0.25 to 0.65 GB per scroll), the scan's level-0 `.zarray` (a few hundred bytes, for the volume dimensions; not read again when the slice file holds `shape_l0`), level-5 planes and level-3 windows for `endcheck.py`, level-2 planes and level-1 and level-0 windows for `ctcheck.py`, bucket listings, and the three published umbilicus files. raw.githubusercontent.com: Alexey Drobkov's ten published lines at commit `DROBKOV_REV`, read for the 13 published scrolls (also when `predict.py` picks the scan of one of them). github.com: the weights, downloaded by hand with `curl`",
-    "Writes": "`predict.py`: `DATA/SCROLL.npz` (slices, when missing), `OUT/SCROLL_umbilicus.json` (or `OUT/SCROLL/umbilicus.json` with `--vc3d-name`) and `OUT/SCROLL_predict.json`. `slices.py extract`: `OUT/SCROLL.npz`. `pipeline.py`: `OUT/JOB.pt` and `OUT/JOB.json` (job), `OUT/result.json` and `OUT/umbilicus/` (collect), `DST/SCROLL_umbilicus.json` or `DST/SCROLL/umbilicus.json` (trim). `refine.py`: `refine_NAME.pt` and `.json` (chain), `refine_cv_fold<k>.pt` and `refine_cv.json` (cv), `result.json` and `umbilicus/` (chain-collect). `endcheck.py`: its cache (default `work/umbilicus/endcheck-cache`), the `--out` JSON, `DST/SCROLL_umbilicus.json` or `DST/SCROLL/umbilicus.json` (files). `ctcheck.py`: `OUT/SCROLL_ct_check.png`, `OUT/SCROLL/SCROLL_zZ.png`, `OUT/summary.json` and `OUT/.cache/`",
+    "Tests": "`tests/test_umbilicus.py`; `tests/test_centerfinder_io.py`; `tests/test_umbilicus_lineends.py`",
+    "Needs": "Python 3.10 or newer, numpy, scipy, requests; torch for `predict.py`, `centrenet.py`, `refine.py` and training; numcodecs only for `slices.extract` (the whole-chunk reader); matplotlib and Pillow for `ctcheck.py`; `lineends.py` needs the standard library only (numcodecs to read a scan stored with compressed chunks, such as PHerc0172's). The released weights `umbilicus-first-all.pt` and `umbilicus-zoom-all.pt` (release `umbilicus-v1`) for `predict.py`",
+    "Runs on": "`predict.py` runs on a CPU or an NVIDIA GPU (`--device cuda`; `mps` is untested). On 4 CPU cores the smallest published scan, PHerc1203, took about 13 minutes, 7 of them reading its slices ([guide](../../scripts/umbilicus/README.md#quick-start)). Training needs a GPU: about 162 to 253 s per first-stage job on a B300 and 46 to 76 s per zoom job on an L40S ([guide](../../scripts/umbilicus/README.md#reproduce-the-held-out-results)). `pipeline.py trim` on a synthetic 60-slice scroll took 0.6 s (measured 2026-10-16, 4-core cloud container). `lineends.py check` on all 115 lines of center lines v2.8 took about 25 minutes in four parallel runs on a shared 4-core cloud container (2026-11-04; mostly waiting on range reads, 10 to 30 s per line)",
+    "Network": "vesuvius-challenge-open-data.s3.amazonaws.com: HTTP range reads of level-3 planes (about 0.8 to 2.4 MB per slice, 0.25 to 0.65 GB per scroll), the scan's level-0 `.zarray` (a few hundred bytes, for the volume dimensions; not read again when the slice file holds `shape_l0`), level-5 planes and level-3 windows for `endcheck.py`, level-2 planes and level-1 and level-0 windows for `ctcheck.py`, bucket listings, and the three published umbilicus files; for `lineends.py`, range reads of 16 KB planes of level-5 chunks of the masked scan round each line's outer quarter of points, plus whole level-5 slices where a point has no scroll within 4 mm. raw.githubusercontent.com: Alexey Drobkov's ten published lines at commit `DROBKOV_REV`, read for the 13 published scrolls (also when `predict.py` picks the scan of one of them). github.com: the weights, downloaded by hand with `curl`",
+    "Writes": "`predict.py`: `DATA/SCROLL.npz` (slices, when missing), `OUT/SCROLL_umbilicus.json` (or `OUT/SCROLL/umbilicus.json` with `--vc3d-name`) and `OUT/SCROLL_predict.json`. `slices.py extract`: `OUT/SCROLL.npz`. `pipeline.py`: `OUT/JOB.pt` and `OUT/JOB.json` (job), `OUT/result.json` and `OUT/umbilicus/` (collect), `DST/SCROLL_umbilicus.json` or `DST/SCROLL/umbilicus.json` (trim). `refine.py`: `refine_NAME.pt` and `.json` (chain), `refine_cv_fold<k>.pt` and `refine_cv.json` (cv), `result.json` and `umbilicus/` (chain-collect). `endcheck.py`: its cache (default `work/umbilicus/endcheck-cache`), the `--out` JSON, `DST/SCROLL_umbilicus.json` or `DST/SCROLL/umbilicus.json` (files). `ctcheck.py`: `OUT/SCROLL_ct_check.png`, `OUT/SCROLL/SCROLL_zZ.png`, `OUT/summary.json` and `OUT/.cache/`. `lineends.py`: `--report` (both commands) and, for `trim`, `OUT/<file name>` for every input",
     "Go-ahead": "Not needed to run `predict.py` on public scans. Needed before renting GPUs to train (the go-ahead rule, hard rule 8, and the Modal rule, hard rule 11), and before posting a line or uploading weights",
     "Released": "Public `main` since 2026-10-14 (`76e4591`); the 14 weight files are the GitHub release `umbilicus-v1` of this repository; in the README's \"Released tools\" as `umbilicus-finder`, since 2026-10-20 a line of the Scrolls kit entry (run from a clone like the kit commands, with its weights as a release of this repository); center lines for 11 scrolls with their end-check status are the GitHub release `umbilicus-lines-v1` ([README](../evidence/2026-10-21-umbilicus-lines/README.md))",
     "Release id": "`umbilicus-finder`",
@@ -16089,85 +16091,85 @@
     {
      "name": "When to use it",
      "start_line": 35,
-     "end_line": 49,
+     "end_line": 50,
      "applicable": true
     },
     {
      "name": "Quick start",
-     "start_line": 50,
-     "end_line": 89,
+     "start_line": 51,
+     "end_line": 90,
      "applicable": true
     },
     {
      "name": "Checks and controls",
-     "start_line": 90,
-     "end_line": 101,
+     "start_line": 91,
+     "end_line": 103,
      "applicable": true
     },
     {
      "name": "Commands and options",
-     "start_line": 102,
-     "end_line": 243,
+     "start_line": 104,
+     "end_line": 262,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 244,
-     "end_line": 265,
+     "start_line": 263,
+     "end_line": 289,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 266,
-     "end_line": 275,
+     "start_line": 290,
+     "end_line": 299,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 276,
-     "end_line": 314,
+     "start_line": 300,
+     "end_line": 338,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 315,
-     "end_line": 352,
-     "applicable": true
-    },
-    {
-     "name": "How it works",
-     "start_line": 353,
-     "end_line": 364,
-     "applicable": true
-    },
-    {
-     "name": "Cost and time",
-     "start_line": 365,
-     "end_line": 372,
-     "applicable": true
-    },
-    {
-     "name": "For agents",
-     "start_line": 373,
+     "start_line": 339,
      "end_line": 382,
      "applicable": true
     },
     {
-     "name": "Tests",
+     "name": "How it works",
      "start_line": 383,
-     "end_line": 392,
+     "end_line": 398,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 399,
+     "end_line": 407,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 408,
+     "end_line": 417,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 418,
+     "end_line": 428,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 393,
-     "end_line": 402,
+     "start_line": 429,
+     "end_line": 439,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 403,
-     "end_line": 411,
+     "start_line": 440,
+     "end_line": 448,
      "applicable": true
     }
    ]

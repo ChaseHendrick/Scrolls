@@ -114,7 +114,7 @@
       "line": "Command-line tools, benchmarks and script folders that run from a clone of this repository.",
       "area": "Releases and repository",
       "page": "docs/tools/cli.md",
-      "released": "2026-11-03",
+      "released": "2026-11-04",
       "summary": "Command-line tools, benchmarks and script folders that run from a clone of this repository. Each line gives the tool's release date, its weights where it has them, one command to start with, its tool page and its evidence; each page lists the tool's own needs. Their outputs are model output or geometry measurements for a person to check, not readings.",
       "commands": [
         "git clone --depth 1 https://github.com/ChaseHendrick/Scrolls.git",
@@ -283,9 +283,9 @@
           "name": "Scroll center (umbilicus) finder and coverage polish",
           "line": "Finds a scroll's winding center line (umbilicus) in its CT scan with two small U-Nets and writes umbilicus.json for VC3D.",
           "area": "Surfaces and tracing",
-          "released": "2026-10-24",
-          "version": "weights `umbilicus-v1`; lines `umbilicus-lines-v1`; polish `kit axispolish` rule 1",
-          "summary": "Finds a scroll's winding center line in its 1.2 m (about 9 um) CT scan with two small U-Nets reading level-3 slices from the open-data bucket, and writes `umbilicus.json` for VC3D and the spiral fit. Against the 13 published center lines, each scroll held out, the median distance over 3,414 slices is 0.73 mm against 3.98 mm for the centroid control (Model output, 13 Oct 2026). `kit axispolish` then moves a line to where villa's traced sheet winds most: on ten fresh scans the polished lines beat villa's vc_gen_umbilicus by +0.084 wraps of coverage, 8 of 10 scans, interval +0.028 to +0.169 (Model output, 22 Oct 2026; [evidence](docs/evidence/2026-10-22-umbilicus-windpolish/README.md)).",
+          "released": "2026-11-04",
+          "version": "weights `umbilicus-v1`; lines `umbilicus-lines-v1`; polish `kit axispolish` rule 1; end trim `lineends.py` 1.0.0",
+          "summary": "Finds a scroll's winding center line in its 1.2 m (about 9 um) CT scan with two small U-Nets and writes `umbilicus.json` for VC3D and the spiral fit: 0.73 mm median from the 13 published lines, each scroll held out, against 3.98 mm for the centroid control (Model output, 13 Oct 2026). `kit axispolish` moves a line to where villa's traced sheet winds most (+0.084 wraps against villa's vc_gen_umbilicus on ten fresh scans, 22 Oct 2026; [evidence](docs/evidence/2026-10-22-umbilicus-windpolish/README.md)). `scripts/umbilicus/lineends.py` (4 Nov 2026) cuts any line's end runs that leave the scroll in the masked CT; on center lines v2.8 it cuts 12 of the 39 Center Finder v2 lines, 155 points and 167.3 mm of height in all.",
           "command": "python scripts/umbilicus/predict.py PHerc0125 --first work/umbilicus/weights/umbilicus-first-all.pt --zoom work/umbilicus/weights/umbilicus-zoom-all.pt --data work/umbilicus/slices --out work/umbilicus/out --vc3d-name",
           "page": "docs/tools/umbilicus.md",
           "evidence": "[guide with the weight download and SHA-256](scripts/umbilicus/README.md), [evidence](docs/evidence/2026-10-14-umbilicus/README.md), [center lines for 11 scrolls with each end's check status (Model output, no person's check)](docs/evidence/2026-10-21-umbilicus-lines/README.md)"

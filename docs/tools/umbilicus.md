@@ -8,13 +8,13 @@
 | Status | Current |
 | Kind | script folder |
 | Area | Surfaces and tracing |
-| Run | `python scripts/umbilicus/predict.py`, `python scripts/umbilicus/slices.py`, `python scripts/umbilicus/pipeline.py`, `python scripts/umbilicus/refine.py`, `python scripts/umbilicus/endcheck.py`, `python scripts/umbilicus/ctcheck.py` |
+| Run | `python scripts/umbilicus/predict.py`, `python scripts/umbilicus/slices.py`, `python scripts/umbilicus/pipeline.py`, `python scripts/umbilicus/refine.py`, `python scripts/umbilicus/endcheck.py`, `python scripts/umbilicus/ctcheck.py`, `python scripts/umbilicus/lineends.py` |
 | Code | `scripts/umbilicus/` |
-| Tests | `tests/test_umbilicus.py`; `tests/test_centerfinder_io.py` |
-| Needs | Python 3.10 or newer, numpy, scipy, requests; torch for `predict.py`, `centrenet.py`, `refine.py` and training; numcodecs only for `slices.extract` (the whole-chunk reader); matplotlib and Pillow for `ctcheck.py`. The released weights `umbilicus-first-all.pt` and `umbilicus-zoom-all.pt` (release `umbilicus-v1`) for `predict.py` |
-| Runs on | `predict.py` runs on a CPU or an NVIDIA GPU (`--device cuda`; `mps` is untested). On 4 CPU cores the smallest published scan, PHerc1203, took about 13 minutes, 7 of them reading its slices ([guide](../../scripts/umbilicus/README.md#quick-start)). Training needs a GPU: about 162 to 253 s per first-stage job on a B300 and 46 to 76 s per zoom job on an L40S ([guide](../../scripts/umbilicus/README.md#reproduce-the-held-out-results)). `pipeline.py trim` on a synthetic 60-slice scroll took 0.6 s (measured 2026-10-16, 4-core cloud container) |
-| Network | vesuvius-challenge-open-data.s3.amazonaws.com: HTTP range reads of level-3 planes (about 0.8 to 2.4 MB per slice, 0.25 to 0.65 GB per scroll), the scan's level-0 `.zarray` (a few hundred bytes, for the volume dimensions; not read again when the slice file holds `shape_l0`), level-5 planes and level-3 windows for `endcheck.py`, level-2 planes and level-1 and level-0 windows for `ctcheck.py`, bucket listings, and the three published umbilicus files. raw.githubusercontent.com: Alexey Drobkov's ten published lines at commit `DROBKOV_REV`, read for the 13 published scrolls (also when `predict.py` picks the scan of one of them). github.com: the weights, downloaded by hand with `curl` |
-| Writes | `predict.py`: `DATA/SCROLL.npz` (slices, when missing), `OUT/SCROLL_umbilicus.json` (or `OUT/SCROLL/umbilicus.json` with `--vc3d-name`) and `OUT/SCROLL_predict.json`. `slices.py extract`: `OUT/SCROLL.npz`. `pipeline.py`: `OUT/JOB.pt` and `OUT/JOB.json` (job), `OUT/result.json` and `OUT/umbilicus/` (collect), `DST/SCROLL_umbilicus.json` or `DST/SCROLL/umbilicus.json` (trim). `refine.py`: `refine_NAME.pt` and `.json` (chain), `refine_cv_fold<k>.pt` and `refine_cv.json` (cv), `result.json` and `umbilicus/` (chain-collect). `endcheck.py`: its cache (default `work/umbilicus/endcheck-cache`), the `--out` JSON, `DST/SCROLL_umbilicus.json` or `DST/SCROLL/umbilicus.json` (files). `ctcheck.py`: `OUT/SCROLL_ct_check.png`, `OUT/SCROLL/SCROLL_zZ.png`, `OUT/summary.json` and `OUT/.cache/` |
+| Tests | `tests/test_umbilicus.py`; `tests/test_centerfinder_io.py`; `tests/test_umbilicus_lineends.py` |
+| Needs | Python 3.10 or newer, numpy, scipy, requests; torch for `predict.py`, `centrenet.py`, `refine.py` and training; numcodecs only for `slices.extract` (the whole-chunk reader); matplotlib and Pillow for `ctcheck.py`; `lineends.py` needs the standard library only (numcodecs to read a scan stored with compressed chunks, such as PHerc0172's). The released weights `umbilicus-first-all.pt` and `umbilicus-zoom-all.pt` (release `umbilicus-v1`) for `predict.py` |
+| Runs on | `predict.py` runs on a CPU or an NVIDIA GPU (`--device cuda`; `mps` is untested). On 4 CPU cores the smallest published scan, PHerc1203, took about 13 minutes, 7 of them reading its slices ([guide](../../scripts/umbilicus/README.md#quick-start)). Training needs a GPU: about 162 to 253 s per first-stage job on a B300 and 46 to 76 s per zoom job on an L40S ([guide](../../scripts/umbilicus/README.md#reproduce-the-held-out-results)). `pipeline.py trim` on a synthetic 60-slice scroll took 0.6 s (measured 2026-10-16, 4-core cloud container). `lineends.py check` on all 115 lines of center lines v2.8 took about 25 minutes in four parallel runs on a shared 4-core cloud container (2026-11-04; mostly waiting on range reads, 10 to 30 s per line) |
+| Network | vesuvius-challenge-open-data.s3.amazonaws.com: HTTP range reads of level-3 planes (about 0.8 to 2.4 MB per slice, 0.25 to 0.65 GB per scroll), the scan's level-0 `.zarray` (a few hundred bytes, for the volume dimensions; not read again when the slice file holds `shape_l0`), level-5 planes and level-3 windows for `endcheck.py`, level-2 planes and level-1 and level-0 windows for `ctcheck.py`, bucket listings, and the three published umbilicus files; for `lineends.py`, range reads of 16 KB planes of level-5 chunks of the masked scan round each line's outer quarter of points, plus whole level-5 slices where a point has no scroll within 4 mm. raw.githubusercontent.com: Alexey Drobkov's ten published lines at commit `DROBKOV_REV`, read for the 13 published scrolls (also when `predict.py` picks the scan of one of them). github.com: the weights, downloaded by hand with `curl` |
+| Writes | `predict.py`: `DATA/SCROLL.npz` (slices, when missing), `OUT/SCROLL_umbilicus.json` (or `OUT/SCROLL/umbilicus.json` with `--vc3d-name`) and `OUT/SCROLL_predict.json`. `slices.py extract`: `OUT/SCROLL.npz`. `pipeline.py`: `OUT/JOB.pt` and `OUT/JOB.json` (job), `OUT/result.json` and `OUT/umbilicus/` (collect), `DST/SCROLL_umbilicus.json` or `DST/SCROLL/umbilicus.json` (trim). `refine.py`: `refine_NAME.pt` and `.json` (chain), `refine_cv_fold<k>.pt` and `refine_cv.json` (cv), `result.json` and `umbilicus/` (chain-collect). `endcheck.py`: its cache (default `work/umbilicus/endcheck-cache`), the `--out` JSON, `DST/SCROLL_umbilicus.json` or `DST/SCROLL/umbilicus.json` (files). `ctcheck.py`: `OUT/SCROLL_ct_check.png`, `OUT/SCROLL/SCROLL_zZ.png`, `OUT/summary.json` and `OUT/.cache/`. `lineends.py`: `--report` (both commands) and, for `trim`, `OUT/<file name>` for every input |
 | Go-ahead | Not needed to run `predict.py` on public scans. Needed before renting GPUs to train (the go-ahead rule, hard rule 8, and the Modal rule, hard rule 11), and before posting a line or uploading weights |
 | Released | Public `main` since 2026-10-14 (`76e4591`); the 14 weight files are the GitHub release `umbilicus-v1` of this repository; in the README's "Released tools" as `umbilicus-finder`, since 2026-10-20 a line of the Scrolls kit entry (run from a clone like the kit commands, with its weights as a release of this repository); center lines for 11 scrolls with their end-check status are the GitHub release `umbilicus-lines-v1` ([README](../evidence/2026-10-21-umbilicus-lines/README.md)) |
 | Release id | `umbilicus-finder` |
@@ -38,6 +38,7 @@ The line is model output, not a measurement: check it on CT slices before relyin
 - A line for VC3D or a spiral fit: `--vc3d-name` writes `SCROLL/umbilicus.json`, stamped with the scan's grid when available.
 - A second opinion on a published or hand-made line: draw both on CT with `ctcheck.py`.
 - Trimming the mount and cap ends from umbilicus files already written (`pipeline.py trim`, `endcheck.py files`).
+- Cutting the end runs of any center line that leave the scroll in the masked CT, for example a line polished on from an untrimmed start (`lineends.py trim`); the same test hides those ends in the Umbilici Space.
 - Reproducing the held-out scores from public data (`slices.py`, `pipeline.py`, `refine.py`, `endcheck.py score`).
 
 Do not use it:
@@ -98,6 +99,7 @@ Without `--vc3d-name` the file is `trimmed/S_umbilicus.json`, as before. Either 
 - **VC3D reads the file.** The tests read every written file back through rule-for-rule copies of VC3D's reader (`Umbilicus::LoadJsonFile`), its file-name search and its rescale rule at villa main `8aa507c12`, before villa #2358 moved the umbilicus into the object store on 29 October 2026 UTC (the reader that replaced them keeps the same refusals and rescale rule; see [Use it in VC3D and spiral-fitting](#use-it-in-vc3d-and-spiral-fitting)); the copies refuse a partial triplet, a float or zero dimension, an empty `volume` and a file without points, and agree with villa's own tests of the rescale. They are copies: no VC3D binary was built or opened for this page.
 
 Claim label: Model output, for every line `predict.py` writes and for the held-out distances of 13 October 2026, scored against one person's published line per scroll, and for the held-out comparison of 22 October 2026.
+- **Line ends that leave the scroll** (`lineends.py`, 4 November 2026). Two built-in checks can fail a line: its middle point must be inside the scroll and the slice corner farthest from it outside; a line that fails either is left whole and reported untested. On all 115 lines of center lines v2.8 (SharpMeow/vesuvius-center-lines revision `fdfb6103`), 114 were tested; the polished PHercMANB line failed the corner check. 12 of the 39 newest Center Finder v2 lines have end runs outside the scroll: 155 of their 3,245 points, 18 ends (12 low, 6 high), 167.3 mm of height and 360.8 mm of line in all, the most on PHerc0257's low end (8 points, 18.6 mm of height, up to 62.1 mm past the scroll's outline). All 12 are on the scrolls with a published line, where v2 started from the untrimmed cross-validation line. None of the 35 first or polished Center Finder lines, nor the 4 newest mapped ones, has a point outside. People's and the organizers' lines: 9 of 24 have a few (30 points, at most 6.4 mm of height at one end); the tool never changes them unless asked. Trimmed copies of three of the 12, tested again, have nothing outside. Measured on the published mask, not a check of where the center is.
 
 ## Commands and options
 
@@ -233,6 +235,23 @@ usage: ctcheck.py [-h] --a A --b B --out OUT [--scrolls [SCROLLS ...]] [--n N]
 | `--zoom-mm ZOOM_MM` | `6.0` | Half width in mm of the level-1 zoom panel |
 | `--close-mm CLOSE_MM` | `2.0` | Half width in mm of the level-0 close-up panel |
 
+### `python scripts/umbilicus/lineends.py`
+
+```
+usage: lineends.py [-h] [--out OUT] [--volume VOLUME] [--report REPORT]
+                   [--json]
+                   {check,trim} files [files ...]
+```
+
+| Option | Default | Meaning |
+| --- | --- | --- |
+| `cmd` | required | `check` (report, per file, the points and height each end would lose; writes nothing else) or `trim` (also write each file to `--out` with those end points removed and `metadata.papyrus_trim` added) |
+| `files` | required | Umbilicus files in the published format (`control_points` in level-0 voxels of their scan) |
+| `--out OUT` | none | `trim`: the folder for the trimmed copies, each under its own file name; required for `trim`, and refused when it is the folder of an input file |
+| `--volume VOLUME` | each file's `metadata.source_volume` | The scan for every file, `SCROLL/volumes/VOL.zarr` in the open-data bucket (masked, so voxels outside the scroll are zero) |
+| `--report REPORT` | none | Write the per-file report here as JSON |
+| `--json` | off | Print the report as JSON instead of one line per file |
+
 `centrenet.py` has no command line; the other scripts import it.
 
 ### Environment variables
@@ -262,6 +281,11 @@ The scripts import one another by file name (each puts its folder first on `sys.
 | `pipeline.stamp_dims(meta, dims, name)` | `meta` | `SystemExit` for a triplet of another grid, or a partial one with no scan shape | Puts the triplet into a file's metadata |
 | `pipeline.trim(src, data, dst, end_rule=True, vc3d_name=False)` | `{scroll: {"points", "z", "file"}}` | `SystemExit` for points off the slice heights | What `pipeline.py trim` runs |
 | `endcheck.files(src_dir, dst, cache, data=None, vc3d_name=False)` | `{scroll: {"points_in", "points_out", "papyrus_level", "file"}}` | `SystemExit` for points off the slice heights (with `data`) | Applies the end-point rule to any file in the published format |
+| `lineends.outside_ends(points, slices)` | `(result, None)` or `(None, why)` | Nothing of its own | The test on one line: `points` as `(x, y, z)` level-0 voxels sorted by z, `slices` a `lineends.Slices`; per end `hidden` (points from the end to the innermost outside point in the outer quarter), `far`, `empty`, `max_mm`. Umbilici's `build_lines.py` imports it |
+| `lineends.open_scan(source_volume)` | `(Slices, level)` or `(None, why)` | Nothing (an unreadable scan gives `why`) | Opens level 5 of a bucket scan named `SCROLL/volumes/VOL.zarr` |
+| `lineends.check_line(points, scan)` | `(result, why)` | Nothing (a failed read gives `why`) | `outside_ends` on an opened scan, with `result["level"]` |
+| `lineends.trim_doc(doc, result, why, um=None)` | a new umbilicus dict | Nothing | The document with the cut end points removed (order and keys kept) and `metadata.papyrus_trim`; `result` None cuts nothing |
+| `lineends.run(files, volume=None, out=None, scans=None, opener=None)` | one report row per file | `OSError`, `json.JSONDecodeError` for an unreadable input | What both commands run; `scans` caches opened scans across calls |
 
 ## Inputs
 
@@ -290,7 +314,7 @@ The scripts import one another by file name (each puts its folder first on `sys.
 | `metadata.method` | str | The models used and the trims applied |
 | `metadata.spread_mm_median` | float or null | Median over kept slices of the distance in mm between each model's answer and the models' median; null when the last stage has one model, as in Quick start |
 
-`OUT/SCROLL_predict.json` (this name in both modes) holds per slice: `z`, `yx` (smoothed center, level-0 voxels, null where no papyrus), `present`, `keep_band`, `kept`, `support` (share of 32 rays meeting papyrus), `spread_mm`; and `scroll`, `volume`, `voxelsize_um`, `volume_dims` (the stamped triplet or null), `umbilicus` (the umbilicus file's path), `papyrus_level`, `first`, `zoom` (weight file names) and `rule` (the trim constants). `pipeline.py trim` adds `metadata.trimmed`, `endcheck.py files` adds `metadata.end_trimmed`; both stamp the triplet when the file lacks it.
+`OUT/SCROLL_predict.json` (this name in both modes) holds per slice: `z`, `yx` (smoothed center, level-0 voxels, null where no papyrus), `present`, `keep_band`, `kept`, `support` (share of 32 rays meeting papyrus), `spread_mm`; and `scroll`, `volume`, `voxelsize_um`, `volume_dims` (the stamped triplet or null), `umbilicus` (the umbilicus file's path), `papyrus_level`, `first`, `zoom` (weight file names) and `rule` (the trim constants). `pipeline.py trim` adds `metadata.trimmed`, `endcheck.py files` adds `metadata.end_trimmed`; both stamp the triplet when the file lacks it. `lineends.py trim` adds `metadata.papyrus_trim`: `version`, `rule` (in words), `points_before`, `points_after`, `tested`, and either `why` (untested, nothing cut) or `level`, `far_mm`, `end_share` and per end (`low`, `high`) `points` cut, `outside` (how many of them lie outside), `empty_slices`, `max_mm_past_outline`, and for a cut end `z_voxels`, `z_mm` (height lost) and `path_mm` (length of the cut run along the line, to the first kept point). The `--report` rows hold the same fields with `file` and `volume`.
 
 ### Use it in VC3D and spiral-fitting
 
@@ -348,9 +372,19 @@ Before #2358, from villa main `8aa507c12` (history, read 19 October 2026): VC3D 
 | `score RUN_DIR` | `endcheck.py score` without exactly one folder | Give one run folder |
 | `files SRC DST` | `endcheck.py files` without a source and a destination | Give both folders |
 | `ModuleNotFoundError: No module named 'torch'` | torch is missing for `predict.py`, `refine.py` or training | `python -m pip install torch` |
+| `lineends.py`: `untested, its middle point lies outside the scroll in the CT ...; left whole` | The line is in another frame than `--volume` or `metadata.source_volume` names, or the mask is wrong | Check the file's scan and frame; nothing was cut |
+| `lineends.py`: `untested, a corner of the scan's slice reads as inside the scroll ...` | The scan is not masked (air is not zero), so the outline cannot be read | Give the masked scan with `--volume`; nothing was cut |
+| `lineends.py`: `untested, this scan's chunks are compressed and numcodecs is not installed ...` | A scan stored with Blosc chunks (PHerc0172) | `python -m pip install numcodecs` |
+| `lineends.py`: `untested, the file names no scan (metadata.source_volume); give --volume` | The file does not say which scan it belongs to | Give `--volume SCROLL/volumes/VOL.zarr` |
+| `lineends.py: error: trim needs --out DIR`, exit code 2 | `trim` without a destination | Give `--out DIR`, or run `check` |
+| `lineends.py: error: --out is the folder of an input file; write the trimmed copies elsewhere`, exit code 2 | `trim` would overwrite its input | Write the trimmed copies to another folder |
 | A line with `"points": 0` | No 2 mm run of slices has papyrus within 4 mm of the center in three quarters of the directions, or no slice holds papyrus | Check the scan on CT; compare with `--no-end-rule` |
 
 ## How it works
+
+`lineends.py` is separate from the steps below: it runs on any finished line. For each line, sorted by z, it reads level 5 of the scan's masked CT and calls a control point outside when no nonzero voxel lies within 4 mm of it in its slice and it sits more than 4 mm (`FAR_MM`) outside the convex hull of that slice's nonzero voxels, or the slice has none. The hull, not the nearest voxel, is the bar because a scroll's ends taper and break into fragments, and a center between fragments is still inside the scroll. Only the outer quarter (`END_SHARE`) of points at each end can be cut; the cut reaches from the end to the innermost outside point there, so the middle half is never cut. The line's middle point must be inside and the slice corner farthest from it outside, or nothing is cut and the line is reported untested.
+
+The finder's own line:
 
 1. **Slices** (`slices.extract_ranged`): planes `z = 4 + 8 k` of level 3, so level-0 heights `32 + 64 k`, about 0.55 to 0.60 mm apart; each plane read with one range request per 128 px chunk (`PlaneReader`).
 2. **First stage** (`centrenet.frame`, `centrenet.predict`): the slices resampled into a 256 px square (`FRAME`) round the scroll's papyrus, plus 5 %; three slices (64 voxels apart) in, a heatmap at half resolution out; the 8 dihedral transforms are averaged, the peak is refined by a weighted mean over a 9 x 9 window, and mapped back to level-0 voxels. The median over `--first` models is taken.
@@ -369,6 +403,7 @@ Training (`pipeline.run_job`, `refine.chain_job`): four folds by scroll (`FOLDS`
 - `endcheck.py calibrate`: about 0.6 to 0.7 GB of range reads; time Not measured.
 - `pipeline.py trim` on a synthetic 60-slice scroll: 0.6 s (measured 2026-10-16, 4-core cloud container).
 - Stamping the grid: none extra when the slice file holds `shape_l0`; otherwise one read of a few hundred bytes per scroll.
+- `lineends.py`: no GPU and no download to disk; range reads of level-5 planes only. All 115 lines of center lines v2.8 in about 25 minutes with four runs at once on a shared 4-core cloud container (2026-11-04); Umbilici's build ran the same test on 91 lines in 9 minutes on a less busy one.
 
 ## For agents
 
@@ -386,12 +421,14 @@ Synthetic I/O tests check false-404 handling, bounded retries, inclusive byte ra
 
 ```bash
 python -m unittest tests.test_umbilicus -v
+python -m unittest tests.test_umbilicus_lineends -v
 ```
 
-They cover the first stage's coordinate frame and augmentation, the zoom crops and offsets, `keep_band`, the papyrus level, the end-point support and trims (from the ends only, at 2 mm and 4 mm for each voxel size), trimming written files, `collect` and `chain-collect`, `predict.py` writing a trimmed file from weights, its refusal of other scans, `endcheck.py` windows and missing-chunk counts, the range reader against a synthetic volume, `pipeline.py` refusing a mistyped command, and the files VC3D reads: rule-for-rule copies of VC3D's reader, name search and rescale rule (checked against villa's own test values) read back what `predict.py`, `trim`, `endcheck.py files`, `collect` and `chain-collect` write, with and without `--vc3d-name`, from a slice file's `shape_l0` or the level-0 `.zarray`, and with no triplet at all when the shape is missing or of another scan. All data is synthetic and read on the CPU; the module keeps `slices.get` off the network. On 2026-10-20 in a Linux cloud container, all 58 tests passed with numpy, scipy, CPU torch, requests and numcodecs, with no skips. The regressions include mismatched or missing slice-cache identity and an optional metadata failure after extraction. They do not read the bucket or the released weights.
+They cover the first stage's coordinate frame and augmentation, the zoom crops and offsets, `keep_band`, the papyrus level, the end-point support and trims (from the ends only, at 2 mm and 4 mm for each voxel size), trimming written files, `collect` and `chain-collect`, `predict.py` writing a trimmed file from weights, its refusal of other scans, `endcheck.py` windows and missing-chunk counts, the range reader against a synthetic volume, `pipeline.py` refusing a mistyped command, and the files VC3D reads: rule-for-rule copies of VC3D's reader, name search and rescale rule (checked against villa's own test values) read back what `predict.py`, `trim`, `endcheck.py files`, `collect` and `chain-collect` write, with and without `--vc3d-name`, from a slice file's `shape_l0` or the level-0 `.zarray`, and with no triplet at all when the shape is missing or of another scan. All data is synthetic and read on the CPU; the module keeps `slices.get` off the network. On 2026-10-20 in a Linux cloud container, all 58 tests passed with numpy, scipy, CPU torch, requests and numcodecs, with no skips. The regressions include mismatched or missing slice-cache identity and an optional metadata failure after extraction. They do not read the bucket or the released weights. `tests.test_umbilicus_lineends` (13 tests, standard library only) checks the end trim on synthetic masked scans: ends in slices with no scroll, a sideways run past the outline, an excursion that comes back, the 4 mm margin, the middle half never cut, point order and keys kept, both failing checks and an unreadable scan leaving the line whole, the command line, and that Umbilici's `build_lines.py` uses this module's test.
 
 ## History
 
+- 2026-11-04: `lineends.py` (`check`, `trim`) cuts the end runs of a center line that leave the scroll in the masked CT; the test moved here from Umbilici's `build_lines.py`, which now loads it, so the Space hides exactly what a trim cuts. On center lines v2.8 it cuts 12 of the 39 Center Finder v2 lines (155 points, 167.3 mm of height); see Checks and controls.
 - 2026-11-03: VC3D section follows villa #2358 (29 Oct 2026 UTC): the umbilicus is imported through File, Import Umbilicus... into the object store, with no file-name search; the pre-#2358 citations stay, pinned to `8aa507c12`.
 - 2026-10-22: held-out comparison with villa's `vc_gen_umbilicus` on PHerc0139 and PHerc1451: closer on PHerc0139, level on PHerc1451 ([#154](https://github.com/ChaseHendrick/Scrolls/pull/154)).
 - 2026-10-20: `--vc3d-name` writes `SCROLL/umbilicus.json`, the name VC3D and spiral-fitting look for; when available, written files carry the scan's level-0 `volume_width`, `volume_height` and `volume_slices`; slice files keep `shape_l0`; `ctcheck.py` reads both names; tests check the files with a copy of VC3D's reader at villa `8aa507c12`.

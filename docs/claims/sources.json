@@ -84,7 +84,7 @@
   "center-finder": {
    "line": 280,
    "sources": {
-    "docs/tools/umbilicus.md": "f5049b78f91942c7aa9a0251afef2cf9bb6ff584a57d19509646632c9fef97a3"
+    "docs/tools/umbilicus.md": "db403826eb011283feeb02ce881306f97ad78769abb4e73adf236ec55d046c99"
    }
   },
   "chart-mean-distance-gained-toward-a-finer-scan": {
@@ -97,7 +97,7 @@
   "claim-label-rule-and-control-data-record-on": {
    "line": 148,
    "sources": {
-    "docs/tools/umbilicus.md": "f5049b78f91942c7aa9a0251afef2cf9bb6ff584a57d19509646632c9fef97a3",
+    "docs/tools/umbilicus.md": "db403826eb011283feeb02ce881306f97ad78769abb4e73adf236ec55d046c99",
     "docs/tools/contact-barrier.md": "1f7409ebb26b4f34af7cb8dc15175f8440b9b68d80c65424c1351bba4f23cca4",
     "docs/tools/snapped-labels.md": "3da92dca823c53779149f1aa9f7699e0e9ee7533b5767956b1c4bae539b977ed",
     "docs/tools/windlabel-box.md": "5e89f8376f0968df0385f75dfa9cc802f3e14970dc829c05e4e1a90fe41ae9fd",
@@ -344,7 +344,7 @@
   "real-runs-need-villa-s-vc3d-tools-python3": {
    "line": 43,
    "sources": {
-    "docs/releases.json": "4fc5bc272781f8b0704203a48039988dbb8fb9ef415126ad8d9eb55f8b101252"
+    "docs/releases.json": "7ae6e6c405dc72a4cb99c57d0761c76e46f6a53276d48d787b75a309dda3eb57"
    },
    "doc": "docs/pipeline-october-2026.md",
    "reasons": {
@@ -438,7 +438,7 @@
   "the-center-finder-s-held-out-lines-sit": {
    "line": 9,
    "sources": {
-    "docs/tools/umbilicus.md": "f5049b78f91942c7aa9a0251afef2cf9bb6ff584a57d19509646632c9fef97a3"
+    "docs/tools/umbilicus.md": "db403826eb011283feeb02ce881306f97ad78769abb4e73adf236ec55d046c99"
    },
    "doc": "docs/FINDINGS.md"
   },
