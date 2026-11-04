@@ -12371,7 +12371,7 @@
      "-3": 0.717
     }
    },
-   "limits": "one scroll and one band, 128 of the 173 scored vertices on w038; the two reference scans are both about 2.4 um at a similar energy and may share a face bias; scroll-label-snap is built for whole segments and ran untuned on small crops, and its default keeps the mesh's own offset by design; labelsnap's defaults were set on other PHerc0139 sites; a within-1 hit shows agreement with two other scans, not that the placement is on the papyrus"
+   "limits": "one scroll and one band, 128 of the 173 scored vertices on w038; the two reference scans are both about 2.4 um at a similar energy and may share a face bias; scroll-label-snap is built for whole segments and ran untuned on small crops, and its default keeps the mesh's own offset by design; labelsnap's defaults were set on other PHerc0139 sites; a within-1 hit shows agreement with two other scans, not that the placement is on the papyrus; labelsnap and the reference both take the recto face of the nearest bright band, so where two sheets touch they can land on the inner neighbor's face together (check of 4 November 2026: another published segment crosses within 3.5 voxels inward of the face, or inside the band, at 12 of the 173 vertices; leaving out those 12 and the 19 vertices whose band is at least 12 voxels thick in both reference scans, 29 in all, keeps labelsnap ahead of all four settings at 0.826, and scoring those 29 against the outer sheet's face, 4.4 voxels in from the band's far side, keeps it ahead at 0.717)"
   },
   {
    "date": "2026-11-03",
