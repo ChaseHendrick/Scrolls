@@ -101,6 +101,19 @@ class Geometry(unittest.TestCase):
         r = expatlas.pair(a, b, self.PX)
         self.assertLess(r["f_same"], expatlas.EXPOSED_FRAC)
 
+    def test_self_cover_sees_a_second_winding_in_one_mesh(self):
+        # one mesh holding two sheets 100 um apart (rows 0-19 at z, rows 20-39 folded back over them)
+        a = plane(h=20, w=30)
+        b = a.copy()
+        b[..., 2] += 100.0 / self.PX
+        two = np.concatenate([a, b[::-1]], axis=0)
+        sc = expatlas.self_cover(two, self.PX)
+        self.assertEqual(sc.size, 40 * 30)
+        self.assertGreater(float(np.mean(np.abs(sc[np.isfinite(sc)] - 100.0) < 5.0)), 0.9)
+        self.assertGreater(float(np.isfinite(sc).mean()), 0.8)
+        one = expatlas.self_cover(plane(h=40, w=30), self.PX)
+        self.assertFalse(np.isfinite(one).any())
+
     def test_displaced_moves_along_normal(self):
         a = plane()
         b = expatlas.displaced(a, 3.0)
@@ -143,6 +156,29 @@ class Calls(unittest.TestCase):
             p.write_text("nopattern\n")
             with self.assertRaises(expatlas.AtlasError):
                 expatlas.read_skip(p)
+
+
+class Verdict(unittest.TestCase):
+    def res(self, b_calls):
+        ok = {"call": "exposed"}
+        return {"a": [ok] * 30, "b": [{"call": c} for c in b_calls], "c": [{"call": "clear"}] * 30,
+                "d": [ok, ok]}
+
+    def test_v1_bars(self):
+        pre = {"bars": {"a_min": 29, "b_min": 29, "c_min": 30}}
+        self.assertTrue(expatlas.verdict(self.res(["clear"] * 29 + ["exposed"]), pre)["pass"])
+        self.assertFalse(expatlas.verdict(self.res(["clear"] * 28 + ["exposed"] * 2), pre)["pass"])
+
+    def test_v2_share_of_scored(self):
+        pre = {"bars": {"a_min": 29, "b_min_frac": 0.95, "b_min_scored": 25, "c_min": 30}}
+        calls = ["clear"] * 27 + ["not scored"] * 3
+        v = expatlas.verdict(self.res(calls), pre)
+        self.assertTrue(v["pass"])
+        self.assertEqual(v["checks"]["b_adjacent_clear"]["not_scored"], 3)
+        v = expatlas.verdict(self.res(["clear"] * 25 + ["exposed"] * 2 + ["not scored"] * 3), pre)
+        self.assertFalse(v["pass"])                       # 25 of 27 is under 95 %
+        v = expatlas.verdict(self.res(["clear"] * 20 + ["not scored"] * 10), pre)
+        self.assertFalse(v["pass"])                       # too few scored to pass
 
 
 class Registry(unittest.TestCase):

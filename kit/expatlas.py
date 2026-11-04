@@ -593,6 +593,36 @@ def displaced(xyz, delta_vox):
     return xyz + n * delta_vox
 
 
+def self_cover(xyz, px_um, reach_um=REACH_UM, gap=4, k=24):
+    """For each valid vertex (row-major order of the finite grid points, as eval_points keeps them), the offset in um
+    along the normal to another part of the same mesh: a vertex more than `gap` grid rows or columns away whose
+    tangential distance is inside the footprint. inf where none lies within reach. A mesh that spans several
+    windings, or folds onto itself, has finite values here."""
+    np = _np()
+    H, W, _ = xyz.shape
+    rr, cc = np.meshgrid(np.arange(H), np.arange(W), indexing="ij")
+    nrm = meshaudit.grid_normals(xyz)
+    valid = np.isfinite(xyz).all(-1)
+    ok = valid & np.isfinite(nrm).all(-1)
+    P, N, R, C = xyz[ok], nrm[ok], rr[ok], cc[ok]
+    step = grid_step(xyz)
+    best = np.full(len(P), np.inf)
+    if len(P) > 1:
+        _, idx = _kdtree()(P).query(P, k=min(k, len(P)), distance_upper_bound=math.hypot(reach_um / px_um, 1.5 * step))
+        for j in range(idx.shape[1]):
+            m = idx[:, j] < len(P)
+            q = idx[m, j]
+            far = (np.abs(R[q] - R[m]) > gap) | (np.abs(C[q] - C[m]) > gap)
+            v = P[m] - P[q]
+            h = np.einsum("ij,ij->i", v, N[q])
+            t = np.linalg.norm(v - h[:, None] * N[q], axis=1)
+            best[m] = np.minimum(best[m], np.where(far & (t <= FOOTPRINT * step), np.abs(h) * px_um, np.inf))
+    out = np.full(int(valid.sum()), np.inf)
+    out[ok[valid]] = best      # vertices with no normal count as having no other part nearby
+    out[out > reach_um] = np.inf
+    return out
+
+
 def plant_check(cat, prereg, fetch, out, log=None):
     """Run the preregistered planted-duplicate checks: (a) recall, (b) adjacent-winding control, (c) cross-scroll
     negative and (d) the real positive pair. Returns the record; nothing here reads labels."""
@@ -645,18 +675,31 @@ def plant_check(cat, prereg, fetch, out, log=None):
         log(f"planted {gid} -> {new} ({rec['scroll']} {f1} -> {f2}, delta {delta} vox, jitter {fit:.1f} um)")
     res = {"schema": SCHEMA + "/plant", "prereg": prereg.get("file"), "settings": settings(), "candidates": len(cands),
            "a": [], "b": [], "c": [], "d": []}
+    free_um = prereg.get("b_free_um")       # v2: score (b) only where the mesh has no other part of itself this near
     for p in planted:
         pxu = px[p["scroll"]][p["frame"]]
-        pts, _ = eval_points(p["xyz1"])
+        sub, _ = decimate(p["xyz1"], MAX_EVAL_POINTS)
+        pts = sub[np.isfinite(sub).all(-1)]
+        free = None
+        if free_um is not None:
+            free = self_cover(sub, pxu) > float(free_um)
         for tag in ("a", "b"):
             idx = {**index, p["id"]: {"scroll": p["scroll"], "suffix": "", "volume": p["copy_frame"], "meshes": {},
                                       "native": str(out / "planted" / f"{p['id']}-{tag}"), "labeled": False}}
             back, how = mesh_in_frame(cat, idx, p["id"], p["frame"], fetch)
             h = offsets(pts, Surface(back, p["id"]), pxu)
+            row = {"source": p["source"], "copy": p["id"], "scroll": p["scroll"], "delta_vox": p["delta_vox"],
+                   "jitter_um": p["jitter_um"], "transform_error_um": p["transform_error_um"]}
+            if tag == "b" and free is not None:
+                n_free = int(free.sum())
+                row.update(free_vertices=n_free, all_vertices=int(free.size), all_f_same=summarize(h)["f_same"])
+                if n_free < int(prereg.get("b_min_free_vertices", 1000)):
+                    res[tag].append({**row, "points": int(free.size), "call": "not scored",
+                                     "why": f"{n_free} free vertices, under {prereg.get('b_min_free_vertices', 1000)}"})
+                    continue
+                h = h[free]
             s = summarize(h)
-            res[tag].append({"source": p["source"], "copy": p["id"], "scroll": p["scroll"], "delta_vox": p["delta_vox"],
-                             "jitter_um": p["jitter_um"], "transform_error_um": p["transform_error_um"], **s,
-                             "call": call(s["f_same"])})
+            res[tag].append({**row, **s, "call": call(s["f_same"])})
     # (c) cross-scroll: each original against a planted copy from the other scroll, read as if in this frame
     others = {}
     for p in planted:
@@ -705,13 +748,21 @@ def _fit_rms(cat, scroll, a, b):
 
 def verdict(res, prereg):
     bars = prereg["bars"]
+    bars.setdefault("b_min", 0)
     a_hit = sum(r["call"] == "exposed" for r in res["a"])
-    b_ok = sum(r["call"] != "exposed" for r in res["b"])
+    scored_b = [r for r in res["b"] if r["call"] != "not scored"]
+    b_ok = sum(r["call"] != "exposed" for r in scored_b)
+    b_bar = bars["b_min"]
+    if "b_min_frac" in bars:     # v2: a share of the scored meshes, with a floor on how many are scored
+        b_bar = max(int(math.ceil(bars["b_min_frac"] * len(scored_b))), 0)
+        if len(scored_b) < int(bars.get("b_min_scored", 0)):
+            b_bar = len(scored_b) + 1      # too few scored: the check cannot pass
     c_ok = sum(r["call"] != "exposed" for r in res["c"])
     d_ok = sum(r["call"] == "exposed" for r in res["d"])
     checks = {
         "a_recall": {"value": a_hit, "of": len(res["a"]), "bar": bars["a_min"], "pass": a_hit >= bars["a_min"]},
-        "b_adjacent_clear": {"value": b_ok, "of": len(res["b"]), "bar": bars["b_min"], "pass": b_ok >= bars["b_min"]},
+        "b_adjacent_clear": {"value": b_ok, "of": len(scored_b), "bar": b_bar, "pass": b_ok >= b_bar,
+                             "not_scored": len(res["b"]) - len(scored_b)},
         "c_cross_scroll": {"value": c_ok, "of": len(res["c"]), "bar": bars["c_min"], "pass": c_ok >= bars["c_min"]},
         "d_real_positive": {"value": d_ok, "of": len(res["d"]), "bar": len(res["d"]),
                             "pass": d_ok == len(res["d"]) and len(res["d"]) > 0},
@@ -759,7 +810,7 @@ def format_plant(res):
     for k, c in res["verdict"]["checks"].items():
         lines.append(f"  {k}: {c['value']} of {c['of']} (bar {c['bar']}) {'PASS' if c['pass'] else 'FAIL'}")
     fa = sorted(r["f_same"] for r in res["a"])
-    fb = sorted(r["f_same"] for r in res["b"])
+    fb = sorted(r["f_same"] for r in res["b"] if "f_same" in r)
     fc = sorted(r["f_same"] for r in res["c"])
     if fa:
         lines.append(f"  (a) f_same min {fa[0]:.3f} median {fa[len(fa) // 2]:.3f}")

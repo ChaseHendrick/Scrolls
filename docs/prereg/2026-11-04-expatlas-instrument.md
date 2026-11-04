@@ -86,4 +86,24 @@ tree were built.
 
 ## Results
 
-Not yet run.
+**Attempt 2: FAIL** (Model output of the instrument, 4 November 2026). Hugging Face Job `6aeaa27a0e0338d1bb7f85ec`
+(cpu-upgrade, 47 s running, image `python:3.13` with numpy 2.5.3, scipy 1.18.1, tifffile 2026.10.15) at commit
+`34c3683`, catalog `metadata.json` Last-Modified 2 Nov 2026 11:32:29 GMT, ETag `274f64b9261982444dfd2881f48ae766`.
+33 candidates, 30 drawn (15 PHerc0009B, 15 PHerc0814). As the rule says, the matrix was not computed.
+
+| Check | Result | Bar | Verdict |
+| --- | --- | --- | --- |
+| (a) recall | 30 of 30 exposed; f_same 0.804 to 0.973, median 0.929 | 29 | PASS |
+| (b) adjacent-winding control | 21 of 30 not exposed (9 exposed, 1 trace); f_same up to 0.250 | 29 | **FAIL** |
+| (c) cross-scroll negative | 30 of 30 not exposed; f_same at most 0.009 | 30 | PASS |
+| (d) real positive pair | both directions exposed: `20250928235954` on `20250928235953` 0.901, the other way 0.050 (the copy covers about a ninth of the larger mesh) | 2 | PASS |
+
+All nine exposed copies in (b), and the one trace, are the ten large auto-grown PHerc0814 meshes traced on the
+9.362 um scan; every PHerc0009B copy and every PHerc0814 2.399 um copy passed. A diagnostic run after the result
+(not part of the rule; Interpretation) measured, for each original, how much of it has another part of the same mesh
+nearby along the normal (`self_cover`, more than 4 grid rows or columns away): on those ten meshes 7 to 45 % of the
+vertices have another part of the mesh 60 to 160 um away (median nearest other part 144 to 227 um) and 0.6 to 11 %
+within 60 um; on every one of the twenty that passed, under 1 % in all. So the meshes that failed span neighboring
+windings of a tight roll, and a copy moved 100 um lands on the mesh's own next winding: the control was built wrong
+for such meshes, while the 60 um band itself held where the shifted copy had no sheet to land on. The fix and its
+rerun are a new rule with its own preregistration: [`2026-11-04-expatlas-instrument-v2.md`](2026-11-04-expatlas-instrument-v2.md).
