@@ -132,6 +132,7 @@ The table below is generated from the pages by `python -m kit.tooldocs index`; e
 
 | Tool | Status | Run | Go-ahead | What it does |
 | --- | --- | --- | --- | --- |
+| [altrain](altrain.md) | Experimental | `python -m kit altrain plan` | Not needed | `python -m kit altrain` lays out a simulated labeling round on one segment with real ink labels (test blocks and a pool of tiles), picks tiles by a label suggester, uncertainty or chance, and judges the fine-tuned readers' test AUC with a paired bootstrap and fixed controls. |
 | [labelsuggest](labelsuggest.md) | Experimental | `python -m kit labelsuggest map` | Not needed | `python -m kit labelsuggest map` ranks the tiles of a segment by how much two or more readers' ink maps disagree there and writes the top tiles as a mask to label first, beside matched random and agree tiles and a shuffle control. It reads no label. |
 | [segzoo](segzoo.md) | Experimental | `python -m kit segzoo` | Not needed | `python -m kit segzoo` lists twelve segmentation model families (nnU-Net, MedNeXt, Swin UNETR, Auto3DSeg, SegFormer, DINOv2 and v3, SAM 2, MedSAM2, Mamba) with license and fit; `scripts/segzoo/` trains them inside nnU-Net and scores them against controls. |
 

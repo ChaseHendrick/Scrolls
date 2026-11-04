@@ -114,7 +114,7 @@
       "line": "Command-line tools, benchmarks and script folders that run from a clone of this repository.",
       "area": "Releases and repository",
       "page": "docs/tools/cli.md",
-      "released": "2026-10-31",
+      "released": "2026-11-03",
       "summary": "Command-line tools, benchmarks and script folders that run from a clone of this repository. Each line gives the tool's release date, its weights where it has them, one command to start with, its tool page and its evidence; each page lists the tool's own needs. Their outputs are model output or geometry measurements for a person to check, not readings.",
       "commands": [
         "git clone --depth 1 https://github.com/ChaseHendrick/Scrolls.git",
@@ -760,6 +760,17 @@
           "page": "docs/tools/labelsuggest.md",
           "evidence": "[results](docs/results.json)",
           "line": "Ranks tiles by where readers' ink maps disagree, so a person labels there first; beat random tiles on two scrolls, not shown to beat simple picks."
+        },
+        {
+          "id": "altrain",
+          "name": "Training-run comparison for label suggestions",
+          "area": "Training",
+          "released": "2026-11-03",
+          "summary": "Lays out a simulated labeling round with oracle labels (test blocks and a tile pool), picks tiles by labelsuggest's edge measure, entropy or chance, and judges the fine-tuned readers' test AUC with a paired bootstrap, reverse-depth, shuffle and displaced-label controls. On three Paris fragments, fine-tuning ink_9um on the suggested tiles did not beat random tiles at any budget (readout VOID by its controls). Model output, not a reading.",
+          "command": "python -m kit altrain readout RESULTS --json",
+          "page": "docs/tools/altrain.md",
+          "evidence": "[results](docs/results.json)",
+          "line": "Tests whether fine-tuning on suggested tiles beats random tiles; on three fragments it did not."
         },
         {
           "id": "sqrecipe",
