@@ -1,0 +1,22 @@
+[
+ "s3:PHerc0009B/segments/20250510172639/surface-volumes/2.401um-0.35m-77keV-volume-20250820154339.zarr",
+ "s3:PHerc0009B/segments/20250511200236/surface-volumes/2.401um-0.35m-77keV-volume-20250820154339.zarr",
+ "s3:PHerc0009B/segments/20250919124722-auto_grown_20250919054722721_inp_hr/surface-volumes/2.401um-0.35m-77keV-volume-20250820154339.zarr",
+ "s3:PHerc0009B/segments/20250919125302-auto_grown_20250919055302061/surface-volumes/2.401um-0.35m-77keV-volume-20250820154339.zarr",
+ "s3:PHerc0009B/segments/20250919130642-auto_grown_20250919060642061/surface-volumes/2.401um-0.35m-77keV-volume-20250820154339.zarr",
+ "s3:PHerc0009B/segments/20250919131642-auto_grown_20250919061642215_inp_hr/surface-volumes/2.401um-0.35m-77keV-volume-20250820154339.zarr",
+ "s3:PHerc0009B/segments/20250919135433-auto_grown_20250919065433578_inp_hr/surface-volumes/2.401um-0.35m-77keV-volume-20250820154339.zarr",
+ "s3:PHerc0009B/segments/20250919140325-auto_grown_20250919070325767_inp_hr/surface-volumes/2.401um-0.35m-77keV-volume-20250820154339.zarr",
+ "s3:PHerc0343P/segments/20250902170435--5_b2/surface-volumes/2.215um-0.4m-111keV-volume-20260304131111.zarr",
+ "s3:PHerc0343P/segments/20250902170447--3_b2/surface-volumes/2.215um-0.4m-111keV-volume-20260304131111.zarr",
+ "s3:PHerc0343P/segments/20250904233748-0_b2/surface-volumes/2.215um-0.4m-111keV-volume-20260304131111.zarr",
+ "s3:PHerc0814/segments/20250925161630-auto_grown_20250925161630635/surface-volumes/1.129um-0.22m-59keV-volume-20260521123630.zarr",
+ "s3:PHerc0814/segments/20250925204843-auto_grown_20250925204843950/surface-volumes/2.399um-0.22m-78keV-volume-20260309142202.zarr",
+ "s3:PHerc0814/segments/20250925222237-auto_grown_20250925222237459/surface-volumes/1.129um-0.22m-59keV-volume-20260521123630.zarr",
+ "s3:PHerc0814/segments/20250926203608-auto_grown_20250926203608932/surface-volumes/1.129um-0.22m-59keV-volume-20260521123630.zarr",
+ "s3:PHerc0814/segments/20250928235954-auto_grown_20250928235953722_copy/surface-volumes/2.399um-0.22m-78keV-volume-20260309142202.zarr",
+ "s3:PHerc0814/segments/20250930083742-auto_grown_20250930083742882/surface-volumes/1.129um-0.22m-59keV-volume-20260521123630.zarr",
+ "s3:PHerc0814/segments/20260225160055-auto_grown_20260225160055913/surface-volumes/2.399um-0.22m-78keV-volume-20260309142202.zarr",
+ "s3:PHerc0814/segments/20260226113324-auto_grown_20260226113324624_abf/surface-volumes/2.399um-0.22m-78keV-volume-20260309142202.zarr",
+ "s3:PHerc0814/segments/20260226123353-auto_grown_20260226123353106/surface-volumes/2.399um-0.22m-78keV-volume-20260309142202.zarr"
+]
