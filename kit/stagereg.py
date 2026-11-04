@@ -60,6 +60,7 @@ STAGES = {
     "ink": "the ink reader: 2.5D (reads the render's layers) or 3D (reads the scan around the mesh)",
     "ensemble": "combining several ink readers' maps",
     "check": "controls on an ink map",
+    "exposure": "whether a model's training data already covers an evaluation segment, before its score is trusted",
     "triage": "ranking maps for a human to look at",
     "legibility": "how text-like an ink map is",
     "crackle": "Crackle Check's gate on a surface's maps",

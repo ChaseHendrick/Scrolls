@@ -1,0 +1,129 @@
+Exposure Atlas (Model output of mesh geometry; training lists as each model's source says)
+same sheet: within 60 um along the normal; exposed at 5% of the evaluation vertices or more
+codes: T trained (named)  E exposed  t trace  S selected  . clear  ? unknown  - not run
+
+segment                                         ink_9um          v8in     v8in-1447          d9v2     reader-v2     reader-v3 canonical-2um        hecate     trace-v3b          a-hn
+PHercParis4 20230702185753                            T             ?             ?             T             T             T             .             T             ?             ?
+PHercParis4 20230929220926                            T           E15           E15             T             T             T             .             T             ?           E15
+PHercParis4 20231007101619                            T           E10           E10             T             T             T             .             T             ?           E10
+PHercParis4 20231012184424                            T             ?             ?             T             T             T             .             T             ?             ?
+PHercParis4 20231016151002                            T             ?             ?             T             T             T             .             T             ?             ?
+PHercParis4 20231031143852                            T             ?             ?             T             T             T             .             T             ?             ?
+PHercParis4 20231106155351                            T             ?             ?             T             T             T             .             T             ?             ?
+PHercParis4 20231210121321                            T             ?             ?             T             T             T             .             T             ?             ?
+PHerc1667 w013_20240304141531_flatboi                 T            t5            t5             T             T             T             ?             T             ?            t5
+PHerc1667 w018_20240304144031_flatboi                 T             T             T             T             T             T             ?             T             ?             T
+PHerc1667 w023_20240304161941_flatboi                 T            E6            E6             T             T             T             ?             T             ?            E6
+PHerc0500P2 -1                                        .            E6            E6           E26            E9            E9             T             T             ?            E6
+PHerc0009B auto_grown_20250919055754487_i             .             S             S           E43           E43           E43             T             T             ?             S
+PHerc1667 w028_20251208130119156_flatboi              T             .             .             T             T             T             ?             T             ?             .
+PHerc1667 w029_20251212185248662_flatboi              T             .             .             T             T             T             ?             T             ?             .
+PHerc1667 w031_2025122323_flatboi                     T             .             .             T             T             T             ?             T             ?             .
+PHerc0841 w00                                         .             .             .             .             .             .             T             T             S             .
+PHerc0841 auto_grown_20260220144552896                .             .             .             .             .             .             T             T             S             .
+PHerc0841 auto_grown_20260220174252405                .             .             .             .             .             .             T             T             S             .
+PHerc0814 46527_2um_try2                              T             T             T             T             T             T             T             T             ?             T
+
+Flags:
+  v8in on 20230702185753: 1 name(s) on PHercParis4 match no catalog segment: 20231012184423; 1 name(s) with no scroll: Frag1
+  v8in-1447 on 20230702185753: 1 name(s) on PHercParis4 match no catalog segment: 20231012184423; 1 name(s) with no scroll: Frag1
+  canonical-2um on 20230702185753: 2 name(s) with no scroll: 500p2a, 658
+  a-hn on 20230702185753: 1 name(s) on PHercParis4 match no catalog segment: 20231012184423; 1 name(s) with no scroll: Frag1
+  v8in on 20230929220926: 1 name(s) on PHercParis4 match no catalog segment: 20231012184423; 1 name(s) with no scroll: Frag1
+  v8in-1447 on 20230929220926: 1 name(s) on PHercParis4 match no catalog segment: 20231012184423; 1 name(s) with no scroll: Frag1
+  canonical-2um on 20230929220926: 2 name(s) with no scroll: 500p2a, 658
+  a-hn on 20230929220926: 1 name(s) on PHercParis4 match no catalog segment: 20231012184423; 1 name(s) with no scroll: Frag1
+  v8in on 20231007101619: 1 name(s) on PHercParis4 match no catalog segment: 20231012184423; 1 name(s) with no scroll: Frag1
+  v8in-1447 on 20231007101619: 1 name(s) on PHercParis4 match no catalog segment: 20231012184423; 1 name(s) with no scroll: Frag1
+  canonical-2um on 20231007101619: 2 name(s) with no scroll: 500p2a, 658
+  a-hn on 20231007101619: 1 name(s) on PHercParis4 match no catalog segment: 20231012184423; 1 name(s) with no scroll: Frag1
+  v8in on 20231012184424: 1 name(s) on PHercParis4 match no catalog segment: 20231012184423; 1 name(s) with no scroll: Frag1
+  v8in-1447 on 20231012184424: 1 name(s) on PHercParis4 match no catalog segment: 20231012184423; 1 name(s) with no scroll: Frag1
+  canonical-2um on 20231012184424: 2 name(s) with no scroll: 500p2a, 658
+  a-hn on 20231012184424: 1 name(s) on PHercParis4 match no catalog segment: 20231012184423; 1 name(s) with no scroll: Frag1
+  v8in on 20231016151002: 1 name(s) on PHercParis4 match no catalog segment: 20231012184423; 1 name(s) with no scroll: Frag1
+  v8in-1447 on 20231016151002: 1 name(s) on PHercParis4 match no catalog segment: 20231012184423; 1 name(s) with no scroll: Frag1
+  canonical-2um on 20231016151002: 2 name(s) with no scroll: 500p2a, 658
+  a-hn on 20231016151002: 1 name(s) on PHercParis4 match no catalog segment: 20231012184423; 1 name(s) with no scroll: Frag1
+  v8in on 20231031143852: 1 name(s) on PHercParis4 match no catalog segment: 20231012184423; 1 name(s) with no scroll: Frag1
+  v8in-1447 on 20231031143852: 1 name(s) on PHercParis4 match no catalog segment: 20231012184423; 1 name(s) with no scroll: Frag1
+  canonical-2um on 20231031143852: 2 name(s) with no scroll: 500p2a, 658
+  a-hn on 20231031143852: 1 name(s) on PHercParis4 match no catalog segment: 20231012184423; 1 name(s) with no scroll: Frag1
+  v8in on 20231106155351: 1 name(s) on PHercParis4 match no catalog segment: 20231012184423; 1 name(s) with no scroll: Frag1
+  v8in-1447 on 20231106155351: 1 name(s) on PHercParis4 match no catalog segment: 20231012184423; 1 name(s) with no scroll: Frag1
+  canonical-2um on 20231106155351: 2 name(s) with no scroll: 500p2a, 658
+  a-hn on 20231106155351: 1 name(s) on PHercParis4 match no catalog segment: 20231012184423; 1 name(s) with no scroll: Frag1
+  v8in on 20231210121321: 1 name(s) on PHercParis4 match no catalog segment: 20231012184423; 1 name(s) with no scroll: Frag1
+  v8in-1447 on 20231210121321: 1 name(s) on PHercParis4 match no catalog segment: 20231012184423; 1 name(s) with no scroll: Frag1
+  canonical-2um on 20231210121321: 2 name(s) with no scroll: 500p2a, 658
+  a-hn on 20231210121321: 1 name(s) on PHercParis4 match no catalog segment: 20231012184423; 1 name(s) with no scroll: Frag1
+  v8in on 20240304141531: 1 name(s) with no scroll: Frag1
+  v8in-1447 on 20240304141531: 1 name(s) with no scroll: Frag1
+  canonical-2um on 20240304141531: 4 name(s) on PHerc1667 match no catalog segment: l_2, l_3, l_4, l_6; 2 name(s) with no scroll: 500p2a, 658
+  a-hn on 20240304141531: 1 name(s) with no scroll: Frag1
+  canonical-2um on 20240304144031: 4 name(s) on PHerc1667 match no catalog segment: l_2, l_3, l_4, l_6; 2 name(s) with no scroll: 500p2a, 658
+  v8in on 20240304161941: 1 name(s) with no scroll: Frag1
+  v8in-1447 on 20240304161941: 1 name(s) with no scroll: Frag1
+  canonical-2um on 20240304161941: 4 name(s) on PHerc1667 match no catalog segment: l_2, l_3, l_4, l_6; 2 name(s) with no scroll: 500p2a, 658
+  a-hn on 20240304161941: 1 name(s) with no scroll: Frag1
+  v8in on 20250825181859: 1 name(s) with no scroll: Frag1
+  v8in-1447 on 20250825181859: 1 name(s) with no scroll: Frag1
+  d9v2 on 20250825181859: d9v2: test (20250825181859--1)
+  a-hn on 20250825181859: 1 name(s) with no scroll: Frag1
+  v8in on 20250919125754: 1 name(s) with no scroll: Frag1
+  v8in-1447 on 20250919125754: 1 name(s) with no scroll: Frag1
+  d9v2 on 20250919125754: d9v2: test (20250919125754-auto_grown_20250919055754487_inp_hr)
+  a-hn on 20250919125754: 1 name(s) with no scroll: Frag1
+  v8in on 20251208130119: 1 name(s) with no scroll: Frag1
+  v8in-1447 on 20251208130119: 1 name(s) with no scroll: Frag1
+  canonical-2um on 20251208130119: 4 name(s) on PHerc1667 match no catalog segment: l_2, l_3, l_4, l_6; 2 name(s) with no scroll: 500p2a, 658
+  a-hn on 20251208130119: 1 name(s) with no scroll: Frag1
+  v8in on 20251212185248: 1 name(s) with no scroll: Frag1
+  v8in-1447 on 20251212185248: 1 name(s) with no scroll: Frag1
+  canonical-2um on 20251212185248: 4 name(s) on PHerc1667 match no catalog segment: l_2, l_3, l_4, l_6; 2 name(s) with no scroll: 500p2a, 658
+  a-hn on 20251212185248: 1 name(s) with no scroll: Frag1
+  v8in on 20251223230000: 1 name(s) with no scroll: Frag1
+  v8in-1447 on 20251223230000: 1 name(s) with no scroll: Frag1
+  canonical-2um on 20251223230000: 4 name(s) on PHerc1667 match no catalog segment: l_2, l_3, l_4, l_6; 2 name(s) with no scroll: 500p2a, 658
+  a-hn on 20251223230000: 1 name(s) with no scroll: Frag1
+  v8in on 20260220213127: 1 name(s) with no scroll: Frag1
+  v8in-1447 on 20260220213127: 1 name(s) with no scroll: Frag1
+  d9v2 on 20260220213127: d9v2: test (20260220213127-w00)
+  a-hn on 20260220213127: 1 name(s) with no scroll: Frag1
+  v8in on 20260220214732: 1 name(s) with no scroll: Frag1
+  v8in-1447 on 20260220214732: 1 name(s) with no scroll: Frag1
+  d9v2 on 20260220214732: d9v2: test (20260220214732-auto_grown_20260220144552896)
+  a-hn on 20260220214732: 1 name(s) with no scroll: Frag1
+  v8in on 20260221022814: 1 name(s) with no scroll: Frag1
+  v8in-1447 on 20260221022814: 1 name(s) with no scroll: Frag1
+  d9v2 on 20260221022814: d9v2: test (20260221022814-auto_grown_20260220174252405)
+  a-hn on 20260221022814: 1 name(s) with no scroll: Frag1
+
+Evaluation segments on one sheet (of 92 same-scroll pairs, 27 at trace or more):
+  20230702185753 on 20231016151002: exposed 20.8%
+  20230702185753 on 20231031143852: exposed 10.6%
+  20231007101619 on 20231210121321: exposed 7.8%
+  20231012184424 on 20231210121321: exposed 13.1%
+  20231016151002 on 20230702185753: exposed 23.9%
+  20231031143852 on 20230702185753: exposed 14.3%
+  20231031143852 on 20231106155351: exposed 12.1%
+  20231106155351 on 20231031143852: exposed 10.2%
+  20231210121321 on 20231007101619: exposed 21.8%
+  20231210121321 on 20231012184424: exposed 25.2%
+  20240304141531 on 20240304144031: trace 4.8%
+  20240304144031 on 20240304141531: trace 3.9%
+  20240304144031 on 20240304161941: exposed 5.5%
+  20240304161941 on 20240304144031: exposed 5.6%
+  20240304161941 on 20251208130119: exposed 5.7%
+  20251208130119 on 20240304161941: exposed 24.7%
+  20251208130119 on 20251212185248: exposed 20.1%
+  20251212185248 on 20240304161941: trace 1.9%
+  20251212185248 on 20251208130119: exposed 19.5%
+  20251212185248 on 20251223230000: trace 1.2%
+  20251223230000 on 20251212185248: trace 1.3%
+  20260220213127 on 20260220214732: exposed 35.3%
+  20260220213127 on 20260221022814: trace 2.5%
+  20260220214732 on 20260220213127: exposed 34.9%
+  20260220214732 on 20260221022814: trace 0.9%
+  20260221022814 on 20260220213127: trace 3.0%
+  20260221022814 on 20260220214732: trace 1.1%

@@ -1557,67 +1557,67 @@
     {
      "name": "Commands and options",
      "start_line": 85,
-     "end_line": 209,
+     "end_line": 210,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 210,
-     "end_line": 238,
+     "start_line": 211,
+     "end_line": 239,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 239,
-     "end_line": 242,
+     "start_line": 240,
+     "end_line": 243,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 243,
-     "end_line": 253,
+     "start_line": 244,
+     "end_line": 254,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 254,
-     "end_line": 267,
+     "start_line": 255,
+     "end_line": 268,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 268,
-     "end_line": 277,
+     "start_line": 269,
+     "end_line": 278,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 278,
-     "end_line": 281,
+     "start_line": 279,
+     "end_line": 282,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 282,
-     "end_line": 291,
+     "start_line": 283,
+     "end_line": 292,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 292,
-     "end_line": 299,
+     "start_line": 293,
+     "end_line": 300,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 300,
-     "end_line": 311,
+     "start_line": 301,
+     "end_line": 312,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 312,
-     "end_line": 318,
+     "start_line": 313,
+     "end_line": 319,
      "applicable": true
     }
    ]
@@ -2959,6 +2959,163 @@
      "name": "Related",
      "start_line": 228,
      "end_line": 236,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "expatlas",
+   "name": "expatlas",
+   "tagline": "how much of each labeled segment a released ink model's training meshes already cover",
+   "summary": "`python -m kit expatlas` resolves the published training lists of ten released ink models to open-data catalog segments and measures, on meshes in one scroll frame, how much of each labeled evaluation segment their training segments already cover: a leakage matrix for fair train and test splits.",
+   "status": "Experimental",
+   "kind": [
+    "kit command",
+    "kit module",
+    "data"
+   ],
+   "area": "Scoring and controls",
+   "commands": [
+    "python -m kit expatlas"
+   ],
+   "imports": [],
+   "code": [
+    {
+     "path": "kit/expatlas.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/cli.py",
+     "symbols": [
+      "cmd_expatlas"
+     ]
+    }
+   ],
+   "tests": [
+    "tests/test_expatlas.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed: it reads public meshes and the catalog and prints. Running it on paid compute follows the compute rule (AGENTS.md rule 11); posting the matrix to villa or the community needs Chase's yes"
+   },
+   "checked": {
+    "date": "2026-11-04",
+    "commit": "7741f8b"
+   },
+   "license": "Apache-2.0 for the code and the registry (this repository's license); the catalog and meshes it reads are Vesuvius Challenge open data, CC BY-NC 4.0",
+   "fields": {
+    "Id": "`expatlas`",
+    "Status": "Experimental",
+    "Kind": "kit command, kit module, data",
+    "Area": "Scoring and controls",
+    "Run": "`python -m kit expatlas`",
+    "Code": "`kit/expatlas.py`, `kit/cli.py` (`cmd_expatlas`)",
+    "Tests": "`tests/test_expatlas.py`",
+    "Needs": "Python 3.10 or newer, numpy, scipy (cKDTree) and tifffile; imagecodecs for the LZW-compressed meshes some catalog segments have (the 4 Nov run used numpy 2.5.3, scipy 1.18.1, tifffile 2026.10.15, imagecodecs 2026.10.10). No villa, VC3D, torch or GPU",
+    "Runs on": "Any CPU with about 1 GB free. The 4 Nov 2026 matrix (20 segments by 10 models) took 76 s and the planted checks 50 s on a Hugging Face cpu-upgrade Job (8 vCPU, 32 GB; `exposure_atlas_checks` in [results.json](../results.json)); one pair took about 4 s in a 4-core cloud container (measured 4 Nov 2026)",
+    "Network": "HTTPS GET of the open-data bucket `vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com`: `metadata.json` (the catalog) and each segment's tifxyz `x.tif`, `y.tif`, `z.tif`. None for `models`, `show` or local folders",
+    "Writes": "`matrix`: OUT/matrix.json and OUT/matrix.txt; `plant`: OUT/plant.json and the planted copies under OUT/planted/ (tifxyz folders); every mesh read from the bucket is cached under `--cache` (default `work/expatlas/cache`). `models`, `segments`, `pair` and `show` print only",
+    "Go-ahead": "Not needed: it reads public meshes and the catalog and prints. Running it on paid compute follows the compute rule (AGENTS.md rule 11); posting the matrix to villa or the community needs Chase's yes",
+    "License": "Apache-2.0 for the code and the registry (this repository's license); the catalog and meshes it reads are Vesuvius Challenge open data, CC BY-NC 4.0",
+    "Released": "Public branch `claude/exposure-atlas` since 4 Nov 2026 (open pull request, not merged)",
+    "Checked": "2026-11-04 against commit `7741f8b`"
+   },
+   "page": "docs/tools/expatlas.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 23,
+     "end_line": 32,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 33,
+     "end_line": 43,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 44,
+     "end_line": 53,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 54,
+     "end_line": 69,
+     "applicable": true
+    },
+    {
+     "name": "The matrix of 4 November 2026",
+     "start_line": 70,
+     "end_line": 89,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 90,
+     "end_line": 181,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 182,
+     "end_line": 220,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 221,
+     "end_line": 228,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 229,
+     "end_line": 249,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 250,
+     "end_line": 275,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 276,
+     "end_line": 288,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 289,
+     "end_line": 292,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 293,
+     "end_line": 302,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 303,
+     "end_line": 306,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 307,
+     "end_line": 312,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 313,
+     "end_line": 321,
      "applicable": true
     }
    ]

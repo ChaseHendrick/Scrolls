@@ -137,6 +137,7 @@ Each command's `--help` line, its actions, its handler and the page that documen
 | `sheetcheck` | `maps`, `volume`, `demo`, `summary` | `cmd_sheetcheck` | [sheetcheck](sheetcheck.md) | label-free self-check of an ink map: on the traced sheet, or smeared across sheets, along the mask edge or in empty space |
 | `hpscore` | none | `cmd_hpscore` | [hpscore](hpscore.md) | letter-scale score: 48 um high-passed correlation with the labels (Scheirer) |
 | `overlap` | none | `cmd_overlap` | [overlap](overlap.md) | do two segments trace the same papyrus? mesh gaps and label agreement |
+| `expatlas` | `models`, `segments`, `pair`, `matrix`, `plant`, `show` | `cmd_expatlas` | [expatlas](expatlas.md) | Exposure Atlas: how much of each labeled segment a released ink model's training meshes already cover, in one scroll frame; the leakage matrix |
 | `collate` | none | `cmd_collate` | [overlap](overlap.md) | two traces of one sheet as two copies: do their ink maps agree, against a control? |
 | `atlas` | `build`, `show` | `atlas.cmd_atlas` (in `kit/atlas.py`) | [atlas](atlas.md) | Segment Atlas: area, isometry, holes and folds of every published segment |
 | `coverage` | none | `coverage.cmd_coverage` (in `kit/coverage.py`) | [coverage](coverage.md) | Winding coverage: which turns and heights a scroll's segments trace, and the gaps |
