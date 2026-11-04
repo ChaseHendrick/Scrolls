@@ -120,6 +120,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **ESRF**: The European Synchrotron Radiation Facility in Grenoble, where scrolls have been scanned since 2025.
 
+**Exposure Atlas**: `python -m kit expatlas` ([page](docs/tools/expatlas.md)): for each labeled evaluation segment and each released ink model, how much of the segment's mesh a training mesh of that model already covers, measured in one scroll frame (the segment's own scan) as the share of vertices within 60 um along the normal. A name check finds a segment by its id; this finds the same papyrus under another id, scan or resolution. Model output of mesh geometry, not a proof that a model is held out.
+
 **evidence archive**: A frozen folder under `docs/evidence/` with the inputs, rules, scripts, results and SHA-256 hashes of one study. These folders are not edited.
 
 ## F
