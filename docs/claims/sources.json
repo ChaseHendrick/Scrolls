@@ -204,14 +204,14 @@
   "labelsnap-moved-published-surface-labels-closer-to-the": {
    "line": 264,
    "sources": {
-    "docs/results.json": "a95d4855f06da2dc115cb839f05e4a511434eada08304b8ac747c1bdf07dcfcb",
+    "docs/results.json": "3f9316aded8a3dcf66545126f029a942f300b9720296e9674679c77bbb36d87d",
     "docs/tools/snapped-labels.md": "3369d672268fb54e79d37f1c1bdf4bbb39ca96560361b7762855be0d31d65116"
    }
   },
   "labelsnap-moved-published-surface-labels-closer-to-the-2": {
    "line": 15,
    "sources": {
-    "docs/results.json": "a95d4855f06da2dc115cb839f05e4a511434eada08304b8ac747c1bdf07dcfcb",
+    "docs/results.json": "3f9316aded8a3dcf66545126f029a942f300b9720296e9674679c77bbb36d87d",
     "docs/tools/snapped-labels.md": "3369d672268fb54e79d37f1c1bdf4bbb39ca96560361b7762855be0d31d65116"
    },
    "doc": "docs/FINDINGS.md"
@@ -338,21 +338,6 @@
    "line": 27,
    "sources": {
     "docs/logs/2026-10-07-overlap-and-baseline.md": "4c4e5150fcabef2e452c8e6a0b9c0badaabb87c0179a4baee1e62af2e4866dae"
-   },
-   "doc": "docs/FINDINGS.md"
-  },
-  "reader-v3-needs-the-air-gap-in-front": {
-   "line": 287,
-   "sources": {
-    "r:inkside_checks/0": "73519b3710c08b574935fad554b3d03009ee7990791f07c305d365dbfbcbb12f",
-    "r:inkside_checks/1": "3afdb33ef4eae9baac5ed24e3e49348140179078030073da68c36c2a670bb2ac"
-   }
-  },
-  "reader-v3-needs-the-air-gap-in-front-2": {
-   "line": 30,
-   "sources": {
-    "r:inkside_checks/0": "73519b3710c08b574935fad554b3d03009ee7990791f07c305d365dbfbcbb12f",
-    "r:inkside_checks/1": "3afdb33ef4eae9baac5ed24e3e49348140179078030073da68c36c2a670bb2ac"
    },
    "doc": "docs/FINDINGS.md"
   },
