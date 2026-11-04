@@ -34,6 +34,7 @@ READ_ONLY = {
     "kit routines check handoff",
     "kit stale",                     # reads committed files and local git history only
     "unittest tests.test_repo",
+    "kit sentinel scan --exit-code",  # anonymous reads of public bucket listings and zarr metadata; writes work/sentinel/
 }
 
 
