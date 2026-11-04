@@ -1,4 +1,4 @@
-"""Command line: python -m kit {start,help,prizes,submitcheck,live,style,stages,doctor,plan,cost,find,labels,centerline,cite,fetch,s3relay,vc3dcache,prclock,prtext,verify,rowscore,auc,hpscore,overlap,collate,stackcheck,tifxyz,sheetview,atlas,coverage,uvgate,windconsistency,axispolish,windlabel-box,hopbench,meshaudit,snap,labelsnap,finesnap,ensemble,fibertensor,sheetcheck,labelsuggest,altrain,gate,layers,shuffle,provenance,compute,run,surfacefix,phantom,view,strokenet,letterread,letterlines,letterdemo,greeklm,releases,spaceconnect,leaderboard,routines,stale,integrity,volumeview,segzoo,fibers,scroll2ink,vxsummary,zarrbox}.
+"""Command line: python -m kit {start,help,prizes,submitcheck,live,style,stages,doctor,plan,cost,find,labels,centerline,cite,fetch,s3relay,vc3dcache,prclock,prtext,verify,rowscore,auc,hpscore,overlap,collate,stackcheck,tifxyz,sheetview,atlas,coverage,uvgate,windconsistency,axispolish,windlabel-box,hopbench,meshaudit,snap,labelsnap,finesnap,ensemble,fibertensor,sheetcheck,labelsuggest,altrain,gate,layers,shuffle,provenance,compute,run,surfacefix,phantom,view,strokenet,letterread,letterlines,letterdemo,greeklm,releases,spaceconnect,leaderboard,routines,stale,integrity,volumeview,segzoo,fibers,scroll2ink,vxsummary,zarrbox,expatlas}.
 
 An installed package (pyproject.toml) has the same commands as console scripts: scrolls-workbench (every command;
 gate, releases and leaderboard read the repository's docs/ and README.md, so they need a clone), and scrolls-letterread,
@@ -1031,7 +1031,7 @@ GROUPS = (
                                     "volumeview", "segzoo", "fibers", "zarrbox")),
     ("Segments and geometry", ("scroll2ink", "stages", "tifxyz", "sheetview", "atlas", "coverage", "stackcheck",
                                "uvgate", "windconsistency", "axispolish",
-                               "windlabel-box", "hopbench", "overlap", "meshaudit", "surfacefix", "layers",
+                               "windlabel-box", "hopbench", "overlap", "expatlas", "meshaudit", "surfacefix", "layers",
                                "snap", "labelsnap", "finesnap")),
     ("Ink maps: score, compare, control", ("auc", "verify", "hpscore", "rowscore", "collate", "ensemble", "view",
                                            "strokenet", "fibertensor", "sheetcheck", "phantom", "shuffle", "gate",
@@ -1341,6 +1341,12 @@ def build_parser(prog="python -m kit", sub_progs=None):
     from . import tifxyz
     tifxyz.build_parser(p)
     p.set_defaults(func=tifxyz.cmd_tifxyz)
+
+    p = sub.add_parser("expatlas", help="Exposure Atlas: how much of each labeled segment a released ink model's "
+                                        "training meshes already cover, in one scroll frame; the leakage matrix")
+    from . import expatlas
+    expatlas.build_parser(p)
+    p.set_defaults(func=expatlas.cmd_expatlas)
 
     p = sub.add_parser("zarrbox", help="copy one box of a zarr volume, chunk files byte for byte, with a sha256 "
                                        "manifest; plan it first, verify it later")
