@@ -44,6 +44,8 @@ ORIGINS = ("ours", "community", "team", "published")
 WORKFLOWS = ["autopipeline", "scroll2ink", "cli", "vc3d"]       # extensions add their own
 # The registry's stage names, in the order a scroll is read; each workflow's own stage names map onto them
 STAGES = {
+    "inputs": "checks on the published inputs before any stage uses them: label canvases against their meshes, "
+              "pyramid depth, physical scale, mesh frames",
     "umbilicus": "the scroll's centre line",
     "surface": "the surface prediction a tracer follows (a 3D volume of sheet likelihood)",
     "lasagna": "the lasagna field: predicted sheet structure (cos, gradient, normals) for surface fitting",
@@ -60,6 +62,7 @@ STAGES = {
     "ink": "the ink reader: 2.5D (reads the render's layers) or 3D (reads the scan around the mesh)",
     "ensemble": "combining several ink readers' maps",
     "check": "controls on an ink map",
+    "exposure": "whether a model's training data already covers an evaluation segment, before its score is trusted",
     "triage": "ranking maps for a human to look at",
     "legibility": "how text-like an ink map is",
     "crackle": "Crackle Check's gate on a surface's maps",

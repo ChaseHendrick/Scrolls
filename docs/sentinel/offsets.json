@@ -1,0 +1,373 @@
+{
+ "schema": "bucket-sentinel-offsets/1",
+ "made_by": "kit sentinel",
+ "version": "sentinel-1",
+ "convention": "canvas level-0 pixel (y, x) shows tifxyz full-resolution cell (y + dy, x + dx); dy = a + b*y + c*x (affine lists a, b, c); villa issue #2370",
+ "align_tol_px": 2.0,
+ "entries": [
+  {
+   "path": "ink/0009b/auto_grown_20250919055754487_inp_hr_2um",
+   "model": "constant",
+   "affine": {
+    "dy": [
+     -19.1995249511153,
+     0.0,
+     0.0
+    ],
+    "dx": [
+     -19.292005363849306,
+     0.0,
+     0.0
+    ]
+   },
+   "resid_rms": 0.338,
+   "max_offset": 20.12,
+   "n_windows": 24,
+   "ct_volume": "20250820154339",
+   "pins": {
+    "meta.json": "9ac19db18485e86d7f96b0fe2878440c0535446677506e89cf9e64d7b7504615",
+    "x.tif": "19656d9bf508f166763928f42a2de982bd35bd47902400a3032eb171948470b4",
+    "y.tif": "8c1bafd75716de23d4b07114a0921e2d308509d9b8a1b5cda1e979173af07fc0",
+    "z.tif": "6bf4873ebae11f64cf28f44a377403d393e580d1d723037a425f8c1695ce7929"
+   },
+   "listing_digest": "d9f6081c6f7b0b31",
+   "checked": "2026-11-04T03:50:12Z"
+  },
+  {
+   "path": "ink/841/auto_grown_20260220144552896",
+   "model": "aligned",
+   "affine": {
+    "dy": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "dx": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   },
+   "resid_rms": 0.07,
+   "max_offset": 0.61,
+   "n_windows": 23,
+   "ct_volume": "20260319124803",
+   "pins": {
+    "meta.json": "2c10259b1929b1467f77c210c171996efd04e05638a254696011e7968242b454",
+    "x.tif": "763027730b8a3a203592d7e6079d3ea91627cc276beba923219c9203ce674843",
+    "y.tif": "c34f3ad4636faa1a8859f33c7a3d393342c398afc9d4fcf99ba2b3b875b3dd79",
+    "z.tif": "9e6919830905b3fe0e3c4f712bbb817b2d6d6eb4ffdf58899d1f7bd814c40dda"
+   },
+   "listing_digest": "397f77456aade884",
+   "checked": "2026-11-04T03:50:12Z"
+  },
+  {
+   "path": "ink/841/auto_grown_20260220174252405",
+   "model": "aligned",
+   "affine": {
+    "dy": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "dx": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   },
+   "resid_rms": 0.07,
+   "max_offset": 0.58,
+   "n_windows": 23,
+   "ct_volume": "20260319124803",
+   "pins": {
+    "meta.json": "7a7bf9221bbe1e7e85f7ca76ec8c5650eb404014b2a4f18e10d1a96c59966ba6",
+    "x.tif": "97a52465463120e296c1eea22cfa79b5959068b5d595573b88a5442cb0f6bda3",
+    "y.tif": "5da54692773cc97d508d5f7d695207abe2ce819765652549082ed0837039d2aa",
+    "z.tif": "5506ead1bd84bef376ed267a1ae130e6e0221d271d515144afcf5c16f239cf43"
+   },
+   "listing_digest": "b4b7a89e9c833767",
+   "checked": "2026-11-04T03:50:12Z"
+  },
+  {
+   "path": "ink/841/w00",
+   "model": "aligned",
+   "affine": {
+    "dy": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "dx": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   },
+   "resid_rms": 0.086,
+   "max_offset": 0.62,
+   "n_windows": 23,
+   "ct_volume": "20260319124803",
+   "pins": {
+    "meta.json": "0821f242c0010a1428ce193c9adbaf72a3386048c6828049f84cf510e01f4d28",
+    "x.tif": "99c0d911ab9f89dddbe59ce3336f47214e85ef38f384c77ea99d3356315cb5e2",
+    "y.tif": "f2e2ef80a0f9f29571dc78ea472fcb13acb8624eb47600e21ad6b2854fff3606",
+    "z.tif": "09c692629498d756f4804605356c57dccd69d20347593f56c7ab1968ac49345a"
+   },
+   "listing_digest": "8c4e2b573bcbf700",
+   "checked": "2026-11-04T03:50:13Z"
+  },
+  {
+   "path": "ink/man5/MAN5_outer_3",
+   "model": "aligned",
+   "affine": {
+    "dy": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "dx": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   },
+   "resid_rms": 0.161,
+   "max_offset": 1.33,
+   "n_windows": 16,
+   "ct_volume": "20260311104824",
+   "pins": {
+    "meta.json": "9b587df3fdfa50a77b866ac80ec14507722d224b0be47d9fca5297655c120042",
+    "x.tif": "5dbbda6ff91868727b8eb5837f4cf613759b266a7e45dd75b726836e7413ce7e",
+    "y.tif": "dc5063e29f5106b5144d0c820c13a535a344761f732f86e1ec248917c5f6c952",
+    "z.tif": "3862fd855b9f3ee09c911d1fd9f52ba5efc1bbf904dccfbae6d01dc58ac2ccc1"
+   },
+   "listing_digest": "c36109a8504c662a",
+   "checked": "2026-11-04T03:50:13Z"
+  },
+  {
+   "path": "ink/phercparis4/w00_20231016151002",
+   "model": "affine",
+   "affine": {
+    "dy": [
+     -23.72223880323844,
+     0.0010030054314650642,
+     1.2643064644645438e-06
+    ],
+    "dx": [
+     11.416734801419281,
+     4.9617183985502245e-06,
+     -0.0006706914487124298
+    ]
+   },
+   "resid_rms": 0.098,
+   "max_offset": 19.19,
+   "n_windows": 25,
+   "ct_volume": "20260411134726",
+   "pins": {
+    "meta.json": "d4fedf76375dfc2af0d5a31dbdb385c4ce5834bee9c32a8b8360c2e373c6a8f1",
+    "x.tif": "7a7bf1443fcba0f6d3f5b44f8199edc655f3d7be92647842578255ec112cc834",
+    "y.tif": "55b391e8263a0de226daa22220f1dbf53ef508cb95b5dee691cf0de04089d169",
+    "z.tif": "ef8120285a642997ea3f188c23c11fb9617ad26c41265171ca3ab62e1c91b176"
+   },
+   "listing_digest": "22296d2ebaf86b1e",
+   "checked": "2026-11-04T03:50:12Z"
+  },
+  {
+   "path": "ink/phercparis4/w01_20230702185753_r15",
+   "model": "affine",
+   "affine": {
+    "dy": [
+     11.555056553750662,
+     0.0042657627357042,
+     3.1563198818430546e-06
+    ],
+    "dx": [
+     11.992533865763068,
+     1.1956859635076263e-06,
+     -0.003875975691911053
+    ]
+   },
+   "resid_rms": 0.158,
+   "max_offset": 231.03,
+   "n_windows": 25,
+   "ct_volume": "20260411134726",
+   "pins": {
+    "meta.json": "3b778a51b477fb021833c426bebdfa74ec8ee29d853d9e23507a85eacbe57ef4",
+    "x.tif": "a3a1f84247e1c0b44c74beb9a55b05979ae5ccf10d9c4ac2903fc441f44bc125",
+    "y.tif": "da0b3004e185dfb4ae4c02fcd64629eb77ffeb9c9486d5c7423cdef40151ebca",
+    "z.tif": "55899028f5df011e36f7eca22c05fa58edae1355d037996700191b538eab8066"
+   },
+   "listing_digest": "c6f494973dcfef9b",
+   "checked": "2026-11-04T03:51:12Z"
+  },
+  {
+   "path": "ink/phercparis4/w02_20231031143852",
+   "model": "affine",
+   "affine": {
+    "dy": [
+     -20.75689472067847,
+     0.0009703997821308697,
+     1.9193689171901653e-07
+    ],
+    "dx": [
+     12.13325530282214,
+     2.5820987040045475e-06,
+     -0.0005277183788368234
+    ]
+   },
+   "resid_rms": 0.144,
+   "max_offset": 16.65,
+   "n_windows": 25,
+   "ct_volume": "20260411134726",
+   "pins": {
+    "meta.json": "a556cc5f2afc8fe4d50d34a3c7974022ad4414421a510788905028e48b9a6e22",
+    "x.tif": "16159d7658bcad13c228a43a9d1b36cb6eb7db3a01457cfbd40604ea660c86c3",
+    "y.tif": "0d2b534383f5c158a41f63e81fdfdd0876b8f40c834c57d518000f45aad07c9d",
+    "z.tif": "d72da14053ed321924c113bbc70d9df087324906b968c44d7ceffdd6bfede75e"
+   },
+   "listing_digest": "648f14067b897d25",
+   "checked": "2026-11-04T03:50:28Z"
+  },
+  {
+   "path": "ink/phercparis4/w03_20231106155351",
+   "model": "affine",
+   "affine": {
+    "dy": [
+     -22.177902574525707,
+     0.0010490058253540136,
+     -3.6015842260958813e-07
+    ],
+    "dx": [
+     11.766159575216673,
+     4.739494423217398e-06,
+     -0.0005629833594150313
+    ]
+   },
+   "resid_rms": 0.124,
+   "max_offset": 17.79,
+   "n_windows": 25,
+   "ct_volume": "20260411134726",
+   "pins": {
+    "meta.json": "f7796dbdf79a22adb79b31f0d26ccb3c22def83f559b7f4782dfc70021c3ac64",
+    "x.tif": "af4b21d6f51035b7e141ed3be0b02b540e6e582ced1c344145848ee6a28c5560",
+    "y.tif": "2872db4fd56870d1418bdff5422cb87d2e9d992ceed059da7916ba9fd198b438",
+    "z.tif": "6342020a735f505c2f1cfb34c9b787e853d9d4db798f01bbcf62af4c83618947"
+   },
+   "listing_digest": "ee1660ef5ab79ba2",
+   "checked": "2026-11-04T03:51:09Z"
+  },
+  {
+   "path": "ink/phercparis4/w05_4424",
+   "model": "affine",
+   "affine": {
+    "dy": [
+     -42.59787837364628,
+     0.0007922055593188313,
+     9.37253717536138e-07
+    ],
+    "dx": [
+     22.82087616265045,
+     -1.3205174729684138e-06,
+     -0.00045198145721080834
+    ]
+   },
+   "resid_rms": 0.191,
+   "max_offset": 37.27,
+   "n_windows": 25,
+   "ct_volume": "20260411134726",
+   "pins": {
+    "meta.json": "c992939cdf661520674dc7a7e6866f42c24cb14f7dcd05e100a7c15c75c19675",
+    "x.tif": "b357c26463589b06d19ea557456cf378b19127ec1879b4c8cd50a7b15b0fc4f0",
+    "y.tif": "dffc3f7a93d33becae0b44253a2f7ecc5917e46104a24ac79a084ea10e31e5d5",
+    "z.tif": "dbbbfb4e6eca20a2810323d8d25d54f02159b0cbd6f7f0044664412f5d2a0203"
+   },
+   "listing_digest": "18d12017dbf22621",
+   "checked": "2026-11-04T03:51:08Z"
+  },
+  {
+   "path": "ink/phercparis4/w06_1321",
+   "model": "affine",
+   "affine": {
+    "dy": [
+     -22.109519896599238,
+     0.0010297535696247011,
+     -8.925551647497336e-07
+    ],
+    "dx": [
+     12.069346836779856,
+     -7.067553046290762e-06,
+     -0.0006360027003615961
+    ]
+   },
+   "resid_rms": 0.185,
+   "max_offset": 23.47,
+   "n_windows": 25,
+   "ct_volume": "20260411134726",
+   "pins": {
+    "meta.json": "f8befba708f495d0b72dce0fcfd282d49c765305a079695ca33907bfa66489b0",
+    "x.tif": "0216502fb6c307433fbc5365527b6bcd4b9c2446945e48856099d8ef15df3079",
+    "y.tif": "db86b4e2b9ec4df8e1de687caddda3455a522fc3a40df63221cae1352d3970c7",
+    "z.tif": "5bd282ee6a48ef701050933ca76d7d61301d8f5cad8eef642327db80edf583c8"
+   },
+   "listing_digest": "42f303ecf2ccbb81",
+   "checked": "2026-11-04T03:51:08Z"
+  },
+  {
+   "path": "ink/phercparis4/w07_1619",
+   "model": "affine",
+   "affine": {
+    "dy": [
+     -44.85397158773785,
+     0.0008019620698482119,
+     1.954539862800706e-06
+    ],
+    "dx": [
+     23.18621588927477,
+     -2.937343594231574e-06,
+     -0.00043365360546880854
+    ]
+   },
+   "resid_rms": 0.083,
+   "max_offset": 38.86,
+   "n_windows": 25,
+   "ct_volume": "20260411134726",
+   "pins": {
+    "meta.json": "cbfb7e496a064d3e4bfc72b7d4d8ac308359fd30f5af70f4d1b6ca786d04226a",
+    "x.tif": "1f5bad0386eada9a1df393d38713d6251b45879737729d32d38b254ac12353e6",
+    "y.tif": "93dd1f352dd9a84f406373a3113be207c02aad9c90bad5949ab35ac896f552a4",
+    "z.tif": "399e1b13d1db592216c7d5c16241de4b404caa384ca4d6927ef02227b070fb02"
+   },
+   "listing_digest": "d5594d9368c78a37",
+   "checked": "2026-11-04T03:50:41Z"
+  },
+  {
+   "path": "ink/phercparis4/w09_20230929220926",
+   "model": "affine",
+   "affine": {
+    "dy": [
+     -22.57452018307337,
+     0.0007262877424040043,
+     1.2997154835073634e-06
+    ],
+    "dx": [
+     11.21950061732745,
+     1.6963651822455596e-05,
+     -0.0005452848853717865
+    ]
+   },
+   "resid_rms": 0.177,
+   "max_offset": 25.21,
+   "n_windows": 25,
+   "ct_volume": "20260411134726",
+   "pins": {
+    "meta.json": "037925f0a00caab936580b714e87a3d4305c6b2d7d888c03d8855f1dd12e78af",
+    "x.tif": "c50feb82ce614014b4d2e7c8a8a4a5d25f6c0eb002c0e1b18df7bdf8d51a67d3",
+    "y.tif": "aeaf1129760e390e5988b3a70633816bfd275e29f70fd877630db267b5bb95a6",
+    "z.tif": "196cfc88f6eb1e42b465f81ccd039bd183c7c3f5c1ae94c381206d3a33a46224"
+   },
+   "listing_digest": "54e94afd2229ece2",
+   "checked": "2026-11-04T03:51:34Z"
+  }
+ ]
+}

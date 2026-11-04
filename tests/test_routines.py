@@ -34,6 +34,7 @@ READ_ONLY = {
     "kit routines check handoff",
     "kit stale",                     # reads committed files and local git history only
     "unittest tests.test_repo",
+    "kit sentinel scan --exit-code",  # anonymous reads of public bucket listings and zarr metadata; writes work/sentinel/
 }
 
 
@@ -71,6 +72,12 @@ class RegistryTest(unittest.TestCase):
         for r in loaded:
             self.assertEqual(r["command"][:2], ["{python}", "-m"])
             self.assertIn(" ".join(r["command"][2:]), READ_ONLY, f"{r['name']}: a new command; review it first")
+
+    def test_sentinel_scan_needs_the_local_exclusion_file(self):
+        # reserved folders are never listed or read: the daily scan runs only where the exclusion file exists
+        for r in routines.load(routines.REGISTRY):
+            if "sentinel" in r["command"]:
+                self.assertIn("work/sentinel/exclude.json", r["requires"], r["name"])
 
     def test_no_villa_pull_request_keep_alive_or_watcher(self):
         # Chase rejected keeping villa pull requests alive by machine (16 Oct 2026).
