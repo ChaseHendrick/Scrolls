@@ -1,0 +1,940 @@
+{
+ "date": "2026-11-04",
+ "label": "Model output",
+ "made_by": "kit sentinel (docs/tools/sentinel.md)",
+ "coverage": "the 14 back-test folders, 15 more ink/unused folders the reserved-data rule leaves open, and the 67 CT volumes the catalog lists in the open-data bucket; other folders were not opened",
+ "rows": [
+  {
+   "item": "hf:ink/0009b/auto_grown_20250919055754487_inp_hr_2um",
+   "phase": "back-test",
+   "check": "pyramid",
+   "kind": "missing_slices",
+   "levels": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "detail": [
+    {
+     "level": 1,
+     "axis": "z",
+     "have": 33,
+     "want": 65,
+     "declared_factor": 1.0
+    },
+    {
+     "level": 2,
+     "axis": "z",
+     "have": 17,
+     "want": 65,
+     "declared_factor": 1.0
+    },
+    {
+     "level": 3,
+     "axis": "z",
+     "have": 9,
+     "want": 65,
+     "declared_factor": 1.0
+    },
+    {
+     "level": 4,
+     "axis": "z",
+     "have": 5,
+     "want": 65,
+     "declared_factor": 1.0
+    },
+    {
+     "level": 5,
+     "axis": "z",
+     "have": 3,
+     "want": 65,
+     "declared_factor": 1.0
+    }
+   ]
+  },
+  {
+   "item": "hf:ink/0009b/auto_grown_20250919055754487_inp_hr_2um",
+   "phase": "back-test",
+   "check": "canvas",
+   "kind": "constant",
+   "model": "constant",
+   "median_offset_px": [
+    -19.2,
+    -19.29
+   ],
+   "max_offset_px": 20.12,
+   "resid_rms_px": 0.338
+  },
+  {
+   "item": "hf:ink/814/814_46527_2um_try2",
+   "phase": "back-test",
+   "check": "pyramid",
+   "kind": "missing_slices",
+   "levels": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "detail": [
+    {
+     "level": 1,
+     "axis": "z",
+     "have": 33,
+     "want": 65,
+     "declared_factor": 1.0
+    },
+    {
+     "level": 2,
+     "axis": "z",
+     "have": 17,
+     "want": 65,
+     "declared_factor": 1.0
+    },
+    {
+     "level": 3,
+     "axis": "z",
+     "have": 9,
+     "want": 65,
+     "declared_factor": 1.0
+    },
+    {
+     "level": 4,
+     "axis": "z",
+     "have": 5,
+     "want": 65,
+     "declared_factor": 1.0
+    },
+    {
+     "level": 5,
+     "axis": "z",
+     "have": 3,
+     "want": 65,
+     "declared_factor": 1.0
+    }
+   ]
+  },
+  {
+   "item": "hf:ink/841/auto_grown_20260220144552896",
+   "phase": "back-test",
+   "check": "pyramid",
+   "kind": "missing_slices",
+   "levels": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "detail": [
+    {
+     "level": 1,
+     "axis": "z",
+     "have": 33,
+     "want": 65,
+     "declared_factor": 1.0
+    },
+    {
+     "level": 2,
+     "axis": "z",
+     "have": 17,
+     "want": 65,
+     "declared_factor": 1.0
+    },
+    {
+     "level": 3,
+     "axis": "z",
+     "have": 9,
+     "want": 65,
+     "declared_factor": 1.0
+    },
+    {
+     "level": 4,
+     "axis": "z",
+     "have": 5,
+     "want": 65,
+     "declared_factor": 1.0
+    },
+    {
+     "level": 5,
+     "axis": "z",
+     "have": 3,
+     "want": 65,
+     "declared_factor": 1.0
+    }
+   ]
+  },
+  {
+   "item": "hf:ink/841/auto_grown_20260220174252405",
+   "phase": "back-test",
+   "check": "pyramid",
+   "kind": "missing_slices",
+   "levels": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "detail": [
+    {
+     "level": 1,
+     "axis": "z",
+     "have": 33,
+     "want": 65,
+     "declared_factor": 1.0
+    },
+    {
+     "level": 2,
+     "axis": "z",
+     "have": 17,
+     "want": 65,
+     "declared_factor": 1.0
+    },
+    {
+     "level": 3,
+     "axis": "z",
+     "have": 9,
+     "want": 65,
+     "declared_factor": 1.0
+    },
+    {
+     "level": 4,
+     "axis": "z",
+     "have": 5,
+     "want": 65,
+     "declared_factor": 1.0
+    },
+    {
+     "level": 5,
+     "axis": "z",
+     "have": 3,
+     "want": 65,
+     "declared_factor": 1.0
+    }
+   ]
+  },
+  {
+   "item": "hf:ink/841/w00",
+   "phase": "back-test",
+   "check": "pyramid",
+   "kind": "missing_slices",
+   "levels": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "detail": [
+    {
+     "level": 1,
+     "axis": "z",
+     "have": 33,
+     "want": 65,
+     "declared_factor": 1.0
+    },
+    {
+     "level": 2,
+     "axis": "z",
+     "have": 17,
+     "want": 65,
+     "declared_factor": 1.0
+    },
+    {
+     "level": 3,
+     "axis": "z",
+     "have": 9,
+     "want": 65,
+     "declared_factor": 1.0
+    },
+    {
+     "level": 4,
+     "axis": "z",
+     "have": 5,
+     "want": 65,
+     "declared_factor": 1.0
+    },
+    {
+     "level": 5,
+     "axis": "z",
+     "have": 3,
+     "want": 65,
+     "declared_factor": 1.0
+    }
+   ]
+  },
+  {
+   "item": "hf:ink/man5/MAN5_outer_3",
+   "phase": "back-test",
+   "check": "labels",
+   "kind": "label_shape",
+   "detail": [
+    {
+     "label": "MAN5_outer_3_inklabels.zarr",
+     "short_by": [
+      59,
+      59
+     ]
+    },
+    {
+     "label": "MAN5_outer_3_supervision_mask.zarr",
+     "short_by": [
+      59,
+      59
+     ]
+    },
+    {
+     "label": "MAN5_outer_3_validation_mask.zarr",
+     "short_by": [
+      59,
+      59
+     ]
+    }
+   ]
+  },
+  {
+   "item": "hf:ink/phercparis4/w00_20231016151002",
+   "phase": "back-test",
+   "check": "canvas",
+   "kind": "affine",
+   "model": "affine",
+   "median_offset_px": [
+    -7.35,
+    -5.15
+   ],
+   "max_offset_px": 19.19,
+   "resid_rms_px": 0.098
+  },
+  {
+   "item": "hf:ink/phercparis4/w01_20230702185753_r15",
+   "phase": "back-test",
+   "check": "canvas",
+   "kind": "affine",
+   "model": "affine",
+   "median_offset_px": [
+    151.11,
+    -101.52
+   ],
+   "max_offset_px": 231.03,
+   "resid_rms_px": 0.158
+  },
+  {
+   "item": "hf:ink/phercparis4/w02_20231031143852",
+   "phase": "back-test",
+   "check": "canvas",
+   "kind": "affine",
+   "model": "affine",
+   "median_offset_px": [
+    -4.33,
+    0.26
+   ],
+   "max_offset_px": 16.65,
+   "resid_rms_px": 0.144
+  },
+  {
+   "item": "hf:ink/phercparis4/w03_20231106155351",
+   "phase": "back-test",
+   "check": "canvas",
+   "kind": "affine",
+   "model": "affine",
+   "median_offset_px": [
+    -4.32,
+    -2.82
+   ],
+   "max_offset_px": 17.79,
+   "resid_rms_px": 0.124
+  },
+  {
+   "item": "hf:ink/phercparis4/w05_4424",
+   "phase": "back-test",
+   "check": "canvas",
+   "kind": "affine",
+   "model": "affine",
+   "median_offset_px": [
+    -22.03,
+    5.88
+   ],
+   "max_offset_px": 37.27,
+   "resid_rms_px": 0.191
+  },
+  {
+   "item": "hf:ink/phercparis4/w06_1321",
+   "phase": "back-test",
+   "check": "canvas",
+   "kind": "affine",
+   "model": "affine",
+   "median_offset_px": [
+    4.2,
+    -1.34
+   ],
+   "max_offset_px": 23.47,
+   "resid_rms_px": 0.185
+  },
+  {
+   "item": "hf:ink/phercparis4/w07_1619",
+   "phase": "back-test",
+   "check": "canvas",
+   "kind": "affine",
+   "model": "affine",
+   "median_offset_px": [
+    -23.47,
+    -0.62
+   ],
+   "max_offset_px": 38.86,
+   "resid_rms_px": 0.083
+  },
+  {
+   "item": "hf:ink/phercparis4/w09_20230929220926",
+   "phase": "back-test",
+   "check": "canvas",
+   "kind": "affine",
+   "model": "affine",
+   "median_offset_px": [
+    -10.77,
+    -9.52
+   ],
+   "max_offset_px": 25.21,
+   "resid_rms_px": 0.177
+  },
+  {
+   "item": "s3vol:PHerc0009B/volumes/20250521125136-8.640um-1.2m-116keV-masked.zarr",
+   "phase": "live sweep",
+   "check": "scale",
+   "kind": "scale_reset",
+   "fallback_um": 8.64,
+   "pitch_source": "metadata.min.json"
+  },
+  {
+   "item": "s3vol:PHerc0009B/volumes/20250820154339-2.401um-0.3m-77keV-masked.zarr",
+   "phase": "live sweep",
+   "check": "scale",
+   "kind": "scale_reset",
+   "fallback_um": 2.401,
+   "pitch_source": "metadata.min.json"
+  },
+  {
+   "item": "s3vol:PHerc0009B/volumes/20260319104112-2.401um-0.3m-77keV-masked.zarr",
+   "phase": "live sweep",
+   "check": "scale",
+   "kind": "scale_reset",
+   "fallback_um": 2.401,
+   "pitch_source": "metadata.min.json"
+  },
+  {
+   "item": "s3vol:PHerc0125/volumes/20250821151825-9.362um-1.2m-113keV-masked.zarr",
+   "phase": "live sweep",
+   "check": "scale",
+   "kind": "scale_reset",
+   "fallback_um": 9.362,
+   "pitch_source": "metadata.min.json"
+  },
+  {
+   "item": "s3vol:PHerc0139/volumes/20250728140407-9.362um-1.2m-113keV-masked.zarr",
+   "phase": "live sweep",
+   "check": "scale",
+   "kind": "scale_reset",
+   "fallback_um": 9.362,
+   "pitch_source": "metadata.min.json"
+  },
+  {
+   "item": "s3vol:PHerc0139/volumes/20250820105138-2.403um-0.2m-77keV-masked.zarr",
+   "phase": "live sweep",
+   "check": "scale",
+   "kind": "scale_reset",
+   "fallback_um": 2.403,
+   "pitch_source": "metadata.min.json"
+  },
+  {
+   "item": "s3vol:PHerc0139/volumes/20250822062710-2.403um-0.2m-77keV-masked.zarr",
+   "phase": "live sweep",
+   "check": "scale",
+   "kind": "scale_reset",
+   "fallback_um": 2.403,
+   "pitch_source": "metadata.min.json"
+  },
+  {
+   "item": "s3vol:PHerc0139/volumes/20251107132835-9.362um-1.2m-113keV-pag0-masked.zarr",
+   "phase": "live sweep",
+   "check": "scale",
+   "kind": "scale_reset",
+   "fallback_um": 9.362,
+   "pitch_source": "metadata.min.json"
+  },
+  {
+   "item": "s3vol:PHerc0139/volumes/20251107135911-9.362um-1.2m-113keV-pag50-masked.zarr",
+   "phase": "live sweep",
+   "check": "scale",
+   "kind": "scale_reset",
+   "fallback_um": 9.362,
+   "pitch_source": "metadata.min.json"
+  },
+  {
+   "item": "s3vol:PHerc0139/volumes/20260102150214-2.399um-0.2m-78keV-masked.zarr",
+   "phase": "live sweep",
+   "check": "scale",
+   "kind": "scale_reset",
+   "fallback_um": 2.399,
+   "pitch_source": "metadata.min.json"
+  },
+  {
+   "item": "s3vol:PHerc0139/volumes/20260319133050-2.403um-0.2m-77keV-masked.zarr",
+   "phase": "live sweep",
+   "check": "scale",
+   "kind": "scale_reset",
+   "fallback_um": 2.403,
+   "pitch_source": "metadata.min.json"
+  },
+  {
+   "item": "s3vol:PHerc0139/volumes/20260319133554-2.403um-0.2m-77keV-masked.zarr",
+   "phase": "live sweep",
+   "check": "scale",
+   "kind": "scale_reset",
+   "fallback_um": 2.403,
+   "pitch_source": "metadata.min.json"
+  },
+  {
+   "item": "s3vol:PHerc0139/volumes/20260413113053-1.129um-0.2m-59keV-masked.zarr",
+   "phase": "live sweep",
+   "check": "scale",
+   "kind": "scale_reset",
+   "fallback_um": 1.129,
+   "pitch_source": "metadata.min.json"
+  },
+  {
+   "item": "s3vol:PHerc0139/volumes/20260930100252-2.399um-0.2m-78keV-masked.zarr",
+   "phase": "live sweep",
+   "check": "scale",
+   "kind": "scale_reset",
+   "fallback_um": 2.399,
+   "pitch_source": "metadata.min.json"
+  },
+  {
+   "item": "s3vol:PHerc0172/volumes/20241024131838-7.910um-53keV-masked.zarr",
+   "phase": "live sweep",
+   "check": "scale",
+   "kind": "scale_reset",
+   "fallback_um": 7.91,
+   "pitch_source": "metadata.min.json"
+  },
+  {
+   "item": "s3vol:PHerc0172/volumes/20241024131839-7.910um-53keV-masked.zarr",
+   "phase": "live sweep",
+   "check": "scale",
+   "kind": "scale_reset",
+   "fallback_um": 7.91,
+   "pitch_source": "metadata.min.json"
+  },
+  {
+   "item": "s3vol:PHerc0175A/volumes/20250521115057-8.640um-1.2m-116keV-masked.zarr",
+   "phase": "live sweep",
+   "check": "scale",
+   "kind": "scale_reset",
+   "fallback_um": 8.64,
+   "pitch_source": "metadata.min.json"
+  },
+  {
+   "item": "s3vol:PHerc0175B/volumes/20250521125822-8.640um-1.2m-116keV-masked.zarr",
+   "phase": "live sweep",
+   "check": "scale",
+   "kind": "scale_reset",
+   "fallback_um": 8.64,
+   "pitch_source": "metadata.min.json"
+  },
+  {
+   "item": "s3vol:PHerc0191/volumes/20250821151635-9.362um-1.2m-113keV-masked.zarr",
+   "phase": "live sweep",
+   "check": "scale",
+   "kind": "scale_reset",
+   "fallback_um": 9.362,
+   "pitch_source": "metadata.min.json"
+  },
+  {
+   "item": "s3vol:PHerc0211/volumes/20250821151803-9.362um-1.2m-113keV-masked.zarr",
+   "phase": "live sweep",
+   "check": "scale",
+   "kind": "scale_reset",
+   "fallback_um": 9.362,
+   "pitch_source": "metadata.min.json"
+  },
+  {
+   "item": "s3vol:PHerc0257/volumes/20250821151750-9.362um-1.2m-113keV-masked.zarr",
+   "phase": "live sweep",
+   "check": "scale",
+   "kind": "scale_reset",
+   "fallback_um": 9.362,
+   "pitch_source": "metadata.min.json"
+  },
+  {
+   "item": "s3vol:PHerc0268/volumes/20251110183117-8.640um-1.2m-116keV-masked.zarr",
+   "phase": "live sweep",
+   "check": "scale",
+   "kind": "scale_reset",
+   "fallback_um": 8.64,
+   "pitch_source": "metadata.min.json"
+  },
+  {
+   "item": "s3vol:PHerc0306B/volumes/20250521133212-8.640um-1.2m-116keV-masked.zarr",
+   "phase": "live sweep",
+   "check": "scale",
+   "kind": "scale_reset",
+   "fallback_um": 8.64,
+   "pitch_source": "metadata.min.json"
+  },
+  {
+   "item": "s3vol:PHerc0332/volumes/20251211183505-2.399um-0.2m-78keV-masked.zarr",
+   "phase": "live sweep",
+   "check": "scale",
+   "kind": "scale_reset",
+   "fallback_um": 2.399,
+   "pitch_source": "metadata.min.json"
+  },
+  {
+   "item": "s3vol:PHerc0343P/volumes/20250521134555-8.640um-1.2m-116keV-masked.zarr",
+   "phase": "live sweep",
+   "check": "scale",
+   "kind": "scale_reset",
+   "fallback_um": 8.64,
+   "pitch_source": "metadata.min.json"
+  },
+  {
+   "item": "s3vol:PHerc0343P/volumes/20260304131111-2.215um-0.4m-111keV-masked.zarr",
+   "phase": "live sweep",
+   "check": "scale",
+   "kind": "scale_reset",
+   "fallback_um": 2.215,
+   "pitch_source": "metadata.min.json"
+  },
+  {
+   "item": "s3vol:PHerc0343/volumes/20250521140437-8.640um-1.2m-116keV-masked.zarr",
+   "phase": "live sweep",
+   "check": "scale",
+   "kind": "scale_reset",
+   "fallback_um": 8.64,
+   "pitch_source": "metadata.min.json"
+  },
+  {
+   "item": "s3vol:PHerc0358/volumes/20250821151737-9.362um-1.2m-113keV-masked.zarr",
+   "phase": "live sweep",
+   "check": "scale",
+   "kind": "scale_reset",
+   "fallback_um": 9.362,
+   "pitch_source": "metadata.min.json"
+  },
+  {
+   "item": "s3vol:PHerc0483A/volumes/20250521140913-8.640um-1.2m-116keV-masked.zarr",
+   "phase": "live sweep",
+   "check": "scale",
+   "kind": "scale_reset",
+   "fallback_um": 8.64,
+   "pitch_source": "metadata.min.json"
+  },
+  {
+   "item": "s3vol:PHerc0483B/volumes/20251124083638-8.640um-1.2m-116keV-masked.zarr",
+   "phase": "live sweep",
+   "check": "scale",
+   "kind": "scale_reset",
+   "fallback_um": 8.64,
+   "pitch_source": "metadata.min.json"
+  },
+  {
+   "item": "s3vol:PHerc0490A/volumes/20250521151210-8.640um-1.2m-116keV-masked.zarr",
+   "phase": "live sweep",
+   "check": "scale",
+   "kind": "scale_reset",
+   "fallback_um": 8.64,
+   "pitch_source": "metadata.min.json"
+  },
+  {
+   "item": "s3vol:PHerc0490B/volumes/20250521151215-8.640um-1.2m-116keV-masked.zarr",
+   "phase": "live sweep",
+   "check": "scale",
+   "kind": "scale_reset",
+   "fallback_um": 8.64,
+   "pitch_source": "metadata.min.json"
+  },
+  {
+   "item": "s3vol:PHerc0500P2/volumes/20250526151718-2.215um-0.4m-111keV-masked.zarr",
+   "phase": "live sweep",
+   "check": "scale",
+   "kind": "scale_reset",
+   "fallback_um": 2.215,
+   "pitch_source": "metadata.min.json"
+  },
+  {
+   "item": "s3vol:PHerc0500P2/volumes/20250528085330-4.317um-1.2m-111keV-masked.zarr",
+   "phase": "live sweep",
+   "check": "scale",
+   "kind": "scale_reset",
+   "fallback_um": 4.317,
+   "pitch_source": "metadata.min.json"
+  },
+  {
+   "item": "s3vol:PHerc0500P2/volumes/20250820143440-9.362um-1.2m-113keV-masked.zarr",
+   "phase": "live sweep",
+   "check": "scale",
+   "kind": "scale_reset",
+   "fallback_um": 9.362,
+   "pitch_source": "metadata.min.json"
+  },
+  {
+   "item": "s3vol:PHerc0500P2/volumes/20250821110041-0.550um-0.1m-65keV-masked.zarr",
+   "phase": "live sweep",
+   "check": "scale",
+   "kind": "scale_reset",
+   "fallback_um": 0.55,
+   "pitch_source": "metadata.min.json"
+  },
+  {
+   "item": "s3vol:PHerc0800/volumes/20250521135224-8.640um-1.2m-116keV-masked.zarr",
+   "phase": "live sweep",
+   "check": "scale",
+   "kind": "scale_reset",
+   "fallback_um": 8.64,
+   "pitch_source": "metadata.min.json"
+  },
+  {
+   "item": "s3vol:PHerc0813/volumes/20250821151723-9.362um-1.2m-113keV-masked.zarr",
+   "phase": "live sweep",
+   "check": "scale",
+   "kind": "scale_reset",
+   "fallback_um": 9.362,
+   "pitch_source": "metadata.min.json"
+  },
+  {
+   "item": "s3vol:PHerc0814/volumes/20250804134230-9.362um-1.2m-113keV-masked.zarr",
+   "phase": "live sweep",
+   "check": "scale",
+   "kind": "scale_reset",
+   "fallback_um": 9.362,
+   "pitch_source": "metadata.min.json"
+  },
+  {
+   "item": "s3vol:PHerc0814/volumes/20260309142202-2.399um-0.2m-78keV-masked.zarr",
+   "phase": "live sweep",
+   "check": "scale",
+   "kind": "scale_reset",
+   "fallback_um": 2.399,
+   "pitch_source": "metadata.min.json"
+  },
+  {
+   "item": "s3vol:PHerc0814/volumes/20260521123630-1.129um-0.2m-59keV-masked.zarr",
+   "phase": "live sweep",
+   "check": "scale",
+   "kind": "scale_reset",
+   "fallback_um": 1.129,
+   "pitch_source": "metadata.min.json"
+  },
+  {
+   "item": "s3vol:PHerc0826/volumes/20250821151701-9.362um-1.2m-113keV-masked.zarr",
+   "phase": "live sweep",
+   "check": "scale",
+   "kind": "scale_reset",
+   "fallback_um": 9.362,
+   "pitch_source": "metadata.min.json"
+  },
+  {
+   "item": "s3vol:PHerc0841/volumes/20250821151531-9.366um-1.2m-113keV-masked.zarr",
+   "phase": "live sweep",
+   "check": "scale",
+   "kind": "scale_reset",
+   "fallback_um": 9.366,
+   "pitch_source": "metadata.min.json"
+  },
+  {
+   "item": "s3vol:PHerc0841/volumes/20260319124803-2.403um-0.2m-77keV-masked.zarr",
+   "phase": "live sweep",
+   "check": "scale",
+   "kind": "scale_reset",
+   "fallback_um": 2.403,
+   "pitch_source": "metadata.min.json"
+  },
+  {
+   "item": "s3vol:PHerc0846A/volumes/20250728152254-9.362um-1.2m-113keV-masked.zarr",
+   "phase": "live sweep",
+   "check": "scale",
+   "kind": "scale_reset",
+   "fallback_um": 9.362,
+   "pitch_source": "metadata.min.json"
+  },
+  {
+   "item": "s3vol:PHerc0846A/volumes/20260319102732-2.403um-0.2m-77keV-masked.zarr",
+   "phase": "live sweep",
+   "check": "scale",
+   "kind": "scale_reset",
+   "fallback_um": 2.403,
+   "pitch_source": "metadata.min.json"
+  },
+  {
+   "item": "s3vol:PHerc0846B/volumes/20250804142305-9.362um-1.2m-113keV-masked.zarr",
+   "phase": "live sweep",
+   "check": "scale",
+   "kind": "scale_reset",
+   "fallback_um": 9.362,
+   "pitch_source": "metadata.min.json"
+  },
+  {
+   "item": "s3vol:PHerc1203/volumes/20250820131727-9.362um-1.2m-113keV-masked.zarr",
+   "phase": "live sweep",
+   "check": "scale",
+   "kind": "scale_reset",
+   "fallback_um": 9.362,
+   "pitch_source": "metadata.min.json"
+  },
+  {
+   "item": "s3vol:PHerc1203/volumes/20260319130212-2.403um-0.2m-77keV-masked.zarr",
+   "phase": "live sweep",
+   "check": "scale",
+   "kind": "scale_reset",
+   "fallback_um": 2.403,
+   "pitch_source": "metadata.min.json"
+  },
+  {
+   "item": "s3vol:PHerc1218/volumes/20250521120456-8.640um-1.2m-116keV-masked.zarr",
+   "phase": "live sweep",
+   "check": "scale",
+   "kind": "scale_reset",
+   "fallback_um": 8.64,
+   "pitch_source": "metadata.min.json"
+  },
+  {
+   "item": "s3vol:PHerc1299/volumes/20260309130042-2.399um-0.2m-78keV-masked.zarr",
+   "phase": "live sweep",
+   "check": "scale",
+   "kind": "scale_reset",
+   "fallback_um": 2.399,
+   "pitch_source": "metadata.min.json"
+  },
+  {
+   "item": "s3vol:PHerc1447/volumes/20250521151220-8.640um-1.2m-116keV-masked.zarr",
+   "phase": "live sweep",
+   "check": "scale",
+   "kind": "scale_reset",
+   "fallback_um": 8.64,
+   "pitch_source": "metadata.min.json"
+  },
+  {
+   "item": "s3vol:PHerc1451/volumes/20250521151225-8.640um-1.2m-116keV-masked.zarr",
+   "phase": "live sweep",
+   "check": "scale",
+   "kind": "scale_reset",
+   "fallback_um": 8.64,
+   "pitch_source": "metadata.min.json"
+  },
+  {
+   "item": "s3vol:PHerc1451/volumes/20260319101107-2.399um-0.2m-78keV-masked.zarr",
+   "phase": "live sweep",
+   "check": "scale",
+   "kind": "scale_reset",
+   "fallback_um": 2.399,
+   "pitch_source": "metadata.min.json"
+  },
+  {
+   "item": "s3vol:PHerc1545/volumes/20250821151648-9.362um-1.2m-113keV-masked.zarr",
+   "phase": "live sweep",
+   "check": "scale",
+   "kind": "scale_reset",
+   "fallback_um": 9.362,
+   "pitch_source": "metadata.min.json"
+  },
+  {
+   "item": "s3vol:PHerc1667/volumes/20251217075048-2.399um-0.2m-78keV-masked.zarr",
+   "phase": "live sweep",
+   "check": "scale",
+   "kind": "scale_reset",
+   "fallback_um": 2.399,
+   "pitch_source": "metadata.min.json"
+  },
+  {
+   "item": "s3vol:PHerc1667/volumes/20260323082859-1.129um-0.2m-59keV-masked.zarr",
+   "phase": "live sweep",
+   "check": "scale",
+   "kind": "scale_reset",
+   "fallback_um": 1.129,
+   "pitch_source": "metadata.min.json"
+  },
+  {
+   "item": "s3vol:PHercMAN5/volumes/20260311104824-2.399um-0.2m-78keV-masked.zarr",
+   "phase": "live sweep",
+   "check": "scale",
+   "kind": "scale_reset",
+   "fallback_um": 2.399,
+   "pitch_source": "metadata.min.json"
+  },
+  {
+   "item": "s3vol:PHercMANB/volumes/20260323091048-2.399um-0.2m-78keV-masked.zarr",
+   "phase": "live sweep",
+   "check": "scale",
+   "kind": "scale_reset",
+   "fallback_um": 2.399,
+   "pitch_source": "metadata.min.json"
+  },
+  {
+   "item": "s3vol:PHercMANBp/volumes/20251216152116-2.399um-0.2m-78keV-masked.zarr",
+   "phase": "live sweep",
+   "check": "scale",
+   "kind": "scale_reset",
+   "fallback_um": 2.399,
+   "pitch_source": "metadata.min.json"
+  },
+  {
+   "item": "s3vol:PHercMANBp/volumes/20260427100434-1.129um-0.2m-59keV-masked.zarr",
+   "phase": "live sweep",
+   "check": "scale",
+   "kind": "scale_reset",
+   "fallback_um": 1.129,
+   "pitch_source": "metadata.min.json"
+  },
+  {
+   "item": "s3vol:PHercParis3/volumes/20260427095331-2.400um-0.2m-78keV-masked.zarr",
+   "phase": "live sweep",
+   "check": "scale",
+   "kind": "scale_reset",
+   "fallback_um": 2.4,
+   "pitch_source": "metadata.min.json"
+  },
+  {
+   "item": "s3vol:PHercParis4/volumes/20260310170716-45.532um-11.0m-74keV-masked.zarr",
+   "phase": "live sweep",
+   "check": "scale",
+   "kind": "scale_reset",
+   "fallback_um": 45.532,
+   "pitch_source": "metadata.min.json"
+  },
+  {
+   "item": "s3vol:PHercParis4/volumes/20260310173927-45.532um-11.0m-110keV-masked.zarr",
+   "phase": "live sweep",
+   "check": "scale",
+   "kind": "scale_reset",
+   "fallback_um": 45.532,
+   "pitch_source": "metadata.min.json"
+  },
+  {
+   "item": "s3vol:PHercParis4/volumes/20260323153942-2.400um-0.2m-137keV-masked.zarr",
+   "phase": "live sweep",
+   "check": "scale",
+   "kind": "scale_reset",
+   "fallback_um": 2.4,
+   "pitch_source": "metadata.min.json"
+  },
+  {
+   "item": "s3vol:PHercParis4/volumes/20260411134726-2.400um-0.2m-78keV-masked.zarr",
+   "phase": "live sweep",
+   "check": "scale",
+   "kind": "scale_reset",
+   "fallback_um": 2.4,
+   "pitch_source": "metadata.min.json"
+  },
+  {
+   "item": "s3vol:PHercParis4/volumes/20260608103018-1.129um-0.2m-78keV-masked.zarr",
+   "phase": "live sweep",
+   "check": "scale",
+   "kind": "scale_reset",
+   "fallback_um": 1.129,
+   "pitch_source": "metadata.min.json"
+  }
+ ]
+}

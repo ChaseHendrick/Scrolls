@@ -13178,5 +13178,41 @@
    "source": "docs/data/expatlas/matrix-2026-11-04.json",
    "cross_scan_cells": 0
   }
+ ],
+ "bucket_sentinel_checks": [
+  {
+   "key": "sentinel_controls_20261104",
+   "date": "2026-11-04",
+   "label": "Model output",
+   "verdict": "PASS",
+   "about": "Bucket Sentinel (kit sentinel, commit 9fcc215) planted-defect controls on 20 public S3 segment surface volumes of PHerc0343P, PHerc0814 and PHerc0009B, each rendered from its own mesh (docs/sentinel/dev-pool.json); attempt 2, after attempt 1 failed on three implementation faults",
+   "rule": "PASS when recall over must-flag plants is at least 0.95, the offset error is at most 2 px in at least 95 percent of caught shift and resample plants, and at most 5 percent of negatives and bases flag",
+   "plants": 252,
+   "recall": 0.9881,
+   "shift_error_median_px": 0.341,
+   "shift_within_2px": 1.0,
+   "negatives_and_bases": 56,
+   "false_flag_rate": 0.0,
+   "bases_aligned": 18,
+   "bases_not_measured": 2,
+   "source": "docs/prereg/2026-11-04-bucket-sentinel.md#4-dev-runs-filled-at-the-freeze"
+  },
+  {
+   "key": "sentinel_backtest_20261104",
+   "date": "2026-11-04",
+   "label": "Model output",
+   "verdict": "PASS",
+   "about": "Bucket Sentinel (commit a7ecd62) frozen blind back-test on the 14 Hugging Face ink/ folders of scrollprize/datasets that the reserved-data rule leaves open, against the defects villa #2370, #2107 and #2369 report (Community report); the reporters' tables were not read; run once",
+   "rule": "B1 at least 8 of 9 misaligned canvases flagged; B2 none of 4 aligned; B3 at least 4 of 5 truncated pyramids and none of 9 others; B4 MAN5_outer_3 labels flagged 59 px short",
+   "b1_flagged": "9/9",
+   "b2_false_flags": "0/4",
+   "b3_flagged": "5/5",
+   "b3_false_flags": "0/9",
+   "b4": "flagged, short by 59 and 59 px",
+   "agreement": "PHerc0009B constant (-19.20, -19.29) px against about (-19.6, -19.6) in #2370; Paris 4 w01_r15 slopes 0.00427 and -0.00388 against 0.004263 and -0.003876",
+   "offset_table": "docs/sentinel/offsets.json",
+   "limits": "14 of the bucket's ink/ folders; the folders the reserved-data rule keeps closed were not opened; one bucket version",
+   "source": "docs/prereg/2026-11-04-bucket-sentinel.md#outcome"
+  }
  ]
 }

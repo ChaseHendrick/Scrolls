@@ -50,6 +50,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **bucket (open-data bucket)**: The Vesuvius Challenge's public Amazon S3 storage, which holds the scans, segments, predictions and labels that kit reads.
 
+**Bucket Sentinel**: `python -m kit sentinel`, the standing checker of the organizers' public uploads: canvas offsets against their meshes (CT only), truncated pyramids, [1, 1, 1] scales, label grids and mesh frames, with an offset table loaders import ([`docs/tools/sentinel.md`](docs/tools/sentinel.md)).
+
 ## C
 
 **canvas (render canvas)**: The 2D pixel grid onto which a traced surface is rendered. A published surface volume reproduces its canvas from its mesh.
@@ -177,6 +179,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 **hero (hero image)**: The wide picture at the top of a README or release entry. Here every released tool has one: 1920 x 640 pixels, WebP, at most 300 KB, in the charcoal, ivory and copper style of the root README's, with its media label in the caption. Made by `scripts/media/hero.py`; listed in [`docs/assets/README.md`](docs/assets/README.md).
 
 **hfpull**: The public bucket download helper `python -m kit.hfpull`. It downloads each distinct file once, then copies it to other paths with the same content. It downloads files; it does not upload them. See [hfpull](docs/tools/hfpull.md).
+
+**HF65 canvas**: The 65-plane surface render (the canvas) in a segment folder of the organizers' Hugging Face bucket `scrollprize/datasets` under `ink/`, on whose grid that folder's ink labels are drawn (villa #2370's term).
 
 **Hugging Face**: A site that hosts models, datasets and small web apps called Spaces. Several released weights and the Unroll viewer live there.
 

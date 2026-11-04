@@ -44,6 +44,8 @@ ORIGINS = ("ours", "community", "team", "published")
 WORKFLOWS = ["autopipeline", "scroll2ink", "cli", "vc3d"]       # extensions add their own
 # The registry's stage names, in the order a scroll is read; each workflow's own stage names map onto them
 STAGES = {
+    "inputs": "checks on the published inputs before any stage uses them: label canvases against their meshes, "
+              "pyramid depth, physical scale, mesh frames",
     "umbilicus": "the scroll's centre line",
     "surface": "the surface prediction a tracer follows (a 3D volume of sheet likelihood)",
     "lasagna": "the lasagna field: predicted sheet structure (cos, gradient, normals) for surface fitting",
