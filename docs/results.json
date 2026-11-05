@@ -10560,6 +10560,63 @@
     "primary": "the all-slices score stays the main score, because there the finder does not choose which slices count"
    },
    "limits": "ten of the 13 lines are one annotator's; the settings were chosen while looking at some of the same scrolls; PHerc0268 and PHerc0800 have more than one winding centre at some heights; no head-to-head with other finders on the same slices"
+  },
+  {
+   "date": "2026-10-23",
+   "source": "docs/tools/axispolish.md",
+   "claim": "Measurement against villa's model-predicted lasagna sheets: the coverage-polished Center Finder line against villa's vc_gen_umbilicus on the ten scans of the 22 October polish test, 38 heights, rule frozen before any field was predicted, read once",
+   "verdict": "LEVEL",
+   "pooled_median_gain_wraps": -0.022,
+   "interval_95": [
+    -0.237,
+    0.256
+   ],
+   "scans_ahead": "4 of 10 (6 needed)",
+   "reported": {
+    "unpolished_vs_vc_gen_umbilicus_wraps": 0.051
+   },
+   "controls": {
+    "scan_center_wraps": -4.74,
+    "ring_3mm_loss_wraps": 2.85
+   },
+   "limits": "coverage of model-predicted sheets, not the true axis"
+  },
+  {
+   "date": "2026-10-28",
+   "source": "docs/tools/umbilicus.md",
+   "claim": "Model output and Measurement: Center Finder v2 (the anchored coverage polish behind the dataset's finder-v2 lines, before their later smoothing) against villa's vc_gen_umbilicus in two tests, each frozen before its heights were read and read once",
+   "coverage": {
+    "scans": "PHerc0846A and PHercMAN5, 2.4 um",
+    "heights": 96,
+    "pooled_median_gain_wraps": 0.352,
+    "interval_95": [
+     0.274,
+     0.476
+    ],
+    "per_scan_wraps": {
+     "PHerc0846A": 0.259,
+     "PHercMAN5": 0.476
+    },
+    "verdict": "BETTER",
+    "controls": "scan center, 3 mm ring round villa's point and v2 moved 3 mm all below villa"
+   },
+   "person_line": {
+    "reference": "Erwin Nieuwlaar's PHerc0343 line, github.com/Nieuwlaar/pherc343-first-letters e8370f1 (MIT)",
+    "heights": 48,
+    "median_mm": {
+     "v2": 1.83,
+     "vc_gen_umbilicus": 1.86,
+     "released_finder_line": 1.39
+    },
+    "difference_interval_95_mm": [
+     -0.56,
+     0.76
+    ],
+    "v2_nearer_blocks": "1 of 11",
+    "verdict": "LEVEL"
+   },
+   "disclosed": "a first coverage test the same morning was VOID (its scorer read two 2.4 um scans' grids at the wrong scale)",
+   "limits": "coverage reads villa's own predicted sheets; one person's line on one scroll; the released v2 lines were smoothed afterward in place of the tests' smoothing"
   }
  ],
  "strokenet_checks": [
@@ -12022,6 +12079,43 @@
     }
    },
    "disclosed": "villa's lasagna-preprocess predict3d (db3dbea) failed twice the same way on one box's crop; that crop's upper end was moved out 4 voxels and nothing else changed"
+  },
+  {
+   "date": "2026-11-04",
+   "source": "docs/tools/windlabel-box.md",
+   "claim": "Model output: villa's spiral fit (commit e2254ebe, 30,000 steps, seeds 1 to 3, the same settings for every arm) of PHerc0172 (scan 20241024131838, 7.91 um), fit window z 7,424 to 8,448, with and without kit windlabel-box relative windings (split rule none, 12 boxes in the window), scored once by the exact share of truth crossing pairs on the published hand windings in z 7,680 to 8,064, at least 150 voxels from every site an earlier test had scored; rule frozen before any fit",
+   "claim_wording": "the windings lowered the exact share at every seed: 0.459, 0.470 and 0.478 without them, 0.410, 0.392 and 0.396 with them; gain -0.069 (95 % interval -0.091 to -0.046); FAIL. The windings beat a plus-one control by +0.076 (+0.043 to +0.109), so the fit reads them",
+   "verdict": "FAIL",
+   "rule": "PASS needs the lower end of the 95 % interval of the gain on all pairs above 0, the lower end on pairs one winding apart at least -0.01, and the plus-one control beaten",
+   "pairs": 16970,
+   "clusters": 303,
+   "E": {
+    "without_1": 0.459,
+    "without_2": 0.47,
+    "without_3": 0.478,
+    "with_1": 0.41,
+    "with_2": 0.392,
+    "with_3": 0.396
+   },
+   "gain": {
+    "all_pairs": [
+     -0.069,
+     -0.091,
+     -0.046
+    ],
+    "one_winding_apart": [
+     -0.06,
+     -0.077,
+     -0.042
+    ]
+   },
+   "windings_minus_plus_one_control": [
+    0.076,
+    0.043,
+    0.109
+   ],
+   "limits": "one band of one scroll, three seeds, the split cut off (split rule none, not v2), a lasagna field from a run of villa's lasagna-preprocess predict3d made for the test (PHerc0172 has none published)",
+   "umbilicus": "both PHerc0172 step accuracy tests (29 Oct) used the umbilicus-lines-v1 PHerc0172 line, off center between about z 9,950 and 12,200 (docs/evidence/2026-10-21-umbilicus-lines/README.md); their axis checks passed"
   }
  ],
  "contact_barrier_checks": [
@@ -12393,6 +12487,49 @@
    "compared": "scroll-label-snap (https://github.com/aqsnyder/scroll-label-snap) at commit 347ea5b4, unmodified, on 13 x 13 vertex crops",
    "data": "docs/data/pherc0139-snap-sites/pherc0139_twoscan_vertices.csv (sha256 14fb0a7c5a0bd3623bad9c80ab87b8b2d78e4e6a656f73940813cf92beb336a7), CC BY-NC 4.0",
    "limits": "one scroll, spent development sites, small crops; scroll-label-snap is built for whole meshes and was untuned here; labelsnap's face finder resembles the truth's face definition, so it may have a home advantage; not a general ranking"
+  },
+  {
+   "date": "2026-10-30",
+   "tool": "kit snap face per vertex on a +-16 voxel window with a +-12 fallback and no contrast floor (FACE_SNAP_WINDOW16; labelsnap --half 16 --fallback-half 12 --min-contrast 0) against community snaps on the PHercMANBp fragment",
+   "source": "https://github.com/ScrollPrize/villa/pull/2368 (update of 30 Oct 2026); docs/tools/labelsnap.md",
+   "claim": "Model output, a comparison with every rule fixed before the read and scored once: share of vertices within 1 voxel of the recto face in a second registered scan, an abstention counted as a miss; geometry only, never a reading; a comparison, not proof of 1 voxel accuracy",
+   "scans": "label 20251216152116 (2.399 um, read at 9.596 um); truth 20260427100434 (1.129 um, read at 9.03 um), linked by its published transform.json and registered per site",
+   "sites_drawn": 300,
+   "sites_with_face": 220,
+   "within_1_voxel": {
+    "window16": 0.927,
+    "rectorefine_recto_edge": 0.691,
+    "published": 0.245,
+    "recto_offset_r2_ungated": 0.232,
+    "recto_offset_r2_min_snr_2": 0.236,
+    "vc_objrefine_shipped": 0.059,
+    "vc_objrefine_full_resolution": 0.027,
+    "vc_objrefine_tuned": 0.205
+   },
+   "window16_hits": 204,
+   "lead_over_best_lower_bound": 0.17,
+   "lead_bound_note": "one-sided 97.5 %, clustered by 150 voxel cell; recto-offset failed its own push-back check and was not counted",
+   "compared": "RectoRefine recto edge (ScrollFiesta bce8a65), recto-offset r2 (16bc31f), vc_objrefine (villa 382e48d), grow3d snap, RectoRefine midline, surface_placement_audit (villa PR #2147)",
+   "limits": "one fragment, one truth scan at about the label voxel size; the truth face is found with the same half-level face rule, which favors a method built on it; scored by the test harness on its own profiles, equal to the snap's per-vertex offsets on synthetic profiles; run without the default contrast floor"
+  },
+  {
+   "date": "2026-10-29",
+   "tool": "the same +-16 window with a +-12 fallback against community snaps on a band of PHerc0332",
+   "source": "https://github.com/ScrollPrize/villa/pull/2368 (update of 30 Oct 2026); docs/tools/labelsnap.md",
+   "claim": "Model output, a test with every rule fixed before the read and scored once; the comparison held, the 0.90 exactness bar was not reached; geometry only, never a reading",
+   "truth": "two 3.240 um scans of PHerc0332, which agree with each other within 1 voxel at 0.869",
+   "sites_with_face": 326,
+   "within_1_voxel": {
+    "window16": 0.782,
+    "rectorefine_recto_edge": 0.604
+   },
+   "lead_over_best_lower_bound": 0.12,
+   "exactness": {
+    "answered_within_1_voxel": 0.859,
+    "upper_bound": 0.896,
+    "bar": 0.9
+   },
+   "limits": "one band of one scroll; the exactness bar sat above what the two truth scans reach together"
   }
  ],
  "parting_checks": [

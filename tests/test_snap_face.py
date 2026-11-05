@@ -246,5 +246,132 @@ class GapLadderTest(unittest.TestCase):
         self.assertTrue(out[0.0][1].all())
 
 
+class _ExactProfiles:
+    """A sampler for a flat 3 x W grid at z 100 with normals along +z: vertex (i, j) at x 10 j, y 10 i reads its own
+    profile row exactly at the 0.25 voxel samples snap_face asks for."""
+
+    def __init__(self, profs, half, step=0.25):
+        self.profs, self.half, self.step = profs, half, step
+
+    def trilinear(self, q):
+        q = np.asarray(q, np.float64)
+        iy, ix = np.rint(q[:, 1] / 10).astype(int), np.rint(q[:, 0] / 10).astype(int)
+        k = np.rint((q[:, 2] - 100.0 + self.half) / self.step).astype(int)
+        return self.profs[iy, ix, k]
+
+
+@unittest.skipIf(np is None, "needs numpy")
+class WindowFallbackTest(unittest.TestCase):
+    """fallback_half and FACE_SNAP_WINDOW16 (5 November 2026): the face read on +-16, else on +-12."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.root = Path(self.tmp.name)
+        self.axis = ("line", (20.0, 20.0, -400.0), (1.0, 0.0, 0.0))
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def sampler(self, vol, name):
+        return snap.Sampler(snap.open_volume(write_zarr(self.root / name, vol)))
+
+    def mesh(self, z, H=5, W=5):
+        xs, ys, zs = plane_mesh(H, W, z, step=1.0, x0=16.0, y0=16.0)
+        return xs, ys, zs, np.ones(xs.shape, bool)
+
+    def test_wide_window_reaches_a_face_the_default_window_cuts_off(self):
+        sm = self.sampler(band((72, 40, 40), [(20, 30)]), "wide.zarr")      # recto face 19.5, 12.5 below z 32
+        base = dict(snap.FACE_SNAP_PER_VERTEX, min_contrast=0.0)
+        r12 = snap.snap_face(*self.mesh(32.0), sm, axis=self.axis, opts=base)
+        self.assertFalse(r12["apply"].any())
+        self.assertEqual(r12["report"]["abstained"]["ambiguous or off the profile"], 25)
+        r16 = snap.snap_face(*self.mesh(32.0), sm, axis=self.axis, opts=dict(snap.FACE_SNAP_WINDOW16))
+        self.assertTrue(r16["apply"].all())
+        self.assertLess(float(np.abs(r16["zs"] - 19.5).max()), 0.05)
+
+    def test_fallback_measures_where_the_wide_window_runs_out_of_data(self):
+        sm = self.sampler(band((48, 40, 40), [(24, 29)]), "edge.zarr")      # +-16 from z 33 leaves the volume
+        r16 = snap.snap_face(*self.mesh(33.0), sm, axis=self.axis, opts=dict(snap.FACE_SNAP_PER_VERTEX, half=16.0))
+        self.assertFalse(r16["apply"].any())
+        self.assertEqual(r16["report"]["abstained"]["missing data"], 25)
+        r = snap.snap_face(*self.mesh(33.0), sm, axis=self.axis, opts=dict(snap.FACE_SNAP_WINDOW16))
+        self.assertTrue(r["apply"].all())
+        self.assertEqual(int(r["detail"]["reason"].max()), 0)
+        self.assertLess(float(np.abs(r["zs"] - 23.5).max()), 0.05)
+
+    def test_default_is_unchanged_and_side_not_named_is_never_retried(self):
+        sm = self.sampler(band((48, 40, 40), [(24, 29)]), "same.zarr")
+        a = snap.snap_face(*self.mesh(33.0), sm, axis=self.axis)
+        b = snap.snap_face(*self.mesh(33.0), sm, axis=self.axis, opts={"fallback_half": None})
+        for k in ("xs", "ys", "zs", "apply"):
+            np.testing.assert_array_equal(a[k], b[k])
+        np.testing.assert_array_equal(a["detail"]["reason"], b["detail"]["reason"])
+        self.assertEqual(a["report"], b["report"])
+        r = snap.snap_face(*self.mesh(33.0), sm, opts=dict(snap.FACE_SNAP_WINDOW16, target="recto"),
+                           recto_sign=np.zeros((5, 5)))
+        self.assertEqual(r["report"]["abstained"]["side not named"], 25)
+
+    def test_fallback_must_sit_inside_the_window(self):
+        sm = self.sampler(band((48, 40, 40), [(24, 29)]), "bad.zarr")
+        for fb in (12.0, 20.0, 0.0, -1.0):
+            with self.assertRaises(snap.SnapError) as cm:
+                snap.snap_face(*self.mesh(26.0), sm, axis=self.axis, opts={"half": 12.0, "fallback_half": fb})
+            self.assertIn("must be above 0 and below half", str(cm.exception))
+
+    def test_window16_equals_the_rule_read_profile_by_profile(self):
+        """On random synthetic profiles through the whole snap_face path, each vertex's measured offset equals the
+        rule written out directly: snaptruth.sheet_faces (sigma 1) on +-16, else on +-12, the band within 4 voxels.
+        The same check catches a difference when the fallback is off or the window is +-12."""
+        from kit import snaptruth
+        rng = np.random.default_rng(20261105)
+        step, half, W = 0.25, 16.0, 100
+        t = np.arange(-half, half + 0.5 * step, step)
+
+        def profile():
+            p = np.full(len(t), 20.0)
+            for _ in range(int(rng.integers(1, 4))):
+                c, w, a = rng.uniform(-22, 22), rng.uniform(1.5, 14), rng.uniform(80, 200)
+                p += a / (1 + np.exp(-(t - (c - w / 2)) / 0.6)) * (1 - 1 / (1 + np.exp(-(t - (c + w / 2)) / 0.6)))
+            p += rng.normal(0, float(rng.choice([0, 5, 15])), len(t))
+            if rng.random() < 0.1:
+                k = int(rng.integers(0, len(t)))
+                p[k:k + int(rng.integers(1, 20))] = np.nan
+            return p
+
+        profs = np.array([[profile() for _ in range(W)] for _ in range(3)])
+        rsg = rng.choice([1.0, -1.0], size=(3, W))
+        xs, ys = np.meshgrid(np.arange(W, dtype=np.float32) * 10, np.arange(3, dtype=np.float32) * 10)
+        zs = np.full(xs.shape, 100.0, np.float32)
+        r = snap.snap_face(xs, ys, zs, np.ones(xs.shape, bool), _ExactProfiles(profs, half), recto_sign=rsg,
+                           opts=dict(snap.FACE_SNAP_WINDOW16), face_opts={"sigma": 1.0})
+        got = r["detail"]["measured"].astype(np.float64)
+
+        def rule(p, rs, windows):
+            for h in windows:
+                keep = np.abs(t) <= h + 1e-6
+                if not np.isfinite(p[keep]).all():
+                    continue
+                f = snaptruth.sheet_faces(t[keep], p[keep], rs, at=0.0, opts={"sigma": 1.0})
+                if not f["ok"]:
+                    continue
+                lo, hi = (f["recto"], f["verso"]) if rs > 0 else (f["verso"], f["recto"])
+                if (0.0 if lo <= 0.0 <= hi else min(abs(lo), abs(hi))) > 4.0:
+                    continue
+                return f["recto"]
+            return float("nan")
+
+        for windows, same in (((16.0, 12.0), True), ((16.0,), False), ((12.0,), False)):
+            want = np.array([[rule(profs[i, j], rsg[i, j], windows) for j in range(W)] for i in range(3)])
+            pattern = int((np.isfinite(want) != np.isfinite(got)).sum())
+            both = np.isfinite(want) & np.isfinite(got)
+            gap = float(np.abs(want[both] - got[both]).max()) if both.any() else 0.0
+            if same:
+                self.assertEqual(pattern, 0)
+                self.assertLess(gap, 1e-5)
+                self.assertGreater(int(both.sum()), 50)
+            else:
+                self.assertTrue(pattern > 0 or gap > 0.5, windows)
+
+
 if __name__ == "__main__":
     unittest.main()

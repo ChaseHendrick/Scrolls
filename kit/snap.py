@@ -1036,6 +1036,10 @@ FACE_SNAP_DEFAULTS = {
     "thick_ref_pct": 25.0, # the reference thickness: this percentile of the mesh's measured band thicknesses (a low
                            # one, so it stays a single sheet's thickness while up to most of the mesh is merged)
     "thick_min_bands": 10, # the ratio rule needs at least this many measured bands, else it is off
+    "fallback_half": None, # a vertex that abstains on the +-half profile (missing data, low contrast, no band,
+                           # ambiguous or off the profile, too far; never side not named) is measured again on the
+                           # +-fallback_half samples of the same profile, its level set from those samples alone;
+                           # the reason kept is the last window's. None: off. Must be above 0 and below half
 }
 
 # Per-vertex form: no jump rejection and no support rule, holes still filled from neighbors. It is meant for stored
@@ -1051,6 +1055,13 @@ FACE_SNAP_PER_VERTEX = {"jump": 1e9, "min_support": 1}
 # there; with the rule they stay where they are. The ratio is set from that geometry (two sheets plus a gap is at least
 # 2 thicknesses; 1.8 leaves room for thickness spread and blur), not fitted to scroll data.
 FACE_SNAP_PER_VERTEX_MERGED = {"jump": 1e9, "min_support": 1, "max_thick_ratio": 1.8}
+
+# The per-vertex form on a +-16 voxel window with a +-12 fallback and no contrast floor (5 November 2026,
+# FACE_SNAP_WINDOW16). The face level sits half way between the profile's 10th and 90th percentiles, so when a vertex
+# sits deep in a thick band a +-12 window holds too little gap, the level comes out too high and the face lands about
+# a voxel inside the band; a +-16 window fixes most of those and +-12 catches the few that +-16 drops. The same
+# setting as villa's snap_labels FACE_SNAP_WINDOW16 (ScrollPrize/villa #2368). Frozen comparisons: docs/tools/labelsnap.md.
+FACE_SNAP_WINDOW16 = {"jump": 1e9, "min_support": 1, "half": 16.0, "fallback_half": 12.0, "min_contrast": 0.0}
 
 # Why a vertex has no own face offset, per vertex in snap_face's result["detail"]["reason"] (uint8 grid). 0 means
 # the vertex measured its own offset and kept it; a vertex with a nonzero reason may still move, by an offset filled
@@ -1138,6 +1149,11 @@ def snap_face(xs, ys, zs, valid, sampler, axis=None, recto_sign=None, opts=None,
     if o["target"] == "mid":
         side_ok = np.ones(nv, bool)
     half, step = float(o["half"]), float(o["step"])
+    fb = o.get("fallback_half")
+    if fb is not None:
+        fb = float(fb)
+        if not 0.0 < fb < half:
+            raise SnapError(f"fallback_half {fb:g} must be above 0 and below half {half:g}")
     t = np.arange(-half, half + 0.5 * step, step)
     prof = _profile(sampler, base, nvx, t, batch) if nv else np.zeros((0, len(t)))
     fo = dict(snaptruth.FACE_DEFAULTS)
@@ -1159,42 +1175,54 @@ def snap_face(xs, ys, zs, valid, sampler, axis=None, recto_sign=None, opts=None,
         why[reason] += 1
         code[i] = _FACE_REASON_CODE[reason]
 
-    for i in range(nv):
-        p = prof[i]
+    windows = [None]                      # None: the whole +-half profile
+    if fb is not None:
+        windows.append(np.abs(t) <= fb + 1e-6)
+
+    def measure(i, tw, p):
+        """One window of vertex i's profile: (None, target offset, thickness) or (reason, None, None)."""
         if not np.isfinite(p).all():
-            skip(i, "missing data")
-            continue
-        if not side_ok[i]:
-            skip(i, "side not named")
-            continue
+            return "missing data", None, None
         if o["level"] is None:
-            r = snaptruth.sheet_faces(t, p, rs[i], at=0.0, opts=fo)
+            r = snaptruth.sheet_faces(tw, p, rs[i], at=0.0, opts=fo)
             vcon[i] = r["contrast"]
+            vsep[i] = np.nan
             if r["contrast"] < floor:
-                skip(i, "low contrast")
-                continue
+                return "low contrast", None, None
             if not r["ok"]:
-                skip(i, "no band" if r["why"] == "no band" else "ambiguous or off the profile")
-                continue
+                return ("no band" if r["why"] == "no band" else "ambiguous or off the profile"), None, None
             vsep[i] = r["second"] - r["dist"]
             lo, hi = (r["recto"], r["verso"]) if rs[i] > 0 else (r["verso"], r["recto"])
         else:
             ps = snaptruth.smooth(p, fo["sigma"] / step)
             vcon[i] = float(np.subtract(*np.percentile(ps, [90, 10])))
             if vcon[i] < floor:
-                skip(i, "low contrast")
-                continue
-            lo, hi, good = _band_at_level(t, ps, float(o["level"]), 0.0, fo["ambiguous"])
+                return "low contrast", None, None
+            lo, hi, good = _band_at_level(tw, ps, float(o["level"]), 0.0, fo["ambiguous"])
             if not good:
-                skip(i, "ambiguous or off the profile")
-                continue
+                return "ambiguous or off the profile", None, None
         recto, verso = (lo, hi) if rs[i] > 0 else (hi, lo)
         tgt = {"recto": recto, "verso": verso, "mid": 0.5 * (lo + hi)}[o["target"]]
         if (0.0 if lo <= 0.0 <= hi else min(abs(lo), abs(hi))) > o["max_move"]:
-            skip(i, "too far")
+            return "too far", None, None
+        return None, tgt, hi - lo
+
+    for i in range(nv):
+        if fb is None and not np.isfinite(prof[i]).all():
+            skip(i, "missing data")
+            continue
+        if not side_ok[i]:
+            skip(i, "side not named")
+            continue
+        for w in windows:
+            reason, tgt, th = measure(i, t, prof[i]) if w is None else measure(i, t[w], prof[i][w])
+            if reason is None:
+                break
+        if reason is not None:
+            skip(i, reason)               # the last window's reason
             continue
         d[i] = tgt
-        thick[i] = hi - lo
+        thick[i] = th
     cap = float("inf")
     if o.get("max_thick") is not None:
         cap = float(o["max_thick"])
@@ -1522,7 +1550,8 @@ def face_options(args):
     if args.mode == "recto" and args.face_target not in (None, "recto"):
         raise SnapError(f"--mode recto snaps to the recto face; for {args.face_target} use --mode face "
                         f"--face-target {args.face_target}")
-    for key, name in (("half", "face_half"), ("step", "face_step"), ("max_move", "face_max_move"),
+    for key, name in (("half", "face_half"), ("fallback_half", "face_fallback_half"), ("step", "face_step"),
+                      ("max_move", "face_max_move"),
                       ("level", "face_level"), ("min_radial", "face_min_radial"), ("jump", "face_jump"),
                       ("sigma", "face_sigma"), ("min_support", "face_min_support"),
                       ("min_contrast", "face_min_contrast"), ("contrast_frac", "face_contrast_frac")):
@@ -1720,6 +1749,8 @@ def build_parser(p):
                    help="FACE_SNAP_PER_VERTEX: no jump rejection and no support rule (holes still filled)")
     fd = FACE_SNAP_DEFAULTS
     for name, typ, hlp in (("half", float, "profile half-length along the normal, voxels"),
+                           ("fallback_half", float, "measure a vertex that abstains on +-half again on this "
+                                                    "shorter window of the same profile, voxels"),
                            ("step", float, "profile sample step, voxels"),
                            ("max_move", float, "a band farther than this abstains, voxels"),
                            ("level", float, "one global CT level for the band (default: per profile, half way "

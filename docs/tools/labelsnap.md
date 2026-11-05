@@ -18,7 +18,7 @@
 | Go-ahead | Not needed for a local run or reads of the public open-data bucket |
 | Released | Public `main` from the pull request that adds this page (October 2026); the same code shipped earlier inside AutoPipeline 0.1.10 (branch `submission/progress-2026-10-fix10`, 29 October 2026). The Snapped Labels dataset (snapped-labels) was made with it and with finesnap |
 | Guide | [snapped-labels](snapped-labels.md) (the released dataset and its viewer), [snap](snap.md) (the snap underneath), [finesnap](finesnap.md) (the same snap on a finer scan) |
-| Checked | 2026-10-29 against commit `afcc05a` |
+| Checked | 2026-11-05 against commit `cc5f793` |
 
 ## What it does
 
@@ -93,6 +93,21 @@ Caveats: one scroll and one band, with 128 of the 173 scored vertices on w038. T
 
 Real data render: a chart of scores, with no CT pixels, mesh or map; Vesuvius Challenge open data, CC BY-NC 4.0. Made by `scripts/experiments/lsnap-realdrift/chart.py`; a [dark copy](../assets/labelsnap/labelsnap-realdrift-dark.png) is beside it.
 
+**A wider window: `--half 16 --fallback-half 12 --min-contrast 0`** (30 October 2026, Model output; every rule fixed before the read, sites drawn once from geometry, scored once). The face level sits half way between the profile's 10th and 90th percentiles, so when a vertex sits deep in a thick band a +-12 voxel window holds too little gap, the level comes out too high and the face lands about a voxel inside the band. This setting (`kit.snap.FACE_SNAP_WINDOW16`) reads the face on a +-16 voxel profile, drops back to +-12 of the same profile where +-16 abstains, and has no mesh-wide contrast floor. It was compared on the PHercMANBp fragment, which is not prize-eligible: label scan `20251216152116` (2.399 um, read at 9.596 um), truth the recto face in the second scan `20260427100434` (1.129 um, read at 9.03 um), linked by its published `transform.json` and registered per site. Of 300 sites, one published label vertex each from the 11 published windings, the second scan showed a face at 220. At those 220, counting an abstention as a miss, the share within 1 voxel of that face:
+
+| Method | Within 1 voxel |
+| --- | ---: |
+| `--half 16 --fallback-half 12 --min-contrast 0` | 92.7 % (204 of 220) |
+| RectoRefine recto edge (ScrollFiesta `bce8a65`), the strongest community tool tested | 69.1 % |
+| Published label | 24.5 % |
+| recto-offset r2 (TAUIL-Abd-Elilah, `16bc31f`), ungated and `--min-snr 2` | 23.2 % and 23.6 % raw; 42 % and 44 % at its documented 2 voxel inward offset |
+| `vc_objrefine` (villa `382e48d`): shipped thresholds, shipped at full resolution, thresholds tuned on other spent sites | 5.9 %, 2.7 % and 20.5 % |
+| grow3d snap, RectoRefine midline, surface_placement_audit ([villa PR #2147](https://github.com/ScrollPrize/villa/pull/2147)) nearest peak | 14 %, 10 %, 5 % raw; 48 %, 51 %, 55 % scored at their own band target |
+
+The lead over the strongest community tool tested has a one-sided 97.5 % lower bound of +0.17, clustered by 150 voxel cell. recto-offset failed its own push-back check on these sites, so it was not counted; the setting still leads it by at least +0.41. An earlier test of the same kind on a band of PHerc0332 gave the same order: on 326 sites with a face, 78.2 % against 60.4 % for RectoRefine's recto edge, lead lower bound +0.12. That test also set a 90 % exactness bar, and 85.9 % of answered vertices lay within 1 voxel (upper bound 89.6 %); its two 3.240 um truth scans agree with each other within 1 voxel only 86.9 % of the time, so the bar was out of reach of the instrument there.
+
+Caveats: one fragment and one truth scan at about the label voxel size, so this is a comparison, not proof that labels end up within 1 voxel. The fragment was chosen as the test site after another candidate's truth scan failed its check. The truth face is found with the same half-level face rule, which favors a method built on it; tools aimed at the band middle are also scored at their own target. The scores come from the test harness reading the same rule on its own profiles, not from a run of `labelsnap snap` on whole meshes; on synthetic profiles through the whole snap path, the snap's per-vertex offsets equal that rule (test `test_window16_equals_the_rule_read_profile_by_profile`, which also catches the difference when the fallback is off or the window is +-12). With the default contrast floor left on, vertices under it abstain as well; the tests ran without it. The same setting is villa's `FACE_SNAP_WINDOW16` in its snap_labels draft ([villa PR #2368](https://github.com/ScrollPrize/villa/pull/2368)). Numbers: the seventh and eighth units of `label_snap_checks` in [`docs/results.json`](../results.json).
+
 Limits, stated plainly: three scrolls, sites drawn from automatic and hand segments of their scans; PHerc0814 is held out by site, not by scroll; the tests show labels moved closer to the recto face, not exactness at every vertex; a label displaced toward the verso was not shown to come back (the planted toward-verso control was weak); the midline and nearest-peak snaps aim at the sheet center by design, so part of their loss is the target, not error; finesnap beat labelsnap on PHerc0814 by +0.93 voxels where a finer scan exists. On PHerc0841 the truth scan is the one the Snapped Labels release's finesnap read, so the released PHerc0841 meshes were not scored. Scored against a finer scan's face found with labelsnap's own band rule; with a face rule sharing neither, the lead held at about half the size (+1.04, +1.23 voxels). Numbers: `label_snap_checks` in [`docs/results.json`](../results.json).
 
 Claim label: None for the products (geometry and masks, no claim); Model output for the measured placement against independent scans on PHerc0139, PHerc0814 and PHerc0841, and for the comparison with scroll-label-snap; Untested idea for the confidence ranking and for other scrolls.
@@ -109,7 +124,9 @@ usage: python -m kit labelsnap snap [-h] --volume VOLUME [--level LEVEL]
                                     [--recto-sign {1.0,-1.0}]
                                     [--target {recto,mid,verso}] [--merged]
                                     [--no-merged] [--face-sigma FACE_SIGMA]
-                                    [--max-move MAX_MOVE] [--no-label]
+                                    [--max-move MAX_MOVE] [--half HALF]
+                                    [--fallback-half FALLBACK_HALF]
+                                    [--min-contrast MIN_CONTRAST] [--no-label]
                                     [--label-level LABEL_LEVEL]
                                     [--ignore-halo IGNORE_HALO]
                                     [--label-step LABEL_STEP]
@@ -135,6 +152,9 @@ usage: python -m kit labelsnap snap [-h] --volume VOLUME [--level LEVEL]
 | `--no-merged` | off | the default since 27 Oct 2026 (kept for old commands) |
 | `--face-sigma FACE_SIGMA` | `1.0` | smoothing of the band finder along the profile, voxels |
 | `--max-move MAX_MOVE` | none | snap_face's max_move (default 4 voxels) |
+| `--half HALF` | none | profile half-length along the normal (default 12 voxels) |
+| `--fallback-half FALLBACK_HALF` | none | measure a vertex that abstains on +-half again on this shorter window (default off); must be above 0 and below the half-length |
+| `--min-contrast MIN_CONTRAST` | none | least profile contrast, CT units; 0 turns the floor off (default: a quarter of the mesh's 1st to 99th percentile window) |
 | `--no-label` | off | skip the OME-Zarr surface label |
 | `--label-level LABEL_LEVEL` | `0` | the image level the label array matches |
 | `--ignore-halo IGNORE_HALO` | none | ignore band along the normal, level-0 voxels (default max_move) |
@@ -227,14 +247,14 @@ usage: python -m kit labelsnap check [-h] [--json] out
 ## How it works
 
 1. Normals by kit snap's rule (central differences on the grid, `cross(d/dcol, d/drow)`).
-2. Per vertex, a trilinear profile of the CT along the normal from -12 to 12 voxels in steps of 0.25 (`FACE_SNAP_DEFAULTS` `half`, `step`).
+2. Per vertex, a trilinear profile of the CT along the normal from -12 to 12 voxels in steps of 0.25 (`FACE_SNAP_DEFAULTS` `half`, `step`; `--half` changes the length). With `--fallback-half F`, a vertex that abstains on that profile (missing data, low contrast, no band, ambiguous or off the profile, too far; never side not named) is measured again on the samples within +-F of the same profile, its level set from those samples alone; the reason kept is the last window's.
 3. `kit.snaptruth.sheet_faces` on that profile (smoothing `--face-sigma` 1.0, level halfway between the 10th and 90th percentiles) gives the band nearest the vertex and its two faces; the recto face is the one toward the axis.
 4. Abstain rules (above); with `--merged`, the merged-band cap is 1.8 times the 25th percentile of the mesh's measured band thicknesses, applied when at least 10 bands were measured.
 5. Per-vertex form: no jump rejection, holes filled from measured neighbors by normalized convolution (`min_support` 1), offsets clipped to `max_move` plus the profile half-length.
 6. The label: each grid cell sampled bilinearly every `--label-step` voxels; an ignore cell also sampled along its normal over the halo; samples rounded to voxels; surface wins over ignore where both touch a voxel; written by z slabs of one chunk, at most 2,000,000 samples in memory at once.
 7. The review queue: 4-connected components of abstaining vertices on the grid, each at the vertex nearest its middle.
 
-Constants: `FACE_SNAP_PER_VERTEX_MERGED = {"jump": 1e9, "min_support": 1, "max_thick_ratio": 1.8}`, `LABEL_CHUNK = 128`, `MAX_BATCH_POINTS = 2_000_000`, defaults in `DEFAULTS`.
+Constants: `FACE_SNAP_PER_VERTEX_MERGED = {"jump": 1e9, "min_support": 1, "max_thick_ratio": 1.8}`, `FACE_SNAP_WINDOW16 = {"jump": 1e9, "min_support": 1, "half": 16.0, "fallback_half": 12.0, "min_contrast": 0.0}` (in `kit/snap.py`), `LABEL_CHUNK = 128`, `MAX_BATCH_POINTS = 2_000_000`, defaults in `DEFAULTS`.
 
 ## Cost and time
 
@@ -252,10 +272,11 @@ Local CPU only; it rents nothing. Measured: the synthetic quick start (above). A
 
 ## Tests
 
-`python3 -m unittest tests.test_labelsnap` (18 tests, under 10 s here): the gap ladder (snaps from gaps of 2 and 4 voxels onto the recto face, abstains `too thick` under 1 with `merged=True`), the default without the merged-band rule, the detail grids, the confidence factors, the axis refusal, connected components, review regions and the VC3D document, the surface label (values, halo, surface winning, level scale, refusal to overwrite, read back through kit's volume reader), and the command line end to end with `check` passing on a good folder and failing on a tampered one, `--label-level 1` on a 2-level pyramid (surface voxels at level-1 z 13 to 14, OME scale 2), the anisotropic-level refusal, and `snap` exiting 1 when its own check fails. Not covered: real CT, a whole segment, URLs. The tests against independent scans in Checks and controls ran outside this repository's test suite.
+`python3 -m unittest tests.test_labelsnap` (19 tests, under 10 s here): the gap ladder (snaps from gaps of 2 and 4 voxels onto the recto face, abstains `too thick` under 1 with `merged=True`), the default without the merged-band rule, the detail grids, the confidence factors, the axis refusal, connected components, review regions and the VC3D document, the surface label (values, halo, surface winning, level scale, refusal to overwrite, read back through kit's volume reader), and the command line end to end with `check` passing on a good folder and failing on a tampered one, `--label-level 1` on a 2-level pyramid (surface voxels at level-1 z 13 to 14, OME scale 2), the anisotropic-level refusal, `snap` exiting 1 when its own check fails, and `--half 16 --fallback-half 12 --min-contrast 0` reaching the snap (with a fallback outside the window refused, exit 2). `tests/test_snap_face.py` (`WindowFallbackTest`) covers the window and fallback themselves. Not covered: real CT, a whole segment, URLs. The tests against independent scans in Checks and controls ran outside this repository's test suite.
 
 ## History
 
+- 2026-11-05: `--half`, `--fallback-half` and `--min-contrast`, with `kit.snap.FACE_SNAP_WINDOW16` and `snap_face`'s `fallback_half`; the PHercMANBp and PHerc0332 comparisons of the +-16 window in Checks and controls. Defaults unchanged (on top of `cc5f793`).
 - 2026-11-03: the 108-site PHerc0139 development table, with scroll-label-snap's placements beside labelsnap's, published in [`docs/data/pherc0139-snap-sites/`](../data/pherc0139-snap-sites/README.md); no code change.
 - 2026-10-29: on public `main` with kit snap and kit finesnap (on top of `afcc05a`); the code is the AutoPipeline 0.1.10 copy (`eea2df5`).
 - 2026-10-27: the default drops the merged-band rule after the PHerc0814 test (the rule cost 0.52 voxels); `--merged` restores the old behavior (`eea2df5`).

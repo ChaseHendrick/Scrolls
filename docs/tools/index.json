@@ -1049,73 +1049,73 @@
     {
      "name": "Checks and controls",
      "start_line": 62,
-     "end_line": 69,
+     "end_line": 71,
      "applicable": true
     },
     {
      "name": "Commands and options",
-     "start_line": 70,
-     "end_line": 93,
+     "start_line": 72,
+     "end_line": 95,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 94,
-     "end_line": 111,
+     "start_line": 96,
+     "end_line": 113,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 112,
-     "end_line": 115,
+     "start_line": 114,
+     "end_line": 117,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 116,
-     "end_line": 136,
+     "start_line": 118,
+     "end_line": 138,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 137,
-     "end_line": 152,
+     "start_line": 139,
+     "end_line": 154,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 153,
-     "end_line": 156,
+     "start_line": 155,
+     "end_line": 158,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 157,
-     "end_line": 160,
+     "start_line": 159,
+     "end_line": 162,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 161,
-     "end_line": 170,
+     "start_line": 163,
+     "end_line": 172,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 171,
-     "end_line": 178,
+     "start_line": 173,
+     "end_line": 180,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 179,
-     "end_line": 182,
+     "start_line": 181,
+     "end_line": 185,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 183,
-     "end_line": 188,
+     "start_line": 186,
+     "end_line": 191,
      "applicable": true
     }
    ]
@@ -7041,8 +7041,8 @@
     "text": "Not needed for a local run or reads of the public open-data bucket"
    },
    "checked": {
-    "date": "2026-10-29",
-    "commit": "afcc05a"
+    "date": "2026-11-05",
+    "commit": "cc5f793"
    },
    "license": null,
    "fields": {
@@ -7060,7 +7060,7 @@
     "Go-ahead": "Not needed for a local run or reads of the public open-data bucket",
     "Released": "Public `main` from the pull request that adds this page (October 2026); the same code shipped earlier inside AutoPipeline 0.1.10 (branch `submission/progress-2026-10-fix10`, 29 October 2026). The Snapped Labels dataset (snapped-labels) was made with it and with finesnap",
     "Guide": "[snapped-labels](snapped-labels.md) (the released dataset and its viewer), [snap](snap.md) (the snap underneath), [finesnap](finesnap.md) (the same snap on a finer scan)",
-    "Checked": "2026-10-29 against commit `afcc05a`"
+    "Checked": "2026-11-05 against commit `cc5f793`"
    },
    "page": "docs/tools/labelsnap.md",
    "sections": [
@@ -7085,73 +7085,73 @@
     {
      "name": "Checks and controls",
      "start_line": 73,
-     "end_line": 99,
+     "end_line": 114,
      "applicable": true
     },
     {
      "name": "Commands and options",
-     "start_line": 100,
-     "end_line": 157,
+     "start_line": 115,
+     "end_line": 177,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 158,
-     "end_line": 180,
+     "start_line": 178,
+     "end_line": 200,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 181,
-     "end_line": 186,
+     "start_line": 201,
+     "end_line": 206,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 187,
-     "end_line": 209,
+     "start_line": 207,
+     "end_line": 229,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 210,
-     "end_line": 226,
+     "start_line": 230,
+     "end_line": 246,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 227,
-     "end_line": 238,
+     "start_line": 247,
+     "end_line": 258,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 239,
-     "end_line": 242,
+     "start_line": 259,
+     "end_line": 262,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 243,
-     "end_line": 252,
+     "start_line": 263,
+     "end_line": 272,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 253,
-     "end_line": 256,
+     "start_line": 273,
+     "end_line": 276,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 257,
-     "end_line": 263,
+     "start_line": 277,
+     "end_line": 284,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 264,
-     "end_line": 270,
+     "start_line": 285,
+     "end_line": 291,
      "applicable": true
     }
    ]
@@ -14105,8 +14105,8 @@
     "text": "Not needed for a local run or a read of the public open-data bucket"
    },
    "checked": {
-    "date": "2026-10-29",
-    "commit": "afcc05a"
+    "date": "2026-11-05",
+    "commit": "cc5f793"
    },
    "license": null,
    "fields": {
@@ -14124,7 +14124,7 @@
     "Go-ahead": "Not needed for a local run or a read of the public open-data bucket",
     "Released": "Public `main` from the pull request that adds this page (October 2026); `kit/snap.py` shipped earlier inside the AutoPipeline package since 2026-10-14 (branch `submission/progress-2026-10` and its fix releases, the latest `submission/progress-2026-10-fix10`)",
     "Guide": "[labelsnap](labelsnap.md) and [finesnap](finesnap.md), the label snaps built on the band face snap",
-    "Checked": "2026-10-29 against commit `afcc05a`"
+    "Checked": "2026-11-05 against commit `cc5f793`"
    },
    "page": "docs/tools/snap.md",
    "sections": [
@@ -14155,67 +14155,67 @@
     {
      "name": "Commands and options",
      "start_line": 114,
-     "end_line": 254,
+     "end_line": 257,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 255,
-     "end_line": 317,
+     "start_line": 258,
+     "end_line": 320,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 318,
-     "end_line": 329,
+     "start_line": 321,
+     "end_line": 332,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 330,
-     "end_line": 380,
+     "start_line": 333,
+     "end_line": 383,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 381,
-     "end_line": 424,
+     "start_line": 384,
+     "end_line": 428,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 425,
-     "end_line": 467,
+     "start_line": 429,
+     "end_line": 471,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 468,
-     "end_line": 484,
+     "start_line": 472,
+     "end_line": 488,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 485,
-     "end_line": 494,
+     "start_line": 489,
+     "end_line": 498,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 495,
-     "end_line": 502,
+     "start_line": 499,
+     "end_line": 506,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 503,
-     "end_line": 511,
+     "start_line": 507,
+     "end_line": 516,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 512,
-     "end_line": 518,
+     "start_line": 517,
+     "end_line": 523,
      "applicable": true
     }
    ]
@@ -16710,73 +16710,73 @@
     {
      "name": "Checks and controls",
      "start_line": 91,
-     "end_line": 103,
+     "end_line": 105,
      "applicable": true
     },
     {
      "name": "Commands and options",
-     "start_line": 104,
-     "end_line": 262,
+     "start_line": 106,
+     "end_line": 264,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 263,
-     "end_line": 289,
+     "start_line": 265,
+     "end_line": 291,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 290,
-     "end_line": 299,
+     "start_line": 292,
+     "end_line": 301,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 300,
-     "end_line": 338,
+     "start_line": 302,
+     "end_line": 340,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 339,
-     "end_line": 382,
+     "start_line": 341,
+     "end_line": 384,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 383,
-     "end_line": 398,
+     "start_line": 385,
+     "end_line": 400,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 399,
-     "end_line": 407,
+     "start_line": 401,
+     "end_line": 409,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 408,
-     "end_line": 417,
+     "start_line": 410,
+     "end_line": 419,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 418,
-     "end_line": 428,
+     "start_line": 420,
+     "end_line": 430,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 429,
-     "end_line": 440,
+     "start_line": 431,
+     "end_line": 443,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 441,
-     "end_line": 449,
+     "start_line": 444,
+     "end_line": 452,
      "applicable": true
     }
    ]
@@ -19466,67 +19466,67 @@
     {
      "name": "Checks and controls",
      "start_line": 66,
-     "end_line": 84,
+     "end_line": 86,
      "applicable": true
     },
     {
      "name": "Commands and options",
-     "start_line": 85,
-     "end_line": 118,
+     "start_line": 87,
+     "end_line": 120,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 119,
-     "end_line": 126,
+     "start_line": 121,
+     "end_line": 128,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 127,
-     "end_line": 161,
+     "start_line": 129,
+     "end_line": 163,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 162,
-     "end_line": 219,
+     "start_line": 164,
+     "end_line": 221,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 220,
-     "end_line": 230,
+     "start_line": 222,
+     "end_line": 232,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 231,
-     "end_line": 234,
+     "start_line": 233,
+     "end_line": 236,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 235,
-     "end_line": 244,
+     "start_line": 237,
+     "end_line": 246,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 245,
-     "end_line": 252,
+     "start_line": 247,
+     "end_line": 254,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 253,
-     "end_line": 257,
+     "start_line": 255,
+     "end_line": 260,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 258,
-     "end_line": 264,
+     "start_line": 261,
+     "end_line": 267,
      "applicable": true
     }
    ]

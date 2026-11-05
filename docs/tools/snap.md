@@ -18,7 +18,7 @@
 | Go-ahead | Not needed for a local run or a read of the public open-data bucket |
 | Released | Public `main` from the pull request that adds this page (October 2026); `kit/snap.py` shipped earlier inside the AutoPipeline package since 2026-10-14 (branch `submission/progress-2026-10` and its fix releases, the latest `submission/progress-2026-10-fix10`) |
 | Guide | [labelsnap](labelsnap.md) and [finesnap](finesnap.md), the label snaps built on the band face snap |
-| Checked | 2026-10-29 against commit `afcc05a` |
+| Checked | 2026-11-05 against commit `cc5f793` |
 
 ## What it does
 
@@ -141,7 +141,9 @@ usage: python -m kit snap [-h] [--volume VOLUME] [--out OUT]
                           [--min-thick MIN_THICK] [--max-thick MAX_THICK]
                           [--face-target {recto,mid,verso}]
                           [--recto-sign RECTO_SIGN] [--face-per-vertex]
-                          [--face-half FACE_HALF] [--face-step FACE_STEP]
+                          [--face-half FACE_HALF]
+                          [--face-fallback-half FACE_FALLBACK_HALF]
+                          [--face-step FACE_STEP]
                           [--face-max-move FACE_MAX_MOVE]
                           [--face-level FACE_LEVEL]
                           [--face-min-radial FACE_MIN_RADIAL]
@@ -222,6 +224,7 @@ CT face snap (`--source ct --mode face` or `--mode recto`, technique D, `snap_fa
 | `--recto-sign RECTO_SIGN` | none | Instead of an axis: +1 when the recto face lies at negative offsets along the stored normal (normals point outward), -1 when at positive ones. 0 names no side, so every vertex abstains. Refused together with an axis |
 | `--face-per-vertex` | off | `FACE_SNAP_PER_VERTEX`: no jump rejection and no support rule (`jump` 1e9, `min_support` 1); holes are still filled from neighbors |
 | `--face-half FACE_HALF` | none | Left out, `12.0`. Profile half-length along the normal, voxels |
+| `--face-fallback-half FACE_FALLBACK_HALF` | none | Left out, off. Measure a vertex that abstains on +-`--face-half` again on this shorter window of the same profile, voxels; must be above 0 and below `--face-half`. `--face-half 16 --face-fallback-half 12 --face-min-contrast 0` with `--face-per-vertex` is `FACE_SNAP_WINDOW16` |
 | `--face-step FACE_STEP` | none | Left out, `0.25`. Profile sample step, voxels |
 | `--face-max-move FACE_MAX_MOVE` | none | Left out, `4.0`. A band farther than this from the vertex abstains, voxels (0 when the vertex is inside it) |
 | `--face-level FACE_LEVEL` | none | One global CT level for the band. Left out, each profile's own level, half way between its 10th and 90th percentiles |
@@ -384,6 +387,7 @@ All refusals print `kit snap: MESSAGE` on stderr and exit 2.
 
 | What you see | Why | What to do |
 | --- | --- | --- |
+| `fallback_half F must be above 0 and below half H` | `--face-fallback-half` (or `opts["fallback_half"]`) at or below 0, or at or above the profile half-length | Give a fallback shorter than `--face-half`, such as 12 with 16 |
 | `face target must be recto, mid or verso, not 'X'` | `snap_face` was given an `opts["target"]` other than those three | Use `recto` (the band face toward the scroll axis), `mid` (its midline) or `verso` |
 | `usage: ...` then `error: ...` on stderr, exit code 2 | A missing or wrong argument | Check the command against Commands and options |
 | `kit snap: MESSAGE`, exit code 2 | Any refusal below, a mesh or TIFF format error, an `OSError`, or a zarr store or read error, with its message | Read the message; the rows below cover the module's own refusals |
@@ -451,7 +455,7 @@ Defaults are `RectoRefineOpts_default` (`recto_refine.c` lines 29 to 61) and `sc
 
 1. Normals as in technique A; vertices without one keep their place.
 2. The side: with an axis, the radial direction at each vertex; a vertex whose \|normal . radial\| is below `--face-min-radial` (0.3) has no named side and abstains, unless the target is `mid`. With `--recto-sign`, its sign for every vertex.
-3. A trilinear CT profile along the normal from -`--face-half` to +`--face-half` (12 voxels) every `--face-step` (0.25).
+3. A trilinear CT profile along the normal from -`--face-half` to +`--face-half` (12 voxels) every `--face-step` (0.25). With `--face-fallback-half F`, a vertex that abstains in step 4 for any reason but side not named is measured again on the samples within +-F of the same profile, its level set from those samples alone; the reason kept is the last window's.
 4. Bands: `kit.snaptruth.sheet_faces` on each profile (level `--face-level-frac`, 0.5, between the 10th and 90th percentiles after light smoothing), or with `--face-level` the runs at or above that one level. The nearest band is taken; it abstains when ambiguous (a second band at most 2 voxels farther than the nearest), running off the profile, below the contrast floor (`--face-min-contrast`, or `--face-contrast-frac` 0.25 of the mesh's 1st to 99th percentile window), or more than `--face-max-move` (4) voxels away.
 5. The target is the recto face, the verso face or the midpoint of the two faces.
 6. Regularize on the grid: drop an offset with fewer than `--face-min-support` (3) measured offsets in its 5 x 5 window; reject offsets more than `--face-jump` (2) from the 5 x 5 nan-median; fill holes by normalized convolution with a Gaussian of 1 grid cell where enough neighbors were measured; with `--face-sigma` above 0, smooth as technique A does.
@@ -502,6 +506,7 @@ python -m unittest tests.test_snap tests.test_snap_face tests.test_snaptruth tes
 
 ## History
 
+- 2026-11-05: `snap_face` option `fallback_half` (`--face-fallback-half`) and the preset `FACE_SNAP_WINDOW16` (+-16 window, +-12 fallback, no contrast floor; [labelsnap](labelsnap.md) has the comparisons); outputs at every existing setting unchanged (on top of `cc5f793`).
 - 2026-10-29: on public `main` with kit labelsnap and kit finesnap (on top of `afcc05a`); the code is the AutoPipeline 0.1.10 copy (`eea2df5`).
 - 2026-10-21: `snap_face` also returns `detail`: per-vertex grids of the vertex's own measured offset, its reason (`FACE_REASONS`), the profile contrast, band thickness and band separation, with the contrast floor and thickness cap; existing outputs are unchanged. [labelsnap](labelsnap.md) builds its abstain mask and confidence on them (`eea2df5`).
 - 2026-10-16: technique D with a command line: `--source ct --mode recto` and `--mode face --face-target recto|mid|verso`, `--recto-sign`, the `--face-*` options and a default `--check` plant of 2 voxels for it; `nanmedian_filter` sorts the window stack itself, with the same values bit for bit (`eea2df5`).
