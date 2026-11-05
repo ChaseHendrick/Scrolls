@@ -344,7 +344,7 @@
   "real-runs-need-villa-s-vc3d-tools-python3": {
    "line": 43,
    "sources": {
-    "docs/releases.json": "e8aa6bd7780c88c8b1f3256996d3ba74b9cada8798249e4ff8f232cb5aa1f4a0"
+    "docs/releases.json": "f1e08e992a28a0ba6d68761ed034017078b1b5fbda47fd1e3f53734ce3193ab4"
    },
    "doc": "docs/pipeline-october-2026.md",
    "reasons": {
@@ -354,13 +354,13 @@
   "ringleader-labeled-every-m7-sheet-pixel-of-held": {
    "line": 273,
    "sources": {
-    "docs/tools/ringleader.md": "13caaf43cccbeda6274634d3a183a55257d771c09e08f3cb03c635e339486949"
+    "docs/tools/ringleader.md": "5e16f0d9dbaeeb482e030ee045cf4c11e5627bca09147cec46d0392cbb32a18a"
    }
   },
   "ringleader-s-one-solve-winding-labels-passed-frozen": {
    "line": 18,
    "sources": {
-    "docs/tools/ringleader.md": "13caaf43cccbeda6274634d3a183a55257d771c09e08f3cb03c635e339486949"
+    "docs/tools/ringleader.md": "5e16f0d9dbaeeb482e030ee045cf4c11e5627bca09147cec46d0392cbb32a18a"
    },
    "doc": "docs/FINDINGS.md"
   },

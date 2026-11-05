@@ -1,0 +1,37 @@
+{
+  "schema": "scrolls-media/1",
+  "name": "ladders-concept",
+  "label": "Synthetic demo",
+  "alt": "Five slow frames on a drawn spiral of seven windings: the sheets in gray; Ringleader's winding labels in alternating blue and orange with three wrong pieces in violet; the wrong pieces and their neighbors faded out; up to 8 dots on each remaining piece; and the dots as one relative-winding collection with wind_a 0, 1, 2 and winding_is_absolute false.",
+  "caption": "Synthetic demo of scripts/ringleader/ladders.py's rule on a drawn spiral. No scan data; geometry, not a reading.",
+  "license": "Apache-2.0",
+  "release_id": null,
+  "data": null,
+  "sources": [],
+  "outputs": [
+    {
+      "file": "ladders-concept.gif",
+      "bytes": 103470,
+      "sha256": "af0b608b4337b39142d680f5672793dfde508a07221d4468b4e389c7f37c3c7b",
+      "width": 800,
+      "height": 860
+    },
+    {
+      "file": "ladders-concept.png",
+      "bytes": 99387,
+      "sha256": "139021ef689823fff685d7a0e78c4da4a81055cc333edd943f312978366f7a95",
+      "width": 800,
+      "height": 860
+    }
+  ],
+  "inputs": [],
+  "made": "2026-11-05",
+  "tool": {
+    "scripts": [
+      "scripts/experiments/ringleader-ladders/concept_gif.py"
+    ],
+    "scripts_sha256": "9a576ae9436aff2fec6555f238dd237056c7047fa1163763643da76fcb787b62",
+    "base_commit": "0a95fdda1cf52f8f23394cbb8d4bfdadd034aa2a"
+  },
+  "command": "python3 scripts/experiments/ringleader-ladders/concept_gif.py --out docs/assets/ringleader/ladders-concept.gif"
+}

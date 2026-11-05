@@ -11259,7 +11259,7 @@
    "id": "ringleader",
    "name": "ringleader",
    "tagline": "label every sheet in a z-slice with its winding in one solve",
-   "summary": "Ringleader labels every sheet pixel of a published surface prediction (such as m7) in a z-slice or a stack of slices with its winding, in one convex solve about the umbilicus, and scores the labels against published hand windings.",
+   "summary": "Ringleader labels every sheet pixel of a surface prediction (such as m7) in a z-slice or stack with its winding, in one convex solve about the umbilicus, scores the labels against hand windings, and (1.1.0) gives villa's spiral fit its surest labels as relative windings.",
    "status": "Current",
    "kind": [
     "script folder"
@@ -11270,7 +11270,9 @@
     "python3 scripts/ringleader/run_slices.py",
     "python3 scripts/ringleader/slab3d.py",
     "python3 scripts/ringleader/score.py",
-    "python3 scripts/ringleader/fitlabel.py convert"
+    "python3 scripts/ringleader/fitlabel.py convert",
+    "python3 scripts/ringleader/ladders.py ladders",
+    "python3 scripts/ringleader/ladders.py grow"
    ],
    "imports": [],
    "code": [
@@ -11282,15 +11284,16 @@
    "tests": [
     "tests/test_ringleader_solve.py",
     "tests/test_ringleader_score.py",
-    "tests/test_ringleader_fitlabel.py"
+    "tests/test_ringleader_fitlabel.py",
+    "tests/test_ringleader_ladders.py"
    ],
    "go_ahead": {
     "needed": false,
     "text": "Not needed: CPU only, public data, local files"
    },
    "checked": {
-    "date": "2026-10-31",
-    "commit": "0f1b080"
+    "date": "2026-11-05",
+    "commit": "0a95fdd"
    },
    "license": "Apache License 2.0 ([`scripts/ringleader/LICENSE`](../../scripts/ringleader/LICENSE))",
    "fields": {
@@ -11298,108 +11301,108 @@
     "Status": "Current",
     "Kind": "script folder",
     "Area": "Surfaces and tracing",
-    "Run": "`python3 scripts/ringleader/m7slices.py`, `python3 scripts/ringleader/run_slices.py`, `python3 scripts/ringleader/slab3d.py`, `python3 scripts/ringleader/score.py`, `python3 scripts/ringleader/fitlabel.py convert`",
+    "Run": "`python3 scripts/ringleader/m7slices.py`, `python3 scripts/ringleader/run_slices.py`, `python3 scripts/ringleader/slab3d.py`, `python3 scripts/ringleader/score.py`, `python3 scripts/ringleader/fitlabel.py convert`, `python3 scripts/ringleader/ladders.py ladders`, `python3 scripts/ringleader/ladders.py grow`",
     "Code": "`scripts/ringleader/`",
-    "Tests": "`tests/test_ringleader_solve.py`, `tests/test_ringleader_score.py`, `tests/test_ringleader_fitlabel.py` (synthetic data only)",
+    "Tests": "`tests/test_ringleader_solve.py`, `tests/test_ringleader_score.py`, `tests/test_ringleader_fitlabel.py`, `tests/test_ringleader_ladders.py` (synthetic data only)",
     "Needs": "Python 3.10 or newer; numpy, scipy (HiGHS `linprog`, sparse graphs, `cKDTree`), scikit-image (`skeletonize`), OR-tools (the `mcf` solver of the v1 settings), numcodecs (to decode m7's blosc chunks); for `score.py` also tifffile and the public `kit/sheetrefs.py` references (`python -m kit hopbench refs`); for `fitlabel.py` villa's Python with torch and villa's `spiral-fitting` folder (`checkpoint_io`, `flatten_spiral_checkpoint`)",
     "Runs on": "Any CPU; no GPU. A two-slice PHerc0139 stack: about 16 s to fetch both m7 slices, 2 min 4 s to label them as one stack (mostly skeleton and geometry; the solve itself 4.3 s) and 36 s to score them; 4 min 35 s once for `python -m kit hopbench refs` (measured 2026-10-31, 4-core cloud container)",
-    "Network": "`vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` over HTTPS: the m7 surface prediction (`m7slices.py`), PHerc0139's umbilicus JSON (`run_slices.py`, `slab3d.py`, `score.py`), the hand-traced windings (`python -m kit hopbench refs`) and, with `--catalog` set to its URL, the catalog `metadata.json`. Nothing else; `fitlabel.py` reads local files only",
-    "Writes": "`m7slices.py`: `DEST/zNNNNN.npy`. `run_slices.py` and `slab3d.py`: `OUT/zNNNNN.npz`, `OUT/params.json`, `OUT/runs.jsonl` (appended), the geometry cache `--geo` (`zNNNNN-HASH.pkl`, `zNNNNN-trackhand.json`) and the umbilicus cache `--cache/json/`. `score.py`: `RUN/score.json` (or `score-clear.json`) and the truth cache `--truth/DIGEST/`. `fitlabel.py convert`: `OUT/zNNNNN.npz`, `OUT/fitlabel.json`, `OUT/pixel/`",
+    "Network": "`vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` over HTTPS: the m7 surface prediction (`m7slices.py`), PHerc0139's umbilicus JSON (`run_slices.py`, `slab3d.py`, `score.py`), the hand-traced windings (`python -m kit hopbench refs`) and, with `--catalog` set to its URL, the catalog `metadata.json`. Nothing else; `fitlabel.py` and `ladders.py` read local files only (`ladders.py` reads the catalog copy beside it unless `--catalog` names a URL)",
+    "Writes": "`m7slices.py`: `DEST/zNNNNN.npy`. `run_slices.py` and `slab3d.py`: `OUT/zNNNNN.npz`, `OUT/params.json`, `OUT/runs.jsonl` (appended), the geometry cache `--geo` (`zNNNNN-HASH.pkl`, `zNNNNN-trackhand.json`) and the umbilicus cache `--cache/json/`. `score.py`: `RUN/score.json` (or `score-clear.json`) and the truth cache `--truth/DIGEST/`. `fitlabel.py convert`: `OUT/zNNNNN.npz`, `OUT/fitlabel.json`, `OUT/pixel/`. `ladders.py ladders`: `OUT/relative_windings.json`, `OUT/ladders.json`, with `--control` `OUT/relative_windings_control.json`. `ladders.py grow`: `OUT/relative_windings_grown.json`, `OUT/relative_windings_grown_control.json`, `OUT/grow.json`",
     "Go-ahead": "Not needed: CPU only, public data, local files",
-    "Released": "Public `main` from the merge of its pull request (prepared 31 Oct 2026), v1.0.0",
+    "Released": "Public `main` from the merge of its pull request (prepared 31 Oct 2026), v1.0.0; v1.1.0 adds `ladders.py` (prepared 5 Nov 2026)",
     "License": "Apache License 2.0 ([`scripts/ringleader/LICENSE`](../../scripts/ringleader/LICENSE))",
-    "Checked": "2026-10-31 against commit `0f1b080`"
+    "Checked": "2026-11-05 against commit `0a95fdd`"
    },
    "page": "docs/tools/ringleader.md",
    "sections": [
     {
      "name": "What it does",
      "start_line": 23,
-     "end_line": 34,
+     "end_line": 40,
      "applicable": true
     },
     {
      "name": "When to use it",
-     "start_line": 35,
-     "end_line": 48,
+     "start_line": 41,
+     "end_line": 55,
      "applicable": true
     },
     {
      "name": "Quick start",
-     "start_line": 49,
-     "end_line": 79,
+     "start_line": 56,
+     "end_line": 94,
      "applicable": true
     },
     {
      "name": "Checks and controls",
-     "start_line": 80,
-     "end_line": 108,
+     "start_line": 95,
+     "end_line": 141,
      "applicable": true
     },
     {
      "name": "Commands and options",
-     "start_line": 109,
-     "end_line": 221,
+     "start_line": 142,
+     "end_line": 288,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 222,
-     "end_line": 241,
+     "start_line": 289,
+     "end_line": 312,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 242,
-     "end_line": 249,
+     "start_line": 313,
+     "end_line": 320,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 250,
-     "end_line": 295,
+     "start_line": 321,
+     "end_line": 368,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 296,
-     "end_line": 319,
+     "start_line": 369,
+     "end_line": 400,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 320,
-     "end_line": 334,
+     "start_line": 401,
+     "end_line": 417,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 335,
-     "end_line": 338,
+     "start_line": 418,
+     "end_line": 421,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 339,
-     "end_line": 348,
+     "start_line": 422,
+     "end_line": 432,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 349,
-     "end_line": 352,
+     "start_line": 433,
+     "end_line": 436,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 353,
-     "end_line": 356,
+     "start_line": 437,
+     "end_line": 441,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 357,
-     "end_line": 363,
+     "start_line": 442,
+     "end_line": 449,
      "applicable": true
     }
    ]

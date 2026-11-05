@@ -1,0 +1,51 @@
+{
+  "schema": "scrolls-media/1",
+  "name": "ladders-test",
+  "label": "Real data render",
+  "alt": "Two charts. Left: on-winding E0 of villa's spiral fit on fresh public PHerc0139 z 1,960 to 2,300 (86 slices, three seeds as dots): alone 0.227, with Ringleader ladders 0.373, with grown ladders 0.409, with the plus-one control ladder 0.107, and Ringleader v1 itself 0.790. Right: the same E0 by distance from the ladder slices, highest next to them (0.74 grown against 0.29 alone) and still ahead past 300 slices.",
+  "caption": "Real data render: a chart of scores (claim label Model output) from the preregistered ladder test on public PHerc0139, read once on 4 November 2026; no CT pixels, mesh or map is shown. Data: Vesuvius Challenge open data, CC BY-NC 4.0.",
+  "license": "CC BY-NC 4.0",
+  "release_id": null,
+  "data": {
+    "scan": "PHerc0139",
+    "segment": "published hand-traced windings (11 scored) in z 1,960 to 2,300",
+    "volume": "20250728140407 (m7 surface prediction frame); villa spiral fit on the 20260102150214 scan's lasagna L2 grid",
+    "voxel_size": "9.362 um (m7 frame)",
+    "credit": "Vesuvius Challenge open data, CC BY-NC 4.0",
+    "labels": "none"
+  },
+  "sources": [
+    "Preregistered ladder test, scored once on 4 November 2026; numbers copied into the chart script"
+  ],
+  "outputs": [
+    {
+      "file": "ladders-test-dark.png",
+      "bytes": 177989,
+      "sha256": "064c70ecf4eff5ed9b0367e56a72bf7f3a7b19294782378bbf48633675e564c6",
+      "width": 1600,
+      "height": 660,
+      "kind": "png",
+      "format": "png"
+    },
+    {
+      "file": "ladders-test-light.png",
+      "bytes": 181571,
+      "sha256": "f3271bdf17d55dc3e4af25328cf21e7583b06973bfa62fcc18b9736afcf3c82c",
+      "width": 1600,
+      "height": 660,
+      "kind": "png",
+      "format": "png"
+    }
+  ],
+  "inputs": [],
+  "made": "2026-11-05",
+  "tool": {
+    "scripts": [
+      "scripts/experiments/ringleader-ladders/chart.py"
+    ],
+    "scripts_sha256": "69baed95609b3e888aea5e7668b951942ee8d8776adf6952e014bb0e45d02aee",
+    "base_commit": "0a95fdda1cf52f8f23394cbb8d4bfdadd034aa2a"
+  },
+  "command": "python3 scripts/experiments/ringleader-ladders/chart.py --out docs/assets/ringleader",
+  "note": "A chart of test numbers only. Two copies, dark and light."
+}
