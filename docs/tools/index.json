@@ -638,6 +638,152 @@
    ]
   },
   {
+   "id": "autocrop",
+   "name": "autocrop",
+   "tagline": "keep the regions of a villa spiral fit whose windings are most likely right",
+   "summary": "Ranks every cell of a villa spiral fit by four checks that need no truth, keeps the better half, and writes the kept regions as villa relative-winding point collections, with a shifted control and a scorer for when winding truth exists.",
+   "status": "Experimental",
+   "kind": [
+    "script"
+   ],
+   "area": "Surfaces and tracing",
+   "commands": [
+    "python3 scripts/autocrop/autocrop.py crops",
+    "score",
+    "readout",
+    "demo"
+   ],
+   "imports": [],
+   "code": [
+    {
+     "path": "scripts/autocrop/autocrop.py",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_autocrop.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed: it reads local files and rents nothing"
+   },
+   "checked": {
+    "date": "2026-11-05",
+    "commit": "cc5f793"
+   },
+   "license": "[Apache-2.0](../../LICENSE)",
+   "fields": {
+    "Id": "`autocrop`",
+    "Status": "Experimental",
+    "Kind": "script",
+    "Area": "Surfaces and tracing",
+    "Run": "`python3 scripts/autocrop/autocrop.py crops`, `score`, `readout`, `demo`",
+    "Code": "`scripts/autocrop/autocrop.py`",
+    "Tests": "`tests/test_autocrop.py`",
+    "Needs": "Python 3.10 or later, numpy, scipy, tifffile, zarr (2.x), and [spiralfiteval](https://github.com/jo-tud/spiralfiteval) (MIT) at commit `217947a`, installed with `pip install \"git+https://github.com/jo-tud/spiralfiteval@217947aff35db6dd8fb912a82423c7c37ea1281d#subdirectory=tools/spiralfiteval\"`; for real use, two villa spiral-fit exports of the same window and the lasagna field they read",
+    "Runs on": "Any CPU; the synthetic demo (192 cells) in about 2 s (measured 2026-11-05, cloud container); 13,465 cells of a 1,024-slice PHerc0139 fit band in about 4 minutes (measured 2026-10-28, cloud container)",
+    "Network": "None",
+    "Writes": "`crops`: four files in `--out-dir` (two point-collection files, the cell file and the record); `score` and `readout`: the `--out` file; `demo`: synthetic fits, a lasagna folder, the crops files and `demo-result.json` under `--out-dir`",
+    "Go-ahead": "Not needed: it reads local files and rents nothing",
+    "Released": "Public `main` since 2026-11-05 (code, Apache-2.0)",
+    "Checked": "2026-11-05 against commit `cc5f793`",
+    "License": "[Apache-2.0](../../LICENSE)"
+   },
+   "page": "docs/tools/autocrop.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 23,
+     "end_line": 32,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 33,
+     "end_line": 44,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 45,
+     "end_line": 63,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 64,
+     "end_line": 98,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 99,
+     "end_line": 177,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 178,
+     "end_line": 181,
+     "applicable": false
+    },
+    {
+     "name": "Inputs",
+     "start_line": 182,
+     "end_line": 188,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 189,
+     "end_line": 231,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 232,
+     "end_line": 252,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 253,
+     "end_line": 262,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 263,
+     "end_line": 266,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 267,
+     "end_line": 276,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 277,
+     "end_line": 280,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 281,
+     "end_line": 284,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 285,
+     "end_line": 292,
+     "applicable": true
+    }
+   ]
+  },
+  {
    "id": "autopipeline",
    "name": "autopipeline",
    "tagline": "run villa's pipeline from a released scan to a scored ink map, unattended",

@@ -114,7 +114,7 @@
       "line": "Command-line tools, benchmarks and script folders that run from a clone of this repository.",
       "area": "Releases and repository",
       "page": "docs/tools/cli.md",
-      "released": "2026-11-04",
+      "released": "2026-11-05",
       "summary": "Command-line tools, benchmarks and script folders that run from a clone of this repository. Each line gives the tool's release date, its weights where it has them, one command to start with, its tool page and its evidence; each page lists the tool's own needs. Their outputs are model output or geometry measurements for a person to check, not readings.",
       "commands": [
         "git clone --depth 1 https://github.com/ChaseHendrick/Scrolls.git",
@@ -804,6 +804,18 @@
           "summary": "Scans a folder of your scripts for references to villa's vesuvius and vc_reader packages and resolves each against villa's tree at a commit (default main), from git alone: villa PR #2440 removed vesuvius.tifxyz, vesuvius.image_proc and vesuvius.Volume. Each break gets a replacement from a map of 31 entries read from #2440, each citing a villa file at baf5e605b; diff compares any two villa commits. A resolved import is not proof a script runs.",
           "command": "python -m kit villaports scan --root YOUR_FOLDER",
           "page": "docs/tools/villaports.md"
+        },
+        {
+          "id": "autocrop",
+          "name": "Autocrop: good regions of a spiral fit",
+          "released": "2026-11-05",
+          "version": "1.0.0",
+          "summary": "Ranks the cells of a villa spiral fit by four checks that need no truth (a second-seed fit, the lasagna normal, sheet spacing, grid regularity), keeps the better half and writes it as villa relative windings with a shifted control. In two tests fixed beforehand (Model output against the organizers' hand windings), pairs inside kept cells got their winding difference right 7.3 points more often than in random crops on a held-out PHerc0172 band (bar 5, 5 of 5 fits), and 8.1 points on PHerc1667, an exception test on reused windings whose lasagna field trained on that scan (weaknesses on the page). Feeding crops back into the fit gave no gain on development; villa's own loss maps, smoothed the same way, did about as well. Code only; not a reading.",
+          "command": "python3 scripts/autocrop/autocrop.py crops --fit RUN --sibling RUN2 --lasagna LASAGNA --windings W0 W1 --out-dir OUT",
+          "page": "docs/tools/autocrop.md",
+          "evidence": "[tests, controls and weaknesses](docs/tools/autocrop.md#checks-and-controls)",
+          "line": "Keeps the regions of a villa spiral fit most likely on the right winding and writes them as relative windings, with controls.",
+          "area": "Surfaces and tracing"
         }
       ],
       "where": "main"

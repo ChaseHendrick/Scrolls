@@ -79,10 +79,11 @@ Command-line tools, benchmarks and script folders that run from a clone of this 
 </details>
 
 <details>
-<summary><b>Surfaces and tracing</b> (15)</summary>
+<summary><b>Surfaces and tracing</b> (16)</summary>
 
 | Tool | What it does |
 | --- | --- |
+| [Autocrop: good regions of a spiral fit](docs/tools/autocrop.md) | Keeps the regions of a villa spiral fit most likely on the right winding and writes them as relative windings, with controls. |
 | [Bounded surface correction (experimental)](docs/tools/surfacefix.md) | Suggests bounded surface shifts using agreement between maps from two traces and keeps only shifts that pass its controls. |
 | [Label snap on a finer registered scan](docs/tools/finesnap.md) | Snaps a label traced on a coarse scan onto the recto face seen in a finer, per-site registered scan of the same scroll. |
 | [Label snap onto the recto face](docs/tools/labelsnap.md) | Moves a tifxyz surface label along its normals onto the recto face of its papyrus band, with an abstain mask and VC3D review points. |

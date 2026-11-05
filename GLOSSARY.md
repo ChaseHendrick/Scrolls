@@ -34,6 +34,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **AutoPipeline (AP)**: The released package that drives villa's VC3D tools and ink detection from a scan through surface checks, rendering and controlled scoring. It records the choices for a run and keeps a control beside each check. See [AutoPipeline](docs/autopipeline/README.md) and the README's released tools list for the current version.
 
+**autocrop (rule main)**: Picking the regions of a villa spiral fit most likely on the right winding. Rule main ranks each cell of 4 by 8 export grid vertices by four signals that need no truth (agreement with a second fit of another seed, the lasagna normal, sheet spacing, grid regularity), averages the ranks, smooths them over the 3 by 3 neighbors and keeps the top half ([page](docs/tools/autocrop.md)). Model output.
+
 **average precision (AP score)**: A score for ranked predictions that summarizes the share of selected pixels that are positive as the selection expands to include more positives. Ink Bench uses it to compare an ink map with its reference. Here AP means average precision; in the pipeline docs, AP can also mean AutoPipeline.
 
 ## B
