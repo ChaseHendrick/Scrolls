@@ -426,6 +426,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **sheet switch**: A tracing error in which a mesh jumps from one turn of papyrus to another.
 
+**sheet_plane_weight (sheet-plane penalty)**: An opt-in setting of villa's beam fiber tracer, proposed in villa #2265: each step pays the squared angle between it and the local lasagna sheet plane, so a trace that drifts out of its sheet costs more ([page](docs/tools/fiber-stop-score.md)).
+
 **sidecar (media sidecar)**: The JSON file next to a picture or clip, `NAME.json`, recording its media label, alt text, caption, license, sizes and SHA-256, inputs, and the command and scripts that made it (schema `scrolls-media/1`; [`docs/tools/media.md`](docs/tools/media.md)).
 
 **Space (Hugging Face Space)**: A small web app hosted on Hugging Face.
@@ -439,6 +441,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 **stage registry (`kit stages`)**: The one list of every option for each stage of reading a scroll (tracer, surface model, lasagna field, flatten, render, 2.5D or 3D ink reader, letter reader and others), with origin, license and maturity; workflows pick from it with `--use STAGE=NAME` or `KIT_STAGE_<STAGE>` instead of hard-coding a tool ([page](docs/tools/stagereg.md)).
 
 **stackcheck**: `kit stackcheck`, which checks a stack of consecutive tifxyz segments of one scroll against its umbilicus from geometry alone.
+
+**stop score (fiber tracer)**: An opt-in early stop for villa's beam fiber tracer, proposed in villa #2377: the trace ends before a step where a weighted sum of fiber presence, direction agreement and a stronger fiber just to the side is above zero ([page](docs/tools/fiber-stop-score.md)).
 
 **StrokeNet**: A small learned score in this repository for how much a window of an ink map looks like lines of text (`kit strokenet`), with rotation and IAAFT controls ([model card](docs/strokenet.md)).
 

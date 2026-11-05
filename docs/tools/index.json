@@ -3717,6 +3717,145 @@
    ]
   },
   {
+   "id": "fiber-stop-score",
+   "name": "fiber-stop-score",
+   "tagline": "end a beam fiber trace before it slides onto the next fiber, with the sheet-plane penalty it was tested with",
+   "summary": "Two opt-in settings for villa's beam fiber tracer, proposed in villa PRs #2377 (`stop_score_weights`, `stop_score_bias`) and #2265 (`sheet_plane_weight`): fewer traces that leave the annotated fiber, for about the same traced length.",
+   "status": "Experimental",
+   "kind": [
+    "patch"
+   ],
+   "area": "Surfaces and tracing",
+   "commands": [
+    "python3 -m vc.fiber_evaluation CONFIG.json RESULT.json",
+    "trace",
+    "vc.fiber_trace.TraceConfig",
+    "vc.fiber_trace.stop_score_features"
+   ],
+   "imports": [],
+   "code": [],
+   "tests": [],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed to build or run. Changing the villa PRs' text or posting on them needs Chase's yes (the go-ahead rule, hard rule 8)"
+   },
+   "checked": {
+    "date": "2026-11-05",
+    "commit": "cc5f793"
+   },
+   "license": "The code is in villa PRs under villa's license (MIT); this page Apache 2.0 ([LICENSE](../../LICENSE)); fiber predictions, normals and annotations are Vesuvius Challenge open data (CC BY-NC 4.0)",
+   "fields": {
+    "Id": "`fiber-stop-score`",
+    "Status": "Experimental",
+    "Kind": "patch",
+    "Area": "Surfaces and tracing",
+    "Run": "villa's own entry points, built from the two PR branches: the reference evaluation `python3 -m vc.fiber_evaluation CONFIG.json RESULT.json` with the keys below in its `trace` block, or `vc.fiber_trace.TraceConfig` from Python. `vc.fiber_trace.stop_score_features` gives the stop score's three inputs along any polyline",
+    "Code": "Not in this repository: villa draft PR [#2377](https://github.com/ScrollPrize/villa/pull/2377) (branch `fiber-stop-score` of ChaseHendrick/villa, head `4a07823150851a8dfd158203d19ce42e051940bc`, two commits on villa `main` `08e06a804`) and draft PR [#2265](https://github.com/ScrollPrize/villa/pull/2265) (branch `fiber-sheet-plane`, head `009a404dbf33aec556fe7bfc7853173326f9ba75`, villa `main` `f7756c758` merged in). Files touched: villa's fiber tracer core source and header, the chunk tracer, reference replay, and the `vc.fiber_trace` Python bindings",
+    "Tests": "None in this repository. In villa: 3 C++ cases in `test_fiber_trace3d` and 1 in `test_fiber_reference_replay_core` plus 2 Python tests for the stop score (#2377); 5 C++ cases and 2 Python tests for the sheet-plane weight (#2265). See Tests",
+    "Needs": "A villa build with its Python package (`vc.fiber_trace`, `vc.fiber_evaluation`) from both PR branches merged; the public fiber prediction and lasagna normals of the scroll (open data); for a test, annotated fibers in villa's fiber JSON",
+    "Runs on": "Wherever villa's beam fiber tracer runs (CPU). The stop score adds three presence look-ups per committed step; the extra time was not measured separately",
+    "Network": "villa's tracer reads the fiber prediction and lasagna normals from the open-data bucket `vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com`, as stock villa does; these settings add no host",
+    "Writes": "Nothing of its own: villa's evaluation writes RESULT.json and its cache under the config's `remote_cache_root`, as without these settings",
+    "Go-ahead": "Not needed to build or run. Changing the villa PRs' text or posting on them needs Chase's yes (the go-ahead rule, hard rule 8)",
+    "Released": "Proposed upstream as villa draft PRs #2265 (2026-10-23) and #2377 (2026-10-30); not merged in villa. This page: public `main` since 2026-11-05",
+    "License": "The code is in villa PRs under villa's license (MIT); this page Apache 2.0 ([LICENSE](../../LICENSE)); fiber predictions, normals and annotations are Vesuvius Challenge open data (CC BY-NC 4.0)",
+    "Checked": "2026-11-05 against commit `cc5f793`"
+   },
+   "page": "docs/tools/fiber-stop-score.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 23,
+     "end_line": 32,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 33,
+     "end_line": 44,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 45,
+     "end_line": 70,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 71,
+     "end_line": 116,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 117,
+     "end_line": 130,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 131,
+     "end_line": 137,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 138,
+     "end_line": 142,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 143,
+     "end_line": 146,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 147,
+     "end_line": 158,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 159,
+     "end_line": 167,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 168,
+     "end_line": 171,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 172,
+     "end_line": 181,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 182,
+     "end_line": 185,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 186,
+     "end_line": 192,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 193,
+     "end_line": 198,
+     "applicable": true
+    }
+   ]
+  },
+  {
    "id": "fibercheck",
    "name": "fibercheck",
    "tagline": "are papyrus fibers visible on a traced surface?",

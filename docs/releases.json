@@ -1054,6 +1054,17 @@
       ],
       "details": "Page: [docs/tools/parting.md](docs/tools/parting.md); evidence: [finding 23](docs/FINDINGS.md). At run time it downloads, pinned by sha256 and never copied, the base dinovol checkpoint and villa's dinovol model code (MIT) as vendored by hercUNet (MIT). Code Apache 2.0; model file [SharpMeow/parting-v1](https://huggingface.co/SharpMeow/parting-v1) (CC BY-NC 4.0, sha256 f0684ab2...); scans and traced layers are the Vesuvius Challenge open data (CC BY-NC 4.0), read live.",
       "where": "main"
+    },
+    {
+      "id": "fiber-stop-score",
+      "title": "Fiber stop score (two opt-in settings for villa's beam fiber tracer)",
+      "line": "Ends a beam fiber trace before it slides onto the next fiber; with the sheet-plane penalty it was tested with. villa draft PRs #2377 and #2265.",
+      "area": "Surfaces and tracing",
+      "page": "docs/tools/fiber-stop-score.md",
+      "released": "2026-11-05",
+      "summary": "Two opt-in settings for villa's beam fiber tracer, both off by default. The stop score ([villa #2377](https://github.com/ScrollPrize/villa/pull/2377)) ends a trace before a step where fiber presence, how well the fiber direction matches the step, and a stronger fiber just to the side say it is about to leave the fiber; the sheet-plane penalty ([villa #2265](https://github.com/ScrollPrize/villa/pull/2265)) charges each step for leaving the lasagna sheet plane. Settings were fixed on PHerc0139 development fibers, then each test ran once under rules written beforehand (Model output scored against the annotators' public fibers). On 84 PHerc1451 fibers drawn in VC3D's shared fiber store from 1 to 3 November 2026, the stop score left the annotated fiber 0.73 times as often per voxel kept as a presence cutoff that stops about as often (95 % interval 0.64 to 0.86), at the same traced length, as on 193 earlier PHerc1451 fibers (0.73); from fixed seeds its length precision was 0.914 against 0.839 for the stock beam settings, 0.93 of villa's fiber_tracer_large, which reached about a quarter as many annotated control points (175 against 713). Shuffled and random stops at the same kept length did worse (0.865, 0.824). Limits: new fibers on a scroll the public fiber prediction trained on, not a new scroll; the sheet-plane penalty's own gain resolved on PHerc0139 only. Model output, not a reading.",
+      "details": "Page: [docs/tools/fiber-stop-score.md](docs/tools/fiber-stop-score.md). The code is in the two villa draft PRs (villa's license, MIT), not in this repository; merge both branches and use the beam backend. Fiber predictions, normals and annotations: Vesuvius Challenge open data, CC BY-NC 4.0.",
+      "where": "main"
     }
   ]
 }
