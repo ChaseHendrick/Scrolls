@@ -1,6 +1,6 @@
 # ringleader: label every sheet in a z-slice with its winding in one solve
 
-Ringleader labels every sheet pixel of a published surface prediction (such as m7) in a z-slice or a stack of slices with its winding, in one convex solve about the umbilicus, and scores the labels against published hand windings.
+Ringleader labels every sheet pixel of a surface prediction (such as m7) in a z-slice or stack with its winding, in one convex solve about the umbilicus, scores the labels against hand windings, and (1.1.0) gives villa's spiral fit its surest labels as relative windings.
 
 | Field | Value |
 | --- | --- |
@@ -8,17 +8,17 @@ Ringleader labels every sheet pixel of a published surface prediction (such as m
 | Status | Current |
 | Kind | script folder |
 | Area | Surfaces and tracing |
-| Run | `python3 scripts/ringleader/m7slices.py`, `python3 scripts/ringleader/run_slices.py`, `python3 scripts/ringleader/slab3d.py`, `python3 scripts/ringleader/score.py`, `python3 scripts/ringleader/fitlabel.py convert` |
+| Run | `python3 scripts/ringleader/m7slices.py`, `python3 scripts/ringleader/run_slices.py`, `python3 scripts/ringleader/slab3d.py`, `python3 scripts/ringleader/score.py`, `python3 scripts/ringleader/fitlabel.py convert`, `python3 scripts/ringleader/ladders.py ladders`, `python3 scripts/ringleader/ladders.py grow` |
 | Code | `scripts/ringleader/` |
-| Tests | `tests/test_ringleader_solve.py`, `tests/test_ringleader_score.py`, `tests/test_ringleader_fitlabel.py` (synthetic data only) |
+| Tests | `tests/test_ringleader_solve.py`, `tests/test_ringleader_score.py`, `tests/test_ringleader_fitlabel.py`, `tests/test_ringleader_ladders.py` (synthetic data only) |
 | Needs | Python 3.10 or newer; numpy, scipy (HiGHS `linprog`, sparse graphs, `cKDTree`), scikit-image (`skeletonize`), OR-tools (the `mcf` solver of the v1 settings), numcodecs (to decode m7's blosc chunks); for `score.py` also tifffile and the public `kit/sheetrefs.py` references (`python -m kit hopbench refs`); for `fitlabel.py` villa's Python with torch and villa's `spiral-fitting` folder (`checkpoint_io`, `flatten_spiral_checkpoint`) |
 | Runs on | Any CPU; no GPU. A two-slice PHerc0139 stack: about 16 s to fetch both m7 slices, 2 min 4 s to label them as one stack (mostly skeleton and geometry; the solve itself 4.3 s) and 36 s to score them; 4 min 35 s once for `python -m kit hopbench refs` (measured 2026-10-31, 4-core cloud container) |
-| Network | `vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` over HTTPS: the m7 surface prediction (`m7slices.py`), PHerc0139's umbilicus JSON (`run_slices.py`, `slab3d.py`, `score.py`), the hand-traced windings (`python -m kit hopbench refs`) and, with `--catalog` set to its URL, the catalog `metadata.json`. Nothing else; `fitlabel.py` reads local files only |
-| Writes | `m7slices.py`: `DEST/zNNNNN.npy`. `run_slices.py` and `slab3d.py`: `OUT/zNNNNN.npz`, `OUT/params.json`, `OUT/runs.jsonl` (appended), the geometry cache `--geo` (`zNNNNN-HASH.pkl`, `zNNNNN-trackhand.json`) and the umbilicus cache `--cache/json/`. `score.py`: `RUN/score.json` (or `score-clear.json`) and the truth cache `--truth/DIGEST/`. `fitlabel.py convert`: `OUT/zNNNNN.npz`, `OUT/fitlabel.json`, `OUT/pixel/` |
+| Network | `vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` over HTTPS: the m7 surface prediction (`m7slices.py`), PHerc0139's umbilicus JSON (`run_slices.py`, `slab3d.py`, `score.py`), the hand-traced windings (`python -m kit hopbench refs`) and, with `--catalog` set to its URL, the catalog `metadata.json`. Nothing else; `fitlabel.py` and `ladders.py` read local files only (`ladders.py` reads the catalog copy beside it unless `--catalog` names a URL) |
+| Writes | `m7slices.py`: `DEST/zNNNNN.npy`. `run_slices.py` and `slab3d.py`: `OUT/zNNNNN.npz`, `OUT/params.json`, `OUT/runs.jsonl` (appended), the geometry cache `--geo` (`zNNNNN-HASH.pkl`, `zNNNNN-trackhand.json`) and the umbilicus cache `--cache/json/`. `score.py`: `RUN/score.json` (or `score-clear.json`) and the truth cache `--truth/DIGEST/`. `fitlabel.py convert`: `OUT/zNNNNN.npz`, `OUT/fitlabel.json`, `OUT/pixel/`. `ladders.py ladders`: `OUT/relative_windings.json`, `OUT/ladders.json`, with `--control` `OUT/relative_windings_control.json`. `ladders.py grow`: `OUT/relative_windings_grown.json`, `OUT/relative_windings_grown_control.json`, `OUT/grow.json` |
 | Go-ahead | Not needed: CPU only, public data, local files |
-| Released | Public `main` from the merge of its pull request (prepared 31 Oct 2026), v1.0.0 |
+| Released | Public `main` from the merge of its pull request (prepared 31 Oct 2026), v1.0.0; v1.1.0 adds `ladders.py` (prepared 5 Nov 2026) |
 | License | Apache License 2.0 ([`scripts/ringleader/LICENSE`](../../scripts/ringleader/LICENSE)) |
-| Checked | 2026-10-31 against commit `0f1b080` |
+| Checked | 2026-11-05 against commit `0a95fdd` |
 
 ## What it does
 
@@ -30,6 +30,12 @@ It treats labeling as phase unwrapping. In one z-slice of a binary surface predi
 
 Ringleader labels windings; it does not trace or flatten a surface, and it never looks at ink. Its labels are model output from a model's sheet prediction, not a reading of anything, and they inherit the prediction's errors: a sheet m7 merged with its neighbor or missed is a sheet Ringleader cannot see.
 
+**Teaching villa's spiral fit** (`ladders.py`, 1.1.0). villa's spiral fit can take relative windings: point collections whose points say how many windings each lies outward of the first. `ladders.py` writes Ringleader's labels in that format, but only the labels it is surest of. A piece counts as sure when no edge within 3 pieces of it (along a sheet or across to the next sheet) disagrees with the labels; up to 8 points of each sure piece go into one collection per slice, numbered by angle from the start ray, with `wind_a` the piece's label minus the slice's smallest sure label. The fit then learns the winding order from those slices and carries it to the slices around them. An optional second round (`grow`) adds the uncertain pieces where the taught fit and Ringleader agree. Each round can write a plus-one control (every step between neighboring windings one larger), which must teach the fit worse.
+
+![Concept, drawn spiral and not scan data: sheets, Ringleader's winding labels with three wrong pieces, the pieces near a broken edge dropped, up to 8 points per sure piece, and the points as one relative-winding collection](../assets/ringleader/ladders-concept.gif)
+
+Concept picture from synthetic data, made by `scripts/experiments/ringleader-ladders/concept_gif.py`; a [still of its last frame](../assets/ringleader/ladders-concept.png) is beside it.
+
 This is v1, the method as frozen for its two tests on 30 October 2026: `slicelab.PARAMS` with `slicelab.V1` (`{"lp_method": "mcf", "hand": "track"}`) and, for stacks, `slab3d.ZPARAMS`. Options the frozen runs left off and that rely on unreleased inputs were removed.
 
 ## When to use it
@@ -37,6 +43,7 @@ This is v1, the method as frozen for its two tests on 30 October 2026: `slicelab
 - You want one consistent winding number for every m7 sheet pixel of a slice or a short stack, for example to check a traced surface's winding, to seed winding constraints, or to compare with a spiral fit.
 - You have a binary surface prediction and the scroll's umbilicus in the same frame (PHerc0139's m7 and umbilicus are the defaults).
 - You want to score any per-pixel winding labeling (yours, Ringleader's or a spiral fit's) against published hand windings with controls that can fail.
+- You run villa's spiral fit and want it on the right windings near some z: label a few slices there with `slab3d.py`, then give the fit `ladders.py`'s `relative_windings.json`.
 
 Do not use it:
 
@@ -75,6 +82,14 @@ z3000: 18072 pieces, 10842 continuity edges, 55214 radial samples, hand 1, 30 s
 
 (`hand 1` is the shape statistic of one slice; the stack used the tracked hand, -1.) `score.py` then wrote `work/ringleader/stack3000/score.json` with one record per slice and a final `pooled {...}` line. Its numbers are not quoted here: z 3000 lies in a band where Ringleader's settings were developed, so they are development numbers, and in this two-slice run the shift control did not drop on either slice, so this E0 would not count as a result anyway.
 
+To turn the same stack into relative windings for villa's spiral fit (default matrix: PHerc0139's catalog transform into the 2.4 um scan, divided by 4 for a fit on its L2 grid):
+
+```bash
+python3 scripts/ringleader/ladders.py ladders --geo work/ringleader/stack3000 --out work/ringleader/lad3000 --control
+```
+
+It prints one line, `{"points": ..., "collections": 2, "files": {...}}`, and writes `work/ringleader/lad3000/relative_windings.json`. Copy that file into the spiral fit's dataset folder as `relative_windings.json` and turn on `input_use_pcl_relative` (the frozen test also set `patch_radius_loss_margin` 0.3 and `loss_weight_unattached_pcl_radius` 0.5, with villa commit `e2254ebe`). Fit once with the ladder and once with `relative_windings_control.json`; the control fit should be clearly worse.
+
 It worked when `runs.jsonl` shows `"status": 0` and `score.json` holds a record for every slice. A score counts only when every slice's `controls_pass` is all true and the slices were not used to develop the settings.
 
 ## Checks and controls
@@ -102,9 +117,27 @@ Results of the two frozen tests, each read once, each with an independent rerun 
 
 ![Ringleader's on-winding E0 in the two frozen tests, beside villa's spiral fit at its defaults and a constant labeling](../images/ringleader-e0.svg)
 
+**The ladders, in a frozen test** (Model output; preregistered, read once on 4 November 2026). Ringleader v1 labeled 10 evidence slices of PHerc0139 (z 1,920 to 1,956); `ladders.py`'s rule made the ladders; villa's spiral fit (commit `e2254ebe`, 30,000 steps, fit window z 1,024 to 2,048 of its L2 grid) ran with and without them at seeds 1 to 3; 86 slices of the fresh band z 1,960 to 2,300 were scored against 11 published hand windings that no development step had read. Arms: A the fit alone, E with round 1's ladders, G with round 2's grown ladders, Q with G's plus-one control.
+
+| Arm | On-winding E0, seeds 1, 2, 3 | Mean |
+| --- | --- | --- |
+| A: villa spiral fit alone | 0.219, 0.230, 0.232 | 0.227 |
+| E: with round 1 ladders | 0.360, 0.380, 0.380 | 0.373 |
+| G: with grown ladders | 0.415, 0.414, 0.397 | 0.409 |
+| Q: with the plus-one control | 0.103, 0.105, 0.112 | 0.107 |
+| Ringleader v1 itself on the same pixels (the teacher; information) | | 0.790 |
+
+The pass rule was G minus A at least +0.10 pooled, above 0 at every seed, and G minus Q at least 0.05 at every seed. It read PASS: G minus A +0.182 pooled (+0.196, +0.184, +0.165 by seed), G minus Q +0.285 to +0.312. The control taught the fit the wrong order, as it should. The gain is largest next to the ladder slices (E0 0.29 for A against 0.74 for G within 40 slices) and smaller far from them (0.19 against 0.28 at 320 to 360 slices).
+
+![Chart of the frozen test (Model output): on-winding E0 of villa's spiral fit alone 0.227, with Ringleader ladders 0.373, with grown ladders 0.409, with the plus-one control 0.107, Ringleader itself 0.790; and E0 by distance from the ladder slices](../assets/ringleader/ladders-test-light.png)
+
+Real data render: a chart of scores, with no CT pixels, mesh or map; Vesuvius Challenge open data, CC BY-NC 4.0. Made by `scripts/experiments/ringleader-ladders/chart.py`; a [dark copy](../assets/ringleader/ladders-test-dark.png) is beside it.
+
+Limits of the ladder result: one scroll and one band; a second frozen test, on another scroll, did not clear its +0.10 bar, so the gain is shown on PHerc0139 only. The ladders do not make the fit as good as Ringleader's own labels (0.41 against 0.79): they move the spiral fit, which gives a whole surface, toward them. The test's harness and data staging are not part of this release. `ladders.py` rebuilds the test's round 1 ladder: on its 10 evidence slices all 146,340 points match the frozen file when `--matrix` holds the catalog matrix rounded to 10 decimals as the test used it; with the default full-precision catalog copy, 25 of them move by 0.001 fit voxel (a rounding tie).
+
 Limits: E0 is a share of m7 sheet pixels, so pixels m7 does not mark as sheet are not scored and a sheet m7 missed is not counted against anyone. The truth is hand windings on PHerc0139 and one organizer mesh of about 3 turns on PHerc0332. Ringleader labels windings; it does not trace a surface. On PHerc0332, m7 may have trained on that scroll's older scans or meshes, and earlier tests of ours had read the same band, so it is not fully held out there; PHerc0139 is held out by band only, since the settings and bars were set on development stacks of the same scroll. villa's spiral fit is not built to label every sheet of a slice and drifts by several turns, so the margin is over its default fit read this way, not over a tuned winding labeler. The public scorer loads the published windings w023 to w040 by default; the frozen PHerc0139 test used 14 of them, so pass `--windings` to score against a chosen subset; this page makes no claim that the default run reproduces 0.902.
 
-Claim label: Model output (the labels, and the two frozen test results above).
+Claim label: Model output (the labels, the ladders, and the three frozen test results above).
 
 ## Commands and options
 
@@ -197,6 +230,40 @@ usage: fitlabel.py convert [-h] --ckpt CKPT --umb UMB --geo GEO --out OUT [--vil
 | `--fit-scale` | `4.0` | Scan voxels per fit-grid voxel (4 for a fit on the L2 level) |
 | `--exclude-z` | none | z ranges never to convert |
 
+### `python3 scripts/ringleader/ladders.py ladders`
+
+```
+usage: ladders.py ladders [-h] --geo GEO --out OUT [--matrix MATRIX] [--catalog CATALOG] [--fit-scale FIT_SCALE]
+                          [--k K] [--d-sure D_SURE] [--exclude-z EXCLUDE_Z] [--z [Z ...]] [--control]
+```
+
+| Option | Default | Meaning |
+| --- | --- | --- |
+| `--geo` | required | A Ringleader run folder (its `zNNNNN.npz` files) |
+| `--out` | required | Output folder (created) |
+| `--matrix` | PHerc0139's catalog transform from 20250728140407 to 20260102150214 | JSON `{"matrix": 3 x 4}` from the slices' frame to the fit's scan voxels |
+| `--catalog` | `scripts/ringleader/catalog-0139.json` | Catalog `metadata.json` (path or URL) for the default matrix |
+| `--fit-scale` | `4.0` | Scan voxels per fit-grid voxel (4 for a fit on the L2 level) |
+| `--k` | `8` | Points per sure piece |
+| `--d-sure` | `3` | Sure distance in pieces |
+| `--exclude-z` | none | z ranges never to use |
+| `--z` | every `zNNNNN.npz` in `--geo` | The slices to use |
+| `--control` | off | Also write the plus-one control |
+
+### `python3 scripts/ringleader/ladders.py grow`
+
+```
+usage: ladders.py grow [-h] --geo GEO --out OUT [--matrix MATRIX] [--catalog CATALOG] [--fit-scale FIT_SCALE] [--k K]
+                       [--d-sure D_SURE] [--exclude-z EXCLUDE_Z] --conv CONV --ladder LADDER
+```
+
+Takes the same `--geo`, `--out`, `--matrix`, `--catalog`, `--fit-scale`, `--k`, `--d-sure` and `--exclude-z` as `ladders` (they must match round 1's, or the rebuild check stops it), and:
+
+| Option | Default | Meaning |
+| --- | --- | --- |
+| `--conv` | required | `fitlabel.py convert`'s output folder for the fit taught by round 1 |
+| `--ladder` | required | Round 1's `relative_windings.json` |
+
 ### Settings (`slicelab.PARAMS` and `slicelab.V1`)
 
 `--params '{"KEY": VALUE}'` overrides any of these. The v1 settings are the defaults below with `slicelab.V1` on top.
@@ -237,6 +304,10 @@ Import the scripts' modules with `scripts/ringleader` on `sys.path` (`sys.path.i
 | `wtruth.turns(rank, alpha, theta_p, hand)` | turn per point (NaN unmatched), residual | Nothing | Turn number in slicelab's convention |
 | `score.score_labels(L, turn, th, rows_a, rows_b, rng, n_pairs=200000)` | dict `on_winding` (E0), `offset`, `pair`, `step_acc`, `switches` and counts | Nothing | The metrics on any labeling |
 | `fitlabel.labels(u, theta_f, theta_p, hand_geo, pid)` | per-piece label, per-pixel turn, hand, theta', phase, spread | `ValueError` (`no finite angles`) | A spiral fit's coordinates to Ringleader labels |
+| `ladders.sure_mask(d, d_sure=3)` | sure, has-pixel, distance, bad and label arrays per piece | Nothing of its own | `d`: one loaded `zNNNNN.npz` as a dict |
+| `ladders.build_e(slices, frame, arm="E", k=8, d_sure=3)` | villa point collections document, record | `ladders.LadderError` | `slices`: `{z: dict}`; `frame`: `ladders.Frame(matrix, scale)` |
+| `ladders.build_g(slices, conv, frame, e_doc, k=8, d_sure=3)` | document, record | `ladders.LadderError` | `conv`: `fitlabel.py convert` output on the same pixels |
+| `ladders.plus_one_levels(doc, src="E", dst="Q")` | document | `KeyError` on a malformed document | The plus-one control |
 | `rlcommon.load_axis(cache, umbilicus=None, catalog=None)` | `Axis` | `KeyError`, network errors | PHerc0139's umbilicus in the m7 frame by default |
 
 ## Inputs
@@ -287,11 +358,13 @@ Import the scripts' modules with `scripts/ringleader` on `sys.path` (`sys.path.i
 
 **Spiral fit labels** (`fitlabel.py convert`): `OUT/zNNNNN.npz` with the run's `ys`, `xs`, `pid`, `rows`, `r`, `path_len` unchanged and the fit's `label` (per piece), `theta_p`, `hand`, `u`, `theta_f`, `turn_px`; `OUT/pixel/` the same with per-pixel labels; `OUT/fitlabel.json` with the checkpoint's sha256 and per-slice hand, phase and spread.
 
+**Ladders** (`ladders.py`): `relative_windings.json` is villa's point collections (`vc_pointcollections_json_version` "1"), one collection per slice named `ringleader-E-zNNNNN`, points with `p` (x, y, z in the fit's grid, rounded to 0.001), `wind_a` and `creation_time` 0, and `metadata` with `winding_is_absolute` false, `z`, `ringleader_hand` and `base_label`. `ladders.json` records per slice the pieces, bad and sure pieces, points, winding levels, span and the largest angle between neighboring points, plus each file's sha256 and each input slice's sha256. `grow` writes the same layout (`ringleader-G-zNNNNN`, metadata adds `offset` and `fit_hand`) and `grow.json` with the agreeing and uncertified piece counts. The control files name their collections `ringleader-Q-...` and carry `kit.control` `plus_one`.
+
 | Exit code | Meaning |
 | --- | --- |
 | `0` | Done: files written as above |
 | `1` | A stop with a message (see Failure modes), or an uncaught error |
-| `2` | A wrong or missing argument |
+| `2` | A wrong or missing argument, or (`ladders.py`) a stop with a `ladders:` message on stderr |
 
 ## Failure modes
 
@@ -314,6 +387,14 @@ Import the scripts' modules with `scripts/ringleader` on `sys.path` (`sys.path.i
 | `Bellman-Ford did not converge: negative cycle in the residual graph` | The `mcf` route's labels could not be recovered (should not happen for convex costs) | Rerun with `--params '{"lp_method": "highs"}'` and report it |
 | `radial cost...is not lowest inside d = 0..3; use an LP method` | Custom costs that `mcf` cannot express | Use `lp_method` `highs` |
 | `...: not a winding name like w023` | A reference whose name is not `wNNN` | The truth ranks windings by number; rename or leave it out with `--windings` |
+| `the matrix is..., not 3 x 4` | `--matrix` holds another shape | Give a 3 by 4 affine as `{"matrix": [[...], [...], [...]]}` |
+| `z...: no sure piece` | Every piece of that slice sits near a broken edge, or the slice has no label | Drop the slice with `--z`, or check its labels |
+| `z...: neighboring ladder points...rad apart (villa needs under pi)` | The sure pieces leave a gap of half a turn or more, which villa's strip loss cannot walk | Drop the slice, or lower `--d-sure` |
+| `the round 1 ladder does not rebuild from this geometry` | `grow` was given another `--geo`, matrix, `--k` or `--d-sure` than round 1 | Use round 1's settings and folder |
+| `z...: no fitlabel conversion` | `--conv` lacks a slice the ladder has | Run `fitlabel.py convert` on the same `--geo` |
+| `z...: the conversion is not on this geometry's pixels` | `--conv` was made from another Ringleader run | Convert the fit on the round 1 run |
+| `z...: the fit labels no sure pixel` | The taught fit gives no label on the slice's sure pixels | Check the fit's window covers the slice |
+| `--k and --d-sure must be at least 1` | A zero or negative setting | Use 1 or more |
 | `kit hopbench needs numpy and scipy...` and similar import errors | A package is missing | Install the Needs list |
 | `ModuleNotFoundError: No module named 'checkpoint_io'` | `fitlabel.py` is not run with villa's spiral fitting on its path | Pass `--villa` or run it in villa's environment |
 
@@ -328,7 +409,9 @@ Import the scripts' modules with `scripts/ringleader` on `sys.path` (`sys.path.i
 7. **Truth and score** (`wtruth.py`, `score.py`): each reference vertex gets its unwrapped angle about the umbilicus, brought to one common branch; a pixel matched within 4 voxels of a winding gets turn = rank + (alpha' - theta') / 360, the turn in slicelab's convention, so label minus turn is constant for a perfect labeling wherever the tracer started. Seam overlaps (a winding traced past a full turn) are masked; the hand comes from the references alone; a match offset over 2 voxels toward a winding number not loaded is left unknown.
 8. **Spiral fit** (`fitlabel.py`): pixels go through the catalog transform (divided by 4 for an L2 fit) into the fit's grid and its slice-to-spiral map, giving u (outward position in windings) and the fit's angle; the fit's hand, a phase from the circular mean, and per-pixel turns follow with no truth involved, and each piece takes its most common turn.
 
-Files in `scripts/ringleader/`: `slicelab.py` (the solver), `slab3d.py` (the stack solve), `run_slices.py` (slices one by one), `m7slices.py` (the slice fetcher), `wtruth.py` (the truth), `score.py` (the scorer), `fitlabel.py` (the spiral fit reader), `rlcommon.py` (the axis, the catalog transform, the z exclusion list and the reference geometry), `catalog-0139.json` (one transform copied from the bucket's catalog) and `LICENSE`.
+9. **Ladders** (`ladders.py`): per slice, a radial edge is broken when its label difference is not 1 plus its start-ray shift, a continuity edge when its difference is not its shift; pieces touching a broken edge are bad, and pieces at least 3 steps (along continuity and radial edges) from every bad piece are sure. Up to 8 pixels of each sure piece, spread evenly along it, go through the affine into the fit's grid; points are numbered by theta' ascending, because villa's strip loss walks a collection in point order and unwraps the angle between neighbors, so the walk must not cross the start ray. Round 2 reads the taught fit per piece with `fitlabel.py` and adds each uncertain piece whose fit label minus Ringleader's equals the slice's most common difference on the sure pixels.
+
+Files in `scripts/ringleader/`: `slicelab.py` (the solver), `slab3d.py` (the stack solve), `run_slices.py` (slices one by one), `m7slices.py` (the slice fetcher), `wtruth.py` (the truth), `score.py` (the scorer), `fitlabel.py` (the spiral fit reader), `ladders.py` (relative windings for the spiral fit), `rlcommon.py` (the axis, the catalog transform, the z exclusion list and the reference geometry), `catalog-0139.json` (one transform copied from the bucket's catalog) and `LICENSE`.
 
 The method is phase unwrapping by minimum-cost flow, applied to sheet pieces and turns. The open-data files it reads are listed under Inputs.
 
@@ -343,16 +426,18 @@ CPU only; it rents nothing. Measured 2026-10-31 on a 4-core cloud container (the
 - **Rerun:** safe. `zNNNNN.npz`, `params.json` and `score.json` are overwritten; `runs.jsonl` is appended; the geometry, umbilicus and truth caches are reused.
 - **Success:** exit 0, `solve.status` 0, every slice's `controls_pass` all true, E0 well above the jitter control.
 - **Not a pass:** an E0 whose controls did not pass; an E0 on slices where the settings were developed (PHerc0139 near z 3000, 5000 or 7000) called held out; a score against references the labels were tuned on; a comparison with a spiral fit read at another resolution or on other pixels.
+- **Ladders:** `python3 scripts/ringleader/ladders.py ladders --geo OUT --out LAD --control`; parse its one stdout line (`points`, `collections`, `files`) and `LAD/ladders.json`; success is exit 0 and every slice's `max_theta_gap` under 3.14. Exit 2 with a `ladders:` line is a stop to read, not to retry.
 - **Go-ahead:** Nothing.
-- **Never:** call the labels a reading or say letters were found; call a score a pass without its controls; claim it works on scrolls beyond the two tested; say it traces a surface.
+- **Never:** call the labels a reading or say letters were found; call a score a pass without its controls; claim it works on scrolls beyond the two tested, or that the ladders help beyond PHerc0139; say it traces a surface.
 
 ## Tests
 
-`python3 -m unittest tests.test_ringleader_solve tests.test_ringleader_score tests.test_ringleader_fitlabel` (about 10 s; the solver tests skip without scipy, scikit-image or OR-tools). They cover: the `mcf` route reaching the linear program's optimum on random problems, start-ray shifts and hand flips, the hand tracker on synthetic spirals, whole synthetic spiral slices labeled with one offset in both hands and with a missed sheet and holes, a three-slice stack, the ray-count baseline failing where the solve does not, the truth's hand and seam-free offset on synthetic windings with gaps, a misnamed-winding control that must fail, the scorer's E0 and its planted and jitter controls, and the spiral fit conversion. They do not fetch real data or run villa's spiral fit.
+`python3 -m unittest tests.test_ringleader_solve tests.test_ringleader_score tests.test_ringleader_fitlabel tests.test_ringleader_ladders` (about 12 s; the solver tests skip without scipy, scikit-image or OR-tools). They cover: the `mcf` route reaching the linear program's optimum on random problems, start-ray shifts and hand flips, the hand tracker on synthetic spirals, whole synthetic spiral slices labeled with one offset in both hands and with a missed sheet and holes, a three-slice stack, the ray-count baseline failing where the solve does not, the truth's hand and seam-free offset on synthetic windings with gaps, a misnamed-winding control that must fail, the scorer's E0 and its planted and jitter controls, the spiral fit conversion, and the ladders: wrong pieces and their neighbors kept out, true turns up to one offset, theta' order, the affine, the plus-one control, round 2 adding only agreeing pieces, and the command line with its exclusion list. They do not fetch real data or run villa's spiral fit.
 
 ## History
 
 - 2026-10-31: first public release, code only, Apache-2.0 (Ringleader 1.0.0, on top of `0f1b080`): v1 as frozen for its two tests of 30 October 2026 (held-out PHerc0139 E0 0.902; PHerc0332 E0 0.659 against organizer mesh m0828), first written on 15 October 2026; released with a generic `--exclude-z` list, `--umbilicus` and `--zarr` options, and a scorer that reads `kit.sheetrefs` references.
+- 2026-11-05: 1.1.0 (on top of `0a95fdd`) adds `ladders.py`, Ringleader's sure pieces as relative windings for villa's spiral fit, the method of the frozen ladder test read on 4 November 2026 (PHerc0139 z 1,960 to 2,300, PASS, G minus A +0.182 against a +0.10 bar), with its tests, a chart and a concept GIF. The labeler itself is unchanged.
 
 ## Related
 
@@ -360,4 +445,5 @@ CPU only; it rents nothing. Measured 2026-10-31 on a 4-core cloud container (the
 - [windconsistency](windconsistency.md): checks whether winding counts contradict themselves.
 - [hopbench](hopbench.md): builds the PHerc0139 hand-winding references `score.py` reads.
 - [umbilicus](umbilicus.md): the Center Finder, for a scroll without a published umbilicus.
-- `docs/results.json` keys `ringleader_test2_20261030` and `ringleader_0332_l4_20261030`: the two frozen tests.
+- `docs/results.json` keys `ringleader_test2_20261030` and `ringleader_0332_l4_20261030`: the two frozen tests of the labeler.
+- villa's spiral fit (`spiral-fitting` in [ScrollPrize/villa](https://github.com/ScrollPrize/villa)): the consumer of `relative_windings.json`.

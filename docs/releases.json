@@ -1014,17 +1014,18 @@
     {
       "id": "ringleader",
       "title": "Ringleader (winding labels for every sheet in a z-slice, in one solve)",
-      "line": "Labels every m7 sheet pixel of a z-slice or stack with its winding in one convex solve, scored against hand windings with controls.",
+      "line": "Labels every m7 sheet pixel of a z-slice with its winding in one solve; 1.1.0 hands its surest labels to villa's spiral fit as relative windings.",
       "area": "Surfaces and tracing",
       "page": "docs/tools/ringleader.md",
-      "released": "2026-10-31",
-      "summary": "Ringleader thins the sheets of a published binary surface prediction (such as the organizers' m7) in a z-slice to a skeleton, cuts it into pieces, and gives every piece its turn number in one convex solve (phase unwrapping about the umbilicus, solved exactly as a minimum-cost flow), instead of counting step by step along chains; a stack of slices is solved as one problem. A scorer compares any per-pixel winding labeling with published hand windings by on-winding E0, with planted, shift and jitter controls that must fail. In two frozen tests, each read once (Model output, 30 October 2026): on held-out PHerc0139 z 3,240 to 3,400 (41 slices) E0 was 0.902 (bar 0.85) against 0.149 to 0.179 for villa's spiral fit at its default settings; on PHerc0332 z 3,760 to 4,340 (146 slices) against organizer mesh m0828 it was 0.659 (bar 0.595) against 0.349 to 0.398 for villa's fit and 0.445 for a constant labeling. Two later tries on other scrolls read VOID and would have missed their bars, so it is claimed on two scrolls. Limits: E0 counts m7 sheet pixels only; it labels windings and does not trace a surface. Code only, Apache 2.0. Model output, not a reading.",
+      "released": "2026-11-05",
+      "summary": "Ringleader thins the sheets of a published binary surface prediction (such as the organizers' m7) in a z-slice to a skeleton, cuts it into pieces, and gives every piece its turn number in one convex solve (phase unwrapping about the umbilicus, solved exactly as a minimum-cost flow); a stack is one problem. A scorer compares any labeling with hand windings by on-winding E0, with controls that must fail. In two frozen tests, each read once (Model output, 30 October 2026): on held-out PHerc0139 z 3,240 to 3,400 (41 slices) E0 was 0.902 (bar 0.85) against 0.149 to 0.179 for villa's spiral fit at its default settings; on PHerc0332 z 3,760 to 4,340 (146 slices) against organizer mesh m0828 it was 0.659 (bar 0.595) against 0.349 to 0.398 for villa's fit. Two later tries on other scrolls read VOID and would have missed their bars, so it is claimed on two scrolls. Version 1.1.0 adds ladders.py: it writes the pieces no broken edge comes near as villa's relative windings, so villa's spiral fit learns the winding order from a few labeled slices. In a frozen test read once on 4 November 2026 (Model output; fresh PHerc0139 z 1,960 to 2,300, 86 slices, 3 seeds) the fit's on-winding E0 rose from 0.227 alone to 0.409 with the ladders (bar: a gain of +0.10; got +0.182), while a plus-one control ladder dropped it to 0.107. A second frozen test on another scroll did not clear its bar, so that gain is shown on PHerc0139 only. Limits: E0 counts m7 sheet pixels only; it labels windings and does not trace a surface. Code only, Apache 2.0. Model output, not a reading.",
       "commands": [
         "python3 scripts/ringleader/m7slices.py work/ringleader/m7 --z 3000 3004",
         "python3 scripts/ringleader/slab3d.py --z 3000 3004 --out work/ringleader/stack3000",
-        "python3 scripts/ringleader/score.py work/ringleader/stack3000"
+        "python3 scripts/ringleader/score.py work/ringleader/stack3000",
+        "python3 scripts/ringleader/ladders.py ladders --geo work/ringleader/stack3000 --out work/ringleader/lad3000 --control"
       ],
-      "details": "Page: [docs/tools/ringleader.md](docs/tools/ringleader.md); evidence: [finding 24](docs/FINDINGS.md). Reads PHerc0139's m7 surface prediction and umbilicus from the Vesuvius Challenge open data (CC BY-NC 4.0), live, and the hand windings through `python -m kit hopbench refs`. `fitlabel.py` reads a villa spiral fit checkpoint in villa's Python. Code Apache 2.0.",
+      "details": "Page: [docs/tools/ringleader.md](docs/tools/ringleader.md); evidence: [finding 24](docs/FINDINGS.md). Reads PHerc0139's m7 surface prediction and umbilicus from the Vesuvius Challenge open data (CC BY-NC 4.0), live, and the hand windings through `python -m kit hopbench refs`. `fitlabel.py` reads a villa spiral fit checkpoint in villa's Python; `ladders.py` writes villa's `relative_windings.json` for the spiral fit's dataset folder. Code Apache 2.0.",
       "where": "main"
     },
     {
