@@ -290,6 +290,23 @@ class CommandLineTest(unittest.TestCase):
         self.assertEqual(code, 1, text)
         self.assertIn("fail their own check", text)
 
+    def test_window16_options_reach_the_snap(self):
+        out = self.root / "out_w16"
+        code, text = self.run_cli(["snap", str(self.root / "label"), "--volume", str(self.root / "ladder.zarr"),
+                                   "--out", str(out), "--axis-point", "20", "12", "-400", "--axis-dir", "1", "0", "0",
+                                   "--half", "16", "--fallback-half", "12", "--min-contrast", "0", "--no-label"])
+        self.assertEqual(code, 0, text)
+        rec = json.loads((out / "labelsnap.json").read_text())
+        for k, v in snap.FACE_SNAP_WINDOW16.items():
+            self.assertEqual(rec["opts"][k], v, k)
+        code, text = self.run_cli(["check", str(out)])
+        self.assertEqual(code, 0, text)
+        code, text = self.run_cli(["snap", str(self.root / "label"), "--volume", str(self.root / "ladder.zarr"),
+                                   "--out", str(self.root / "out_w16_bad"), "--recto-sign", "1",
+                                   "--fallback-half", "12", "--no-label"])
+        self.assertEqual(code, 2, text)
+        self.assertIn("must be above 0 and below half", text)
+
     def test_refusals(self):
         code, text = self.run_cli(["snap", str(self.root / "label"), "--volume", str(self.root / "ladder.zarr"),
                                    "--out", str(self.out), "--recto-sign", "1"])

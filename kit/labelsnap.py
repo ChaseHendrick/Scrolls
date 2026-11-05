@@ -31,6 +31,8 @@ the CT volume it lives in, and writes:
   kit labelsnap snap SURFACE --volume CT --out DIR (--umbilicus FILE | --axis-point X Y Z --axis-dir X Y Z |
                      --recto-sign 1|-1) [--level 0] [--target recto] [--merged] [--no-label] [--label-level 0]
                      [--ignore-halo 4] [--label-step 0.5] [--review-min 4] [--self-check] [--json]
+                     [--half 12] [--fallback-half F] [--min-contrast C]   (the +-16 window: --half 16
+                     --fallback-half 12 --min-contrast 0, FACE_SNAP_WINDOW16)
   kit labelsnap check DIR [--json]     every output present, shapes and values consistent (exit 1 on a problem)
 
 A snapped label is geometry, not a reading. Whether snapping helps is measured against an independent scan by
@@ -527,6 +529,12 @@ def build_parser(p):
     s.add_argument("--no-merged", action="store_true", help="the default since 27 Oct 2026 (kept for old commands)")
     s.add_argument("--face-sigma", type=float, default=DEFAULTS["face_sigma"])
     s.add_argument("--max-move", type=float, help="snap_face's max_move (default 4 voxels)")
+    s.add_argument("--half", type=float, help="profile half-length along the normal (default 12 voxels)")
+    s.add_argument("--fallback-half", type=float,
+                   help="measure a vertex that abstains on +-half again on this shorter window (default off)")
+    s.add_argument("--min-contrast", type=float,
+                   help="least profile contrast, CT units; 0 turns the floor off (default: a quarter of the mesh's "
+                        "1st to 99th percentile window)")
     s.add_argument("--no-label", action="store_true", help="skip the OME-Zarr surface label")
     s.add_argument("--label-level", type=int, default=0, help="the image level the label array matches")
     s.add_argument("--ignore-halo", type=float, help="ignore band along the normal, level-0 voxels (default max_move)")
@@ -573,7 +581,11 @@ def run_snap(args):
     xs, ys, zs, valid = S.load_mesh(args.surface)
     vol = S.open_volume(args.volume)
     sampler = S.Sampler(vol, level=args.level)
-    extra = {"max_move": float(args.max_move)} if args.max_move is not None else None
+    extra = {}
+    for key in ("max_move", "half", "fallback_half", "min_contrast"):
+        if getattr(args, key, None) is not None:
+            extra[key] = float(getattr(args, key))
+    extra = extra or None
     res = label_snap(xs, ys, zs, valid, sampler, axis=axis, recto_sign=args.recto_sign, target=args.target,
                      merged=bool(args.merged) and not args.no_merged, face_sigma=args.face_sigma, extra_opts=extra)
     t_snap = time.time() - t0
