@@ -63,6 +63,8 @@ It worked when the exit code is 0 and the summary names more polished slices tha
 
 The frozen test of 22 October 2026 (evidence: [`docs/evidence/2026-10-22-umbilicus-windpolish/`](../evidence/2026-10-22-umbilicus-windpolish/README.md)) polished the Center Finder's lines on ten fresh 1.2 m scans, then scored every line by winding coverage at 24 slices per scan that the polish never read, against villa's `vc_gen_umbilicus` run on those slices. Polished: **BETTER**, pooled median +0.084 wraps (95% interval +0.028 to +0.169), deeper on 8 of 10 scans. Unpolished: WORSE, -0.330 wraps, 10 of 10 lost. Controls: the scan center scored -5.57 wraps and a 3 mm ring round villa's point -2.40 (interval -2.94 to -1.82), so the check sees a 3 mm miss. The verdict could have read WORSE, as the unpolished line did.
 
+On a second sheet model the gain did not hold. A second frozen test (23 October 2026, rule fixed before any field was predicted, read once) counted wraps on villa's lasagna sheets instead of its m7 traces, on the same ten scans: lasagna's predicted field made fresh on whole papyrus planes at 38 heights. The polished line came out **LEVEL** with `vc_gen_umbilicus`: pooled median gain -0.022 wraps (95% interval -0.237 to +0.256), deeper on 4 of 10 scans, where 6 were needed. The unpolished line was level too (+0.051 wraps), so neither its loss on m7 nor the polish's gain carried to the second model. Controls held: the scan center scored -4.74 wraps and a 3 mm ring round villa's point lost 2.85 wraps. Both tests measure coverage of model-predicted sheets, not the true axis.
+
 Each run records how far the polish moved the line and the coverage it gained (`median_moved_mm`, `median_gain_wraps`), so a polish that moved nothing shows a move of 0.
 
 Claim label: Model output, measured against villa's predicted sheets; not the true axis.
@@ -178,6 +180,7 @@ They pin the rule and the frozen code's outputs on synthetic spirals, check cove
 
 ## History
 
+- 2026-11-05: Checks and controls add the 23 October lasagna sheets test (LEVEL), added to `umbilicus_checks` (on top of `cc5f793`).
 - 2026-10-24: ported to public Scrolls as `kit axispolish` on top of `81e5ead`, the polish of the private test of 22 October 2026 with the same rule.
 
 ## Related
