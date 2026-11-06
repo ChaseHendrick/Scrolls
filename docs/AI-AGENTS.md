@@ -79,3 +79,13 @@ Measured on 5 Nov 2026 from one session's own transcript: its first turn carried
 - Wait with PR subscriptions or a `--wait` flag, never a sleep or polling loop.
 - GitHub MCP calls: `minimal_output` and five to ten items a page.
 
+### Model tiers and the cost of a turn (6 November 2026, second pass)
+
+Every model call re-reads the whole thread so far from cache, so a long thread costs more per turn and a wake with nothing to do still costs a full read. Measured on one long thread: cache reads were about 70 percent of its cost at standard API price ratios. So: unsubscribe from PR events on a PR merged at once, start new large work in a fresh thread, and let a subagent read long output and return the few lines that matter.
+
+| Work | Agent | Model, effort |
+| --- | --- | --- |
+| CI and PR state, a test run's pass or fail, file checks | `checker` | Haiku, low |
+| Search, reading excerpts, summarizing logs, papers or pages | `scout` | Sonnet, medium |
+| Design, code that decides a result, preregistration, readouts, reviews, outward text | the session itself | the session's model |
+

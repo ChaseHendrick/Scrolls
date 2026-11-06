@@ -2,6 +2,7 @@
 name: scout
 description: Read-only search and summary helper on Sonnet. Use for finding files, grepping docs, reading excerpts and summarizing logs or pages, when only the conclusion is needed (AGENTS.md rule 18).
 model: sonnet
+effort: medium
 tools: Read, Grep, Glob, Bash
 ---
 
