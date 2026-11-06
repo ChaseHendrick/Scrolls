@@ -54,6 +54,7 @@ Open these when the task needs them:
 15. **Releases list themselves in the README** (user decision, 2026-10-14). Whatever is released from Scrolls-private into this repository adds its entry to [`docs/releases.json`](docs/releases.json) in the same change, with `python -m kit releases add ENTRY.json`, which rewrites the README's "Released tools" section from that list. One entry per standalone product; command-line kit tools share the Scrolls kit entry (user decision, 2026-10-20). A new version or fix of a released product replaces that product's entry, under the same id and title, and a new version of a kit tool replaces its line in the Scrolls kit entry's `tools` list under the tool's id, instead of adding another (user decisions, 2026-10-14 and 2026-10-20). AutoPipeline is pinned to the top of the section (`python -m kit releases pin`), so new releases go below it until Chase says to unpin it (user decision, 2026-10-14). Never edit the section by hand: `python -m kit releases check`, run by the tests, fails when it and the list disagree. The entry is part of the package's reviewed file list (since 2026-10-21, the agent leak and quality review of rule 8). For a Progress Prize package, the private exporter writes the entry itself and pushes it as a `release-readme/<submission_id>` branch for a PR into `main`.
 16. **Tools** (Chase, 16-17 Oct 2026): every tool and technique needs complete headless agent workflows and aims for competitive community performance. Every tool needs a page; follow [the interface and evidence standard](docs/TOOL-DOCS.md#headless-workflows-and-competitive-evidence). Update its page in the same PR; start new pages with `python -m kit.tooldocs new`. New tools register as stage options; workflows pick stages through the [registry](docs/tools/stagereg.md), never hard-coded (25 Oct).
 17. **Terminal look** (Chase, 23 Oct 2026): every terminal gets one styled look, spacing and mouse, with no install step. **Every command posted for Chase must render in it**: a kit command, or a script whose `main()` calls [`termstyle.script()`](docs/tools/termstyle.md) behind an `isatty()` guard, with child commands through `termstyle.run()`; try it in a pseudo-terminal first. Print plain lines and let `kit.termstyle` style them; draw panels and tables with its helpers, never hand-rolled color codes; keep `--json` and pipes plain; `kit live -- CMD` gives any output mouse scrolling.
+18. **Token thrift** (Chase, 6 Nov 2026; [details](docs/AI-AGENTS.md#token-thrift-6-november-2026)). More work per Claude token, never less work. Batch independent tool calls in one turn. Search with `git grep`; never read a file over about 50 KB whole (`docs/MAP.md`, `docs/README.md`, `docs/results.json`): grep it, `head`, or read with offset and limit. Tail logs and test output. Search and summary subagents run on Sonnet (Agent tool `model: "sonnet"`, or the `scout` agent), with a narrow brief and a short report. Wait with PR subscriptions or `--wait`, never polling loops.
 
 ## Standing user decisions
 
@@ -61,54 +62,33 @@ One line per decision still in force. The dated record, with every superseded de
 
 - Private plans, findings and submission material live in Scrolls-private (2026-10-07).
 - Leave `docs/contrib/villa-1865-m1pro-comment.md` alone (2026-10-07).
-- Paid compute runs on Hugging Face (Jobs, ZeroGPU, inference); no new paid Modal launches; launch rules and limits are in Scrolls-private's rule 10 (2026-10-23, rule 11; it replaces the Modal decisions of 2026-10-07 to 10-21).
-- Public writing for villa: clear titles, community terms, short, in Chase's voice; Chase posts (2026-10-12, rule 12).
-- Hugging Face, forum and Discord posts need Chase's yes for each, never with private work; no forum posts for now (2026-10-13); a standing yes covers redeploying approved Spaces and byte-identical releases (2026-10-18, rule 8); packages from Scrolls-private go to GitHub after an agent leak and quality review, without Chase reviewing each file list (2026-10-21, rule 8); pushes and PRs here need only the leak check (2026-10-23, rule 8).
+- The decisions behind rules 8, 11, 12, 15, 16 and 17 (Hugging Face compute; posts, releases and pushes; villa writing; the generated Released tools section; one page per tool; the terminal look) are stated in those rules; their dates are in DECISIONS.md.
 - Call the owner Chase (Chase Hendrick), never Bob (2026-10-13).
-- "Released tools" is generated from `docs/releases.json`, one entry per standalone product, with command-line kit tools sharing the Scrolls kit entry (2026-10-20), AutoPipeline pinned first until Chase says (2026-10-14, rule 15).
 - AutoPipeline's short name is AP, defined once per document; write it in full for villa and the community (2026-10-14).
 - Public commits: author and committer `Chase Hendrick <326338179+ChaseHendrick@users.noreply.github.com>`; never another `users.noreply.github.com` address or an AI account (2026-10-14).
-- One detailed page per tool in `docs/tools/` (2026-10-16, rule 16).
 - Public media: concept, synthetic and interface pictures; real-data stills, GIFs and short videos only from public scans that are not prize-eligible and show no held-out labels, at most 1920 px and 4 MB, with a credit sidecar; never model output, prize-eligible scrolls, volumes, segments or weights; hard rule 6 unchanged (2026-10-18, [rule](docs/media/README.md), [record](docs/DECISIONS.md)).
 - Merged branches are deleted automatically; start new work from `main` (2026-10-18).
-- Every terminal in one styled look (`kit.termstyle`), plain for pipes and `--json`, `kit live` for mouse; every command posted for Chase renders in it (2026-10-23, rule 17).
 - Never ask Chase to paste a command into a terminal: after his yes, agents run steps that need his Mac (GitHub releases, local credentials) through a Remote Control session themselves (2026-10-24).
 - Every Space, now and future, gets a Connect your tool panel (`kit spaceconnect`, a `connect.json` per Space, listed in `spaces/connect/spaces.json`): data URLs and tested snippets for villa, VC3D, neuroglancer, Python and others' tools; data linked, never rehosted (2026-10-24).
 - Every Space keeps one page scroll bar: nothing inside a page scrolls on its own (`onescroll.html` from `kit spaceconnect`); one-screen viewers keep one scrolling list at most (2026-10-27).
 - American English in every Space, card and release entry; names from others keep theirs (`kit spaceconnect spelling`, run by `check`) (2026-10-27).
 - A frozen test may be rerun after a technical break, or after a noise-limited near miss on new seeds or sites preregistered first; each rerun is a new disclosed freeze with its attempt count and earlier result, never tuned on the spent result (2026-10-29).
 - Agents may use swarm bursts, many subagents at once each trying a different route, to solve problems; preregistration and freezing before any test, the held-out rules and rule 8 still bind (2026-10-29).
+- Token thrift: more work per Claude token, never less work; Sonnet for search and summary subagents (2026-11-06, rule 18).
 
-## Repository map
+## Repository map and commands
 
-The full map, one row per module and script, is [`docs/MAP.md`](docs/MAP.md); search it for a tool or a path. The top level:
-
-| Path | What it is |
-| --- | --- |
-| `kit/` | The `python -m kit` package: standard library only, except numpy, tifffile and zarr for the map tools; every subcommand is in `kit/cli.py` |
-| `scripts/` | Mac GPU scripts (bash 3.2), the letter reader's training and benchmarks, the Center Finder (`scripts/umbilicus/`), and `scripts/experiments/`: saved records of past public-data jobs, keep their wording |
-| `docs/` | Docs, indexed by [`docs/README.md`](docs/README.md): the handoff, benchmark numbers (`docs/results.json`), dated logs, compute notes (Modal pricing and specs, kept for past runs), and frozen evidence archives with hashes in `docs/evidence/` (do not edit) |
-| `spaces/` | Hugging Face Space sources: `scroll-lens/` ([page](docs/tools/scroll-lens.md)), `ink-lens/` ([page](docs/tools/ink-lens.md)) |
-| `tests/` | `python -m unittest discover -s tests`; `tests/test_repo.py` checks the repository itself |
-| `experiments/`, `templates/` | The local experiment ledger (gitignored except its README) and its record template |
-
-## Commands
+One row per module and script: [`docs/MAP.md`](docs/MAP.md); grep it for a tool or a path. Top level: `kit/` (the `python -m kit` package, standard library only except numpy, tifffile and zarr for the map tools; every subcommand in `kit/cli.py`), `scripts/` (Mac GPU scripts in bash 3.2, the letter reader, the Center Finder, and `scripts/experiments/`: saved records of past public-data jobs, keep their wording), `docs/` (indexed by [`docs/README.md`](docs/README.md); frozen evidence in `docs/evidence/`, do not edit), `spaces/` (Hugging Face Space sources), `tests/`, `experiments/` and `templates/`.
 
 ```bash
 python -m unittest discover -s tests -v        # all tests; map tests skip without their numerical dependencies
-python -m kit prizes                            # open prizes from the snapshot
 python -m kit run all --dry-run --refresh        # AutoPipeline over every open-data bucket volume: priced plan, launches nothing
-python -m kit run watch --exit-code             # scheduled: queue new or changed bucket volumes, priced (exit 3 if any)
-python -m kit auc MAP.tif --control MAP_reverse.tif --labels L/inklabels.zarr --mask L/supervision.zarr \
-    [--crop Y0 Y1 X0 X1 --surface-shape H W] [--inner 64] [--json]
-python -m kit provenance write OUT.json --run NAME --model M --input I --output O
-python -m kit provenance check OUT.json --files
+python -m kit auc MAP.tif --control MAP_reverse.tif --labels L/inklabels.zarr --mask L/supervision.zarr [--json]
 python -m kit.tooldocs show auc --section "For agents"   # any tool's page, or one section of it
-python -m kit.tooldocs check                    # every tool page against the code (the tests run it)
 bash -n scripts/*.sh                            # syntax check; scripts must stay bash 3.2 compatible (macOS)
 ```
 
-Testing the Mac scripts off a Mac: `SMOKE=1 EXPECT_GPU=cpu WORK=<scratch dir> bash scripts/mac-w045.sh` (a 256 px window on CPU). Never edit a script in place while a run of it is going: bash reads scripts as it runs; replace files atomically.
+Off a Mac: `SMOKE=1 EXPECT_GPU=cpu WORK=<scratch dir> bash scripts/mac-w045.sh`. Never edit a script in place while a run of it is going; replace files atomically.
 
 ## Glossary
 

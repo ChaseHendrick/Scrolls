@@ -65,3 +65,17 @@ User decision, 2026-10-12. This covers anything meant for villa or the wider Ves
 - **Voice.** Short, in the user's own voice, as a person writing to maintainers. Lead with what happens, how to reproduce it and what you expected. No headings or boilerplate a person would not write for a short report, and no long dashes.
 - **Why.** Maintainers close issues with unclear titles, invented terminology, or text that does not read as written by the person. A closed issue costs the fix and the user's standing with the team.
 - **Before handing a draft over,** reread it as a maintainer who has never seen this repository: is every term one they use, and does the title alone say what the report is about?
+
+## Token thrift, 6 November 2026
+
+Chase asked for ways to cut Claude token usage so threads can work longer, and on 6 Nov 2026 chose a thrift rule (AGENTS.md rule 18), a shorter AGENTS.md and Sonnet for search and summary subagents. The goal is more work per token, never less work.
+
+Measured on 5 Nov 2026 from one session's own transcript: its first turn carried about 137k tokens of context before any work, and every later turn reads it again from cache. The account's plugin and connector catalog was about a quarter of it and the AGENTS.md files about a tenth. So the levers are a smaller base context and fewer, fuller turns.
+
+- Batch independent tool calls into one turn.
+- Search with `git grep -n`; read big files (`docs/MAP.md`, `docs/README.md`, `docs/results.json`) with grep, `head` or offset and limit, never whole.
+- Tail logs and test output (`2>&1 | tail -30`).
+- Search and summary subagents run on Sonnet: pass `model: "sonnet"` to the Agent tool, or use the read-only `scout` agent in `.claude/agents/scout.md`. Give a narrow brief and ask for a short report. Work that decides a result keeps the session's model. Swarm bursts stay allowed; size them to the question.
+- Wait with PR subscriptions or a `--wait` flag, never a sleep or polling loop.
+- GitHub MCP calls: `minimal_output` and five to ten items a page.
+
