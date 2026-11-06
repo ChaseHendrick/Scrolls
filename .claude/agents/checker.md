@@ -1,6 +1,6 @@
 ---
 name: checker
-description: Read-only status checker on Haiku at low effort. Use for routine checks whose answer is pass, fail or a number: CI and check runs, PR state, `kit hfprogress RUN`, a test run's result, a file's existence or size, a handoff row's state. Returns a few lines, so the main thread never reads long output (AGENTS.md rule 18).
+description: Read-only status checker on Haiku at low effort. Use for routine checks whose answer is pass, fail or a number: CI and check runs, PR state, a test run's result, a file's existence or size, a handoff row's state. Returns a few lines, so the main thread never reads long output (AGENTS.md rule 18).
 model: haiku
 effort: low
 tools: Read, Grep, Glob, Bash
