@@ -13230,6 +13230,164 @@
    "source": "docs/tools/ringleader.md#checks-and-controls",
    "date": "2026-10-30",
    "slices_scored": 142
+  },
+  {
+   "key": "ringleader_ladders_0139_20261104",
+   "about": "Ringleader v1 sure pieces on 10 evidence slices of PHerc0139 (z 1,920 to 1,956) given to villa's spiral fit (commit e2254ebe, 30,000 steps, fit window z 1,024 to 2,048 of its L2 grid) as relative windings by ladders.py's rule; arms A (fit alone), E (round 1 ladders), G (grown ladders), Q (G's plus-one control), seeds 1 to 3; 86 slices of fresh z 1,960 to 2,300 scored by on-winding E0 against 11 published hand windings; read once",
+   "label": "Model output",
+   "verdict": "PASS",
+   "rule": "PASS when G minus A is at least +0.10 pooled and above 0 at every seed, and G minus Q is at least 0.05 at every seed",
+   "slices": 86,
+   "seeds": [
+    1,
+    2,
+    3
+   ],
+   "e0": {
+    "A": [
+     0.219,
+     0.23,
+     0.232
+    ],
+    "E": [
+     0.36,
+     0.38,
+     0.38
+    ],
+    "G": [
+     0.415,
+     0.414,
+     0.397
+    ],
+    "Q": [
+     0.103,
+     0.105,
+     0.112
+    ],
+    "ringleader": 0.79
+   },
+   "e0_mean": {
+    "A": 0.227,
+    "E": 0.373,
+    "G": 0.409,
+    "Q": 0.107
+   },
+   "g_minus_a_pooled": 0.182,
+   "g_minus_a": [
+    0.196,
+    0.184,
+    0.165
+   ],
+   "g_minus_q_range": [
+    0.285,
+    0.312
+   ],
+   "limits": "One band of one scroll; a later frozen test on another scroll did not clear its +0.10 bar. The taught fit stays below Ringleader's own labels (0.41 against 0.79). The test harness and data staging are not released.",
+   "source": "docs/tools/ringleader.md#checks-and-controls",
+   "date": "2026-11-04"
+  },
+  {
+   "key": "ringleader_ladders_0172_20261106",
+   "about": "The ringleader_ladders_0139_20261104 method, constants and pass rule, unchanged, on PHerc0172 scan 20241024131838 (7.91 um): our run of the organizers' m7 model on the band, villa's lasagna model for the fit's field, a center line picked from three public candidates by a label-free rule; Ringleader v1 sure pieces on 10 evidence slices (z 9,640 to 9,676) as relative windings; villa's spiral fit (commit e2254ebe, 30,000 steps, fit window z 9,280 to 10,304), arms A, E, G and Q, seeds 1 to 3; 57 slices of z 9,680 to 9,904 (every 4th, three stacks of 19) scored by on-winding E0 against the organizers' hand windings w052 to w095 (44); read once",
+   "label": "Model output",
+   "verdict": "PASS",
+   "rule": "PASS when G minus A is at least +0.10 pooled and above 0 at every seed, and G minus Q is at least 0.05 at every seed; void unless Ringleader itself leads mean A by at least 0.20 (added before this test's freeze, after the failed test on another scroll)",
+   "slices": 57,
+   "refs": 44,
+   "seeds": [
+    1,
+    2,
+    3
+   ],
+   "e0": {
+    "A": [
+     0.07,
+     0.066,
+     0.072
+    ],
+    "E": [
+     0.268,
+     0.267,
+     0.27
+    ],
+    "G": [
+     0.293,
+     0.293,
+     0.278
+    ],
+    "Q": [
+     0.038,
+     0.038,
+     0.035
+    ],
+    "ringleader": 0.497
+   },
+   "e0_mean": {
+    "A": 0.069,
+    "E": 0.268,
+    "G": 0.288,
+    "Q": 0.037
+   },
+   "g_minus_a_pooled": 0.219,
+   "g_minus_a": [
+    0.224,
+    0.226,
+    0.206
+   ],
+   "g_minus_q": [
+    0.256,
+    0.255,
+    0.243
+   ],
+   "teacher_lead": 0.428,
+   "by_distance_mean": {
+    "bins_slices": [
+     [
+      0,
+      40
+     ],
+     [
+      40,
+      80
+     ],
+     [
+      80,
+      120
+     ],
+     [
+      120,
+      160
+     ],
+     [
+      160,
+      200
+     ],
+     [
+      200,
+      240
+     ]
+    ],
+    "A": [
+     0.061,
+     0.063,
+     0.064,
+     0.08,
+     0.079,
+     0.077
+    ],
+    "G": [
+     0.327,
+     0.321,
+     0.311,
+     0.246,
+     0.246,
+     0.237
+    ]
+   },
+   "attempts": "Eighth freeze of this test; the first seven stopped on technical faults before any score was read; read once",
+   "limits": "A second pass on a band picked after a failed test on another scroll, with the void rule added after that failure (under it the failed test would read void), so not a planned replication. Ringleader v1 had run on other PHerc0172 bands, never on this band's windings. m7's training data is not published; whether villa's fit settings were tuned on PHerc0172 is unknown; arm A is villa's fit at the PHerc0139 test's settings, not its best configuration. Stack C and ten slices of stack B lose one sector to a box held out for another test. The taught fit stays below Ringleader's own labels (0.29 against 0.50). The harness and data staging are not released.",
+   "source": "docs/tools/ringleader.md#checks-and-controls",
+   "date": "2026-11-06"
   }
  ],
  "exposure_atlas_checks": [

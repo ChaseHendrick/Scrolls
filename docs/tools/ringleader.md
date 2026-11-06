@@ -133,11 +133,29 @@ The pass rule was G minus A at least +0.10 pooled, above 0 at every seed, and G 
 
 Real data render: a chart of scores, with no CT pixels, mesh or map; Vesuvius Challenge open data, CC BY-NC 4.0. Made by `scripts/experiments/ringleader-ladders/chart.py`; a [dark copy](../assets/ringleader/ladders-test-dark.png) is beside it.
 
-Limits of the ladder result: one scroll and one band; a second frozen test, on another scroll, did not clear its +0.10 bar, so the gain is shown on PHerc0139 only. The ladders do not make the fit as good as Ringleader's own labels (0.41 against 0.79): they move the spiral fit, which gives a whole surface, toward them. The test's harness and data staging are not part of this release. `ladders.py` rebuilds the test's round 1 ladder: on its 10 evidence slices all 146,340 points match the frozen file when `--matrix` holds the catalog matrix rounded to 10 decimals as the test used it; with the default full-precision catalog copy, 25 of them move by 0.001 fit voxel (a rounding tie).
+Limits of the ladder result: one band of one scroll in this test; a second frozen test, on another scroll, did not clear its +0.10 bar, and a third, on PHerc0172 (below), passed, so the gain is shown on two scrolls of the three tried. The ladders do not make the fit as good as Ringleader's own labels (0.41 against 0.79): they move the spiral fit, which gives a whole surface, toward them. The test's harness and data staging are not part of this release. `ladders.py` rebuilds the test's round 1 ladder: on its 10 evidence slices all 146,340 points match the frozen file when `--matrix` holds the catalog matrix rounded to 10 decimals as the test used it; with the default full-precision catalog copy, 25 of them move by 0.001 fit voxel (a rounding tie).
 
 Limits: E0 is a share of m7 sheet pixels, so pixels m7 does not mark as sheet are not scored and a sheet m7 missed is not counted against anyone. The truth is hand windings on PHerc0139 and one organizer mesh of about 3 turns on PHerc0332. Ringleader labels windings; it does not trace a surface. On PHerc0332, m7 may have trained on that scroll's older scans or meshes, and earlier tests of ours had read the same band, so it is not fully held out there; PHerc0139 is held out by band only, since the settings and bars were set on development stacks of the same scroll. villa's spiral fit is not built to label every sheet of a slice and drifts by several turns, so the margin is over its default fit read this way, not over a tuned winding labeler. The public scorer loads the published windings w023 to w040 by default; the frozen PHerc0139 test used 14 of them, so pass `--windings` to score against a chosen subset; this page makes no claim that the default run reproduces 0.902.
 
-Claim label: Model output (the labels, the ladders, and the three frozen test results above).
+**The ladders, in a second passing frozen test** (Model output; preregistered, read once on 6 November 2026). The method, its constants and the pass rule are the PHerc0139 test's, unchanged, here on public PHerc0172 (scan 20241024131838, 7.91 um). PHerc0172 has no published m7 on this band, so we ran the organizers' m7 model (`scrollprize/surface_m7_nnunet`) on it ourselves; the fit's lasagna field was made with villa's lasagna model, whose training data, as villa lists it, does not include PHerc0172; the center line was picked from three public candidates by a label-free rule fixed before the read. Ringleader v1 labeled 10 evidence slices (z 9,640 to 9,676); `ladders.py`'s rule made the ladders; villa's spiral fit (commit `e2254ebe`, 30,000 steps, fit window z 9,280 to 10,304) ran with and without them at seeds 1 to 3; 57 slices of z 9,680 to 9,904 (every 4th, three stacks of 19) were scored against the organizers' hand-traced windings w052 to w095 (44 windings), which no method had been scored on in this band.
+
+| Arm | On-winding E0, seeds 1, 2, 3 | Mean |
+| --- | --- | --- |
+| A: villa spiral fit alone | 0.070, 0.066, 0.072 | 0.069 |
+| E: with round 1 ladders | 0.268, 0.267, 0.270 | 0.268 |
+| G: with grown ladders | 0.294, 0.293, 0.278 | 0.288 |
+| Q: with the plus-one control | 0.038, 0.038, 0.035 | 0.037 |
+| Ringleader v1 itself on the same pixels (the teacher; information) | | 0.497 |
+
+The pass rule was the PHerc0139 test's (G minus A at least +0.10 pooled, above 0 at every seed, and G minus Q at least 0.05 at every seed), with one rule added before this test was frozen: the test is void unless Ringleader itself leads the plain fit by at least 0.20, since ladders cannot teach what the teacher does not know. It read PASS: G minus A +0.219 pooled (+0.224, +0.226, +0.206 by seed), G minus Q +0.243 to +0.256, and Ringleader led the plain fit by +0.428. The gain is largest next to the ladder slices (E0 0.06 for A against 0.33 for G within 40 slices) and smaller far from them (0.08 against 0.24 at 200 to 240 slices).
+
+![Chart of the second passing frozen test (Model output): on-winding E0 of villa's spiral fit on PHerc0172 alone 0.069, with Ringleader ladders 0.268, with grown ladders 0.288, with the plus-one control 0.037, Ringleader itself 0.497; and E0 by distance from the ladder slices](../assets/ringleader/ladders-test-0172-light.png)
+
+Real data render: a chart of scores, with no CT pixels, mesh or map; Vesuvius Challenge open data, CC BY-NC 4.0. Made by `scripts/experiments/ringleader-ladders/chart_0172.py`; a [dark copy](../assets/ringleader/ladders-test-0172-dark.png) is beside it.
+
+Limits of this result: it came after the failed test on the other scroll, and the band and the void rule were chosen after that failure, so it is a second pass on a band picked later, not a planned replication; under the void rule the failed test would read void, not pass. Seven earlier freezes of this test stopped on technical faults (launch refusals, start-up failures, fits that stopped short, a gate refusing a mislabeled record) before anything was scored; this eighth freeze was read once. Ringleader v1 had been run on other bands of PHerc0172 before, never on this band's windings. m7's training data is not published, so whether it saw this scroll is unknown, and whether villa's spiral fit settings were tuned on PHerc0172 is unknown. Arm A is villa's fit at the same settings as in the PHerc0139 test, not villa's best configuration, and it scores low here (0.07). Stack C and ten slices of stack B lose one sector to a box held out for another test, so those slices score fewer pixels. As on PHerc0139, the taught fit stays well below Ringleader's own labels (0.29 against 0.50), and the test's harness and data staging are not part of this release.
+
+Claim label: Model output (the labels, the ladders, and the four frozen test results above).
 
 ## Commands and options
 
@@ -428,7 +446,7 @@ CPU only; it rents nothing. Measured 2026-10-31 on a 4-core cloud container (the
 - **Not a pass:** an E0 whose controls did not pass; an E0 on slices where the settings were developed (PHerc0139 near z 3000, 5000 or 7000) called held out; a score against references the labels were tuned on; a comparison with a spiral fit read at another resolution or on other pixels.
 - **Ladders:** `python3 scripts/ringleader/ladders.py ladders --geo OUT --out LAD --control`; parse its one stdout line (`points`, `collections`, `files`) and `LAD/ladders.json`; success is exit 0 and every slice's `max_theta_gap` under 3.14. Exit 2 with a `ladders:` line is a stop to read, not to retry.
 - **Go-ahead:** Nothing.
-- **Never:** call the labels a reading or say letters were found; call a score a pass without its controls; claim it works on scrolls beyond the two tested, or that the ladders help beyond PHerc0139; say it traces a surface.
+- **Never:** call the labels a reading or say letters were found; call a score a pass without its controls; claim it works on scrolls beyond the two tested, or that the ladders help beyond PHerc0139 and PHerc0172; say it traces a surface.
 
 ## Tests
 
@@ -438,6 +456,7 @@ CPU only; it rents nothing. Measured 2026-10-31 on a 4-core cloud container (the
 
 - 2026-10-31: first public release, code only, Apache-2.0 (Ringleader 1.0.0, on top of `0f1b080`): v1 as frozen for its two tests of 30 October 2026 (held-out PHerc0139 E0 0.902; PHerc0332 E0 0.659 against organizer mesh m0828), first written on 15 October 2026; released with a generic `--exclude-z` list, `--umbilicus` and `--zarr` options, and a scorer that reads `kit.sheetrefs` references.
 - 2026-11-05: 1.1.0 (on top of `0a95fdd`) adds `ladders.py`, Ringleader's sure pieces as relative windings for villa's spiral fit, the method of the frozen ladder test read on 4 November 2026 (PHerc0139 z 1,960 to 2,300, PASS, G minus A +0.182 against a +0.10 bar), with its tests, a chart and a concept GIF. The labeler itself is unchanged.
+- 2026-11-06: on top of `372353d`, the page adds the second passing frozen ladder test (PHerc0172 z 9,680 to 9,904, read once on 6 November 2026, PASS, G minus A +0.219 against a +0.10 bar) and its chart (`chart_0172.py`); no code change.
 
 ## Related
 
