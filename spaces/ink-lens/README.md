@@ -76,12 +76,13 @@ runs; only rows marked no are a test of generalization.
 | [Reader V3](https://huggingface.co/domenicor046/reader-v3) | Domenico Russo | surface volume | 9.362 | MIT | no (recipe chosen on it) | yes |
 | [dense_native](https://huggingface.co/Nieuwlaar/ink9um-dense-native) | Erwin Nieuwlaar | surface volume | 9.362 | MIT | not stated | yes |
 | [d9v2](https://github.com/TAUIL-Abd-Elilah/pherc0826-first-letters-search) | TAUIL-Abd-Elilah | surface volume | 9.6 | MIT | no | yes |
+| [TRACE v3B](https://github.com/Jashann/vesuvius-scrolling) | Jashanjot Singh Gill and Nhat Nam Tran | surface volume | 9.362 | CC BY-NC-SA 4.0 | no (checkpoint chosen on it) | yes |
 | [Hecate](https://huggingface.co/scrollprize/hecate) 2.4 and 9.6 | Vesuvius Challenge | surface volume, 3D out | 2.4, 9.6 | MIT | likely | yes |
 | [canonical 2 um](https://huggingface.co/scrollprize/ink_canonical_2um) | Vesuvius Challenge | surface volume | 2.399 | MIT | likely | likely |
 | [Paris 4 3D, 4.8 um](https://huggingface.co/scrollprize/ink_paris4_3d_4.8um_gambiarra) | Vesuvius Challenge | CT around the sheet | 2.4 in, 4.8 out | MIT | no | no |
 | [DINO-guided 3D](https://huggingface.co/scrollprize/ink_3d_dino_guided) | Vesuvius Challenge | CT around the sheet | 2.4 | MIT | yes | yes |
 
-Sources for each entry are in `list_models` (and `zoo.py`). The live **Compare models** tab runs any of the nine
+Sources for each entry are in `list_models` (and `zoo.py`). The live **Compare models** tab runs any of the ten
 surface-volume models on up to 512 px of the grid. The two scan-space 3D models need minutes of GPU per sample, so
 they do not run live: `tools/gallery_job.py` runs them, and every other model on whole crops, on a GPU.
 
@@ -173,7 +174,8 @@ Nothing you send is kept: an upload is read into memory and deleted, and results
 
 Code: Apache 2.0 (`LICENSE`, `NOTICE`), by Chase Hendrick. Models: d9v2 by TAUIL-Abd-Elilah, Reader v2 and Reader V3
 by Domenico Russo, dense_native by Erwin Nieuwlaar, and `ink_9um`, Hecate, canonical 2 um and the two Paris 4 3D
-models by the Vesuvius Challenge (all MIT); model code: villa's vesuvius package (MIT) and ink-sdk by LimeGS (MIT),
+models by the Vesuvius Challenge (all MIT); TRACE v3B by Jashanjot Singh Gill and Nhat Nam Tran (CC BY-NC-SA 4.0,
+from their GitHub release v1.0); model code: villa's vesuvius package (MIT) and ink-sdk by LimeGS (MIT),
 whose comparison features (profiles, liveness gate, ensemble recipe, battery windows, scale rule, orientation check)
 this page follows and in part runs. Scan data: CC BY-NC 4.0, Vesuvius Challenge,
 *CT Scans of Herculaneum Papyri* (https://scrollprize.org/data). Source and tests:

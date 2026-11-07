@@ -71,6 +71,10 @@ class Zoo(unittest.TestCase):
         self.assertEqual(zoo.scale_plan(2.403, "hecate-9.6"), ("pool", 4))
         self.assertEqual(zoo.scale_plan(2.403, "hecate-2.4"), ("native", 1))
         self.assertEqual(zoo.scale_plan(2.399, "canonical-2um"), ("native", 1))
+        self.assertEqual(zoo.scale_plan(2.403, "trace-v3b"), ("pool", 4))
+        self.assertEqual(zoo.scale_plan(9.366, "trace-v3b"), ("native", 1))
+        self.assertEqual(zoo.exposure("trace-v3b", "PHerc0841")[0], "selected")
+        self.assertEqual(zoo.control_of("trace-v3b"), "reverse-depth")
         for src, name in ((9.366, "canonical-2um"), (9.366, "hecate-2.4"), (4.8, "ink_9um-s42"),
                           (1.2, "canonical-2um")):
             with self.assertRaises(zoo.ZooError):
