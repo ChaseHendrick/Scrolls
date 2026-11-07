@@ -6198,7 +6198,7 @@
    "id": "ink-lens",
    "name": "ink-lens",
    "tagline": "every ink model side by side with controls, and control-checked ink maps of your own region for VC3D",
-   "summary": "Compares eleven open ink models, 2.5D and 3D, on the same pixels and labels, each with its own control, and maps one region of a VC3D segment with a 9 um model, keeping only ink above its own reverse-depth control, written back as VC3D's own files.",
+   "summary": "Compares twelve open ink models, 2.5D and 3D, on the same pixels and labels, each with its own control, and maps one region of a VC3D segment with a 9 um model, keeping only ink above its own reverse-depth control, written back as VC3D's own files.",
    "status": "Experimental",
    "kind": [
     "app",
@@ -6404,13 +6404,13 @@
     {
      "name": "History",
      "start_line": 521,
-     "end_line": 532,
+     "end_line": 533,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 533,
-     "end_line": 540,
+     "start_line": 534,
+     "end_line": 541,
      "applicable": true
     }
    ]

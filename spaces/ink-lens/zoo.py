@@ -51,6 +51,7 @@ SRC = {
     "canonical-card": "https://huggingface.co/scrollprize/ink_canonical_2um",
     "dino-card": "https://huggingface.co/scrollprize/ink_3d_dino_guided",
     "gambiarra-card": "https://huggingface.co/scrollprize/ink_paris4_3d_4.8um_gambiarra",
+    "trace-card": "https://github.com/Jashann/vesuvius-scrolling/blob/main/MODEL_CARD.md",
 }
 
 _INK9_TRAIN = {"PHerc0139": ("trained", "its labels include PHerc0139, among them w045's 2.4 um render", "w045"),
@@ -132,6 +133,25 @@ MODELS = {
         "outputs": ("2d",), "no_ink_floor": 0.0, "floor_source": "not declared",
         "exposure": {"PHerc0139": ("trained", "an ink_9um fine-tune; inherits its w045 training", "exposure-log"),
                      "PHerc0841": ("held_out", "PHerc0841 w00, ag896, ag405 are its reader/test.txt", "d9v2-test")}},
+    "trace-v3b": {
+        "title": "TRACE v3B", "by": "Jashanjot Singh Gill and Nhat Nam Tran", "family": "villa9", "sdk_profile": None,
+        # An ink_9um seed 42 fine-tune in villa's own checkpoint format: same config and step entries as seed 42,
+        # same 508 tensor names and shapes, other weights (checked 7 Nov 2026), so villa's loader runs it unchanged.
+        "weights": {"kind": "url", "url": "https://github.com/Jashann/vesuvius-scrolling/releases/download/v1.0/"
+                    "v3B_best.pth", "path": "v3B_best.pth",
+                    "sha256": "812ffe2b42b3293974052ebbee60a0fe939ca2bfc3f03a517a0bc2e2339e5da2",
+                    "bytes": 272882569},
+        "license": "CC BY-NC-SA 4.0", "scale_um": 9.362, "tolerance_um": 0.75, "depth": 17,
+        "orders": ("forward", "reverse"), "outputs": ("2d",), "no_ink_floor": 0.0, "floor_source": "not declared",
+        "exposure": {"PHerc0139": ("trained", "fine-tuned on PHerc0139 and PHerc0814 surface volumes (and ink_9um's "
+                                   "labels before that)", "trace-card"),
+                     "PHerc0841": ("selected", "not trained on it, but its checkpoint was chosen on PHerc0841 w00, "
+                                   "ag144 and ag174", "trace-card"),
+                     "PHerc0814": ("trained", "fine-tuned on its surface volumes with 2.4 um ink predictions as "
+                                   "targets", "trace-card"),
+                     "PHerc0009B": ("trained", "v3 added the PHerc0009B fragment scans", "trace-card"),
+                     "PHerc0343P": ("trained", "v3 added the PHerc0343P fragment scans", "trace-card"),
+                     "PHerc0500P2": ("trained", "v3 added the PHerc0500P2 fragment scans", "trace-card")}},
     # ---------------------------------------------------------------- Hecate, through ink-sdk
     "hecate-2.4": {
         "title": "Hecate 2.4 um", "by": "Vesuvius Challenge", "family": "hecate", "sdk_profile": "hecate@2.4um",
