@@ -83,3 +83,9 @@ Source: [VC-Catalog] (shape field); sizes are the product of the shape, not the 
 ## Licenses of the scan data
 
 Scan volumes in the open-data catalog carry one of two licenses: **CC BY-NC 4.0** (67 volumes, including all ESRF data) or the **EduceLab Data License** (7 volumes, the older Diamond data) [VC-Catalog]. Publication of hidden text derived from the data is additionally governed by the Vesuvius Challenge data agreement ([Chapter 28](28-ethics.md#ch-ethics)). This book reproduces no images derived from the scan data.
+
+## 16-bit reconstructions on the ESRF portal
+
+The ESRF's Cultural Heritage Tomography database lists 16-bit reconstructions of two 2.4 µm Herculaneum scans that the open-data catalog does not link: PHerc. 139 (2.399 µm, 78 keV, 113 files in ZIP parts of about 107 GB) [ESRF-PHerc0139-16bit] and PHerc. 1667 (2.399 µm, 78 keV, 17 parts of about 1.79 TB in all, plus a 2x binned JP2 copy of about 224 GB) [ESRF-PHerc1667-16bit]. Each is the reconstructed volume exported as 16-bit JP2 axial slices under CC BY-NC 4.0, downloaded through Globus [ESRF-CH-Tomo]. The catalog's own volumes are stored as 8-bit integers [VC-Catalog].
+
+Whether the 8-bit copies lose signal was checked without any model on open-data PHerc. 1667 at 2.399 µm (editors' measurement, 7 November 2026 [Editors-2026-11-07]). In four papyrus blocks the high-pass noise was 2.6 to 4.3 gray levels (a lower bound) and the adjacent-slice difference 7.5 to 9.0 levels (an upper bound that includes structure); rounding to 8 bits adds about 0.29 levels, under 1 percent of the noise variance. The stored 9.6 µm level equals the 4 x 4 x 4 mean of level 0 rounded again to 8 bits, which adds about 0.3 levels more. Interpretation: the 16-bit copies can add little over open-data level 0; the one 8-bit cost seen, the second rounding of the coarse level, is avoided by averaging level 0 in floating point when making a 9.6 µm input.

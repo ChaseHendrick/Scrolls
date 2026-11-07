@@ -36,4 +36,4 @@ The Markdown edition has one file per chapter in `md/`, the whole book in one fi
 
 ## Status
 
-This is an independent compilation. It is not published or endorsed by the Vesuvius Challenge, Scroll Prize, Inc., EduceLab, or any library or facility named in it. Corrections are welcome; the sources cited are authoritative where they differ from this book.
+This is an independent compilation. It is not published or endorsed by the Vesuvius Challenge, Scroll Prize, Inc., EduceLab, or any library or facility named in it. Corrections are welcome; the sources cited are authoritative where they differ from this book. Chapter 8 was updated on 7 November 2026 (16-bit reconstructions on the ESRF portal).

@@ -6,6 +6,10 @@ Sources are cited in the text by keys in square brackets. Web pages were accesse
 
 ## Vesuvius Challenge pages
 
+- <span id="bib-Editors-2026-11-07"></span>**[Editors-2026-11-07]** Editors' measurement, 7 November 2026 (unpublished): model-free noise statistics of open-data PHerc. 1667 at 2.399 µm.
+- <span id="bib-ESRF-CH-Tomo"></span>**[ESRF-CH-Tomo]** ESRF, Cultural Heritage Tomography database, search page, accessed 7 Nov 2026. <https://cultural-heritage.esrf.fr/tomo/search>
+- <span id="bib-ESRF-PHerc0139-16bit"></span>**[ESRF-PHerc0139-16bit]** ESRF data collection, PHerc. 139, 2.399 µm, 78 keV, reconstructed volume as 16-bit JP2 axial slices, DOI 10.15151/ESRF-DC-2488816678, accessed 7 Nov 2026. <https://doi.org/10.15151/ESRF-DC-2488816678>
+- <span id="bib-ESRF-PHerc1667-16bit"></span>**[ESRF-PHerc1667-16bit]** ESRF data collection, PHerc. 1667, 2.399 µm, 78 keV, reconstructed volume as 16-bit JP2 axial slices, DOI 10.15151/ESRF-DC-2488816686, accessed 7 Nov 2026. <https://doi.org/10.15151/ESRF-DC-2488816686>
 - <span id="bib-VC-Catalog"></span>**[VC-Catalog]** Vesuvius Challenge open data catalog, metadata.json in the open data bucket. scrollprize.org, accessed 15 Oct 2026. <https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/metadata.json>
 - <span id="bib-VC-CommunityProjects"></span>**[VC-CommunityProjects]** Vesuvius Challenge, "Awesome Scroll Tools" (community projects). scrollprize.org, accessed 15 Oct 2026. <https://scrollprize.org/community_projects>
 - <span id="bib-VC-Data"></span>**[VC-Data]** Vesuvius Challenge, "Data Formats" (data page: licenses, how to cite, repositories). scrollprize.org, accessed 15 Oct 2026. <https://scrollprize.org/data>
