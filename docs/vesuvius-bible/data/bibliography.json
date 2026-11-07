@@ -698,5 +698,25 @@
   "text": "Editors' digest of public Vesuvius Challenge activity, 10 to 15 October 2026 (ScrollPrize/villa commit log, @scrollprize posts, scrollprize.org/winners).",
   "url": "https://github.com/ScrollPrize/villa/commits/main",
   "type": "work"
+ },
+ "Editors-2026-11-07": {
+  "text": "Editors' measurement, 7 November 2026 (unpublished): model-free noise statistics of open-data PHerc. 1667 at 2.399 µm.",
+  "url": "",
+  "type": "work"
+ },
+ "ESRF-CH-Tomo": {
+  "text": "ESRF, Cultural Heritage Tomography database, search page, accessed 7 Nov 2026.",
+  "url": "https://cultural-heritage.esrf.fr/tomo/search",
+  "type": "work"
+ },
+ "ESRF-PHerc0139-16bit": {
+  "text": "ESRF data collection, PHerc. 139, 2.399 µm, 78 keV, reconstructed volume as 16-bit JP2 axial slices, DOI 10.15151/ESRF-DC-2488816678, accessed 7 Nov 2026.",
+  "url": "https://doi.org/10.15151/ESRF-DC-2488816678",
+  "type": "work"
+ },
+ "ESRF-PHerc1667-16bit": {
+  "text": "ESRF data collection, PHerc. 1667, 2.399 µm, 78 keV, reconstructed volume as 16-bit JP2 axial slices, DOI 10.15151/ESRF-DC-2488816686, accessed 7 Nov 2026.",
+  "url": "https://doi.org/10.15151/ESRF-DC-2488816686",
+  "type": "work"
  }
 }
