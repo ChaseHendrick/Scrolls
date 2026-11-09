@@ -19,7 +19,7 @@
   {"id": "lasagna", "title": "Lasagna field, PHerc0175A", "kind": "hf-dataset",
    "url": "https://huggingface.co/datasets/SharpMeow/pherc0175a-lasagna",
    "repo": "SharpMeow/pherc0175a-lasagna", "file": "README.md", "size": "large",
-   "license": "CC BY-NC 4.0", "note": "villa lasagna predict3d output (scrollprize/lasagna); model output, not checked by eye."},
+   "license": "CC BY-NC 4.0", "note": "villa lasagna predict3d output (scrollprize/lasagna); model output."},
   {"id": "fields", "title": "Lasagna fields, ten scans", "kind": "page-api",
    "url": "https://huggingface.co/spaces/SharpMeow/lasagna-fields",
    "links": [{"label": "Lasagna Fields: every field's OME-Zarr URL, VC3D manifest and tested snippets", "url": "https://huggingface.co/spaces/SharpMeow/lasagna-fields"}],

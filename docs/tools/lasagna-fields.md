@@ -32,7 +32,7 @@ The metadata API `list_coverage(scroll="")` returns the summary and all matching
 
 The first ten datasets hold villa's field for ten whole scans that had none: PHerc0175A, PHerc0175B, PHerc0306B, PHerc0483A, PHerc0483B, PHerc0490A, PHerc0490B, PHerc0841, PHerc0846A and PHerc0846B. Each is in villa's own layout (`SCAN.lasagna.json` and four `SCAN_{cos,grad_mag,nx,ny}.ome.zarr` channels), so lasagna's tools open it without changes. The same fields sit unpacked in the public bucket SharpMeow/lasagna-fields, laid out like the open data (`SCAN/representations/predictions/lasagna/RUN/`), so any zarr reader can open them by URL.
 
-They are raw model output that nobody has checked by eye. They are geometry inputs, not a reading of any text.
+They are model-generated geometry inputs, not a reading of any text.
 
 **Make a field** (since 25 Oct 2026) covers every other public scan, one box at a time. Pick a scan and a level-0 point; the Space reads the CT around the box from the open data (level 0 of 8.6 to 9.4 um scans, level 2 of 2.4 um scans, with a margin of one tile), calls villa's own `predict3d` in-process on ZeroGPU with the pinned commit and checkpoint, and returns three things: a picture of the middle slices, a receipt with the check below, and a zip with villa's output folder, `field.npz` and the receipt. Nothing is reimplemented, and the box's field is the field a whole-scan run makes there, because boxes are whole 256-voxel blocks on villa's own tile lattice.
 

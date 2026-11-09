@@ -108,7 +108,7 @@ curl -s https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc012
 
 `https://huggingface.co/datasets/SharpMeow/pherc0175a-lasagna`
 
-License: CC BY-NC 4.0. villa lasagna predict3d output (scrollprize/lasagna); model output, not checked by eye.
+License: CC BY-NC 4.0. villa lasagna predict3d output (scrollprize/lasagna); model output.
 
 ### Python (huggingface_hub) (tested 2026-10-24)
 
