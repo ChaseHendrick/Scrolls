@@ -7311,8 +7311,8 @@
   {
    "id": "lasagna-fields",
    "name": "lasagna-fields",
-   "tagline": "whole-scan lasagna fields for 24 scrolls, listed by scroll, and villa's field for any box on demand",
-   "summary": "Whole-scan lasagna fields for 24 scrolls, listed by scroll (villa's own in the open data and 22 public datasets made with villa's lasagna or Lasagnetta 0.1.1), and a Space that runs villa's lasagna on ZeroGPU for any box of any public scan, from its page, API or MCP server.",
+   "tagline": "explore published layer fields",
+   "summary": "Choose a scroll and scan, view an available preview, and open the published field's dataset or manifest. Lasagna and Lasagnetta fields are identified by model. The Space also offers villa's Lasagna model for small boxes through its page, API or MCP server.",
    "status": "Current",
    "kind": [
     "data",
@@ -7383,91 +7383,91 @@
     {
      "name": "What it does",
      "start_line": 23,
-     "end_line": 40,
+     "end_line": 44,
      "applicable": true
     },
     {
      "name": "When to use it",
-     "start_line": 41,
-     "end_line": 53,
+     "start_line": 45,
+     "end_line": 57,
      "applicable": true
     },
     {
      "name": "Quick start",
-     "start_line": 54,
-     "end_line": 101,
+     "start_line": 58,
+     "end_line": 136,
      "applicable": true
     },
     {
      "name": "Checks and controls",
-     "start_line": 102,
-     "end_line": 122,
+     "start_line": 137,
+     "end_line": 157,
      "applicable": true
     },
     {
      "name": "Commands and options",
-     "start_line": 123,
-     "end_line": 145,
+     "start_line": 158,
+     "end_line": 180,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 146,
-     "end_line": 155,
+     "start_line": 181,
+     "end_line": 190,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 156,
-     "end_line": 159,
+     "start_line": 191,
+     "end_line": 194,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 160,
-     "end_line": 187,
+     "start_line": 195,
+     "end_line": 222,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 188,
-     "end_line": 201,
+     "start_line": 223,
+     "end_line": 236,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 202,
-     "end_line": 205,
+     "start_line": 237,
+     "end_line": 240,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 206,
-     "end_line": 211,
+     "start_line": 241,
+     "end_line": 246,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 212,
-     "end_line": 224,
+     "start_line": 247,
+     "end_line": 259,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 225,
-     "end_line": 228,
+     "start_line": 260,
+     "end_line": 263,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 229,
-     "end_line": 239,
+     "start_line": 264,
+     "end_line": 274,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 240,
-     "end_line": 243,
+     "start_line": 275,
+     "end_line": 278,
      "applicable": true
     }
    ]
