@@ -102,7 +102,7 @@ python3 tools/build_lasagna.py DATASET_DIR OUT_DIR
 | `mode` | `array` | `array`, `scan` (the X-ray view) or `lasagna` |
 | `scan` | none | A scroll id such as `PHerc0191`; needed for `scan` and `lasagna` |
 | `z` | the line's middle | Slice height in level-0 voxels; in `lasagna` it snaps to the nearest of the nine heights |
-| `ex` | `3` | Side-to-side exaggeration in the Array view, 1 to 20 |
+| `ex` | `2` | Side-to-side exaggeration in the Array view, 1 to 20; Reset returns to 2x, and an explicit URL overrides the default. Published coordinates are unchanged |
 | `outside` | off | `1` draws the line ends that lie outside the scroll in the CT, faded and dotted (the control **show ends outside the scroll**); off, they are hidden |
 | `guide` | none | Opens the guide at a tab: `basics`, `vc3d`, `research`, `data`, `credits` |
 | `data` | none | Opens the Data tables: `lines` or `scans` |

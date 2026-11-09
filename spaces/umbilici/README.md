@@ -37,7 +37,7 @@ scans.
   Finder amber, its polished lines lime); click a maker in the key to hide its lines, or untick one line on a scan card, and the view link
   keeps it (`off=`). Scan names follow a traffic light from the automatic CT end check: green when both Center
   Finder ends passed, yellow for caution (a CT recap, an end it could not judge, or a 2.4 µm scan it was never
-  tuned on), red when an end was flagged. The slider exaggerates side-to-side drift (default 3x).
+  tuned on), red when an end was flagged. The slider exaggerates side-to-side drift (default 2x). Reset returns it to 2x; an explicit `?ex=` link can select another value. This display setting does not change the published line coordinates.
 - **X-ray**: one scan. A radiograph (or maximum intensity) render of the whole scan at about 0.3 mm per voxel
   (0.15 to 0.23 mm on a 2.4 µm scan, with fewer heights),
   the lines inside it, and an axial slice at 70 to 80 µm per pixel with every line's crossing marked. The slice
