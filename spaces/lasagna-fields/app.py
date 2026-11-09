@@ -290,12 +290,16 @@ def list_fields(scroll: str = ""):
     villa's own fields in the Vesuvius Challenge open data and the public SharpMeow datasets (made with villa's
     lasagna predict3d or with Lasagnetta 0.1.1, a faster copy of it). Args: scroll, part of a scroll name to keep
     only its fields (empty for all). Returns a list of {scroll, volume, zarr, voxel_um, read_level, model, source,
-    made_by, bytes, url, dataset, manifest, stream, preview_xy, preview_xz, browse, note}: stream is the run folder
-    that zarr reads by URL, manifest its lasagna.json, preview_xy and preview_xz pictures of cos and normals, and
-    browse the page to download it from (the dataset, or the open data's file browser).
+    made_by, bytes, url, dataset, manifest, stream, preview_xy, preview_xz, preview_kind, preview_caption,
+    preview_thumb, browse, note, normal_source, availability, provenance, normals_access}: stream is the run
+    folder that zarr reads by URL and manifest its lasagna.json. Preview pictures may show combined cos/normals
+    or a layer-pattern-only image (preview_kind="cos"). preview_caption maps xy/xz to attributed text;
+    preview_thumb is an optional thumbnail URL. Missing optional preview metadata is null. browse is the page
+    to download it from (the dataset, or the open data's file browser). Normal array links are independent.
     """
     keep = ("scroll", "volume", "zarr", "voxel_um", "read_level", "model", "source", "made_by", "bytes", "url",
-            "dataset", "manifest", "stream", "preview_xy", "preview_xz", "browse", "note",
+            "dataset", "manifest", "stream", "preview_xy", "preview_xz", "preview_kind", "preview_caption",
+            "preview_thumb", "browse", "note",
             "normal_source", "availability", "provenance", "normals_access")
     q = str(scroll or "").strip().lower()
     return [{k: f.get(k) for k in keep} for f in field_doc().get("fields", []) if q in f["scroll"].lower()]
@@ -550,6 +554,11 @@ CSS = """
 .lf-guide iframe { width:100%; min-height:640px; border:0; border-radius:12px; background:#f7f2ea; }
 .lf-note p { font-size:13px; color: var(--body-text-color-subdued); margin:0; }
 .lf-est p { font-size:13.5px; color: var(--body-text-color-subdued); }
+/* Put dropdown spacing inside the input so the whole visible box opens it. */
+.lf-dropdown .wrap-inner { padding:0 !important; }
+.lf-dropdown .secondary-wrap { min-width:0; }
+.lf-dropdown input[role="combobox"] { box-sizing:border-box; margin:0 !important;
+  min-height:44px; padding:10px 40px 10px 12px !important; border-radius:var(--input-radius); }
 .lf-point { flex-wrap: wrap !important; }
 .lf-credit { text-align:center; font-size:13px; color: var(--body-text-color-subdued); padding:18px 0 6px; }
 .lf-credit a { color: var(--lf-accent) !important; padding:0 !important; margin:0 !important; }
@@ -635,6 +644,13 @@ def guide_html():
 
 TAB_JS = """
 () => {
+  // Escape keeps focus. Reopen via Gradio's focus handler without a blur/input callback.
+  document.addEventListener('click', (event) => {
+    const input = event.target.closest('.lf-dropdown input[role="combobox"]');
+    if (input && document.activeElement === input && input.getAttribute('aria-expanded') === 'false') {
+      input.dispatchEvent(new FocusEvent('focus'));
+    }
+  });
   const pick = (name) => {
     const ids = {scans: 0, make: 1, howto: 2, agents: 3};
     const btns = document.querySelectorAll('#lf-tabs button[role="tab"]');
@@ -691,9 +707,9 @@ def build_demo():
                 with gr.Row(equal_height=False):
                     with gr.Column(scale=2, min_width=300):
                         ex = gr.Dropdown([(e["label"], i) for i, e in enumerate(EXAMPLES)], value=0,
-                                         label="Start with an example")
+                                         label="Start with an example", elem_classes="lf-dropdown")
                         vid = gr.Dropdown(choices, value=first["volume"], label="Scan acquisition",
-                                          filterable=True)
+                                          filterable=True, elem_classes="lf-dropdown")
                         with gr.Accordion("Location, box size and model", open=True):
                             with gr.Accordion("Scan details", open=False):
                                 vinfo = gr.Markdown(volume_text(first["volume"]), elem_classes="lf-note")
