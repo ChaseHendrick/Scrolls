@@ -199,6 +199,8 @@ html.lbopen{overflow:hidden}
 .lbpanel{background:var(--card);color:var(--ink);border-radius:16px;box-shadow:var(--shadow);width:min(1100px,100%);max-height:calc(100vh - 32px);display:flex;flex-direction:column;overflow:hidden}
 .lbhead{display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:12px 16px;border-bottom:1px solid var(--line)}
 .lbhead b{font-size:15px;margin-right:auto}
+.lbhead .seg{max-width:100%}
+.lbhead .seg button{min-width:0;white-space:normal}
 #lbslice[hidden]{display:none}
 .lbx{border:1px solid var(--line);background:var(--bg2);color:var(--ink);border-radius:9px;padding:6px 12px;font:inherit;font-size:13.5px;cursor:pointer}
 #lbimg{display:block;width:100%;min-height:0;flex:1 1 auto;object-fit:contain;background:#0e1117}
@@ -278,7 +280,7 @@ html.lbopen{overflow:hidden}
 .human-kicker{font-size:12px;font-weight:650;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:10px}
 .human-intro h2{font-size:clamp(28px,3.5vw,40px);margin-bottom:10px}
 .human-intro p:not(.human-kicker){color:var(--ink2);margin:0}
-.human button,.human select,.human input,.human a.human-primary{min-height:44px;font:inherit;border:1px solid var(--line);border-radius:9px;background:var(--card);color:var(--ink);padding:9px 12px}
+.human button,.human select,.human input{min-height:44px;font:inherit;border:1px solid var(--line);border-radius:9px;background:var(--card);color:var(--ink);padding:9px 12px}
 .human button{cursor:pointer}.human button:disabled{opacity:.5;cursor:default}
 .human :focus-visible,.human-fold summary:focus-visible{outline:3px solid #5081ae;outline-offset:3px}
 .human .human-quiet{font-size:13px;white-space:nowrap;background:transparent}
@@ -290,18 +292,23 @@ html.lbopen{overflow:hidden}
 #human-availability{display:block;font-size:14px;font-weight:650;color:var(--ink)}
 #human-completeness{font-size:12px;color:var(--ink2);line-height:1.5;margin:5px 0 0}
 .human-actions{display:grid;gap:10px;margin:8px 0 18px}
-.human .human-primary{background:var(--accent);color:var(--card);text-align:center;font-weight:650;border-color:transparent;text-decoration:none}
-:root[data-theme="dark"] .human .human-primary{color:#141210}
-@media(prefers-color-scheme:dark){:root:not([data-theme="light"]) .human .human-primary{color:#141210}}
-.human-normals{padding:16px;border:1px solid var(--line);border-radius:10px;background:var(--card);margin:12px 0;min-width:0}
-.human-normals h3{font-size:18px;margin-bottom:12px}.human-normals p{font-size:13px;line-height:1.6;margin:12px 0}
-.human-channel{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:6px;margin:12px 0}
-.human-channel label{margin:0;font-size:13px}.human .human-channel button{font-size:12px;padding:5px 9px;min-height:36px;width:auto}
-.human .human-channel input{grid-column:1 / -1;min-width:0;width:100%;font:12px/1.5 ui-monospace,monospace;margin:0;min-height:36px;padding:7px 9px;text-overflow:clip}
-.human-normals>button{width:100%;font-size:13px}
-.human-normal-links{display:flex;flex-wrap:wrap;gap:8px 18px;margin:14px 0;font-size:13px}
+.human-data{grid-column:1 / -1;min-width:0;border-top:1px solid var(--line);padding-top:20px;scroll-margin-top:16px}
+.human-data h3{font-size:21px;margin:0 0 8px}.human-data h4{font-size:15px;margin:20px 0 8px}
+.human-data p{font-size:13px;line-height:1.6;margin:8px 0 14px;color:var(--ink2)}
+.human-data-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.human-data-row{min-width:0;border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--card)}
+.human-data-row strong{font-size:14px;display:block}.human-data-row small{font-size:12px;color:var(--ink2);display:block;margin:4px 0}
+.human-data-actions{display:flex;align-items:center;gap:16px;margin:8px 0}
+.human-data-actions a,.human-data-actions button{font-size:13px;min-height:44px;display:inline-flex;align-items:center}
+.human-data-url{display:block;font:11px/1.6 ui-monospace,monospace;overflow-wrap:anywhere;color:var(--ink2)}
+.human-quick-links{margin:8px 0 14px}.human-quick-row{display:flex;flex-wrap:wrap;align-items:center;gap:4px 12px;border-bottom:1px solid var(--line);padding:6px 0}
+.human-quick-row>span{font-size:13px;flex:1;min-width:110px}.human-quick-row a,.human-quick-row button{font-size:12px;min-height:36px;padding:6px 0;display:inline-flex;align-items:center}
+.human-quick-row button{border:0;background:transparent}
+.human-data-footer{display:flex;align-items:center;flex-wrap:wrap;gap:12px;margin:16px 0}
+.human-actions .human-help{margin:0;font-size:12px}.human-data-footer .human-help{margin:0}
 #human-using{border-top:1px solid var(--line);font-size:13px}#human-using summary{cursor:pointer;padding:12px 0;min-height:44px}
-.human-normals .human-smallprint{font-size:11px;line-height:1.5;color:var(--ink2);margin:4px 0 0}
+#human-region-recipe{margin-top:24px}#human-region-recipe>summary{cursor:pointer;min-height:44px;padding:12px 0}
+#use h3{margin-top:24px}#use .codebox pre{white-space:pre-wrap;overflow-wrap:anywhere}
 .human-make{font-size:14px;display:inline-block;padding:4px 0}
 .human-preview{margin:0;border:1px solid var(--line);border-radius:14px;background:var(--card);overflow:hidden;min-width:0}
 .human-preview-head{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:15px 18px;border-bottom:1px solid var(--line)}
@@ -336,7 +343,8 @@ footer .wrap{max-width:1120px}#top[hidden]{display:none!important}
  .human-intro p:not(.human-kicker){font-size:14px}.human .human-quiet{font-size:12px;padding:7px}
  .human-browser{display:flex;flex-direction:column;gap:12px}.human-choices{display:contents}
  .human-inputs{order:0;width:100%}.human-preview{order:1;width:100%}
- .human-status,.human-actions,#human-copy-status,.human-make,.human-normals{order:2;width:100%;margin:0}
+ .human-status,.human-actions,.human-make,.human-quick-links{order:2;width:100%;margin:0}
+ .human-data{order:3;width:100%;margin:0}.human-data-list{grid-template-columns:minmax(0,1fr)}
  .human-actions{margin-bottom:8px}.human-image{min-height:180px;padding:8px}
  .human-image img{max-height:250px}.human select,.human input{margin-bottom:10px}.human-help{margin:0 0 10px}
  .human-inputs>.human-help:not(#human-link-note){font-size:12px;margin-bottom:4px}
@@ -352,7 +360,7 @@ footer .wrap{max-width:1120px}#top[hidden]{display:none!important}
 <main class="human" id="human-browser">
   <div class="human-fields" aria-hidden="true"><svg class="fields" id="fields" viewBox="0 440 1600 460" preserveAspectRatio="xMidYMin slice" aria-hidden="true"></svg></div>
   <div class="human-intro">
-    <div><p class="human-kicker">Published fields</p><h2>Explore scroll layers</h2>
+    <div><p class="human-kicker" id="human-count">Published fields</p><h2>Explore scroll layers</h2>
       <p>Choose a scroll, preview a field, and open its source.</p></div>
     <button type="button" id="human-theme" class="human-quiet">Light / dark</button>
   </div>
@@ -367,22 +375,9 @@ footer .wrap{max-width:1120px}#top[hidden]{display:none!important}
       <div id="human-field-choice" hidden><label for="human-field">Field</label><select id="human-field"></select></div>
       </div>
       <div class="human-status" aria-live="polite"><span id="human-availability"></span></div>
-      <div class="human-actions"><button id="human-normals-toggle" class="human-primary" type="button" aria-controls="human-normals-panel" aria-expanded="false">Get normals</button>
-        <button id="human-share" type="button">Copy link to this field</button></div>
-      <div id="human-normals-panel" class="human-normals" hidden>
-        <h3>Surface normals</h3><p id="human-normals-description"></p>
-        <p class="human-help">Use these chunked Zarr array URLs in a compatible reader.</p>
-        <div class="human-channel"><label for="human-nx">nx array</label><button id="human-copy-nx" type="button">Copy nx</button>
-          <input id="human-nx" type="text" readonly spellcheck="false" aria-label="Exact nx Zarr array URL"></div>
-        <div class="human-channel"><label for="human-ny">ny array</label><button id="human-copy-ny" type="button">Copy ny</button>
-          <input id="human-ny" type="text" readonly spellcheck="false" aria-label="Exact ny Zarr array URL"></div>
-        <button id="human-copy" type="button">Copy both with scan details</button>
-        <div class="human-normal-links"><a id="human-source" target="_blank" rel="noopener">Open published source</a>
-          <a id="human-normals-manifest" target="_blank" rel="noopener">Manifest</a></div>
-        <details id="human-using"><summary>Using these files</summary><p id="human-coordinates" class="human-help"></p></details>
-        <p id="human-completeness" class="human-smallprint">Whole-volume completeness is not verified here.</p>
-      </div>
-      <p id="human-copy-status" class="human-help" role="status"></p>
+      <div id="human-quick-links" class="human-quick-links" aria-label="Selected field data links"></div>
+      <div class="human-actions"><button id="human-share" type="button">Copy page link</button>
+        <p class="human-help">Share this scroll, scan and field selection.</p></div>
       <a class="human-make" href="?tab=make">Need a new field? Make a small box</a>
     </div>
     <figure class="human-preview">
@@ -394,6 +389,18 @@ footer .wrap{max-width:1120px}#top[hidden]{display:none!important}
       <div class="human-image"><img id="human-image" alt="" hidden><p id="human-empty">Choose a scroll to see its preview.</p></div>
       <figcaption id="human-caption">The layer signal and surface directions are model output, not a reading.</figcaption>
     </figure>
+    <section class="human-data" id="human-data" aria-labelledby="human-data-title">
+      <h3 id="human-data-title">Data and downloads</h3><p id="human-data-selection"></p>
+      <h4>Field arrays</h4>
+      <p>Copy a Zarr URL into a compatible reader. These are chunked arrays, not single-file downloads; opening a root in a browser may not show a page.</p>
+      <div id="human-data-arrays" class="human-data-list"></div>
+      <h4>Files and source</h4><p id="human-download-help"></p>
+      <div id="human-data-files" class="human-data-list"></div>
+      <div class="human-data-footer"><button id="human-copy" type="button">Copy normals with scan details</button>
+        <p id="human-copy-status" class="human-help" role="status"></p></div>
+      <details id="human-using"><summary>Coordinates and decoding</summary><p id="human-coordinates"></p></details>
+      <p id="human-completeness">Whole-volume completeness is not verified here.</p>
+    </section>
   </div>
   <details class="human-details" id="human-provenance"><summary>Field details and provenance</summary>
     <dl id="human-facts"></dl><p id="human-note"></p><a id="human-manifest" target="_blank" rel="noopener">Open field manifest</a>
@@ -419,8 +426,8 @@ footer .wrap{max-width:1120px}#top[hidden]{display:none!important}
 
 <details class="human-fold" id="human-all"><summary>All fields, filters and tables</summary>
 <section id="all"><div class="wrap">
-  <h2>Every field, by scroll</h2>
-  <p class="sub">One card per scroll. <span class="mp villa">villa predict3d</span> is the villa lasagna model itself, the reference. <span class="mp lgt">Lasagnetta 0.1.1</span> copies it and runs about 5 times faster: use its fields as a preview, and villa's where exact values matter.</p>
+  <h2>Every field, by scroll or fragment</h2>
+  <p class="sub">One card per scroll or fragment. <span class="mp villa">villa predict3d</span> is the villa lasagna model itself, the reference. <span class="mp lgt">Lasagnetta 0.1.1</span> copies it and runs about 5 times faster: use its fields as a preview, and villa's where exact values matter.</p>
   <div class="ftools">
     <input id="fq" type="search" placeholder="Filter by scroll or volume" aria-label="Filter by scroll or volume">
     <div class="seg" role="group" aria-label="Model">
@@ -442,60 +449,25 @@ footer .wrap{max-width:1120px}#top[hidden]{display:none!important}
 </div></section>
 
 </details>
-<details class="human-fold" id="human-use"><summary>Download and developer recipes</summary>
+<details class="human-fold" id="human-use"><summary>Download and developer recipes for this field</summary>
 <section id="use"><div class="wrap">
-  <h2>Stream, download and load</h2>
-  <p class="sub">Every field made here is also in the public bucket <a href="https://huggingface.co/buckets/SharpMeow/lasagna-fields">SharpMeow/lasagna-fields</a>, so any tool that reads zarr over HTTPS opens it with no download and no account. Pick one of the first ten fields made here, with the villa lasagna model, to see its field, its numbers and the commands to get it; for any other field, <b>Copy URL</b> in the list gives its folder.</p>
-  <div class="picker" id="grid" role="group" aria-label="Scan"></div>
-  <div class="panel">
-    <div class="usebox" id="usebox">
-      <div>
-        <div class="vhead">
-          <div class="seg" role="group" aria-label="View">
-            <button type="button" id="vxy" aria-pressed="true">Top view</button><button type="button" id="vxz" aria-pressed="false">Side view</button>
-          </div>
-          <span class="dim">Model output: <b>cos</b> left, <b>surface normals</b> as color right</span>
-        </div>
-        <div class="viewer"><img id="dimg" alt=""><span class="cap" id="dcap"></span></div>
-      </div>
-      <div>
-        <h3 id="dname"></h3>
-        <dl class="facts" id="dfacts"></dl>
-        <div class="links" id="dlinks"></div>
-      </div>
-    </div>
-    <div class="howto">
-      <div class="tabs" role="tablist" aria-label="How to get it">
-        <button role="tab" type="button" aria-selected="true" data-ut="connect">Connect your tool</button>
-        <button role="tab" type="button" aria-selected="false" data-ut="get">Whole scan</button>
-        <button role="tab" type="button" aria-selected="false" data-ut="region">Only a region</button>
-        <button role="tab" type="button" aria-selected="false" data-ut="load">Load in Python</button>
-        <button role="tab" type="button" aria-selected="false" data-ut="format">Format</button>
-      </div>
-
-      <div class="upanel" id="u-connect" role="tabpanel">
-        <p class="lead">The bucket is laid out like the Vesuvius Challenge open data (<code>SCAN/representations/predictions/lasagna/RUN/</code>). villa's fields in the open data stream the same way from their run folder.</p>
-        <div class="uhead" id="connect"><h3 id="cname"></h3><span class="dim">Anonymous HTTPS, CORS open, missing chunks read as empty</span></div>
-        <div class="codebox"><pre id="curl"></pre><button class="copy" data-copy="curl" type="button">Copy</button></div>
-        <div class="tabs" role="tablist" aria-label="Tool">
-          <button role="tab" type="button" aria-selected="true" data-ct="py">Python (zarr)</button>
-          <button role="tab" type="button" aria-selected="false" data-ct="ng">Neuroglancer</button>
-          <button role="tab" type="button" aria-selected="false" data-ct="villa">Local copy for lasagna</button>
-          <button role="tab" type="button" aria-selected="false" data-ct="any">Any other tool</button>
-        </div>
-        <div id="cbody"></div>
-      </div>
-
-      <div class="upanel" id="u-get" role="tabpanel" hidden>
-        <ol class="plain">
-          <li><b>Install the Hugging Face client and zarr.</b><div class="codebox"><pre id="u1">pip install -U "huggingface_hub[cli]" "zarr&lt;3" numpy</pre><button class="copy" data-copy="u1" type="button">Copy</button></div></li>
-          <li><b>Download, check, unpack.</b> <code>sha256sum -c SHA256SUMS</code> checks every file. Unpack the fix tar last (the meta tar, for a Lasagnetta field): it holds the joined manifest, so it must overwrite the per-part ones.<div class="codebox"><pre id="dcode"></pre><button class="copy" data-copy="dcode" type="button">Copy</button></div></li>
-          <li><b>Load it.</b> The <b>Load in Python</b> tab reads a point; each dataset's <code>load_example.py</code> runs as is.</li>
-        </ol>
-      </div>
-
-      <div class="upanel" id="u-region" role="tabpanel" hidden>
-        <p class="lead">Click the map, or type a point in full-resolution scan voxels. The first command copies from the bucket only the chunks that cover your z range. The second downloads whole parts from the dataset: each scan was computed in boxes called parts, one tar each, and a region needs only the parts it touches plus one small tar with the joined manifest. Parts you skip read as empty; add <code>--ignore-missing</code> to the checksum check after a partial download.</p>
+  <h2>Use the selected field</h2>
+  <p id="human-recipe-selection" class="sub"></p>
+  <p class="lead">These recipes follow the scroll, scan acquisition and field selected above. <a href="#human-data">Open or copy individual data links</a>.</p>
+  <div id="human-stream-recipe" hidden>
+    <h3>Read chunked arrays in Python</h3>
+    <p class="lead">Open the listed Zarr arrays by URL. This prints their metadata; indexing an array reads its chunks. Check the manifest for coordinate scales and normal decoding before using values.</p>
+    <div class="codebox"><pre id="human-stream-code"></pre><button class="copy" data-copy="human-stream-code" type="button">Copy</button></div>
+  </div>
+  <div id="human-bundle-recipe" hidden>
+    <h3>Download the published field bundle</h3>
+    <p id="human-bundle-help" class="lead"></p>
+    <div class="codebox"><pre id="human-bundle-code"></pre><button class="copy" data-copy="human-bundle-code" type="button">Copy</button></div>
+  </div>
+  <p id="human-no-bundle" class="lead"></p>
+  <details id="human-region-recipe" hidden>
+    <summary>Advanced: copy only a region of this bundle</summary>
+    <p class="lead">This bundle has a published part map. Coordinates below are full-resolution scan voxels. The first command copies complete z planes from the bucket; the second downloads archive parts touching your box. Both may include data outside the box. Missing parts read as empty, not as verified absence.</p>
         <div class="region" id="region">
           <div class="mapbox">
             <svg class="map" id="map" viewBox="0 0 400 400" role="img" aria-label="Top view of the scan's parts at the chosen height"></svg>
@@ -511,34 +483,11 @@ footer .wrap{max-width:1120px}#top[hidden]{display:none!important}
             <div class="result" id="rres"></div>
             <div class="codebox"><pre id="rsync"></pre><button class="copy" data-copy="rsync" type="button">Copy</button></div>
             <div class="codebox"><pre id="rcode"></pre><button class="copy" data-copy="rcode" type="button">Copy</button></div>
-            <p class="dim" style="margin-top:10px">The <b>Load in Python</b> tab reads this point.</p>
+
           </div>
         </div>
-      </div>
-
-      <div class="upanel" id="u-load" role="tabpanel" hidden>
-        <p class="lead">Open the arrays with <code>zarr</code>, <code>tensorstore</code> or any OME-Zarr viewer. Coordinates are the scan's own voxels, divided by 2 for cos and by 4 for the other channels. Normals are stored as <code>uint8</code> as <code>v &times; 127 + 128</code>; <code>nz</code> is not stored, so take <code>sqrt(1 - nx&sup2; - ny&sup2;)</code>. This reads a local copy at the point of the <b>Only a region</b> tab; <b>Connect your tool</b> reads straight from the bucket.</p>
-        <div class="codebox"><pre id="rpy"></pre><button class="copy" data-copy="rpy" type="button">Copy</button></div>
-      </div>
-
-      <div class="upanel" id="u-format" role="tabpanel" hidden>
-        <p class="lead">The same layout as the lasagna fields in the open data. Replace <code>SCAN</code> with the scan's name.</p>
-        <div class="tablewrap" id="format"><table>
-          <thead><tr><th>File</th><th>Read at</th><th>Scale</th><th>Stored as</th></tr></thead>
-          <tbody>
-            <tr><td><code>SCAN_cos.ome.zarr</code></td><td>Level <code>1</code></td><td>Every 2nd scan voxel</td><td>uint8; peaks on papyrus sheets and dips between them</td></tr>
-            <tr><td><code>SCAN_grad_mag.ome.zarr</code></td><td>Level <code>2</code></td><td>Every 4th scan voxel</td><td>uint8 gradient magnitude, encoded as the manifest says (<code>grad_mag_encode_scale</code>)</td></tr>
-            <tr><td><code>SCAN_nx.ome.zarr</code>, <code>SCAN_ny.ome.zarr</code></td><td>Level <code>2</code></td><td>Every 4th scan voxel</td><td>uint8 surface normal components, <code>v &times; 127 + 128</code>; <code>nz</code> not stored</td></tr>
-            <tr><td><code>SCAN.lasagna.json</code></td><td colspan="3">The manifest the lasagna tools read: groups, their zarr paths (relative, to the four channels) and scale-downs, <code>base_shape_zyx</code> and the boxes computed</td></tr>
-            <tr><td>Every array</td><td colspan="3">zarr v2, chunks 64 &times; 64 &times; 64, Blosc zstd level 3, fill value 0, axes z, y, x, each with coarser levels down to 4</td></tr>
-          </tbody>
-        </table></div>
-        <p style="margin-top:14px;color:var(--ink2);font-size:15px">Lasagnetta fields keep the same layout and channels. A field read at level 2 or 3 of a fine scan is on that level's grid: its levels are counted from that level, as its manifest's <code>base_shape_zyx</code> says, so multiply its coordinates by 4 or 8 for full resolution.</p>
-      </div>
-    </div>
-  </div>
+  </details>
 </div></section>
-
 </details>
 <details class="human-fold" id="human-about"><summary>About these fields and credits</summary>
 <section id="about"><div class="wrap"><div class="about">
@@ -594,7 +543,7 @@ const fmt=n=>n.toLocaleString('en-US');
 const gb=b=>Number.isFinite(b)&&b>=0?(b/1e9).toFixed(1)+' GB':'Size not listed';
 function sizeLabel(rows){const known=rows.filter(f=>Number.isFinite(f.bytes)&&f.bytes>=0);if(!known.length)return 'Size not listed';const total=gb(known.reduce((a,f)=>a+f.bytes,0));return known.length===rows.length?total:'Known size '+total+'; remaining size not listed'}
 const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;');
-let cur=0,view='xy',ut='connect';
+let cur=-1,recipeField=null;
 
 /* theme */
 (function(){/* the saved choice, or the Space page's theme, is applied in <head>, before first paint */
@@ -665,7 +614,14 @@ function fieldRow(f,first,n){
   '<td data-k="Model" class="mdl">'+chip(f.model)+(f.note?'<span class="fnote">'+esc(f.note)+'</span>':'')+'</td>'+
   '<td data-k="Where">'+where+'</td><td data-k="Size" class="num">'+gb(f.bytes)+'</td>'+
   '<td class="get"><div class="flinks">'+links(f)+'</div></td></tr>'}
-function thumbOf(g){const f=g.find(x=>x.preview_xy||x.preview_xz)||g[0];return {src:f.preview_xy||f.preview_xz?(f.preview_thumb||'assets/thumbs/'+f.scroll+'-'+f.volume+'.webp'):null,alt:f.preview_xy||f.preview_xz||'',vol:f.volume,field:f}}
+function thumbOf(g){const f=g.find(x=>x.preview_xy||x.preview_xz)||g[0];return {src:f.preview_xy||f.preview_xz?(f.preview_thumb||f.preview_xy||f.preview_xz):null,alt:f.preview_xy||f.preview_xz||'',vol:f.volume,field:f}}
+let sampleTypes=new Map();
+try{sampleTypes=new Map(JSON.parse(document.getElementById('coverage-list').textContent).samples.map(s=>[s.scroll,s.sample_type]))}catch(_){}
+function fieldCountLabel(rows){
+ const counts={scroll:0,fragment:0,sample:0};
+ for(const name of new Set(rows.map(f=>f.scroll))){const type=sampleTypes.get(name);counts[type==='scroll'||type==='fragment'?type:'sample']++}
+ return [rows.length+' field'+(rows.length===1?'':'s'),...Object.entries(counts).filter(([,n])=>n).map(([kind,n])=>n+' '+(kind==='sample'?'other sample':kind)+(n===1?'':'s'))].join(' · ');
+}
 const srcOf=f=>f.source==='open-data'?'open data':'SharpMeow';
 /* one field of a card: its voxel size and volume, model and source, the four links, and its note */
 function cardLine(f,size){
@@ -698,7 +654,7 @@ function drawFields(){
  t.insertAdjacentHTML('beforeend',groups.length?groups.map(g=>'<tbody>'+g.map((f,i)=>fieldRow(f,i===0,g.length)).join('')+'</tbody>').join(''):'<tbody><tr><td colspan="7" class="fempty">No field matches.</td></tr></tbody>');
  $('fcards').innerHTML=groups.length?groups.map(card).join(''):'<p class="fempty">No field matches.</p>';
  $('fcards').querySelectorAll('details.more').forEach(d=>d.addEventListener('toggle',()=>{if(d.open)openSc.add(d.dataset.sc);else openSc.delete(d.dataset.sc)}));
- $('fcount').textContent=rows.length+(rows.length===1?' field':' fields')+' on '+groups.length+(groups.length===1?' scroll':' scrolls');}
+ $('fcount').textContent=fieldCountLabel(rows);}
 document.querySelectorAll('[data-fw]').forEach(b=>b.onclick=()=>{fw=b.dataset.fw;document.querySelectorAll('[data-fw]').forEach(x=>x.setAttribute('aria-pressed',x===b));drawFields()});
 document.querySelectorAll('[data-fv]').forEach(b=>b.onclick=()=>{fv=b.dataset.fv;document.querySelectorAll('[data-fv]').forEach(x=>x.setAttribute('aria-pressed',x===b));drawFields()});
 document.querySelectorAll('[data-fm]').forEach(b=>b.onclick=()=>{fm=b.dataset.fm;document.querySelectorAll('[data-fm]').forEach(x=>x.setAttribute('aria-pressed',x===b));drawFields()});
@@ -711,14 +667,27 @@ $('fq').oninput=()=>{fq=$('fq').value;drawFields()};
 /* inside the Space the guide's frame is as tall as the guide and the page scrolls, so a fixed box would sit in the
    middle of the whole frame: place the box and the toast in the part of the frame that is on screen */
 function onScreen(){let fe=null;try{fe=window.frameElement}catch(e){}
- if(!fe)return null;const r=fe.getBoundingClientRect(),vh=parent.innerHeight,dh=document.documentElement.scrollHeight;
- return {top:Math.max(0,Math.min(-r.top,dh-vh)),h:Math.min(vh,dh)}}
+ if(!fe)return null;
+ const r=fe.getBoundingClientRect(),vv=parent.visualViewport;
+ // Intersect the frame's content box with the visible parent viewport, in CSS pixels.
+ const sx=r.width/fe.offsetWidth||1,sy=r.height/fe.offsetHeight||1;
+ const x=r.left+fe.clientLeft*sx,y=r.top+fe.clientTop*sy;
+ const vx=vv?vv.offsetLeft:0,vy=vv?vv.offsetTop:0;
+ const left=Math.max(x,vx),top=Math.max(y,vy);
+ const right=Math.min(x+fe.clientWidth*sx,vx+(vv?vv.width:parent.innerWidth));
+ const bottom=Math.min(y+fe.clientHeight*sy,vy+(vv?vv.height:parent.innerHeight));
+ return {left:window.scrollX+(left-x)/sx,top:window.scrollY+(top-y)/sy,
+  w:Math.max(0,right-left)/sx,h:Math.max(0,bottom-top)/sy}}
 function placeLb(){const L=$('lbox'),v=onScreen();if(!v)return;
- L.style.position='absolute';L.style.top=v.top+'px';L.style.bottom='auto';L.style.height=v.h+'px';
+ L.style.position='absolute';L.style.top=v.top+'px';L.style.left=v.left+'px';
+ L.style.right='auto';L.style.bottom='auto';L.style.width=v.w+'px';L.style.height=v.h+'px';
  const style=getComputedStyle(L),padding=parseFloat(style.paddingTop)+parseFloat(style.paddingBottom);
- L.querySelector('.lbpanel').style.maxHeight=(v.h-padding)+'px'}
+ L.querySelector('.lbpanel').style.maxHeight=Math.max(0,v.h-padding)+'px'}
 function toastOn(){const T=$('toast'),v=onScreen();if(v){T.style.position='absolute';T.style.bottom='auto';T.style.top=(v.top+v.h-64)+'px'}T.classList.add('on')}
-try{parent.addEventListener('scroll',()=>{if(!$('lbox').hidden)placeLb()},{passive:true})}catch(e){}
+const refreshLb=()=>{if(!$('lbox').hidden)placeLb()};
+window.addEventListener('resize',refreshLb,{passive:true});
+try{parent.addEventListener('scroll',refreshLb,{passive:true});parent.addEventListener('resize',refreshLb,{passive:true});
+ if(parent.visualViewport){parent.visualViewport.addEventListener('resize',refreshLb,{passive:true});parent.visualViewport.addEventListener('scroll',refreshLb,{passive:true})}}catch(e){}
 const failedPreviews=new Set();
 function smoothedPreview(f,view){
  const original=f?.['preview_'+view],value=f?.preview_smoothed?.[view];
@@ -754,7 +723,7 @@ function openPv(f,view,mode){if(!f.preview_xy&&!f.preview_xz)return;if(!f['previ
  $('lbcaption').textContent=f.preview_kind==='cos'?cosCaption(f,view):'Model output: cos (one band per papyrus layer) beside the surface normals as color.';
  $('lbtitle').textContent=f.scroll+' · '+um(f.voxel_um)+' · '+f.volume;
  document.querySelectorAll('[data-lv]').forEach(x=>{x.setAttribute('aria-pressed',x.dataset.lv===view);x.disabled=!f['preview_'+x.dataset.lv]});
- $('lbslice').hidden=!f.gallery;
+ $('lbslice').hidden=regionBundle(f)<0;
  if(L.hidden){pvReturnFocus=document.activeElement;L.hidden=false;placeLb();document.documentElement.classList.add('lbopen');$('lbclose').focus({preventScroll:true})}}
 function closePv(){if($('lbox').hidden)return;$('lbox').hidden=true;document.documentElement.classList.remove('lbopen');$('lbimg').previewRequest=null;$('lbimg').removeAttribute('src');pv=null;
  const target=pvReturnFocus?.isConnected&&pvReturnFocus.getClientRects().length?pvReturnFocus:$('human-search');pvReturnFocus=null;target.focus({preventScroll:true})}
@@ -768,7 +737,7 @@ document.addEventListener('keydown',e=>{const dialog=$('lbox');if(dialog.hidden)
   const first=items[0],last=items[items.length-1];if(!first)return;
   if(e.shiftKey&&(document.activeElement===first||!dialog.contains(document.activeElement))){e.preventDefault();last.focus()}
   else if(!e.shiftKey&&(document.activeElement===last||!dialog.contains(document.activeElement))){e.preventDefault();first.focus()}}});
-$('lbslice').onclick=()=>{const f=pv,i=D.findIndex(s=>s.id===f.scroll);closePv();if(i>=0){pick(i,false);$('use').scrollIntoView({behavior:'smooth'})}};
+$('lbslice').onclick=()=>{const f=pv;closePv();document.dispatchEvent(new CustomEvent('lasagna-select-field',{detail:f}));$('human-use').open=true;$('human-region-recipe').open=true;$('use').scrollIntoView({behavior:'smooth'})};
 /* the volumes being made: shown without any link until each is public (fields.json, pending_not_public) */
 if(FP.length){$('pend').hidden=false;
  $('pend').innerHTML='<h3>Being made now, not public yet</h3><p class="sub" style="margin-bottom:14px">Lasagnetta 0.1.1 fields for more volumes of scrolls in the list. None is public yet, so there is nothing to download or stream.</p>'+
@@ -778,62 +747,28 @@ drawFields();
 
 /* stats */
 const totB=D.reduce((a,s)=>a+s.bytes,0),totP=D.reduce((a,s)=>a+s.parts.length,0);
-const ours=FL.filter(f=>f.source==='dataset'),nsc=uniq(FL.map(f=>f.scroll)).length;
-$('stats').innerHTML=(FL.length?[[nsc,'scrolls'],[FL.length-ours.length,'villa fields in the open data'],[ours.length,'fields made here'],[sizeLabel(ours),'listed download size']]
- :[[D.length,'scans'],[Math.round(totB/1e9)+' GB','to download'],[fmt(totP),'GPU parts'],['4','channels each']])
+const ours=FL.filter(f=>f.source==='dataset'),nsc=uniq(FL.map(f=>f.scroll)).filter(name=>sampleTypes.get(name)==='scroll').length;
+$('stats').innerHTML=(FL.length?[[nsc,'scrolls'],[uniq(FL.map(f=>f.scroll)).filter(name=>sampleTypes.get(name)==='fragment').length,'fragments'],[FL.length-ours.length,'villa fields in the open data'],[ours.length,'fields made here'],[sizeLabel(ours),'listed download size']]
+ :[[D.length,'original hosted bundles'],[Math.round(totB/1e9)+' GB','to download'],[fmt(totP),'GPU parts'],['4','channels each']])
  .map(([b,s])=>'<div class="stat"><b>'+b+'</b><span>'+s+'</span></div>').join('');
 $('nscrolls').textContent=FL.length?nsc:D.length;
 $('mparts').textContent=fmt(totP);
 
-/* stream, download and load: one of the ten bucket fields drives every tab */
-$('grid').innerHTML=D.map((s,i)=>'<button class="scan" type="button" data-i="'+i+'" aria-pressed="false"><img loading="lazy" src="assets/'+s.id+'-xy.webp" alt=""><span><span class="name">'+s.id+'</span><br><span class="small">'+s.um+' µm<span class="gbx"> &middot; '+gb(s.bytes)+'</span></span></span></button>').join('');
-$('grid').onclick=e=>{const b=e.target.closest('.scan');if(b)pick(+b.dataset.i,true)};
-function showUse(n){ut=n;
- document.querySelectorAll('[data-ut]').forEach(b=>b.setAttribute('aria-selected',b.dataset.ut===n));
- document.querySelectorAll('.upanel').forEach(p=>p.hidden=p.id!=='u-'+n);}
-document.querySelectorAll('[data-ut]').forEach(b=>b.onclick=()=>showUse(b.dataset.ut));
-
-function dl(s){const d=s.id.toLowerCase()+'-lasagna';
- return '<span class="c"># the whole scan, '+gb(s.bytes)+'</span>\nhf download '+s.repo+' --repo-type dataset --local-dir '+d+'\ncd '+d+' && sha256sum -c SHA256SUMS\nfor f in parts/*.tar; do tar -xf "$f"; done\ntar -xf '+s.id+'-lasagna-pyramid-fix.tar   <span class="c"># last: the joined manifest</span>'}
-function py(s,z,y,x){return 'import numpy as np\nimport zarr\n\ncos = zarr.open("'+s.id+'_cos.ome.zarr/1", mode="r")   <span class="c"># every 2nd scan voxel</span>\nnx = zarr.open("'+s.id+'_nx.ome.zarr/2", mode="r")     <span class="c"># every 4th scan voxel</span>\nny = zarr.open("'+s.id+'_ny.ome.zarr/2", mode="r")\n\nz, y, x = '+z+', '+y+', '+x+'   <span class="c"># full-resolution scan voxels</span>\npatch = cos[z // 2, y // 2 - 256:y // 2 + 256, x // 2 - 256:x // 2 + 256]\na = (float(nx[z // 4, y // 4, x // 4]) - 128) / 127\nb = (float(ny[z // 4, y // 4, x // 4]) - 128) / 127\nc = np.sqrt(max(0.0, 1 - a * a - b * b))           <span class="c"># nz is not stored</span>\nprint(patch.shape, round(float(patch.mean()), 1), (a, b, c))'}
-
-function pick(i,scroll){cur=i;const s=D[i];
- document.querySelectorAll('.scan').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.i===i));
- $('dname').textContent=s.id;
- const mm=(s.shape[0]*s.um/1000).toFixed(1);
- const facts=[['Scan',s.volume],['Voxel size',s.um+' µm'],['Scan size (z, y, x)',s.shape.map(fmt).join(' × ')+' voxels, '+mm+' mm tall'],['Download',gb(s.bytes)+' in '+s.parts.length+' parts'],['Seam check',s.seam<=1.5?'Worst edge '+s.seam.toFixed(2)+' (limit 1.5)':'One edge at '+s.seam.toFixed(2)+', cleared: a run across it matched byte for byte']];
- $('dfacts').innerHTML=facts.map(([k,v])=>'<dt>'+k+'</dt><dd>'+v+'</dd>').join('');
- $('dlinks').innerHTML='<a class="btn primary small" href="https://huggingface.co/datasets/'+s.repo+'">Open dataset</a>'+(s.center?'<a class="btn small" href="https://huggingface.co/datasets/SharpMeow/vesuvius-center-lines">Center line</a>':'')+(s.id==='PHerc0175A'?'<a class="btn small" href="https://huggingface.co/spaces/SharpMeow/umbilici?mode=lasagna&scan=PHerc0175A&z=6400">See in 3D</a>':'');
- $('dcode').innerHTML=dl(s);
- showView();showConnect();regionReset();
- if(scroll)$('usebox').scrollIntoView({behavior:'smooth',block:'nearest'});}
-function showView(){const s=D[cur];
- $('vxy').setAttribute('aria-pressed',view==='xy');$('vxz').setAttribute('aria-pressed',view==='xz');
- $('dimg').src='assets/'+s.id+(view==='xy'?'-xy-l':'-xz')+'.webp';
- $('dimg').alt=s.id+(view==='xy'?' top view':' side view')+': cos left, normals right';
- $('dcap').textContent=(view==='xy'?'Slice at z '+fmt(s.pz):'Cut through the middle, side on')+' · cos | normals';}
-$('vxy').onclick=()=>{view='xy';showView()};$('vxz').onclick=()=>{view='xz';showView()};
-
-/* connect your tool */
+/* The original part maps apply only to their exact hosted field, not every catalog entry. */
 const BUCKET='https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/';
-let ctab='py';
-function base(s){return BUCKET+s.run}
-function ngLink(s,z,y,x){const st={layers:[{type:'image',source:'zarr2://'+base(s)+'/'+s.id+'_cos.ome.zarr/1',name:s.id+' cos'}],position:[Math.round(z/2),Math.round(y/2),Math.round(x/2)],crossSectionScale:4,layout:'xy'};
- return 'https://neuroglancer-demo.appspot.com/#!'+encodeURIComponent(JSON.stringify(st))}
-function showConnect(){const s=D[cur],c=center(s),b=base(s);
- $('cname').textContent=s.id;
- $('curl').innerHTML='<span class="c"># the run folder: manifest and four OME-Zarr channels</span>\n'+b+'/\n<span class="c"># for example</span>\ncurl -L '+b+'/'+s.id+'.lasagna.json';
- document.querySelectorAll('[data-ct]').forEach(t=>t.setAttribute('aria-selected',t.dataset.ct===ctab));
- let h='';
- if(ctab==='py')h='<p style="margin-top:14px">Reads only the chunks you index, over HTTPS. Tested with zarr 3.4.1, fsspec and aiohttp.</p><div class="codebox"><pre id="cpy">pip install "zarr&gt;=3" fsspec aiohttp\n\nimport zarr\n\nbase = "'+b+'"\ncos = zarr.open_array(base + "/'+s.id+'_cos.ome.zarr/1", mode="r", zarr_format=2)   <span class="c"># every 2nd scan voxel</span>\nnx = zarr.open_array(base + "/'+s.id+'_nx.ome.zarr/2", mode="r", zarr_format=2)     <span class="c"># every 4th scan voxel</span>\n\nz, y, x = '+c[0]+', '+c[1]+', '+c[2]+'   <span class="c"># full-resolution scan voxels</span>\npatch = cos[z // 2, y // 2 - 256:y // 2 + 256, x // 2 - 256:x // 2 + 256]\nprint(patch.shape, patch.mean())</pre><button class="copy" data-copy="cpy" type="button">Copy</button></div>';
- if(ctab==='ng')h='<p style="margin-top:14px">Opens the cos channel (level 1) in the public Neuroglancer viewer, streaming from the bucket. Its axes d0, d1, d2 are z, y, x in level-1 voxels, half the scan\'s.</p><div class="links"><a class="btn primary small" target="_blank" rel="noopener" href="'+ngLink(s,c[0],c[1],c[2])+'">Open '+s.id+' in Neuroglancer</a></div><div class="codebox"><pre id="cng">zarr2://'+b+'/'+s.id+'_cos.ome.zarr/1</pre><button class="copy" data-copy="cng" type="button">Copy</button></div><p style="margin-top:10px;font-size:14px;color:var(--ink3)">Add the source above as an image layer in any Neuroglancer. Use a level folder (<code>/1</code>, <code>/2</code>), not the <code>.ome.zarr</code> root: villa writes the axis unit as "pixel", which Neuroglancer\'s OME reader rejects.</p>';
- if(ctab==='villa')h='<p style="margin-top:14px">The lasagna fit in villa reads a local manifest. Sync the run folder (or only the rows you need, from the <a href="#use" data-go="region">region tab</a>) and point lasagna at <code>'+s.id+'.lasagna.json</code>. Tested anonymously with the <code>hf</code> CLI.</p><div class="codebox"><pre id="cvl">pip install -U "huggingface_hub[cli]"\nhf buckets sync hf://buckets/SharpMeow/lasagna-fields/'+s.run+' '+s.id.toLowerCase()+'-lasagna\n<span class="c"># then point lasagna at '+s.id.toLowerCase()+'-lasagna/'+s.id+'.lasagna.json</span></pre><button class="copy" data-copy="cvl" type="button">Copy</button></div>'+(s.center?'<p style="margin-top:10px;font-size:14px">The fit and the spiral fit also want a center line: '+s.id+'\'s is in <a href="https://huggingface.co/datasets/SharpMeow/vesuvius-center-lines">vesuvius-center-lines</a>.</p>':'');
- if(ctab==='any')h='<div class="tablewrap" style="margin-top:14px"><table><tbody><tr><th>Store</th><td>zarr v2, one array per pyramid level, chunks 64 &times; 64 &times; 64, Blosc zstd, fill 0, <code>/</code> separator</td></tr><tr><th>URL</th><td><code>'+b+'/'+s.id+'_CHANNEL.ome.zarr/LEVEL/Z/Y/X</code></td></tr><tr><th>Channels</th><td>cos (levels 1 to 4), grad_mag, nx, ny (levels 2 to 4)</td></tr><tr><th>HTTP</th><td>Anonymous; a 302 to Hugging Face\'s CDN, which allows any origin and byte ranges; a missing chunk is a 404, which zarr readers treat as empty</td></tr><tr><th>Scale</th><td>Level k is every 2<sup>k</sup>th scan voxel; the OME <code>.zattrs</code> gives the same as scale transforms</td></tr></tbody></table></div>';
- $('cbody').innerHTML=h;}
-document.querySelectorAll('[data-ct]').forEach(b=>b.onclick=()=>{ctab=b.dataset.ct;showConnect()});
-/* links that open one tab or one fold (the Space's own handler scrolls to it) */
-document.addEventListener('click',e=>{const a=e.target.closest('a[href^="#"]');if(!a)return;const d=document.getElementById(a.getAttribute('href').slice(1));if(d&&d.tagName==='DETAILS')d.open=true});
-document.addEventListener('click',e=>{const a=e.target.closest('[data-go]');if(a)showUse(a.dataset.go)});
+function regionBundle(f) {
+ const d=f?.normals_access?.download;
+ if(d?.kind!=='hf_dataset_bundle'||!/^[a-f0-9]{40}$/.test(d.revision||''))return -1;
+ return D.findIndex(s=>s.id===f.scroll && s.volume.slice(0,14)===f.volume && s.repo===d.dataset_id &&
+  BUCKET+s.run===f.stream && s.run.split('/').pop()===f.run &&
+  d.finalize_archives?.some(a=>a.path===s.id+'-lasagna-pyramid-fix.tar'));
+}
+function setRegionField(f) {
+ cur=regionBundle(f);recipeField=cur>=0?f:null;
+ $('human-region-recipe').hidden=cur<0;$('human-region-recipe').open=false;
+ for(const id of ['rsync','rcode','rres','map'])$(id).textContent='';
+ if(cur>=0)regionReset();
+}
 
 /* region picker */
 const R={z:0,y:0,x:0};
@@ -841,7 +776,7 @@ function center(s){return [Math.round(s.pz/64)*64,Math.round(s.shape[1]/2),Math.
 function regionReset(){const s=D[cur];[R.z,R.y,R.x]=center(s);$('zr').max=s.shape[0]-1;drawRegion()}
 function need(s,r){const lo=[R.z-r,R.y-r,R.x-r],hi=[R.z+r,R.y+r,R.x+r];
  return s.parts.filter(p=>p[1].every((c,k)=>c[0]<hi[k]&&c[1]>lo[k]))}
-function drawRegion(){const s=D[cur];const r=Math.max(1,+$('rr').value||512);
+function drawRegion(){const s=D[cur];if(!s||!recipeField)return;const r=Math.max(1,+$('rr').value||512);
  const clamp=(v,k)=>Math.max(0,Math.min(s.shape[k]-1,Math.round(v)));R.z=clamp(R.z,0);R.y=clamp(R.y,1);R.x=clamp(R.x,2);
  $('rz').value=R.z;$('ry').value=R.y;$('rx').value=R.x;$('zr').value=R.z;$('zv').textContent=fmt(R.z);
  const W=400,sc=W/Math.max(s.shape[1],s.shape[2]),H=Math.round(s.shape[1]*sc);
@@ -861,8 +796,8 @@ function drawRegion(){const s=D[cur];const r=Math.max(1,+$('rr').value||512);
  [['cos',1,128],['grad_mag',2,256],['nx',2,256],['ny',2,256]].forEach(([ch,l,f])=>rows(f).forEach(z=>inc.push('"*_'+ch+'.ome.zarr/'+l+'/'+z+'/*"')));
  $('rsync').innerHTML='<span class="c"># from the bucket: the full planes for your z range (cos level 1, the rest level 2)</span>\nhf buckets sync hf://buckets/SharpMeow/lasagna-fields/'+s.run+' '+d+' \\\n  '+inc.map(i=>'--include '+i).join(' \\\n  ');
  const files=parts.map(p=>'parts/'+s.id+'-lasagna-t'+p[0]+'.tar').concat([s.id+'-lasagna-pyramid-fix.tar','SHA256SUMS','load_example.py']);
- $('rcode').innerHTML='<span class="c"># or from the dataset: whole parts for z, y, x = '+R.z+', '+R.y+', '+R.x+' ± '+r+' voxels</span>\nhf download '+s.repo+' \\\n  '+files.join(' \\\n  ')+' \\\n  --repo-type dataset --local-dir '+d+'\ncd '+d+' && sha256sum -c --ignore-missing SHA256SUMS\nfor f in parts/*.tar; do tar -xf "$f"; done\ntar -xf '+s.id+'-lasagna-pyramid-fix.tar';
- $('rpy').innerHTML=py(s,R.z,R.y,R.x);}
+ $('rcode').innerHTML='<span class="c"># or from the dataset: whole parts for z, y, x = '+R.z+', '+R.y+', '+R.x+' ± '+r+' voxels</span>\nhf download '+s.repo+' \\\n  '+files.join(' \\\n  ')+' \\\n  --repo-type dataset --revision '+recipeField.normals_access.download.revision+' --local-dir '+d+'\ncd '+d+' && sha256sum -c --ignore-missing SHA256SUMS\nfor f in parts/*.tar; do tar -xf "$f"; done\ntar -xf '+s.id+'-lasagna-pyramid-fix.tar';
+}
 ['rz','ry','rx'].forEach((id,k)=>$(id).oninput=()=>{R['zyx'[k]]=+$(id).value||0;drawRegion()});
 $('rr').oninput=drawRegion;$('zr').oninput=()=>{R.z=+$('zr').value;drawRegion()};
 function mapAt(e){const m=$('map'),b=m.getBoundingClientRect(),vb=m.viewBox.baseVal,sc=+m.dataset.sc;
@@ -875,7 +810,6 @@ document.addEventListener('click',e=>{const b=e.target.closest('.copy');if(!b)re
  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(done,()=>fallback(t,done));else fallback(t,done)});
 function fallback(t,done){const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy');done()}catch(e){}a.remove()}
 
-pick(0,false);
 </script>
 <script>
 /* Presentation only. Catalog browsing and link copying never call scientific endpoints. */
@@ -904,6 +838,86 @@ pick(0,false);
     const arrays = f?.availability?.arrays;
     return {nx:url(arrays?.nx?.url), ny:url(arrays?.ny?.url)};
   }
+  function dataLinks(f) {
+    if (!f) return [];
+    const a=f.normals_access || {}, d=a.download || {}, n=normals(f), rows=[];
+    const add=(key,label,format,value,kind)=>{const href=url(value);if(href)rows.push({key,label,format,href,kind});};
+    for (const [key,label] of [['nx','Normals (nx)'],['ny','Normals (ny)'],['cos','Layer pattern (cos)'],['grad_mag','Gradient magnitude']]) {
+      const array=f.availability?.arrays?.[key];
+      add(key,label,'Zarr array',key==='nx'||key==='ny'?n[key]:array?.url,'zarr');
+    }
+    let source=d.folder_url || d.page_url || f.browse || f.url;
+    // A pinned file browser for a cataloged HF bundle; no archive paths are guessed.
+    if (d.kind==='hf_dataset_bundle' && /^[\w.-]+\/[\w.-]+$/.test(d.dataset_id || '') && /^[a-f0-9]{40}$/.test(d.revision || ''))
+      source='https://huggingface.co/datasets/'+d.dataset_id+'/tree/'+d.revision;
+    add('source',d.kind==='hf_dataset_bundle'?'Field bundle files':'Published source',d.kind==='hf_dataset_bundle'?'File browser · TAR parts':'Folder browser',source,'source');
+    add('index','Bundle index','JSON file',d.index_url,'file');
+    add('checksums','Checksums','SHA256SUMS text file',d.checksums_url,'file');
+    for (const [i,archive] of (d.finalize_archives || []).entries())
+      add('final-'+i,'Final metadata / pyramid archive','TAR file · unpack after all parts',archive.url,'file');
+    add('manifest','Field manifest','JSON file',manifestOf(f),'file');
+    return rows;
+  }
+  function fieldRecipes(f) {
+    const rows=dataLinks(f), arrays=rows.filter(row=>row.kind==='zarr'), d=f?.normals_access?.download || {};
+    const title=f?[f.scroll,f.volume,f.model].filter(Boolean).join(' · '):'No published field selected.';
+    const python=arrays.length?['# Install: python -m pip install "zarr>=3" fsspec aiohttp','import zarr','',
+      'urls = '+JSON.stringify(Object.fromEntries(arrays.map(row=>[row.key,row.href])),null,4),
+      'for channel, url in urls.items():','    array = zarr.open_array(url, mode="r")',
+      '    print(channel, array.shape, array.chunks)',
+      '# Use the field manifest for coordinate scales and normal decoding.'].join('\n'):'';
+    const final=d.finalize_archives || [], quote=value=>"'"+String(value).replace(/'/g,"'\\''")+"'";
+    const bundle=d.kind==='hf_dataset_bundle' && /^[\w.-]+\/[\w.-]+$/.test(d.dataset_id || '') &&
+      /^[a-f0-9]{40}$/.test(d.revision || '') && url(d.index_url) && url(d.checksums_url) && final.length &&
+      final.every(a=>url(a.url) && /^[\w./-]+\.tar$/.test(a.path || '') && !a.path.startsWith('/') && !a.path.split('/').includes('..'));
+    const folder=bundle?d.dataset_id.split('/')[1]+'-'+d.revision.slice(0,8):'';
+    const download=bundle?['# Install: python -m pip install -U huggingface_hub',
+      'hf download '+quote(d.dataset_id)+' --repo-type dataset --revision '+quote(d.revision)+' --local-dir '+quote(folder),
+      'cd '+quote(folder),'shasum -a 256 -c SHA256SUMS',
+      'for part in parts/*.tar; do tar -xf "$part"; done',
+      '# Unpack these last, after all parts:',...final.map(a=>'tar -xf '+quote(a.path))].join('\n'):'';
+    return {title,python,download};
+  }
+  function showRecipes(f) {
+    const recipe=fieldRecipes(f);
+    el('recipe-selection').textContent=recipe.title;
+    el('stream-recipe').hidden=!recipe.python;el('stream-code').textContent=recipe.python;
+    el('bundle-recipe').hidden=!recipe.download;el('bundle-code').textContent=recipe.download;
+    el('bundle-help').textContent=recipe.download?'Downloads all files at the recorded dataset revision. Check the checksums, unpack the parts, then unpack the final metadata / pyramid archive last.':'';
+    el('no-bundle').hidden=Boolean(recipe.download);
+    el('no-bundle').textContent=f?'No complete archive recipe is listed for this field. Use its Zarr URLs or published source above.':'Choose a published field above to see its recipes.';
+    setRegionField(f);
+  }
+  function showDataLinks(f) {
+    const rows=dataLinks(f), d=f?.normals_access?.download || {};
+    el('quick-links').replaceChildren(...rows.filter(row=>row.kind==='zarr'||row.key==='source').map(row=>{
+      const line=document.createElement('div');line.className='human-quick-row';line.dataset.key=row.key;
+      const name=document.createElement('span');name.textContent=row.kind==='zarr'?row.label:d.kind==='hf_dataset_bundle'?'TAR bundle files':'Source files';
+      const open=document.createElement('a');open.href=row.href;open.target='_blank';open.rel='noopener';open.textContent='Open';open.setAttribute('aria-label','Open '+row.label);
+      const button=document.createElement('button');button.type='button';button.textContent='Copy URL';button.setAttribute('aria-label','Copy URL for '+row.label);
+      button.onclick=async()=>{const ok=await copy(row.href,row.label+' URL copied.');button.textContent=ok?'Copied':'Select URL below';setTimeout(()=>{button.textContent='Copy URL';},1600);};
+      line.append(name,open,button);return line;
+    }));
+    el('data-selection').textContent=f?[f.scroll,f.volume,f.model].filter(Boolean).join(' · '):'Choose a published field to see its links.';
+    el('download-help').textContent=d.kind==='hf_dataset_bundle'?
+      'For a complete local field, download all '+(Number.isInteger(d.parts_count)?d.parts_count+' ':'')+'parts listed in the bundle index, then unpack the final archive last. The final archive alone is not the field.':
+      'Use the Zarr arrays above or browse the published source. No single-file field download is listed.';
+    for (const group of ['arrays','files']) {
+      const list=rows.filter(row=>(row.kind==='zarr')===(group==='arrays'));
+      el('data-'+group).replaceChildren(...list.map(row=>{
+        const card=document.createElement('div');card.className='human-data-row';card.dataset.key=row.key;
+        const title=document.createElement('strong');title.textContent=row.label;
+        const format=document.createElement('small');format.textContent=row.format;
+        const actions=document.createElement('div');actions.className='human-data-actions';
+        const open=document.createElement('a');open.href=row.href;open.target='_blank';open.rel='noopener';open.textContent='Open';open.setAttribute('aria-label','Open '+row.label);
+        const button=document.createElement('button');button.type='button';button.textContent='Copy URL';button.setAttribute('aria-label','Copy URL for '+row.label);
+        button.onclick=async()=>{const ok=await copy(row.href,row.label+' URL copied.');button.textContent=ok?'Copied':'Select URL';setTimeout(()=>{button.textContent='Copy URL';},1600);};
+        const address=document.createElement('a');address.className='human-data-url';address.href=row.href;address.target='_blank';address.rel='noopener';address.textContent=row.href;
+        actions.append(open,button);card.append(title,format,actions,address);return card;
+      }));
+      if (!list.length) el('data-'+group).textContent='No '+(group==='arrays'?'array':'file')+' links listed for this selection.';
+    }
+  }
   function shareURL() {
     if (!selected || !fieldId(selected)) return null;
     const u = new URL('https://sharpmeow-lasagna-fields.hf.space/');
@@ -921,8 +935,8 @@ pick(0,false);
   }
   async function copy(value, success) {
     if (!value) return;
-    try { await navigator.clipboard.writeText(value); el('copy-status').textContent = success; }
-    catch (_) { el('copy-status').textContent = 'Clipboard unavailable. Select the links in Surface normals to copy them.'; }
+    try { await navigator.clipboard.writeText(value); el('copy-status').textContent = success; return true; }
+    catch (_) { el('copy-status').textContent = 'Clipboard unavailable. Select a URL in Data and downloads to copy it.'; return false; }
   }
   let displayMode = 'smoothed';
   function preview() {
@@ -940,18 +954,13 @@ pick(0,false);
     selected = matching.length === 1 ? matching[0] : null;
     el('completeness').textContent = selected && selected.availability?.whole_volume_complete === true ? 'Catalog reports whole-volume completeness; see provenance.' : 'Whole-volume completeness is not verified here.';
     const f = selected || {}, a = f.normals_access || {}, p = f.provenance || {}, n = normals(selected);
-    const source = a.download?.page_url || f.browse || f.url;
-    link(el('source'), source); link(el('manifest'), manifestOf(selected));
-    link(el('normals-manifest'), manifestOf(selected));
-    el('source').textContent = source && source.includes('/tree/') ? 'Open file browser' : a.download?.kind === 'hf_dataset_bundle' ? 'Open field bundle source' : 'Open published source';
-    el('normals-panel').hidden = true; el('normals-toggle').setAttribute('aria-expanded','false');
+    link(el('manifest'), manifestOf(selected));
+    showDataLinks(selected);
+    showRecipes(selected);
     const accessible = Boolean(n.nx && n.ny && manifestOf(selected));
-    el('availability').textContent = accessible ? 'Normals links available' : selected ? 'Normals links not listed' : 'No published field selected';
-    el('normals-toggle').disabled = !accessible; el('copy').disabled = !accessible;
-    el('normals-toggle').textContent = selected && !accessible ? 'Normals links not listed' : 'Get normals';
-    for (const channel of ['nx','ny']) { el(channel).value = n[channel] || ''; el('copy-'+channel).disabled = !n[channel]; }
+    el('availability').textContent = accessible ? 'Field arrays (Zarr) and download files' : selected ? 'See available source links below' : 'No published field selected';
+    el('copy').disabled = !accessible;
     el('using').open = false;
-    el('normals-description').textContent = selected ? selected.model + '. Two encoded surface-direction channels, nx and ny.' : '';
     el('coordinates').textContent = a.coordinate_note || 'Use the manifest for coordinate scales and decoding.';
     el('share').disabled = !shareURL(); el('copy-status').textContent = '';
     const facts = [['Scroll',el('scroll').value],['Acquisition',el('volume').value],['Model',f.model],['Source',f.source],['Made by',f.made_by],['Voxel size',f.voxel_um != null ? f.voxel_um+' µm' : null],['CT input level',f.read_level],['Normal source',f.normal_source],['Checkpoint',p.checkpoint_revision],['Published size',f.bytes != null ? gb(f.bytes) : null],['Availability status',f.availability?.status]];
@@ -987,20 +996,20 @@ pick(0,false);
     notice(chosen ? '' : matches.length ? 'Choose a specific scroll or variant from the matches.' : 'No scroll matches this search.');
     scroll();
   }
+  el('count').textContent=fieldCountLabel(FL);
   options(el('scroll'),names.map(s => [s,s]));
   if (names.includes('PHerc0139')) el('scroll').value = 'PHerc0139';
   el('search').oninput = search;
   el('scroll').onchange = () => { notice(); scroll(); };
   el('volume').onchange = () => { notice(); acquisition(); };
   el('field').onchange = () => { notice(); showField(); };
+  document.addEventListener('lasagna-select-field',e=>{const f=e.detail;if(!f)return;el('search').value='';options(el('scroll'),names.map(s=>[s,s]));el('scroll').value=f.scroll;notice();scroll(f.volume,fieldId(f));});
   for (const view of ['xy','xz']) el(view).onclick = () => { direction=view; preview(); };
   for (const mode of ['original','smoothed']) el(mode).onclick = () => { displayMode=mode; preview(); };
   el('enlarge').onclick = () => { if(selected)openPv(selected,direction,displayMode); };
   el('theme').onclick = () => document.getElementById('theme').click();
-  el('normals-toggle').onclick = () => { const panel=el('normals-panel'); panel.hidden=!panel.hidden; el('normals-toggle').setAttribute('aria-expanded',String(!panel.hidden)); };
   el('copy').onclick = () => copy(normalContext(),'Both normals links, manifest and field context copied.');
-  for (const channel of ['nx','ny']) el('copy-'+channel).onclick = () => copy(normals(selected)[channel],channel+' array URL copied.');
-  el('share').onclick = () => copy(shareURL(),'Link to this exact field copied.');
+  el('share').onclick = async () => { const ok=await copy(shareURL(),'Page link copied. It opens this selection, not a data download.');el('share').textContent=ok?'Page link copied':'Select page URL unavailable';setTimeout(()=>{el('share').textContent='Copy page link';},1600); };
   function reveal(target) { for (let n=target;n;n=n.parentElement) if (n.tagName==='DETAILS') n.open=true; }
   document.addEventListener('click',e => { const a=e.target.closest('a[href^="#"]'); if(a)reveal(document.getElementById(a.getAttribute('href').slice(1))); if(e.target.closest('#lbslice'))reveal(document.getElementById('use')); },true);
   window.addEventListener('hashchange',() => reveal(document.getElementById(location.hash.slice(1))));

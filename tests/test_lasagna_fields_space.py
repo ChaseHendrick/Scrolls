@@ -117,13 +117,16 @@ class TestBox(unittest.TestCase):
 @unittest.skipUnless(HAVE_NUMPY, "needs numpy")
 class TestGuidePictures(unittest.TestCase):
     def test_guide_pictures_point_at_the_file_route(self):
-        """The guide's previews are built as assets/... in its script; inside the page they must use Gradio's file
-        route (a <base> of /gradio_api/file= turned them into /gradio_api/assets/..., which 404s)."""
+        """Any bundled preview path must use Gradio's file route, not a relative URL under /gradio_api/."""
         import html
-        raw = (SPACE / "guide" / "index.html").read_text(encoding="utf-8")
-        self.assertIn("'assets/", raw)                      # the control: the guide itself uses relative paths
+        import tempfile
         app = _load_app()
-        page = html.unescape(app.guide_html())
+        # Explicit relative-path control even when the catalog supplies only HTTPS previews.
+        with tempfile.TemporaryDirectory() as folder:
+            app.GUIDE = Path(folder) / "guide.html"
+            app.GUIDE.write_text('<head></head><img src="assets/preview.png">'
+                                 "<script>const preview='assets/preview.png';</script>", encoding="utf-8")
+            page = html.unescape(app.guide_html())
         self.assertNotIn("<base", page)
         self.assertNotIn("'assets/", page)
         self.assertNotIn('"assets/', page)
