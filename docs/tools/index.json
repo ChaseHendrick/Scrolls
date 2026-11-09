@@ -7383,91 +7383,91 @@
     {
      "name": "What it does",
      "start_line": 23,
-     "end_line": 46,
+     "end_line": 48,
      "applicable": true
     },
     {
      "name": "When to use it",
-     "start_line": 47,
-     "end_line": 59,
+     "start_line": 49,
+     "end_line": 61,
      "applicable": true
     },
     {
      "name": "Quick start",
-     "start_line": 60,
-     "end_line": 138,
+     "start_line": 62,
+     "end_line": 140,
      "applicable": true
     },
     {
      "name": "Checks and controls",
-     "start_line": 139,
-     "end_line": 159,
+     "start_line": 141,
+     "end_line": 161,
      "applicable": true
     },
     {
      "name": "Commands and options",
-     "start_line": 160,
-     "end_line": 182,
+     "start_line": 162,
+     "end_line": 184,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 183,
-     "end_line": 192,
+     "start_line": 185,
+     "end_line": 194,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 193,
-     "end_line": 196,
+     "start_line": 195,
+     "end_line": 198,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 197,
-     "end_line": 224,
+     "start_line": 199,
+     "end_line": 226,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 225,
-     "end_line": 238,
+     "start_line": 227,
+     "end_line": 240,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 239,
-     "end_line": 242,
+     "start_line": 241,
+     "end_line": 244,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 243,
-     "end_line": 248,
+     "start_line": 245,
+     "end_line": 250,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 249,
-     "end_line": 261,
+     "start_line": 251,
+     "end_line": 263,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 262,
-     "end_line": 265,
+     "start_line": 264,
+     "end_line": 267,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 266,
-     "end_line": 276,
+     "start_line": 268,
+     "end_line": 278,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 277,
-     "end_line": 280,
+     "start_line": 279,
+     "end_line": 282,
      "applicable": true
     }
    ]
