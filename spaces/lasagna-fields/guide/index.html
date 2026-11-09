@@ -229,6 +229,8 @@ html.lbopen{overflow:hidden}
   .lbhead .seg{order:3;width:100%}.lbhead .seg button{flex:1}
 }
 @media (max-width:600px){
+  .lbox{padding:0}
+  .lbpanel{width:100%;max-height:100vh;border-radius:0}
   /* a scroll's card: picture beside the name, the fields below */
   .sccard{display:grid;grid-template-columns:132px minmax(0,1fr);align-content:start}
   .sccard .thumb{aspect-ratio:2/1;margin:12px 0 0 12px;border-radius:8px}
@@ -271,7 +273,7 @@ html.lbopen{overflow:hidden}
 [hidden]{display:none!important}
 .human{max-width:1120px;margin:auto;padding:30px 28px 12px;position:relative;isolation:isolate}
 .human-fields{position:absolute;inset:0 0 auto;height:400px;overflow:hidden;z-index:-1;pointer-events:none;opacity:.38;mask-image:linear-gradient(180deg,#000 0%,#000 50%,transparent 100%)}
-.human-fields .fields{opacity:1;pointer-events:none}
+.human-fields .fields{height:100%;opacity:1;pointer-events:none}
 .human-intro{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;margin-bottom:28px}
 .human-kicker{font-size:12px;font-weight:650;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:10px}
 .human-intro h2{font-size:clamp(28px,3.5vw,40px);margin-bottom:10px}
@@ -308,9 +310,12 @@ html.lbopen{overflow:hidden}
 .human-preview-head button[aria-pressed="true"]{background:var(--bg2);border-color:var(--line)}
 
 .preview-display{display:flex;gap:4px;align-items:center;justify-content:flex-end;padding:6px 12px;background:var(--card);border-bottom:1px solid var(--line)}
-.preview-display[hidden]{display:none}.preview-display button{font-size:12px;min-height:36px;padding:6px 10px;border-color:transparent}
+.preview-display[hidden]{display:none}.preview-display button{font:inherit;font-size:12px;min-height:36px;padding:6px 10px;border:1px solid transparent;border-radius:9px;background:var(--card);color:var(--ink);cursor:pointer}
+.preview-display button:disabled{opacity:.5;cursor:default}
 .preview-display button[aria-pressed="true"]{background:var(--bg2);border-color:var(--line)}
 .lbpanel .preview-display{flex:0 0 auto}
+.preview-note{margin:0;padding:8px 16px;color:var(--ink2);font-size:12px;line-height:1.5}
+#lbempty{padding:24px;text-align:center;color:var(--ink2)}
 
 .human-image{min-height:300px;display:flex;align-items:center;justify-content:center;background:var(--bg2);padding:16px}
 .human-image img{display:block;width:100%;max-height:420px;object-fit:contain}
@@ -345,7 +350,7 @@ footer .wrap{max-width:1120px}#top[hidden]{display:none!important}
 </head>
 <body>
 <main class="human" id="human-browser">
-  <div class="human-fields" aria-hidden="true"><svg class="fields" id="fields" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMax slice" aria-hidden="true"></svg></div>
+  <div class="human-fields" aria-hidden="true"><svg class="fields" id="fields" viewBox="0 440 1600 460" preserveAspectRatio="xMidYMin slice" aria-hidden="true"></svg></div>
   <div class="human-intro">
     <div><p class="human-kicker">Published fields</p><h2>Explore scroll layers</h2>
       <p>Choose a scroll, preview a field, and open its source.</p></div>
@@ -383,8 +388,9 @@ footer .wrap{max-width:1120px}#top[hidden]{display:none!important}
     <figure class="human-preview">
       <div class="human-preview-head"><h3>Field preview</h3><div role="group" aria-label="Preview direction">
         <button type="button" id="human-xy" aria-pressed="true">Top view</button>
-        <button type="button" id="human-xz" aria-pressed="false">Side view</button></div></div>
+        <button type="button" id="human-xz" aria-pressed="false">Side view</button></div><button type="button" id="human-enlarge">Enlarge</button></div>
       <div id="human-display" class="preview-display" role="group" aria-label="Preview display" title="Preview smoothing does not change the downloadable normals." hidden><button type="button" id="human-original" data-preview-mode="original" aria-pressed="false">Original</button><button type="button" id="human-smoothed" data-preview-mode="smoothed" aria-pressed="true">Smoothed</button></div>
+      <p id="human-display-note" class="preview-note" role="status"></p>
       <div class="human-image"><img id="human-image" alt="" hidden><p id="human-empty">Choose a scroll to see its preview.</p></div>
       <figcaption id="human-caption">The layer signal and surface directions are model output, not a reading.</figcaption>
     </figure>
@@ -573,7 +579,8 @@ and with Lasagnetta 0.1.1 (SharpMeow/lasagnetta), on Vesuvius Challenge open dat
 <div class="lbox" id="lbox" hidden role="dialog" aria-modal="true" aria-labelledby="lbtitle"><div class="lbpanel">
   <div class="lbhead"><b id="lbtitle"></b><div class="seg"><button type="button" data-lv="xy" aria-pressed="true">Through the middle</button><button type="button" data-lv="xz" aria-pressed="false">Along the scroll</button></div><button type="button" class="lbx" id="lbclose" aria-label="Close">Close</button></div>
   <div id="lb-display" class="preview-display" role="group" aria-label="Preview display" title="Preview smoothing does not change the downloadable normals." hidden><button type="button" id="lb-original" data-preview-mode="original" aria-pressed="false">Original</button><button type="button" id="lb-smoothed" data-preview-mode="smoothed" aria-pressed="true">Smoothed</button></div>
-  <img id="lbimg" alt="">
+  <p id="lb-display-note" class="preview-note" role="status"></p>
+  <img id="lbimg" alt="" hidden><p id="lbempty" hidden></p>
   <div class="lbfoot"><span id="lbcaption">Model output: cos (one band per papyrus layer) beside the surface normals as color.</span><button type="button" class="btn" id="lbslice">Open in the slice viewer</button></div>
 </div></div>
 
@@ -708,25 +715,48 @@ function onScreen(){let fe=null;try{fe=window.frameElement}catch(e){}
  return {top:Math.max(0,Math.min(-r.top,dh-vh)),h:Math.min(vh,dh)}}
 function placeLb(){const L=$('lbox'),v=onScreen();if(!v)return;
  L.style.position='absolute';L.style.top=v.top+'px';L.style.bottom='auto';L.style.height=v.h+'px';
- L.querySelector('.lbpanel').style.maxHeight=(v.h-32)+'px'}
+ const style=getComputedStyle(L),padding=parseFloat(style.paddingTop)+parseFloat(style.paddingBottom);
+ L.querySelector('.lbpanel').style.maxHeight=(v.h-padding)+'px'}
 function toastOn(){const T=$('toast'),v=onScreen();if(v){T.style.position='absolute';T.style.bottom='auto';T.style.top=(v.top+v.h-64)+'px'}T.classList.add('on')}
 try{parent.addEventListener('scroll',()=>{if(!$('lbox').hidden)placeLb()},{passive:true})}catch(e){}
-function smoothedPreview(f,view){const value=f&&f.preview_kind!=='cos'&&f['preview_'+view]&&f.preview_smoothed?.[view];return typeof value==='string'&&/^https:\/\//.test(value)?value:null}
-function previewDisplay(prefix,f,view,mode){const smooth=smoothedPreview(f,view),active=smooth&&mode==='smoothed'?'smoothed':'original';
+const failedPreviews=new Set();
+function smoothedPreview(f,view){
+ const original=f?.['preview_'+view],value=f?.preview_smoothed?.[view];
+ if(!original||f.preview_kind==='cos'||typeof value!=='string'||!/^https:\/\//.test(value))return null;
+ try{const raw=new URL(original,location.href),smooth=new URL(value);raw.hash='';smooth.hash='';
+  return raw.href!==smooth.href?value:null}catch(e){return null}}
+function previewDisplay(prefix,f,view,mode){const smooth=smoothedPreview(f,view),failed=failedPreviews.has(smooth),active=smooth&&!failed&&mode==='smoothed'?'smoothed':'original';
  $(prefix+'-display').hidden=!smooth;
  for(const choice of ['original','smoothed'])$(prefix+'-'+choice).setAttribute('aria-pressed',String(choice===active));
+ $(prefix+'-smoothed').disabled=failed;
+ $(prefix+'-display-note').textContent=!f?'':failed?'Smoothed preview could not load. Showing Original.':active==='smoothed'?'Smoothed preview. Display only; downloads are unchanged.':smooth?'Original preview. Downloads are unchanged.':'Original preview. Smoothing is not available for this view.';
  return active==='smoothed'?smooth:f?.['preview_'+view]}
+function loadPreview(prefix,f,view,mode){
+ const image=$(prefix==='human'?'human-image':'lbimg'),empty=$(prefix==='human'?'human-empty':'lbempty');
+ const source=previewDisplay(prefix,f,view,mode),request={};image.previewRequest=request;
+ image.hidden=true;image.removeAttribute('src');empty.hidden=false;
+ empty.textContent=source?'Loading the published preview...':'No preview image is listed for this view. Published access links remain available.';
+ if(!source)return;
+ // A separate loader keeps late responses from an earlier field or mode out of the current view.
+ const loader=new Image();
+ loader.onload=()=>{if(image.previewRequest!==request)return;image.src=source;image.hidden=false;empty.hidden=true};
+ loader.onerror=()=>{if(image.previewRequest!==request)return;
+  if(source===smoothedPreview(f,view)){failedPreviews.add(source);loadPreview(prefix,f,view,mode);return}
+  empty.textContent='This preview could not load. Published access links remain available.';
+  $(prefix+'-display-note').textContent='Preview unavailable.';
+  for(const choice of ['original','smoothed'])$(prefix+'-'+choice).setAttribute('aria-pressed','false')};
+ loader.src=source;
+}
 let pvMode='smoothed',pvView='xy';
-function openPv(f,view){if(!f.preview_xy&&!f.preview_xz)return;if(!f['preview_'+view])view=f.preview_xy?'xy':'xz';if(pv!==f)pvMode='smoothed';pv=f;pvView=view;const L=$('lbox');
- $('lbimg').onerror=()=>{if(pvMode==='smoothed'&&smoothedPreview(f,view)){pvMode='original';$('lbimg').src=previewDisplay('lb',f,view,pvMode)}};
- $('lbimg').src=previewDisplay('lb',f,view,pvMode);
+function openPv(f,view,mode){if(!f.preview_xy&&!f.preview_xz)return;if(!f['preview_'+view])view=f.preview_xy?'xy':'xz';if(pv!==f)pvMode='smoothed';if(mode)pvMode=mode;pv=f;pvView=view;const L=$('lbox');
+ loadPreview('lb',f,view,pvMode);
  $('lbimg').alt=f.scroll+' '+f.volume+' '+view+' preview, '+(f.preview_kind==='cos'?'Layer pattern (cos), '+f.model:'cos and normals');
  $('lbcaption').textContent=f.preview_kind==='cos'?cosCaption(f,view):'Model output: cos (one band per papyrus layer) beside the surface normals as color.';
  $('lbtitle').textContent=f.scroll+' · '+um(f.voxel_um)+' · '+f.volume;
  document.querySelectorAll('[data-lv]').forEach(x=>{x.setAttribute('aria-pressed',x.dataset.lv===view);x.disabled=!f['preview_'+x.dataset.lv]});
  $('lbslice').hidden=!f.gallery;
  if(L.hidden){pvReturnFocus=document.activeElement;L.hidden=false;placeLb();document.documentElement.classList.add('lbopen');$('lbclose').focus({preventScroll:true})}}
-function closePv(){if($('lbox').hidden)return;$('lbox').hidden=true;document.documentElement.classList.remove('lbopen');$('lbimg').removeAttribute('src');pv=null;
+function closePv(){if($('lbox').hidden)return;$('lbox').hidden=true;document.documentElement.classList.remove('lbopen');$('lbimg').previewRequest=null;$('lbimg').removeAttribute('src');pv=null;
  const target=pvReturnFocus?.isConnected&&pvReturnFocus.getClientRects().length?pvReturnFocus:$('human-search');pvReturnFocus=null;target.focus({preventScroll:true})}
 document.querySelectorAll('[data-lv]').forEach(b=>b.onclick=()=>pv&&openPv(pv,b.dataset.lv));
 for(const mode of ['original','smoothed'])$('lb-'+mode).onclick=()=>{if(pv){pvMode=mode;openPv(pv,pvView)}};
@@ -896,17 +926,12 @@ pick(0,false);
   }
   let displayMode = 'smoothed';
   function preview() {
-    const image = el('image'), empty = el('empty');
-    const source = url(previewDisplay('human',selected,direction,displayMode));
+    const image = el('image');
     for (const view of ['xy','xz']) { el(view).disabled = !(selected && url(selected['preview_' + view])); el(view).setAttribute('aria-pressed', String(view === direction)); }
-    image.hidden = true; image.removeAttribute('src'); empty.hidden = false;
-    empty.textContent = selected ? 'No preview image is listed for this view. You can still use the published normals links.' : 'Choose a listed scroll, acquisition and field to see its preview.';
-    if (source) {
+    el('enlarge').disabled = !(selected && url(selected['preview_' + direction]));
+    loadPreview('human',selected,direction,displayMode);
+    if (selected) {
       image.alt = selected.scroll + ', acquisition ' + selected.volume + ': ' + (direction === 'xy' ? 'top' : 'side') + ' view of ' + (selected.preview_kind === 'cos' ? 'Layer pattern (cos), ' + selected.model : 'the model field');
-      empty.textContent = 'Loading the published preview...';
-      image.onload = () => { image.hidden = false; empty.hidden = true; };
-      image.onerror = () => { if(displayMode==='smoothed'&&smoothedPreview(selected,direction)){displayMode='original';preview();return;} image.hidden = true; empty.hidden = false; empty.textContent = 'This preview could not load. Published access links remain available under Get normals.'; };
-      image.src = source;
     }
     el('caption').textContent = selected ? (selected.preview_kind === 'cos' ? cosCaption(selected,direction) : 'Grayscale shows the layer pattern; color shows surface direction. ' + (selected.model || 'Published model') + '. Model output, not a reading.') : 'Field availability is specific to the selected scan acquisition.';
   }
@@ -970,6 +995,7 @@ pick(0,false);
   el('field').onchange = () => { notice(); showField(); };
   for (const view of ['xy','xz']) el(view).onclick = () => { direction=view; preview(); };
   for (const mode of ['original','smoothed']) el(mode).onclick = () => { displayMode=mode; preview(); };
+  el('enlarge').onclick = () => { if(selected)openPv(selected,direction,displayMode); };
   el('theme').onclick = () => document.getElementById('theme').click();
   el('normals-toggle').onclick = () => { const panel=el('normals-panel'); panel.hidden=!panel.hidden; el('normals-toggle').setAttribute('aria-expanded',String(!panel.hidden)); };
   el('copy').onclick = () => copy(normalContext(),'Both normals links, manifest and field context copied.');
