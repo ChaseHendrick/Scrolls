@@ -38,6 +38,12 @@ it worked. Placeholders are CAPITALS, each explained under the block. -->
 <!-- Write: the control that lets the result fail, how to run it, what a pass and a fail look like, with the numbers
 and their source. -->
 
+<!-- Write: the claim and validation scope, following docs/STANDARDS.md#scientific-transfer-across-scrolls.
+For scientific transfer, name the exact method version, independent physical test scrolls, development and upstream
+exposures (including unknowns), frozen selection/calibration/preprocessing and bars, and every per-scroll outcome.
+For other claims, state the applicable format, workload, device or correctness checks. Reuse matching evidence;
+record missing evidence and scope limits without rewriting historical results or requiring a universal scroll count. -->
+
 Claim label: <!-- Write: one of the claim labels in docs/TOOL-DOCS.md, and what it applies to -->
 
 ## Commands and options

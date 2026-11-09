@@ -10,6 +10,9 @@
 | Our run's outcome | A ledger record (`experiments/<slug>/run.json`) with readout rule, control, commands, costs |
 | Possible letters | Label **Candidate (private)**; never in this repository |
 | Untested idea | Mark as hypothesis; prefer `docs/logs/` |
+| Scientific generalization across scrolls | Eligible independent physical scrolls, audited upstream exposure, a frozen method and bars, and all per-scroll outcomes under [Scientific transfer across scrolls](STANDARDS.md#scientific-transfer-across-scrolls) |
+| Format, lossless codec, performance or device/backend behavior | Representative inputs and environments, controls and parity or integrity checks suited to the claim; no universal scroll count |
+| Utility, UI, operational or exact mathematical correctness | Tests of supported behavior and failure cases; scientific transfer validation is not applicable |
 
 ## Kit
 
