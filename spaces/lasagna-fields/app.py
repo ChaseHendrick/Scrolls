@@ -291,15 +291,17 @@ def list_fields(scroll: str = ""):
     lasagna predict3d or with Lasagnetta 0.1.1, a faster copy of it). Args: scroll, part of a scroll name to keep
     only its fields (empty for all). Returns a list of {scroll, volume, zarr, voxel_um, read_level, model, source,
     made_by, bytes, url, dataset, manifest, stream, preview_xy, preview_xz, preview_kind, preview_caption,
-    preview_thumb, browse, note, normal_source, availability, provenance, normals_access}: stream is the run
+    preview_thumb, preview_smoothed, browse, note, normal_source, availability, provenance, normals_access}: stream is the run
     folder that zarr reads by URL and manifest its lasagna.json. Preview pictures may show combined cos/normals
     or a layer-pattern-only image (preview_kind="cos"). preview_caption maps xy/xz to attributed text;
-    preview_thumb is an optional thumbnail URL. Missing optional preview metadata is null. browse is the page
+    preview_thumb is an optional thumbnail URL. preview_smoothed optionally maps xy/xz to display-only
+    derivatives; preview_xy/xz retain the originals and downloadable normals do not change.
+    Missing optional preview metadata is null. browse is the page
     to download it from (the dataset, or the open data's file browser). Normal array links are independent.
     """
     keep = ("scroll", "volume", "zarr", "voxel_um", "read_level", "model", "source", "made_by", "bytes", "url",
             "dataset", "manifest", "stream", "preview_xy", "preview_xz", "preview_kind", "preview_caption",
-            "preview_thumb", "browse", "note",
+            "preview_thumb", "preview_smoothed", "browse", "note",
             "normal_source", "availability", "provenance", "normals_access")
     q = str(scroll or "").strip().lower()
     return [{k: f.get(k) for k in keep} for f in field_doc().get("fields", []) if q in f["scroll"].lower()]
