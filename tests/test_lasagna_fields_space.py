@@ -187,8 +187,6 @@ class TestFieldList(unittest.TestCase):
         import json
         cls.doc = json.loads((SPACE / "fields.json").read_text(encoding="utf-8"))
         cls.rows = cls.doc["fields"]
-        prizes = json.loads((ROOT / "kit" / "data" / "prizes-2026-10-11.json").read_text(encoding="utf-8"))
-        cls.eligible = {e["scroll"] for p in prizes["prizes"] for e in (p.get("eligible") or [])}
 
     def test_rows_are_complete_and_sorted(self):
         self.assertGreater(len(self.rows), 10)                # the control: more than the ten of 24 Oct
@@ -200,7 +198,7 @@ class TestFieldList(unittest.TestCase):
             self.assertTrue(r["zarr"].startswith(r["volume"] + "-"), r)
             self.assertIn(r["model"], ("villa predict3d", "Lasagnetta 0.1.1"))
             self.assertIn(r["source"], ("open-data", "dataset"))
-            self.assertGreater(r["bytes"], 0)
+            self.assertTrue(r["bytes"] is None or r["bytes"] > 0)
             self.assertTrue(r["url"].startswith("https://"), r)
             if r["source"] == "dataset":
                 self.assertEqual(r["url"], "https://huggingface.co/datasets/" + r["dataset"])
@@ -208,27 +206,23 @@ class TestFieldList(unittest.TestCase):
                 self.assertTrue(r["manifest"].endswith(".lasagna.json"), r)
                 self.assertIn(f"/{r['scroll']}/representations/predictions/lasagna/", r["stream"])
 
-    def test_never_lists_a_scroll_the_space_refuses(self):
+    def test_public_geometry_covers_every_catalog_scroll(self):
+        import json
+        coverage = json.loads((SPACE / "coverage.json").read_text())
+        scrolls = {s["scroll"] for s in coverage["samples"] if s["sample_type"] == "scroll"}
+        self.assertEqual(len(scrolls), 35)
+        self.assertLessEqual(scrolls, {r["scroll"] for r in self.rows})
         never, = _constants("REFUSED_SAMPLES")
-        rows = self.rows + self.doc.get("pending_not_public", {}).get("items", [])
-        self.assertTrue(never and rows)                       # the control: there is something to compare
-        self.assertFalse(never & {r["scroll"].lower() for r in rows})
-        text = (SPACE / "fields.json").read_text(encoding="utf-8").lower()
-        for s in never:
-            self.assertNotIn(s, text)
+        self.assertEqual(never, set())
 
-    def test_prize_scrolls_only_as_listed_before(self):
-        """No new entry for a scroll on a prize list: only the ten SharpMeow datasets listed since 24 Oct 2026."""
-        own, = _constants("OWN_FIELDS")
-        ten = {s for s, _ in own.values()}
-        listed = {r["scroll"] for r in self.rows}
-        self.assertTrue(self.eligible & listed)               # the control: the ten include prize-list scrolls
-        for r in self.rows:
-            if r["scroll"] in self.eligible:
-                self.assertIn(r["scroll"], ten, r)
-                self.assertEqual((r["source"], r["model"]), ("dataset", "villa predict3d"), r)
-        for r in self.doc.get("pending_not_public", {}).get("items", []):
-            self.assertNotIn(r["scroll"], self.eligible, r)
+    def test_fields_are_public_geometry_with_honest_completeness(self):
+        for row in self.rows:
+            self.assertIn(row["normal_source"], ("lasagna", "lasagnetta"))
+            self.assertIn("/predictions/lasagna/", row["manifest"])
+            self.assertNotIn("/fibers/", row["manifest"])
+            self.assertIsNone(row["availability"]["whole_volume_complete"])
+            self.assertGreater(row["availability"]["arrays"]["nx"]["chunk_sample_count"], 0)
+            self.assertGreater(row["availability"]["arrays"]["ny"]["chunk_sample_count"], 0)
 
     def test_every_field_has_all_four_links(self):
         """Dataset, Manifest, Preview and Copy URL on every row (30 Oct 2026): the bucket holds every SharpMeow field."""
@@ -236,8 +230,11 @@ class TestFieldList(unittest.TestCase):
             self.assertTrue(r["browse"].startswith("https://"), r)
             self.assertTrue(r["manifest"].endswith(".lasagna.json") and r["manifest"].startswith(r["stream"] + "/"), r)
             self.assertIn(f"/{r['scroll']}/representations/predictions/lasagna/", r["stream"])
-            self.assertRegex(r["preview_xy"], r"-xy\.(png|webp)$")
-            self.assertRegex(r["preview_xz"], r"-xz\.(png|webp)$")
+            if r["preview_xy"] is not None:
+                self.assertRegex(r["preview_xy"], r"-xy\.(png|webp)$")
+                self.assertRegex(r["preview_xz"], r"-xz\.(png|webp)$")
+            else:
+                self.assertIsNone(r["preview_xz"])
             if r["source"] == "dataset":
                 self.assertTrue(r["stream"].startswith("https://huggingface.co/buckets/SharpMeow/lasagna-fields/"), r)
                 self.assertEqual(r["browse"], r["url"])

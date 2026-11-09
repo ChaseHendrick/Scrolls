@@ -1,6 +1,6 @@
-# lasagna-fields: whole-scan lasagna fields for 24 scrolls, listed by scroll, and villa's field for any box on demand
+# lasagna-fields: explore published layer fields
 
-Whole-scan lasagna fields for 24 scrolls, listed by scroll (villa's own in the open data and 22 public datasets made with villa's lasagna or Lasagnetta 0.1.1), and a Space that runs villa's lasagna on ZeroGPU for any box of any public scan, from its page, API or MCP server.
+Choose a scroll and scan, view an available preview, and open the published field's dataset or manifest. Lasagna and Lasagnetta fields are identified by model. The Space also offers villa's Lasagna model for small boxes through its page, API or MCP server.
 
 | Field | Value |
 | --- | --- |
@@ -24,7 +24,11 @@ Whole-scan lasagna fields for 24 scrolls, listed by scroll (villa's own in the o
 
 villa's lasagna surface fitting, and the spiral fit that builds on it, read a lasagna field: the output of villa's lasagna model over a scan, with a cos channel (a signal that repeats once per papyrus layer), its gradient size (grad_mag) and the surface normals (nx, ny). The open data has such fields for only some scans. Predicting one for a whole scan takes a GPU for hours.
 
-The Space's first tab, **Every field**, lists every whole-scan field it knows for 24 scrolls, one row per field, with the volume, voxel size, the level the model read, the model, where it lives, its size and four links (Dataset, Manifest, Preview and Copy URL, on every field): villa's own fields in the open data for seven scrolls on no prize list (linked, not copied), and 22 public datasets made here for scans that had none. Twelve of those were made with villa's lasagna model and ten with [Lasagnetta](lasagnetta.md) 0.1.1, a faster copy of it, whose fields are previews where exact values matter. The list is `spaces/lasagna-fields/fields.json`; `list_fields` returns it.
+The Space's first tab, **Every field**, lists 56 public fields across all 35 scroll catalog entries and four fragment entries with catalog volumes. Fifteen scrolls with existing public Lasagna fields were omitted by an old listing restriction; their links are now included. The complete catalog contains 45 samples, 67 scans and 74 reconstructed volumes. Eighteen additional volumes have no known Lasagna or Lasagnetta field. Six fragments have no catalog volume.
+
+Coverage means a field is available for at least one volume of each scroll. The 8 November 2026 audit read manifests, array headers and chunk listings, and compared metadata for 598 dataset parts. It did not read arrays or exhaustively verify sparse chunk coverage. `whole_volume_complete: null` means unverified. Lasagnetta remains labeled as a student preview; m7-derived normals and fiber predictions are separate products and do not count as Lasagna or Lasagnetta.
+
+The metadata API `list_coverage(scroll="")` returns the summary and all matching samples, including every reconstructed volume, missing fields and the limits of the audit. `list_fields` retains its arguments and existing keys, adding `normal_source`, `availability`, `provenance` and `normals_access`. `bytes`, `preview_xy` and `preview_xz` may be null when no measured size or preview is available. Missing previews do not require reading scientific data to expose public field links. The full source inventory is `coverage.json`.
 
 The first ten datasets hold villa's field for ten whole scans that had none: PHerc0175A, PHerc0175B, PHerc0306B, PHerc0483A, PHerc0483B, PHerc0490A, PHerc0490B, PHerc0841, PHerc0846A and PHerc0846B. Each is in villa's own layout (`SCAN.lasagna.json` and four `SCAN_{cos,grad_mag,nx,ny}.ome.zarr` channels), so lasagna's tools open it without changes. The same fields sit unpacked in the public bucket SharpMeow/lasagna-fields, laid out like the open data (`SCAN/representations/predictions/lasagna/RUN/`), so any zarr reader can open them by URL.
 
@@ -52,6 +56,37 @@ Do not use it:
 - As a check of the model: it is the model's output, not ground truth.
 
 ## Quick start
+
+1. **Select a scan.** Find a scroll, then choose the field for the scan and voxel size you need. Check whether its model is Lasagna or Lasagnetta.
+2. **Preview the field.** Open an available preview to see the layer signal and normals. If no preview is available, use the published source link.
+3. **Open the source.** Follow the dataset link for downloads and its documentation, or the manifest link for the field's array paths and coordinate metadata.
+
+A preview shows model output. It does not establish scientific accuracy or whole-volume completeness. The field metadata records provenance and coverage separately; an unknown completion status is not a pass. Lasagnetta previews remain labeled as student output, and m7-derived normals are a separate product. For agents, `list_coverage` reports missing volumes and these limits, while `list_fields` returns the published field links.
+
+To get normals links from Python, request the field metadata and choose the volume and model you need. This example prints links without opening any arrays:
+
+```python
+from gradio_client import Client
+
+fields = Client("SharpMeow/lasagna-fields").predict("PHerc0175A", api_name="/list_fields")
+for field in fields:
+    access = field["normals_access"]
+    print(field["scroll"], field["volume"], field["model"])
+    for channel in ("nx", "ny"):
+        print(channel, access["channels"][channel]["array_url"])
+    print("Manifest:", access["manifest_url"])
+    print("Source files:", access["download"]["page_url"])
+```
+
+`normals_access` uses schema `lasagna-normal-access/1`. It describes two encoded normal channels, nx and ny. Each channel has an exact `array_url`, its parent `group_url`, `array_level`, `manifest_scaledown_exponent`, `scale_from_manifest_base`, and `shape_zyx` and `chunks_zyx`. Use `array_url` when a reader expects one array; use `group_url` when it expects the parent OME-Zarr store. Paths come from the published manifest, not from a filename template.
+
+Array levels and scaledown refer to `manifest_base_shape_zyx`. `ct_read_level` records the separate CT input level; do not add it to `array_level`. `source_to_base` and `coordinate_note` preserve the manifest context. Follow the source's coordinate and decoding instructions: a universal normal decoder or sign convention across producer versions has not been verified.
+
+For `download.kind == "hf_dataset_bundle"`, `folder_url` opens the files at the recorded dataset revision. `download` includes the dataset page, revision, index and checksum URLs, part count and `finalize_archives` with their exact paths, URLs, sizes and hashes. A complete local field needs all indexed parts, then the final metadata/pyramid archive unpacked last. This is a stitched field bundle, not a single normals-only archive. For `download.kind == "open_data_zarr"`, use the direct array links or the published folder browser; the bundle-only fields are null and `finalize_archives` is empty.
+
+All 56 field records have these links. The November 2026 access audit verified metadata and download headers only. It did not read array chunks or prove whole-volume completeness; `normals_access.whole_volume_complete` remains null. The field's model and provenance still distinguish Lasagna from Lasagnetta.
+
+To download a field and inspect it in code:
 
 ```bash
 pip install -U "huggingface_hub[cli]" "zarr<3" numpy
@@ -134,7 +169,7 @@ Claim label: Model output (the fields); Measurement (the seam ratios, hashes and
 
 | Call | Arguments | Returns |
 | --- | --- | --- |
-| `/list_fields` | `scroll=""` (part of a scroll name, or empty for all) | every whole-scan field the first tab lists: scroll, volume, zarr, voxel_um, read_level, model, source, made_by, bytes, url, dataset, manifest, stream (a run folder zarr reads by URL, or null), note |
+| `/list_fields` | `scroll=""` (part of a scroll name, or empty for all) | every whole-scan field the first tab lists: scroll, volume, zarr, voxel_um, read_level, model, source, made_by, bytes, url, dataset, manifest, stream (a run folder zarr reads by URL, or null), note; preview and browse links; normal_source, availability, provenance, and normals_access (exact nx/ny array and group URLs, coordinate metadata and source/download links) |
 | `/list_scans` | none | every open-data volume it can read, with the level the model reads |
 | `/list_models` | none | the model slot: models, which are offered, what they were tested on |
 | `/example_points` | none | ready points inside the papyrus of scans on no prize list |
@@ -224,7 +259,7 @@ Downloads are free to use: users rent nothing. A whole scan is 32 to 82 GB (abou
 
 ## Tests
 
-`tests/test_lasagna_fields_space.py`: the box holds the point on whole 256-voxel blocks, villa's `--crop` is level-0 x y z, sizes and points outside are refused, the plan names the point `center_level0_zyx`, the ten own fields match the card, the field list (`fields.json`) is complete and sorted, links every dataset the card names, never names a held or target scroll, adds no scroll on a prize list beyond the ten listed since 24 Oct 2026, shows the fields being made without any link, reaches the guide whole with every element id used once, `list_fields` leaves the pending ones out, and Make a field names the listed dataset of a scan with no field to check against, the page carries the one-scroll fragment (`onescroll.html` in its head), the guide's frame has no fixed height and its code blocks grow instead of scrolling, the receipt and the download's file row grow after a run, `lasfield.py selftest` passes, and a worker pool starts inside a daemon process only with the ZeroGPU fix (the control: without it, the pool is refused). For the data, none in this repository: The datasets' `SHA256SUMS` and `load_example.py` are the checks; the streaming snippet above was run on 2026-10-24.
+`tests/test_lasagna_fields_space.py`: the box holds the point on whole 256-voxel blocks, villa's `--crop` is level-0 x y z, sizes and points outside are refused, the plan names the point `center_level0_zyx`, the ten own fields match the card, the field list (`fields.json`) is complete and sorted, links every dataset the card names, covers all catalog scrolls with public geometry fields and keeps completeness unverified, shows the fields being made without any link, reaches the guide whole with every element id used once, `list_fields` leaves the pending ones out, and Make a field names the listed dataset of a scan with no field to check against, the page carries the one-scroll fragment (`onescroll.html` in its head), the guide's frame has no fixed height and its code blocks grow instead of scrolling, the receipt and the download's file row grow after a run, `lasfield.py selftest` passes, and a worker pool starts inside a daemon process only with the ZeroGPU fix (the control: without it, the pool is refused). For the data, none in this repository: The datasets' `SHA256SUMS` and `load_example.py` are the checks; the streaming snippet above was run on 2026-10-24.
 
 ## History
 

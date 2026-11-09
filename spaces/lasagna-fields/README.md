@@ -11,7 +11,7 @@ pinned: false
 license: apache-2.0
 suggested_hardware: zero-a10g
 startup_duration_timeout: 1h
-short_description: lasagna fields for 24 scrolls, or made for any box
+short_description: Explore scroll layers, previews, and published sources
 models:
 - scrollprize/lasagna
 datasets:
@@ -62,14 +62,11 @@ tags:
 
 # Lasagna Fields
 
-The **lasagna field** for Herculaneum scroll CT, two ways:
+Explore published layer fields for Herculaneum scroll scans:
 
-- **Every field, by scroll**: whole-scan fields for 24 scrolls in one list, each with its volume, voxel size,
-  model, size and link (`fields.json`). Seven are villa's own fields in the Vesuvius Challenge open data. Thirty-four
-  are public datasets made here for scans that had none: twelve with villa's lasagna model, among them ten that
-  also stream from a bucket (PHerc0175A, PHerc0175B, PHerc0306B, PHerc0483A, PHerc0483B, PHerc0490A, PHerc0490B,
-  PHerc0841, PHerc0846A and PHerc0846B), and twenty-two with [Lasagnetta](https://huggingface.co/SharpMeow/lasagnetta)
-  0.1.1, a faster copy of it.
+- **Browse fields**: choose a scroll and scan, view a preview where one is available, then open its published
+  dataset or manifest. Each field identifies its scan, voxel size and model. Fields from
+  [Lasagnetta](https://huggingface.co/SharpMeow/lasagnetta) are labeled separately from villa's Lasagna fields.
 - **Make a field** for any box of any public scan: pick a scan and a point, and the Space runs villa's own lasagna
   model there on ZeroGPU, checks the result against the field the open data already publishes for that scan, and
   hands you a download in villa's own layout.
@@ -77,6 +74,17 @@ The **lasagna field** for Herculaneum scroll CT, two ways:
 A lasagna field is what villa's lasagna surface fitting and the spiral fit read: **cos** (a signal that repeats once
 per papyrus layer), its gradient size **grad_mag**, and the surface normal (**nx**, **ny**). It is model output:
 geometry inputs, not a reading of any text.
+
+The catalog records source links, model provenance and coverage status. A listed field or preview does not prove
+whole-volume completeness. An unknown coverage status means completeness has not been verified. A missing preview
+or size estimate means it is unavailable.
+
+## Reference fields
+
+The original ten hosted reference fields use the same villa commit and checkpoint as Make a field:
+PHerc0175A, PHerc0175B, PHerc0306B, PHerc0483A, PHerc0483B, PHerc0490A, PHerc0490B, PHerc0841,
+PHerc0846A and PHerc0846B. Their published datasets remain available through the scroll selector and
+the dataset links above. The current catalog also lists fields from other runs and models.
 
 ## Make a field: what runs
 
@@ -99,7 +107,9 @@ is the whole-scan field there.
 ## For agents
 
 The page is also an API and an MCP server (`https://sharpmeow-lasagna-fields.hf.space/gradio_api/mcp/`):
-`list_fields`, `list_scans`, `list_models`, `example_points`, `plan_field` and `make_field`. See the page's **Agents and API** tab.
+`list_fields`, `list_coverage`, `list_scans`, `list_models`, `example_points`, `plan_field` and `make_field`.
+`list_coverage` reports catalog entries and volumes separately, including missing fields and unknown completeness.
+See the page's **Agents and API** tab.
 A field uses the caller's ZeroGPU time.
 
 ## Credit and licenses

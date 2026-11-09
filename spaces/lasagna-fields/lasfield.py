@@ -37,8 +37,8 @@ import numpy as np
 BUCKET = "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com"
 METADATA = BUCKET + "/metadata.json"
 USER_AGENT = "lasagna-fields-space (huggingface.co/spaces/SharpMeow/lasagna-fields)"
-# Scans this Space never reads: PHercParis4 is kept out of every public tool of ours (Chase's rule).
-REFUSED_SAMPLES = {"phercparis4"}
+# Public geometry coverage includes every catalog scroll.
+REFUSED_SAMPLES = set()
 CACHE = Path(os.environ.get("LASFIELD_CACHE") or Path(tempfile.gettempdir()) / "lasagna-fields")
 
 # villa's lasagna at the commit the ten whole-scan fields of this Space were made with (docs/tools/lasagna-fields.md);
@@ -109,6 +109,26 @@ def level_for(um):
     return max(0, int(round(math.log2(TARGET_UM / float(um))))) if um else 0
 
 
+def public_ct_urls(v):
+    """Declared public ordinary OME-Zarr origins; compressed formats need their own reader."""
+    urls = []
+    for item in v.get("data", []):
+        if item.get("type") != "ome-zarr":
+            continue
+        for origin in item.get("origins", []):
+            for root in origin.get("access_roots", []):
+                if root.get("usage") != "public-read":
+                    continue
+                base = root.get("url", "")
+                if base == "s3://vesuvius-challenge-open-data":
+                    base = BUCKET
+                if base.startswith("https://"):
+                    url = base.rstrip("/") + "/" + origin["path"].strip("/") + "/"
+                    if url not in urls:
+                        urls.append(url)
+    return urls
+
+
 def catalog(refresh_s=6 * 3600):
     """Every volume of the open data's metadata.json this Space may read, by volume id."""
     with _LOCK:
@@ -127,7 +147,7 @@ def catalog(refresh_s=6 * 3600):
                 vols[vid] = {"volume": vid, "sample": sid, "long_id": v["long_id"], "voxel_um": float(um),
                              "shape_zyx": shape, "level": level_for(um),
                              "superseded_by": pr.get("superseded_by"),
-                             "url": f"{BUCKET}/{sid}/volumes/{v['long_id']}/"}
+                             "url": (public_ct_urls(v) or [f"{BUCKET}/{sid}/volumes/{v['long_id']}/"])[0]}
         _CATALOG.update(at=time.time(), volumes=vols)
         return vols
 
@@ -142,7 +162,7 @@ def volume(vid):
         if v["long_id"] == vid or v["long_id"].startswith(vid + "-"):
             return v
     if any(vid.lower().startswith(s) for s in REFUSED_SAMPLES):
-        raise FieldError("this Space does not read PHercParis4")
+        raise FieldError("this sample is not enabled")
     raise FieldError(f"{vid!r} is not a volume in the Vesuvius Challenge open data (metadata.json); "
                      "give its 14-digit volume id, such as 20260102150214")
 

@@ -264,9 +264,125 @@ html.lbopen{overflow:hidden}
  if(t!=='light'&&t!=='dark'){try{t=new URLSearchParams(parent.location.search).get('__theme')}catch(e){t=null}}
  if(t==='light'||t==='dark')document.documentElement.dataset.theme=t;})();
 </script>
+<style>
+/* The human view uses the same catalog and leaves the existing guide hooks intact. */
+[hidden]{display:none!important}
+.human{max-width:1120px;margin:auto;padding:30px 28px 12px}
+.human-intro{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;margin-bottom:28px}
+.human-kicker{font-size:12px;font-weight:650;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:10px}
+.human-intro h2{font-size:clamp(28px,3.5vw,40px);margin-bottom:10px}
+.human-intro p:not(.human-kicker){color:var(--ink2);margin:0}
+.human button,.human select,.human input,.human a.human-primary{min-height:44px;font:inherit;border:1px solid var(--line);border-radius:9px;background:var(--card);color:var(--ink);padding:9px 12px}
+.human button{cursor:pointer}.human button:disabled{opacity:.5;cursor:default}
+.human :focus-visible,.human-fold summary:focus-visible{outline:3px solid #5081ae;outline-offset:3px}
+.human .human-quiet{font-size:13px;white-space:nowrap;background:transparent}
+.human-browser{display:grid;grid-template-columns:minmax(240px,300px) minmax(0,1fr);gap:32px;align-items:start}
+.human-choices{min-width:0}.human label{display:block;font-size:14px;font-weight:650;margin:0 0 7px}
+.human select,.human input{width:100%;margin:0 0 16px;max-width:100%;text-overflow:ellipsis}
+.human-help{font-size:13px;color:var(--ink2);line-height:1.5;margin:-8px 0 20px}
+.human-status{padding:15px 0;border-top:1px solid var(--line);margin-top:4px}
+#human-availability{display:block;font-size:14px;font-weight:650;color:var(--ink)}
+#human-completeness{font-size:12px;color:var(--ink2);line-height:1.5;margin:5px 0 0}
+.human-actions{display:grid;gap:10px;margin:8px 0 18px}
+.human .human-primary{background:var(--accent);color:var(--card);text-align:center;font-weight:650;border-color:transparent;text-decoration:none}
+:root[data-theme="dark"] .human .human-primary{color:#141210}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]) .human .human-primary{color:#141210}}
+.human-normals{padding:16px;border:1px solid var(--line);border-radius:10px;background:var(--card);margin:12px 0;min-width:0}
+.human-normals h3{font-size:18px;margin-bottom:12px}.human-normals p{font-size:13px;line-height:1.6;margin:12px 0}
+.human-channel{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:6px;margin:12px 0}
+.human-channel label{margin:0;font-size:13px}.human .human-channel button{font-size:12px;padding:5px 9px;min-height:36px;width:auto}
+.human .human-channel input{grid-column:1 / -1;min-width:0;width:100%;font:12px/1.5 ui-monospace,monospace;margin:0;min-height:36px;padding:7px 9px;text-overflow:clip}
+.human-normals>button{width:100%;font-size:13px}
+.human-normal-links{display:flex;flex-wrap:wrap;gap:8px 18px;margin:14px 0;font-size:13px}
+#human-using{border-top:1px solid var(--line);font-size:13px}#human-using summary{cursor:pointer;padding:12px 0;min-height:44px}
+.human-normals .human-smallprint{font-size:11px;line-height:1.5;color:var(--ink2);margin:4px 0 0}
+.human-make{font-size:14px;display:inline-block;padding:4px 0}
+.human-preview{margin:0;border:1px solid var(--line);border-radius:14px;background:var(--card);overflow:hidden;min-width:0}
+.human-preview-head{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:15px 18px;border-bottom:1px solid var(--line)}
+.human-preview-head h3{font:650 15px/1.4 Inter,system-ui,sans-serif;margin:0}
+.human-preview-head>div{display:flex;gap:4px}.human-preview-head button{font-size:13px;padding:7px 10px;min-height:40px;border-color:transparent}
+.human-preview-head button[aria-pressed="true"]{background:var(--bg2);border-color:var(--line)}
+.human-image{min-height:300px;display:flex;align-items:center;justify-content:center;background:var(--bg2);padding:16px}
+.human-image img{display:block;width:100%;max-height:420px;object-fit:contain}
+.human-image p{max-width:28em;text-align:center;color:var(--ink2);font-size:14px;padding:24px;margin:0}
+.human-preview figcaption{padding:14px 18px;color:var(--ink2);font-size:12px;line-height:1.6}
+.human-details,.human-fold{border-top:1px solid var(--line);margin:24px auto 0;max-width:1064px}
+.human-details summary,.human-fold>summary{cursor:pointer;padding:16px 0;font-size:14px;font-weight:650;color:var(--ink2);min-height:48px}
+.human-details dl{display:grid;grid-template-columns:140px minmax(0,1fr);gap:8px 20px;font-size:13px;margin:8px 0 16px}
+.human-details dt{color:var(--ink2)}.human-details dd{margin:0;overflow-wrap:anywhere}
+.human-details p,.human-details>a{font-size:13px;overflow-wrap:anywhere}.human-explainer{font-size:13px;color:var(--ink2);margin:10px 0 16px}
+.human-fold{margin-top:0}.human-fold section{padding:18px 0 32px}.human-fold .wrap{padding:0}
+.human-fold[open]>summary{color:var(--ink)}.human-fold:last-of-type{margin-bottom:24px}
+footer .wrap{max-width:1120px}#top[hidden]{display:none!important}
+.human-no-preview{display:flex;align-items:center;justify-content:center;min-height:140px;width:100%;color:var(--ink2);font-size:13px;background:var(--bg2)}
+@media(max-width:700px){
+ .human{padding:12px 8px 4px}.human-intro{gap:12px;margin-bottom:18px}.human-intro h2{font-size:27px}
+ .human-intro p:not(.human-kicker){font-size:14px}.human .human-quiet{font-size:12px;padding:7px}
+ .human-browser{display:flex;flex-direction:column;gap:12px}.human-choices{display:contents}
+ .human-inputs{order:0;width:100%}.human-preview{order:1;width:100%}
+ .human-status,.human-actions,#human-copy-status,.human-make,.human-normals{order:2;width:100%;margin:0}
+ .human-actions{margin-bottom:8px}.human-image{min-height:180px;padding:8px}
+ .human-image img{max-height:250px}.human select,.human input{margin-bottom:10px}.human-help{margin:0 0 10px}
+ .human-inputs>.human-help:not(#human-link-note){font-size:12px;margin-bottom:4px}
+ .human-preview-head{padding:12px;flex-wrap:wrap}.human-preview-head>div{margin-left:auto}
+ .human-fold{margin-left:8px;margin-right:8px}.human-details dl{grid-template-columns:1fr;gap:3px}.human-details dd{margin-bottom:10px}
+ .human-intro{position:relative;padding-right:76px}.human .human-quiet{position:absolute;right:0;top:0;max-width:70px;white-space:normal}
+}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto!important}*{animation:none!important;transition:none!important}}
+
+</style>
 </head>
 <body>
-<header class="hero" id="top">
+<main class="human" id="human-browser">
+  <div class="human-intro">
+    <div><p class="human-kicker">Published fields</p><h2>Explore scroll layers</h2>
+      <p>Choose a scroll, preview a field, and open its source.</p></div>
+    <button type="button" id="human-theme" class="human-quiet">Light / dark</button>
+  </div>
+  <div class="human-browser">
+    <div class="human-choices">
+      <div class="human-inputs">
+      <label for="human-search">Find a scroll</label><input id="human-search" type="search" placeholder="1447, PHerc1447, 175..." autocomplete="off">
+      <p id="human-link-note" class="human-help" role="status" hidden></p>
+      <label for="human-scroll">Scroll</label><select id="human-scroll"></select>
+      <label for="human-volume">Scan acquisition</label><select id="human-volume"></select>
+      <p class="human-help">A scroll can have several scans. Pick the acquisition you need.</p>
+      <div id="human-field-choice" hidden><label for="human-field">Field</label><select id="human-field"></select></div>
+      </div>
+      <div class="human-status" aria-live="polite"><span id="human-availability"></span></div>
+      <div class="human-actions"><button id="human-normals-toggle" class="human-primary" type="button" aria-controls="human-normals-panel" aria-expanded="false">Get normals</button>
+        <button id="human-share" type="button">Copy link to this field</button></div>
+      <div id="human-normals-panel" class="human-normals" hidden>
+        <h3>Surface normals</h3><p id="human-normals-description"></p>
+        <p class="human-help">Use these chunked Zarr array URLs in a compatible reader.</p>
+        <div class="human-channel"><label for="human-nx">nx array</label><button id="human-copy-nx" type="button">Copy nx</button>
+          <input id="human-nx" type="text" readonly spellcheck="false" aria-label="Exact nx Zarr array URL"></div>
+        <div class="human-channel"><label for="human-ny">ny array</label><button id="human-copy-ny" type="button">Copy ny</button>
+          <input id="human-ny" type="text" readonly spellcheck="false" aria-label="Exact ny Zarr array URL"></div>
+        <button id="human-copy" type="button">Copy both with scan details</button>
+        <div class="human-normal-links"><a id="human-source" target="_blank" rel="noopener">Open published source</a>
+          <a id="human-normals-manifest" target="_blank" rel="noopener">Manifest</a></div>
+        <details id="human-using"><summary>Using these files</summary><p id="human-coordinates" class="human-help"></p></details>
+        <p id="human-completeness" class="human-smallprint">Whole-volume completeness is not verified here.</p>
+      </div>
+      <p id="human-copy-status" class="human-help" role="status"></p>
+      <a class="human-make" href="?tab=make">Need a new field? Make a small box</a>
+    </div>
+    <figure class="human-preview">
+      <div class="human-preview-head"><h3>Field preview</h3><div role="group" aria-label="Preview direction">
+        <button type="button" id="human-xy" aria-pressed="true">Top view</button>
+        <button type="button" id="human-xz" aria-pressed="false">Side view</button></div></div>
+      <div class="human-image"><img id="human-image" alt="" hidden><p id="human-empty">Choose a scroll to see its preview.</p></div>
+      <figcaption id="human-caption">The layer signal and surface directions are model output, not a reading.</figcaption>
+    </figure>
+  </div>
+  <details class="human-details" id="human-provenance"><summary>Field details and provenance</summary>
+    <dl id="human-facts"></dl><p id="human-note"></p><a id="human-manifest" target="_blank" rel="noopener">Open field manifest</a>
+  </details>
+  <p class="human-explainer">A field describes the shape of papyrus layers. It helps surface-fitting tools follow them.</p>
+</main>
+
+<header class="hero" id="top" hidden>
   <svg class="fields" id="fields" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMax slice" aria-hidden="true"></svg>
   <button class="tbtn" id="theme" type="button" aria-label="Switch light or dark">Theme</button>
   <div class="wrap">
@@ -283,6 +399,7 @@ html.lbopen{overflow:hidden}
   </div>
 </header>
 
+<details class="human-fold" id="human-all"><summary>All fields, filters and tables</summary>
 <section id="all"><div class="wrap">
   <h2>Every field, by scroll</h2>
   <p class="sub">One card per scroll. <span class="mp villa">villa predict3d</span> is the villa lasagna model itself, the reference. <span class="mp lgt">Lasagnetta 0.1.1</span> copies it and runs about 5 times faster: use its fields as a preview, and villa's where exact values matter.</p>
@@ -306,6 +423,8 @@ html.lbopen{overflow:hidden}
   <div id="pend" hidden></div>
 </div></section>
 
+</details>
+<details class="human-fold" id="human-use"><summary>Download and developer recipes</summary>
 <section id="use"><div class="wrap">
   <h2>Stream, download and load</h2>
   <p class="sub">Every field made here is also in the public bucket <a href="https://huggingface.co/buckets/SharpMeow/lasagna-fields">SharpMeow/lasagna-fields</a>, so any tool that reads zarr over HTTPS opens it with no download and no account. Pick one of the first ten fields made here, with the villa lasagna model, to see its field, its numbers and the commands to get it; for any other field, <b>Copy URL</b> in the list gives its folder.</p>
@@ -402,6 +521,8 @@ html.lbopen{overflow:hidden}
   </div>
 </div></section>
 
+</details>
+<details class="human-fold" id="human-about"><summary>About these fields and credits</summary>
 <section id="about"><div class="wrap"><div class="about">
   <h2>About these fields</h2>
   <p class="sub">A lasagna field is the input that the lasagna surface fit in villa reads. These are public so that nobody has to spend a GPU day before trying an idea on these scrolls: use them, compare against them, and tell us if you find a problem.</p>
@@ -432,6 +553,7 @@ and with Lasagnetta 0.1.1 (SharpMeow/lasagnetta), on Vesuvius Challenge open dat
   </details>
 </div></div></section>
 
+</details>
 <footer><div class="wrap">
   <span>Lasagna Fields, by Chase Hendrick &middot; <a href="https://huggingface.co/SharpMeow">huggingface.co/SharpMeow</a> &middot; <a href="https://github.com/ChaseHendrick">github.com/ChaseHendrick</a></span>
   <span>Also: <a href="https://huggingface.co/datasets/SharpMeow/vesuvius-center-lines">center lines</a> &middot; <a href="https://huggingface.co/spaces/SharpMeow/umbilici?mode=lasagna&scan=PHerc0175A&z=6400">PHerc0175A in 3D</a></span>
@@ -445,11 +567,13 @@ and with Lasagnetta 0.1.1 (SharpMeow/lasagnetta), on Vesuvius Challenge open dat
 
 <script id="data" type="application/json">[{"id":"PHerc0175A","repo":"SharpMeow/pherc0175a-lasagna","volume":"20250521115057-8.640um-1.2m-116keV-masked.zarr","um":8.64,"shape":[12748,9363,9363],"bytes":48177793405,"fix":256972800,"seam":1.26,"pz":6372,"center":true,"parts":[["000",[[1024,2048],[0,4608],[0,9363]],569692160],["001",[[1024,2048],[4608,9363],[0,4608]],496906240],["002",[[1024,2048],[4608,9363],[4608,9363]],1085020160],["003",[[2048,3072],[0,4608],[0,9363]],1038991360],["004",[[2048,3072],[4608,7168],[0,4608]],1268101120],["005",[[2048,3072],[4608,7168],[4608,9363]],1239439360],["006",[[2048,3072],[7168,9363],[0,4608]],309596160],["007",[[2048,3072],[7168,9363],[4608,9363]],333393920],["008",[[3072,4096],[0,4608],[0,9363]],1165516800],["009",[[3072,4096],[4608,7168],[0,2048]],198952960],["010",[[3072,4096],[4608,7168],[2048,4608]],1121945600],["011",[[3072,4096],[4608,7168],[4608,9363]],1206630400],["012",[[3072,4096],[7168,9363],[0,4608]],477286400],["013",[[3072,4096],[7168,9363],[4608,9363]],298577920],["014",[[4096,5120],[0,4608],[0,9363]],1303111680],["015",[[4096,5120],[4608,7168],[0,2048]],213565440],["016",[[4096,5120],[4608,7168],[2048,4608]],1113907200],["017",[[4096,5120],[4608,7168],[4608,9363]],1252628480],["018",[[4096,5120],[7168,9363],[0,4608]],409507840],["019",[[4096,5120],[7168,9363],[4608,9363]],269250560],["020",[[5120,6144],[0,4608],[0,4608]],1032652800],["021",[[5120,6144],[0,4608],[4608,9363]],387000320],["022",[[5120,6144],[4608,7168],[0,2048]],237475840],["023",[[5120,6144],[4608,7168],[2048,4608]],1103083520],["024",[[5120,6144],[4608,7168],[4608,7168]],1101475840],["025",[[5120,6144],[4608,7168],[7168,9363]],227850240],["026",[[5120,6144],[7168,9363],[0,4608]],326850560],["027",[[5120,6144],[7168,9363],[4608,9363]],253163520],["028",[[6144,7168],[0,4608],[0,4608]],1004503040],["029",[[6144,7168],[0,4608],[4608,9363]],526776320],["030",[[6144,7168],[4608,7168],[0,2048]],200007680],["031",[[6144,7168],[4608,7168],[2048,4608]],1079756800],["032",[[6144,7168],[4608,7168],[4608,7168]],1095782400],["033",[[6144,7168],[4608,7168],[7168,9363]],264478720],["034",[[6144,7168],[7168,9363],[0,4608]],280637440],["035",[[6144,7168],[7168,9363],[4608,9363]],251627520],["036",[[7168,8192],[0,4608],[0,4608]],1008650240],["037",[[7168,8192],[0,4608],[4608,9363]],652462080],["038",[[7168,8192],[4608,7168],[0,2048]],176281600],["039",[[7168,8192],[4608,7168],[2048,4608]],1071370240],["040",[[7168,8192],[4608,7168],[4608,7168]],1079173120],["041",[[7168,8192],[4608,7168],[7168,9363]],290242560],["042",[[7168,8192],[7168,9363],[0,4608]],219996160],["043",[[7168,8192],[7168,9363],[4608,9363]],244940800],["044",[[8192,9216],[0,4608],[0,4608]],1032304640],["045",[[8192,9216],[0,4608],[4608,9363]],867645440],["046",[[8192,9216],[4608,7168],[0,4608]],1188648960],["047",[[8192,9216],[4608,7168],[4608,7168]],1085102080],["048",[[8192,9216],[4608,7168],[7168,9363]],379729920],["049",[[8192,9216],[7168,9363],[0,4608]],170926080],["050",[[8192,9216],[7168,9363],[4608,9363]],239185920],["051",[[9216,10240],[0,4608],[0,4608]],1050480640],["052",[[9216,10240],[0,4608],[4608,9363]],1185935360],["053",[[9216,10240],[4608,7168],[4608,7168]],1115289600],["054",[[9216,10240],[4608,7168],[7168,9363]],585236480],["055",[[9216,10240],[4608,9363],[0,4608]],1247825920],["056",[[9216,10240],[7168,9363],[4608,9363]],255498240],["057",[[10240,11264],[0,4608],[0,4608]],1034823680],["058",[[10240,11264],[0,4608],[4608,9363]],915281920],["059",[[10240,11264],[4608,9363],[0,4608]],1213378560],["060",[[10240,11264],[4608,9363],[4608,9363]],1442519040],["00",[[0,1024],[0,9363],[0,9363]],885186560],["11",[[11264,12288],[0,9363],[0,9363]],1106769920],["12",[[12288,12748],[0,9363],[0,9363]],1427712000]],"run":"PHerc0175A/representations/predictions/lasagna/20250521115057-lasagna-de45f011"},{"id":"PHerc0175B","repo":"SharpMeow/pherc0175b-lasagna","volume":"20250521125822-8.640um-1.2m-116keV-masked.zarr","um":8.64,"shape":[15897,9613,9613],"bytes":82186089634,"fix":10240,"seam":1.345,"pz":7948,"center":true,"parts":[["000",[[0,1024],[0,9613],[0,9613]],1514383360],["001",[[1024,2048],[0,5120],[0,9613]],1407938560],["002",[[1024,2048],[5120,9613],[0,9613]],3160821760],["003",[[2048,3072],[0,5120],[0,5120]],2000721920],["004",[[2048,3072],[0,5120],[5120,9613]],2044180480],["005",[[2048,3072],[5120,9613],[0,5120]],1640591360],["006",[[2048,3072],[5120,9613],[5120,9613]],1497559040],["007",[[3072,4096],[0,5120],[0,5120]],2237388800],["008",[[3072,4096],[0,5120],[5120,9613]],2131998720],["009",[[3072,4096],[5120,9613],[0,9613]],2935080960],["010",[[4096,5120],[0,5120],[0,5120]],2153451520],["011",[[4096,5120],[0,5120],[5120,9613]],1844142080],["012",[[4096,5120],[5120,9613],[0,9613]],2714398720],["013",[[5120,6144],[0,5120],[0,5120]],2108313600],["014",[[5120,6144],[0,5120],[5120,9613]],1906216960],["015",[[5120,6144],[5120,9613],[0,9613]],2691891200],["016",[[6144,7168],[0,5120],[0,5120]],2061670400],["017",[[6144,7168],[0,5120],[5120,9613]],1911951360],["018",[[6144,7168],[5120,9613],[0,9613]],2576302080],["019",[[7168,8192],[0,5120],[0,5120]],1851371520],["020",[[7168,8192],[0,5120],[5120,9613]],1717555200],["021",[[7168,8192],[5120,9613],[0,9613]],2700554240],["022",[[8192,9216],[0,5120],[0,5120]],1822607360],["023",[[8192,9216],[0,5120],[5120,9613]],1616537600],["024",[[8192,9216],[5120,9613],[0,5120]],1389537280],["025",[[8192,9216],[5120,9613],[5120,9613]],1553776640],["026",[[9216,10240],[0,5120],[0,5120]],1848739840],["027",[[9216,10240],[0,5120],[5120,9613]],1431142400],["028",[[9216,10240],[5120,9613],[0,5120]],1497989120],["029",[[9216,10240],[5120,9613],[5120,9613]],1644605440],["030",[[10240,11264],[0,5120],[0,5120]],1843128320],["031",[[10240,11264],[0,5120],[5120,9613]],1212149760],["032",[[10240,11264],[5120,9613],[0,5120]],1812940800],["033",[[10240,11264],[5120,9613],[5120,9613]],1621381120],["034",[[11264,12288],[0,5120],[0,9613]],2792785920],["035",[[11264,12288],[5120,9613],[0,5120]],1752053760],["036",[[11264,12288],[5120,9613],[5120,9613]],1498009600],["037",[[12288,13312],[0,5120],[0,9613]],2421299200],["038",[[12288,13312],[5120,9613],[0,9613]],2411141120],["039",[[13312,14336],[0,9613],[0,9613]],2876979200],["040",[[14336,15360],[0,9613],[0,9613]],816035840],["041",[[15360,15897],[0,9613],[0,9613]],1510348800]],"run":"PHerc0175B/representations/predictions/lasagna/20250521125822-lasagna-de45f011"},{"id":"PHerc0306B","repo":"SharpMeow/pherc0306b-lasagna","volume":"20250521133212-8.640um-1.2m-116keV-masked.zarr","um":8.64,"shape":[15898,8849,8849],"bytes":54562104779,"fix":10240,"seam":1.123,"pz":7948,"center":true,"parts":[["000",[[0,1024],[0,8849],[0,8849]],868341760],["001",[[1024,2048],[0,8849],[0,8849]],1625139200],["002",[[2048,3072],[0,8849],[0,8849]],3220418560],["003",[[3072,4096],[0,4096],[0,8849]],1915596800],["004",[[3072,4096],[4096,8849],[0,8849]],2842306560],["005",[[4096,5120],[0,4096],[0,8849]],2505390080],["006",[[4096,5120],[4096,8849],[0,8849]],2990786560],["007",[[5120,6144],[0,4096],[0,8849]],2537093120],["008",[[5120,6144],[4096,8849],[0,8849]],2867517440],["009",[[6144,7168],[0,4096],[0,8849]],2207866880],["010",[[6144,7168],[4096,8849],[0,8849]],2478387200],["011",[[7168,8192],[0,4096],[0,8849]],1837332480],["012",[[7168,8192],[4096,8849],[0,8849]],2307379200],["013",[[8192,9216],[0,4096],[0,8849]],1822986240],["014",[[8192,9216],[4096,8849],[0,8849]],2176440320],["015",[[9216,10240],[0,4096],[0,8849]],1844285440],["016",[[9216,10240],[4096,8849],[0,8849]],2145331200],["017",[[10240,11264],[0,4096],[0,8849]],1904312320],["018",[[10240,11264],[4096,8849],[0,8849]],2072791040],["019",[[11264,12288],[0,4096],[0,8849]],1891225600],["020",[[11264,12288],[4096,8849],[0,8849]],1812705280],["021",[[12288,13312],[0,4096],[0,8849]],2163097600],["022",[[12288,13312],[4096,8849],[0,8849]],1357107200],["023",[[13312,14336],[0,8849],[0,8849]],2441410560],["024",[[14336,15360],[0,8849],[0,8849]],1459896320],["025",[[15360,15898],[0,8849],[0,8849]],1263534080]],"run":"PHerc0306B/representations/predictions/lasagna/20250521133212-lasagna-de45f011"},{"id":"PHerc0483A","repo":"SharpMeow/pherc0483a-lasagna","volume":"20250521140913-8.640um-1.2m-116keV-masked.zarr","um":8.64,"shape":[15898,8849,8849],"bytes":47412438501,"fix":10240,"seam":1.162,"pz":7948,"center":true,"parts":[["000",[[0,1024],[0,8849],[0,8849]],953948160],["001",[[1024,2048],[0,8849],[0,8849]],2872115200],["002",[[2048,3072],[0,4096],[0,8849]],846182400],["003",[[2048,3072],[4096,8849],[0,8849]],2758737920],["004",[[3072,4096],[0,4096],[0,8849]],1158533120],["005",[[3072,4096],[4096,8849],[0,8849]],2182359040],["006",[[4096,5120],[0,4096],[0,8849]],1438115840],["007",[[4096,5120],[4096,8849],[0,8849]],2021847040],["008",[[5120,6144],[0,4096],[0,8849]],1460674560],["009",[[5120,6144],[4096,8849],[0,8849]],1818675200],["010",[[6144,7168],[0,8849],[0,8849]],2900961280],["011",[[7168,8192],[0,8849],[0,8849]],2810716160],["012",[[8192,9216],[0,8849],[0,8849]],3019837440],["013",[[9216,10240],[0,4096],[0,8849]],1343682560],["014",[[9216,10240],[4096,8849],[0,8849]],2060544000],["015",[[10240,11264],[0,4096],[0,8849]],1397544960],["016",[[10240,11264],[4096,8849],[0,8849]],2733813760],["017",[[11264,12288],[0,4096],[0,8849]],1278771200],["018",[[11264,12288],[4096,8849],[0,4096]],1464422400],["019",[[11264,12288],[4096,8849],[4096,8849]],1550018560],["020",[[12288,13312],[0,4096],[0,8849]],1111787520],["021",[[12288,13312],[4096,8849],[0,4096]],1561292800],["022",[[12288,13312],[4096,8849],[4096,8849]],1478133760],["023",[[13312,14336],[0,8849],[0,8849]],2452049920],["024",[[14336,15360],[0,8849],[0,8849]],1035386880],["025",[[15360,15898],[0,8849],[0,8849]],1698887680]],"run":"PHerc0483A/representations/predictions/lasagna/20250521140913-lasagna-de45f011"},{"id":"PHerc0483B","repo":"SharpMeow/pherc0483b-lasagna","volume":"20251124083638-8.640um-1.2m-116keV-masked.zarr","um":8.64,"shape":[11880,8343,8343],"bytes":41488155053,"fix":10240,"seam":1.106,"pz":5940,"center":true,"parts":[["000",[[0,1024],[0,8343],[0,8343]],176138240],["001",[[1024,2048],[0,8343],[0,8343]],1620623360],["002",[[2048,3072],[0,4096],[0,8343]],1205012480],["003",[[2048,3072],[4096,8343],[0,8343]],2147061760],["004",[[3072,4096],[0,4096],[0,8343]],1296189440],["005",[[3072,4096],[4096,8343],[0,8343]],2460006400],["006",[[4096,5120],[0,4096],[0,8343]],1599467520],["007",[[4096,5120],[4096,8343],[0,8343]],2541731840],["008",[[5120,6144],[0,4096],[0,8343]],1956659200],["009",[[5120,6144],[4096,8343],[0,8343]],2760755200],["010",[[6144,7168],[0,4096],[0,8343]],2275471360],["011",[[6144,7168],[4096,8343],[0,8343]],2689259520],["012",[[7168,8192],[0,4096],[0,8343]],2534461440],["013",[[7168,8192],[4096,8343],[0,8343]],2701701120],["014",[[8192,9216],[0,4096],[0,8343]],2829107200],["015",[[8192,9216],[4096,8343],[0,8343]],2989660160],["016",[[9216,10240],[0,4096],[0,8343]],2140211200],["017",[[9216,10240],[4096,8343],[0,8343]],2483568640],["018",[[10240,11264],[0,8343],[0,8343]],2567260160],["019",[[11264,11880],[0,8343],[0,8343]],510801920]],"run":"PHerc0483B/representations/predictions/lasagna/20251124083638-lasagna-de45f011"},{"id":"PHerc0490A","repo":"SharpMeow/pherc0490a-lasagna","volume":"20250521151210-8.640um-1.2m-116keV-masked.zarr","um":8.64,"shape":[11698,9101,9101],"bytes":49710517889,"fix":10240,"seam":1.184,"pz":5848,"center":true,"parts":[["000",[[0,1024],[0,9101],[0,9101]],1930536960],["001",[[1024,2048],[0,9101],[0,9101]],1422868480],["002",[[2048,3072],[0,4096],[0,9101]],2111375360],["003",[[2048,3072],[4096,9101],[0,9101]],2413690880],["004",[[3072,4096],[0,4096],[0,9101]],2379786240],["005",[[3072,4096],[4096,9101],[0,4096]],1359073280],["006",[[3072,4096],[4096,9101],[4096,9101]],1717237760],["007",[[4096,5120],[0,4096],[0,9101]],2506946560],["008",[[4096,5120],[4096,9101],[0,9101]],2644244480],["009",[[5120,6144],[0,4096],[0,9101]],2550620160],["010",[[5120,6144],[4096,9101],[0,9101]],2524825600],["011",[[6144,7168],[0,4096],[0,9101]],2422814720],["012",[[6144,7168],[4096,9101],[0,4096]],1422325760],["013",[[6144,7168],[4096,9101],[4096,9101]],1651210240],["014",[[7168,8192],[0,4096],[0,9101]],2114242560],["015",[[7168,8192],[4096,9101],[0,4096]],1600624640],["016",[[7168,8192],[4096,9101],[4096,9101]],2081792000],["017",[[8192,9216],[0,4096],[0,9101]],1961154560],["018",[[8192,9216],[4096,9101],[0,4096]],1693204480],["019",[[8192,9216],[4096,9101],[4096,9101]],2359152640],["020",[[9216,10240],[0,4096],[0,9101]],1631877120],["021",[[9216,10240],[4096,9101],[0,4096]],1850408960],["022",[[9216,10240],[4096,9101],[4096,9101]],2133708800],["023",[[10240,11264],[0,9101],[0,9101]],1912156160],["024",[[11264,11698],[0,9101],[0,9101]],1311467520]],"run":"PHerc0490A/representations/predictions/lasagna/20250521151210-lasagna-de45f011"},{"id":"PHerc0490B","repo":"SharpMeow/pherc0490b-lasagna","volume":"20250521151215-8.640um-1.2m-116keV-masked.zarr","um":8.64,"shape":[10648,8343,8343],"bytes":32900440486,"fix":10240,"seam":1.123,"pz":5324,"center":true,"parts":[["000",[[0,1024],[0,8343],[0,8343]],2058895360],["001",[[1024,2048],[0,8343],[0,8343]],822784000],["002",[[2048,3072],[0,8343],[0,8343]],2714982400],["003",[[3072,4096],[0,4096],[0,8343]],1944125440],["004",[[3072,4096],[4096,8343],[0,8343]],2514268160],["005",[[4096,5120],[0,4096],[0,8343]],2359951360],["006",[[4096,5120],[4096,8343],[0,8343]],2827724800],["007",[[5120,6144],[0,4096],[0,8343]],2485729280],["008",[[5120,6144],[4096,8343],[0,8343]],2586828800],["009",[[6144,7168],[0,4096],[0,8343]],2359173120],["010",[[6144,7168],[4096,8343],[0,8343]],2469836800],["011",[[7168,8192],[0,4096],[0,8343]],1728665600],["012",[[7168,8192],[4096,8343],[0,8343]],2325022720],["013",[[8192,9216],[0,8343],[0,8343]],2124062720],["014",[[9216,10240],[0,8343],[0,8343]],537180160],["015",[[10240,10648],[0,8343],[0,8343]],1038735360]],"run":"PHerc0490B/representations/predictions/lasagna/20250521151215-lasagna-de45f011"},{"id":"PHerc0841","repo":"SharpMeow/pherc0841-lasagna","volume":"20250821151531-9.366um-1.2m-113keV-masked.zarr","um":9.366,"shape":[19400,7703,7703],"bytes":45944867652,"fix":10240,"seam":1.622,"pz":9700,"center":false,"parts":[["000",[[0,1024],[0,7703],[0,7703]],1157713920],["001",[[1024,2048],[0,7703],[0,7703]],1659146240],["002",[[2048,3072],[0,4096],[0,7703]],2530775040],["003",[[2048,3072],[4096,7703],[0,7703]],1158072320],["004",[[3072,4096],[0,4096],[0,7703]],2732318720],["005",[[3072,4096],[4096,7703],[0,7703]],1305569280],["006",[[4096,5120],[0,4096],[0,7703]],2477383680],["007",[[4096,5120],[4096,7703],[0,7703]],1224796160],["008",[[5120,6144],[0,7703],[0,7703]],3200819200],["009",[[6144,7168],[0,7703],[0,7703]],2484510720],["010",[[7168,8192],[0,7703],[0,7703]],2356346880],["011",[[8192,9216],[0,7703],[0,7703]],2220840960],["012",[[9216,10240],[0,7703],[0,7703]],2199930880],["013",[[10240,11264],[0,7703],[0,7703]],2256486400],["014",[[11264,12288],[0,7703],[0,7703]],2268364800],["015",[[12288,13312],[0,7703],[0,7703]],2323046400],["016",[[13312,14336],[0,7703],[0,7703]],2426265600],["017",[[14336,15360],[0,7703],[0,7703]],2492456960],["018",[[15360,16384],[0,7703],[0,7703]],2691143680],["019",[[16384,17408],[0,7703],[0,7703]],2651279360],["020",[[17408,18432],[0,7703],[0,7703]],1724067840],["021",[[18432,19400],[0,7703],[0,7703]],400711680]],"run":"PHerc0841/representations/predictions/lasagna/20250821151531-lasagna-de45f011"},{"id":"PHerc0846A","repo":"SharpMeow/pherc0846a-lasagna","volume":"20250728152254-9.362um-1.2m-113keV-masked.zarr","um":9.362,"shape":[14019,7726,7726],"bytes":32441070000,"fix":10240,"seam":1.108,"pz":7008,"center":true,"parts":[["000",[[0,1024],[0,4096],[0,7726]],2497198080],["001",[[0,1024],[4096,7726],[0,7726]],2297927680],["002",[[1024,2048],[0,7726],[0,7726]],658155520],["003",[[2048,3072],[0,7726],[0,7726]],2689873920],["004",[[3072,4096],[0,4096],[0,7726]],2094336000],["005",[[3072,4096],[4096,7726],[0,7726]],1497937920],["006",[[4096,5120],[0,4096],[0,7726]],1887641600],["007",[[4096,5120],[4096,7726],[0,7726]],1414348800],["008",[[5120,6144],[0,7726],[0,7726]],2803722240],["009",[[6144,7168],[0,7726],[0,7726]],2204078080],["010",[[7168,8192],[0,7726],[0,7726]],1953495040],["011",[[8192,9216],[0,7726],[0,7726]],1988648960],["012",[[9216,10240],[0,7726],[0,7726]],2122731520],["013",[[10240,11264],[0,7726],[0,7726]],2195148800],["014",[[11264,12288],[0,7726],[0,7726]],1854883840],["015",[[12288,13312],[0,7726],[0,7726]],1597736960],["016",[[13312,14019],[0,7726],[0,7726]],680857600]],"run":"PHerc0846A/representations/predictions/lasagna/20250728152254-lasagna-de45f011"},{"id":"PHerc0846B","repo":"SharpMeow/pherc0846b-lasagna","volume":"20250804142305-9.362um-1.2m-113keV-masked.zarr","um":9.362,"shape":[13926,7859,7859],"bytes":35033335856,"fix":10240,"seam":1.36,"pz":6964,"center":true,"parts":[["000",[[0,1024],[0,7859],[0,7859]],188262400],["001",[[1024,2048],[0,7859],[0,7859]],1207982080],["002",[[2048,3072],[0,7859],[0,7859]],1744916480],["003",[[3072,4096],[0,7859],[0,7859]],1853480960],["004",[[4096,5120],[0,7859],[0,7859]],1885081600],["005",[[5120,6144],[0,7859],[0,7859]],1954447360],["006",[[6144,7168],[0,7859],[0,7859]],2012354560],["007",[[7168,8192],[0,7859],[0,7859]],2397071360],["008",[[8192,9216],[0,4096],[0,7859]],1862440960],["009",[[8192,9216],[4096,7859],[0,7859]],1379829760],["010",[[9216,10240],[0,4096],[0,7859]],2212546560],["011",[[9216,10240],[4096,7859],[0,7859]],1635399680],["012",[[10240,11264],[0,4096],[0,7859]],2502000640],["013",[[10240,11264],[4096,7859],[0,7859]],2152806400],["014",[[11264,12288],[0,4096],[0,7859]],2383554560],["015",[[11264,12288],[4096,7859],[0,7859]],2498549760],["016",[[12288,13312],[0,4096],[0,7859]],2026168320],["017",[[12288,13312],[4096,7859],[0,7859]],2171258880],["018",[[13312,13926],[0,7859],[0,7859]],962652160]],"run":"PHerc0846B/representations/predictions/lasagna/20250804142305-lasagna-de45f011"}]</script>
 <script id="fieldlist" type="application/json">null</script>
+<script id="coverage-list" type="application/json">null</script>
 <script>
 const D=JSON.parse(document.getElementById('data').textContent);
 const $=id=>document.getElementById(id);
 const fmt=n=>n.toLocaleString('en-US');
-const gb=b=>(b/1e9).toFixed(1)+' GB';
+const gb=b=>Number.isFinite(b)&&b>=0?(b/1e9).toFixed(1)+' GB':'Size not listed';
+function sizeLabel(rows){const known=rows.filter(f=>Number.isFinite(f.bytes)&&f.bytes>=0);if(!known.length)return 'Size not listed';const total=gb(known.reduce((a,f)=>a+f.bytes,0));return known.length===rows.length?total:'Known size '+total+'; remaining size not listed'}
 const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;');
 let cur=0,view='xy',ut='connect';
 
@@ -511,7 +635,7 @@ const openSc=new Set();
 function links(f){const od=f.source==='open-data';
  return '<a href="'+attr(f.browse||f.url)+'" target="_blank" rel="noopener" title="'+(od?'its run folder in the Vesuvius Challenge open data':'its Hugging Face dataset, to download')+'">Dataset</a>'+
   '<a href="'+attr(f.manifest)+'" target="_blank" rel="noopener" title="the lasagna.json the lasagna fit reads">Manifest</a>'+
-  '<button type="button" data-pv="'+FL.indexOf(f)+'" title="cos and normals, through the middle and along the scroll">Preview</button>'+
+  '<button type="button" data-pv="'+FL.indexOf(f)+'"'+(!f.preview_xy&&!f.preview_xz?' disabled':'')+' title="'+(f.preview_xy||f.preview_xz?'cos and normals, through the middle and along the scroll':'Preview not listed')+'">Preview</button>'+
   '<button type="button" data-url="'+attr(f.stream)+'" title="the run folder, which zarr reads by URL">Copy URL</button>'}
 function fieldRow(f,first,n){
  const where=f.source==='open-data'?'Open data<span class="fnote">villa\'s run</span>':'SharpMeow dataset<span class="fnote">also in the public bucket</span>';
@@ -521,7 +645,7 @@ function fieldRow(f,first,n){
   '<td data-k="Model" class="mdl">'+chip(f.model)+(f.note?'<span class="fnote">'+esc(f.note)+'</span>':'')+'</td>'+
   '<td data-k="Where">'+where+'</td><td data-k="Size" class="num">'+gb(f.bytes)+'</td>'+
   '<td class="get"><div class="flinks">'+links(f)+'</div></td></tr>'}
-function thumbOf(g){const f=g[0];return {src:'assets/thumbs/'+f.scroll+'-'+f.volume+'.webp',alt:f.preview_xy,vol:f.volume}}
+function thumbOf(g){const f=g.find(x=>x.preview_xy||x.preview_xz)||g[0];return {src:f.preview_xy||f.preview_xz?'assets/thumbs/'+f.scroll+'-'+f.volume+'.webp':null,alt:f.preview_xy||f.preview_xz||'',vol:f.volume}}
 const srcOf=f=>f.source==='open-data'?'open data':'SharpMeow';
 /* one field of a card: its voxel size and volume, model and source, the four links, and its note */
 function cardLine(f,size){
@@ -536,11 +660,11 @@ function summary(g){
  const vs=(v.length>2?v[0]+' to '+v[v.length-1]:v.join(' and '))+' µm';
  return '<div class="sum">'+ms+'<span class="dim">'+vs+' &middot; '+uniq(g.map(srcOf)).join(' and ')+'</span></div>'}
 function card(g){const t=thumbOf(g),n=g.length,sc=g[0].scroll;
- const img='<img loading="lazy" src="'+t.src+'" data-alt="'+attr(t.alt)+'" alt="'+attr(sc)+' field preview, cos and normals" onerror="if(this.dataset.alt){this.src=this.dataset.alt;this.dataset.alt=\'\'}"><span class="tag">cos | normals</span>';
+ const img=t.src?'<img loading="lazy" src="'+t.src+'" data-alt="'+attr(t.alt)+'" alt="'+attr(sc)+' field preview, cos and normals" onerror="if(this.dataset.alt){this.src=this.dataset.alt;this.dataset.alt=\'\'}else{this.hidden=true;this.parentElement.textContent=\'Preview unavailable\'}"><span class="tag">cos | normals</span>':'<span class="human-no-preview">Preview not listed</span>';
  const open=openSc.has(sc)||(fq.trim()!=='');
  const foot=n===1?'<div class="foot one"><ul>'+cardLine(g[0],false)+'</ul></div>'
   :'<details class="foot more" data-sc="'+attr(sc)+'"'+(open?' open':'')+'><summary>Show the '+n+' fields and their links</summary><ul>'+g.map(f=>cardLine(f,true)).join('')+'</ul></details>';
- return '<article class="sccard"><div class="thumb">'+img+'</div><div class="body"><div class="hd"><h3>'+esc(sc)+'</h3><span class="cnt">'+n+(n===1?' field':' fields')+' &middot; '+gb(g.reduce((a,f)=>a+f.bytes,0))+'</span></div>'+(n>1?summary(g):'')+'</div>'+foot+'</article>'}
+ return '<article class="sccard"><div class="thumb">'+img+'</div><div class="body"><div class="hd"><h3>'+esc(sc)+'</h3><span class="cnt">'+n+(n===1?' field':' fields')+' &middot; '+sizeLabel(g)+'</span></div>'+(n>1?summary(g):'')+'</div>'+foot+'</article>'}
 function drawFields(){
  const t=$('flist');t.querySelectorAll('tbody').forEach(b=>b.remove());
  $('fcards').hidden=fv!=='cards';$('ftable').hidden=fv!=='table';
@@ -572,11 +696,11 @@ function placeLb(){const L=$('lbox'),v=onScreen();if(!v)return;
  L.querySelector('.lbpanel').style.maxHeight=(v.h-32)+'px'}
 function toastOn(){const T=$('toast'),v=onScreen();if(v){T.style.position='absolute';T.style.bottom='auto';T.style.top=(v.top+v.h-64)+'px'}T.classList.add('on')}
 try{parent.addEventListener('scroll',()=>{if(!$('lbox').hidden)placeLb()},{passive:true})}catch(e){}
-function openPv(f,view){pv=f;const L=$('lbox');
+function openPv(f,view){if(!f.preview_xy&&!f.preview_xz)return;if(!f['preview_'+view])view=f.preview_xy?'xy':'xz';pv=f;const L=$('lbox');
  $('lbimg').src=view==='xz'?f.preview_xz:f.preview_xy;
  $('lbimg').alt=f.scroll+' '+f.volume+' '+view+' preview, cos and normals';
  $('lbtitle').textContent=f.scroll+' · '+um(f.voxel_um)+' · '+f.volume;
- document.querySelectorAll('[data-lv]').forEach(x=>x.setAttribute('aria-pressed',x.dataset.lv===view));
+ document.querySelectorAll('[data-lv]').forEach(x=>{x.setAttribute('aria-pressed',x.dataset.lv===view);x.disabled=!f['preview_'+x.dataset.lv]});
  $('lbslice').hidden=!f.gallery;
  if(L.hidden){L.hidden=false;placeLb();document.documentElement.classList.add('lbopen');$('lbclose').focus({preventScroll:true})}}
 function closePv(){$('lbox').hidden=true;document.documentElement.classList.remove('lbopen');$('lbimg').removeAttribute('src');pv=null}
@@ -595,7 +719,7 @@ drawFields();
 /* stats */
 const totB=D.reduce((a,s)=>a+s.bytes,0),totP=D.reduce((a,s)=>a+s.parts.length,0);
 const ours=FL.filter(f=>f.source==='dataset'),nsc=uniq(FL.map(f=>f.scroll)).length;
-$('stats').innerHTML=(FL.length?[[nsc,'scrolls'],[FL.length-ours.length,'villa fields in the open data'],[ours.length,'fields made here'],[Math.round(ours.reduce((a,f)=>a+f.bytes,0)/1e9)+' GB','to download here']]
+$('stats').innerHTML=(FL.length?[[nsc,'scrolls'],[FL.length-ours.length,'villa fields in the open data'],[ours.length,'fields made here'],[sizeLabel(ours),'listed download size']]
  :[[D.length,'scans'],[Math.round(totB/1e9)+' GB','to download'],[fmt(totP),'GPU parts'],['4','channels each']])
  .map(([b,s])=>'<div class="stat"><b>'+b+'</b><span>'+s+'</span></div>').join('');
 $('nscrolls').textContent=FL.length?nsc:D.length;
@@ -692,6 +816,149 @@ document.addEventListener('click',e=>{const b=e.target.closest('.copy');if(!b)re
 function fallback(t,done){const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy');done()}catch(e){}a.remove()}
 
 pick(0,false);
+</script>
+<script>
+/* Presentation only. Catalog browsing and link copying never call scientific endpoints. */
+(() => {
+  let coverage = {};
+  try { coverage = JSON.parse(document.getElementById('coverage-list').textContent) || {}; } catch (_) {}
+  const samples = coverage.samples || [];
+  const names = [...new Set([...FL.map(f => f.scroll), ...samples.map(s => s.scroll)])].sort();
+  const el = id => document.getElementById('human-' + id);
+  const normalize = value => String(value || '').trim().toUpperCase().replace(/^PHERC[.\s_-]*/, '').replace(/[\s_.-]+/g, '').replace(/^0+(?=\d)/, '');
+  let selected = null, direction = 'xy';
+  const url = value => { try { const u = new URL(value); return u.protocol === 'https:' ? u.href : null; } catch (_) { return null; } };
+  const manifestOf = f => f && url(f.normals_access?.manifest_url || f.manifest);
+  const fieldId = f => manifestOf(f) || '';
+  const rowsFor = () => FL.filter(f => f.scroll === el('scroll').value && f.volume === el('volume').value);
+  function options(node, values, placeholder = null) {
+    const items = placeholder === null ? values : [['',placeholder], ...values];
+    node.replaceChildren(...items.map(([value,label]) => { const o = document.createElement('option'); o.value = value; o.textContent = label; return o; }));
+    node.disabled = !values.length;
+  }
+  function notice(message = '') { el('link-note').textContent = message; el('link-note').hidden = !message; }
+  function link(node, value) { const href = url(value); node.hidden = !href; if (href) node.href = href; else node.removeAttribute('href'); }
+  function normals(f) {
+    const a = f?.normals_access;
+    if (a) return {nx:url(a.channels?.nx?.array_url), ny:url(a.channels?.ny?.array_url)};
+    const arrays = f?.availability?.arrays;
+    return {nx:url(arrays?.nx?.url), ny:url(arrays?.ny?.url)};
+  }
+  function shareURL() {
+    if (!selected || !fieldId(selected)) return null;
+    const u = new URL('https://sharpmeow-lasagna-fields.hf.space/');
+    u.searchParams.set('scroll', selected.scroll); u.searchParams.set('volume', selected.volume);
+    u.searchParams.set('field', fieldId(selected));
+    return u.href;
+  }
+  function normalContext() {
+    const n = normals(selected), manifest = manifestOf(selected);
+    if (!selected || !n.nx || !n.ny || !manifest) return null;
+    return ['Lasagna Fields: surface normals', 'Scroll: ' + selected.scroll, 'Acquisition: ' + selected.volume,
+      'Model: ' + selected.model, 'Two encoded direction channels, nx and ny (chunked Zarr).',
+      'nx: ' + n.nx, 'ny: ' + n.ny, 'Manifest: ' + manifest,
+      selected.normals_access?.coordinate_note || '', 'View: ' + shareURL()].filter(Boolean).join('\n');
+  }
+  async function copy(value, success) {
+    if (!value) return;
+    try { await navigator.clipboard.writeText(value); el('copy-status').textContent = success; }
+    catch (_) { el('copy-status').textContent = 'Clipboard unavailable. Select the links in Surface normals to copy them.'; }
+  }
+  function preview() {
+    const image = el('image'), empty = el('empty');
+    const source = selected && url(selected['preview_' + direction]);
+    for (const view of ['xy','xz']) { el(view).disabled = !(selected && url(selected['preview_' + view])); el(view).setAttribute('aria-pressed', String(view === direction)); }
+    image.hidden = true; image.removeAttribute('src'); empty.hidden = false;
+    empty.textContent = selected ? 'No preview image is listed for this view. You can still use the published normals links.' : 'Choose a listed scroll, acquisition and field to see its preview.';
+    if (source) {
+      image.alt = selected.scroll + ', acquisition ' + selected.volume + ': ' + (direction === 'xy' ? 'top' : 'side') + ' view of the model field';
+      empty.textContent = 'Loading the published preview...';
+      image.onload = () => { image.hidden = false; empty.hidden = true; };
+      image.onerror = () => { image.hidden = true; empty.hidden = false; empty.textContent = 'This preview could not load. Published access links remain available under Get normals.'; };
+      image.src = source;
+    }
+    el('caption').textContent = selected ? 'Grayscale shows the layer pattern; color shows surface direction. ' + (selected.model || 'Published model') + '. Model output, not a reading.' : 'Field availability is specific to the selected scan acquisition.';
+  }
+  function showField() {
+    const rows = rowsFor(), matching = rows.filter(f => fieldId(f) === el('field').value);
+    selected = matching.length === 1 ? matching[0] : null;
+    el('completeness').textContent = selected && selected.availability?.whole_volume_complete === true ? 'Catalog reports whole-volume completeness; see provenance.' : 'Whole-volume completeness is not verified here.';
+    const f = selected || {}, a = f.normals_access || {}, p = f.provenance || {}, n = normals(selected);
+    const source = a.download?.page_url || f.browse || f.url;
+    link(el('source'), source); link(el('manifest'), manifestOf(selected));
+    link(el('normals-manifest'), manifestOf(selected));
+    el('source').textContent = source && source.includes('/tree/') ? 'Open file browser' : a.download?.kind === 'hf_dataset_bundle' ? 'Open field bundle source' : 'Open published source';
+    el('normals-panel').hidden = true; el('normals-toggle').setAttribute('aria-expanded','false');
+    const accessible = Boolean(n.nx && n.ny && manifestOf(selected));
+    el('availability').textContent = accessible ? 'Normals links available' : selected ? 'Normals links not listed' : 'No published field selected';
+    el('normals-toggle').disabled = !accessible; el('copy').disabled = !accessible;
+    el('normals-toggle').textContent = selected && !accessible ? 'Normals links not listed' : 'Get normals';
+    for (const channel of ['nx','ny']) { el(channel).value = n[channel] || ''; el('copy-'+channel).disabled = !n[channel]; }
+    el('using').open = false;
+    el('normals-description').textContent = selected ? selected.model + '. Two encoded surface-direction channels, nx and ny.' : '';
+    el('coordinates').textContent = a.coordinate_note || 'Use the manifest for coordinate scales and decoding.';
+    el('share').disabled = !shareURL(); el('copy-status').textContent = '';
+    const facts = [['Scroll',el('scroll').value],['Acquisition',el('volume').value],['Model',f.model],['Source',f.source],['Made by',f.made_by],['Voxel size',f.voxel_um != null ? f.voxel_um+' µm' : null],['CT input level',f.read_level],['Normal source',f.normal_source],['Checkpoint',p.checkpoint_revision],['Published size',f.bytes != null ? gb(f.bytes) : null],['Availability status',f.availability?.status]];
+    el('facts').replaceChildren(...facts.filter(([,v]) => v !== undefined && v !== null && v !== '').flatMap(([k,v]) => { const dt = document.createElement('dt'), dd = document.createElement('dd'); dt.textContent = k; dd.textContent = String(v); return [dt,dd]; }));
+    el('note').textContent = f.note || '';
+    direction = f.preview_xy ? 'xy' : 'xz'; preview();
+  }
+  function acquisition(requestedField = null) {
+    const rows = rowsFor(), invalid = requestedField !== null && !rows.some(f => fieldId(f) === requestedField);
+    options(el('field'), rows.map(f => [fieldId(f),(f.model || 'Field')+' · '+(f.source || 'published source')]), invalid ? 'Choose a listed field' : null);
+    if (requestedField !== null && !invalid) el('field').value = requestedField;
+    el('field-choice').hidden = rows.length < 2 && !invalid;
+    showField();
+    if (invalid) notice('The field in this link is not listed for this acquisition. Choose a listed field.');
+    else if (el('volume').value && !rows.length) { el('availability').textContent = 'No published field listed'; el('empty').textContent = 'No published field is listed for this acquisition. Choose another acquisition or make a small box.'; }
+  }
+  function scroll(requestedVolume = null, requestedField = null) {
+    const name = el('scroll').value, volumes = new Map();
+    for (const v of (samples.find(s => s.scroll === name)?.volumes || [])) volumes.set(v.volume,v);
+    for (const f of FL.filter(f => f.scroll === name)) if (!volumes.has(f.volume)) volumes.set(f.volume,f);
+    const invalid = requestedVolume !== null && !volumes.has(requestedVolume);
+    options(el('volume'), [...volumes.values()].sort((a,b) => a.volume.localeCompare(b.volume)).map(v => [v.volume,v.volume+(v.voxel_um != null ? ' · '+v.voxel_um+' µm' : '')+(v.superseded_by ? ' (superseded)' : '')]), invalid ? 'Choose a listed acquisition' : null);
+    if (requestedVolume !== null && !invalid) el('volume').value = requestedVolume;
+    acquisition(invalid ? null : requestedField);
+    if (invalid) notice('The acquisition in this link is not listed for this scroll. Choose a listed acquisition.');
+  }
+  function search() {
+    const q = normalize(el('search').value), matches = names.filter(n => normalize(n).includes(q));
+    const exact = matches.filter(n => normalize(n) === q), previous = el('scroll').value;
+    const chosen = exact.length === 1 ? exact[0] : matches.length === 1 ? matches[0] : !q && matches.includes(previous) ? previous : null;
+    options(el('scroll'), matches.map(s => [s,s]), chosen ? null : matches.length ? 'Choose a scroll or variant' : 'No matching scroll');
+    if (chosen) el('scroll').value = chosen;
+    notice(chosen ? '' : matches.length ? 'Choose a specific scroll or variant from the matches.' : 'No scroll matches this search.');
+    scroll();
+  }
+  options(el('scroll'),names.map(s => [s,s]));
+  if (names.includes('PHerc0139')) el('scroll').value = 'PHerc0139';
+  el('search').oninput = search;
+  el('scroll').onchange = () => { notice(); scroll(); };
+  el('volume').onchange = () => { notice(); acquisition(); };
+  el('field').onchange = () => { notice(); showField(); };
+  for (const view of ['xy','xz']) el(view).onclick = () => { direction=view; preview(); };
+  el('theme').onclick = () => document.getElementById('theme').click();
+  el('normals-toggle').onclick = () => { const panel=el('normals-panel'); panel.hidden=!panel.hidden; el('normals-toggle').setAttribute('aria-expanded',String(!panel.hidden)); };
+  el('copy').onclick = () => copy(normalContext(),'Both normals links, manifest and field context copied.');
+  for (const channel of ['nx','ny']) el('copy-'+channel).onclick = () => copy(normals(selected)[channel],channel+' array URL copied.');
+  el('share').onclick = () => copy(shareURL(),'Link to this exact field copied.');
+  function reveal(target) { for (let n=target;n;n=n.parentElement) if (n.tagName==='DETAILS') n.open=true; }
+  document.addEventListener('click',e => { const a=e.target.closest('a[href^="#"]'); if(a)reveal(document.getElementById(a.getAttribute('href').slice(1))); if(e.target.closest('#lbslice'))reveal(document.getElementById('use')); },true);
+  window.addEventListener('hashchange',() => reveal(document.getElementById(location.hash.slice(1))));
+  reveal(document.getElementById(location.hash.slice(1)));
+  let params;
+  try { params=new URLSearchParams(window.parent.location.search); } catch (_) { params=new URLSearchParams(); }
+  if (params.has('scroll')) {
+    const requested=params.get('scroll'), exact=names.filter(n => normalize(n)===normalize(requested));
+    if (exact.length===1) { el('scroll').value=exact[0]; scroll(params.get('volume'),params.get('field')); }
+    else { el('search').value=requested; search(); if(el('scroll').value) { options(el('scroll'),names.map(s=>[s,s]),'Choose a listed scroll'); scroll(); } notice('This link needs a specific listed scroll or variant. Choose one below.'); }
+  } else if (params.has('volume') || params.has('field')) {
+    options(el('scroll'),names.map(s=>[s,s]),'Choose a listed scroll'); scroll(); notice('This link is missing its scroll. Choose a scroll and acquisition.');
+  } else if (names.length) scroll();
+  else { scroll(); notice('No published field metadata loaded.'); }
+})();
+
 </script>
 </body>
 </html>
