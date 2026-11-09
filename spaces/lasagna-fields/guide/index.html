@@ -306,6 +306,12 @@ html.lbopen{overflow:hidden}
 .human-preview-head h3{font:650 15px/1.4 Inter,system-ui,sans-serif;margin:0}
 .human-preview-head>div{display:flex;gap:4px}.human-preview-head button{font-size:13px;padding:7px 10px;min-height:40px;border-color:transparent}
 .human-preview-head button[aria-pressed="true"]{background:var(--bg2);border-color:var(--line)}
+
+.preview-display{display:flex;gap:4px;align-items:center;justify-content:flex-end;padding:6px 12px;background:var(--card);border-bottom:1px solid var(--line)}
+.preview-display[hidden]{display:none}.preview-display button{font-size:12px;min-height:36px;padding:6px 10px;border-color:transparent}
+.preview-display button[aria-pressed="true"]{background:var(--bg2);border-color:var(--line)}
+.lbpanel .preview-display{flex:0 0 auto}
+
 .human-image{min-height:300px;display:flex;align-items:center;justify-content:center;background:var(--bg2);padding:16px}
 .human-image img{display:block;width:100%;max-height:420px;object-fit:contain}
 .human-image p{max-width:28em;text-align:center;color:var(--ink2);font-size:14px;padding:24px;margin:0}
@@ -378,6 +384,7 @@ footer .wrap{max-width:1120px}#top[hidden]{display:none!important}
       <div class="human-preview-head"><h3>Field preview</h3><div role="group" aria-label="Preview direction">
         <button type="button" id="human-xy" aria-pressed="true">Top view</button>
         <button type="button" id="human-xz" aria-pressed="false">Side view</button></div></div>
+      <div id="human-display" class="preview-display" role="group" aria-label="Preview display" title="Preview smoothing does not change the downloadable normals." hidden><button type="button" id="human-original" data-preview-mode="original" aria-pressed="false">Original</button><button type="button" id="human-smoothed" data-preview-mode="smoothed" aria-pressed="true">Smoothed</button></div>
       <div class="human-image"><img id="human-image" alt="" hidden><p id="human-empty">Choose a scroll to see its preview.</p></div>
       <figcaption id="human-caption">The layer signal and surface directions are model output, not a reading.</figcaption>
     </figure>
@@ -565,6 +572,7 @@ and with Lasagnetta 0.1.1 (SharpMeow/lasagnetta), on Vesuvius Challenge open dat
 <div class="toast" id="toast">Copied</div>
 <div class="lbox" id="lbox" hidden role="dialog" aria-modal="true" aria-labelledby="lbtitle"><div class="lbpanel">
   <div class="lbhead"><b id="lbtitle"></b><div class="seg"><button type="button" data-lv="xy" aria-pressed="true">Through the middle</button><button type="button" data-lv="xz" aria-pressed="false">Along the scroll</button></div><button type="button" class="lbx" id="lbclose" aria-label="Close">Close</button></div>
+  <div id="lb-display" class="preview-display" role="group" aria-label="Preview display" title="Preview smoothing does not change the downloadable normals." hidden><button type="button" id="lb-original" data-preview-mode="original" aria-pressed="false">Original</button><button type="button" id="lb-smoothed" data-preview-mode="smoothed" aria-pressed="true">Smoothed</button></div>
   <img id="lbimg" alt="">
   <div class="lbfoot"><span id="lbcaption">Model output: cos (one band per papyrus layer) beside the surface normals as color.</span><button type="button" class="btn" id="lbslice">Open in the slice viewer</button></div>
 </div></div>
@@ -703,8 +711,15 @@ function placeLb(){const L=$('lbox'),v=onScreen();if(!v)return;
  L.querySelector('.lbpanel').style.maxHeight=(v.h-32)+'px'}
 function toastOn(){const T=$('toast'),v=onScreen();if(v){T.style.position='absolute';T.style.bottom='auto';T.style.top=(v.top+v.h-64)+'px'}T.classList.add('on')}
 try{parent.addEventListener('scroll',()=>{if(!$('lbox').hidden)placeLb()},{passive:true})}catch(e){}
-function openPv(f,view){if(!f.preview_xy&&!f.preview_xz)return;if(!f['preview_'+view])view=f.preview_xy?'xy':'xz';pv=f;const L=$('lbox');
- $('lbimg').src=view==='xz'?f.preview_xz:f.preview_xy;
+function smoothedPreview(f,view){const value=f&&f.preview_kind!=='cos'&&f['preview_'+view]&&f.preview_smoothed?.[view];return typeof value==='string'&&/^https:\/\//.test(value)?value:null}
+function previewDisplay(prefix,f,view,mode){const smooth=smoothedPreview(f,view),active=smooth&&mode==='smoothed'?'smoothed':'original';
+ $(prefix+'-display').hidden=!smooth;
+ for(const choice of ['original','smoothed'])$(prefix+'-'+choice).setAttribute('aria-pressed',String(choice===active));
+ return active==='smoothed'?smooth:f?.['preview_'+view]}
+let pvMode='smoothed',pvView='xy';
+function openPv(f,view){if(!f.preview_xy&&!f.preview_xz)return;if(!f['preview_'+view])view=f.preview_xy?'xy':'xz';if(pv!==f)pvMode='smoothed';pv=f;pvView=view;const L=$('lbox');
+ $('lbimg').onerror=()=>{if(pvMode==='smoothed'&&smoothedPreview(f,view)){pvMode='original';$('lbimg').src=previewDisplay('lb',f,view,pvMode)}};
+ $('lbimg').src=previewDisplay('lb',f,view,pvMode);
  $('lbimg').alt=f.scroll+' '+f.volume+' '+view+' preview, '+(f.preview_kind==='cos'?'Layer pattern (cos), '+f.model:'cos and normals');
  $('lbcaption').textContent=f.preview_kind==='cos'?cosCaption(f,view):'Model output: cos (one band per papyrus layer) beside the surface normals as color.';
  $('lbtitle').textContent=f.scroll+' · '+um(f.voxel_um)+' · '+f.volume;
@@ -714,6 +729,7 @@ function openPv(f,view){if(!f.preview_xy&&!f.preview_xz)return;if(!f['preview_'+
 function closePv(){if($('lbox').hidden)return;$('lbox').hidden=true;document.documentElement.classList.remove('lbopen');$('lbimg').removeAttribute('src');pv=null;
  const target=pvReturnFocus?.isConnected&&pvReturnFocus.getClientRects().length?pvReturnFocus:$('human-search');pvReturnFocus=null;target.focus({preventScroll:true})}
 document.querySelectorAll('[data-lv]').forEach(b=>b.onclick=()=>pv&&openPv(pv,b.dataset.lv));
+for(const mode of ['original','smoothed'])$('lb-'+mode).onclick=()=>{if(pv){pvMode=mode;openPv(pv,pvView)}};
 $('lbclose').onclick=closePv;
 $('lbox').addEventListener('click',e=>{if(e.target===$('lbox'))closePv()});
 document.addEventListener('keydown',e=>{const dialog=$('lbox');if(dialog.hidden)return;
@@ -878,9 +894,10 @@ pick(0,false);
     try { await navigator.clipboard.writeText(value); el('copy-status').textContent = success; }
     catch (_) { el('copy-status').textContent = 'Clipboard unavailable. Select the links in Surface normals to copy them.'; }
   }
+  let displayMode = 'smoothed';
   function preview() {
     const image = el('image'), empty = el('empty');
-    const source = selected && url(selected['preview_' + direction]);
+    const source = url(previewDisplay('human',selected,direction,displayMode));
     for (const view of ['xy','xz']) { el(view).disabled = !(selected && url(selected['preview_' + view])); el(view).setAttribute('aria-pressed', String(view === direction)); }
     image.hidden = true; image.removeAttribute('src'); empty.hidden = false;
     empty.textContent = selected ? 'No preview image is listed for this view. You can still use the published normals links.' : 'Choose a listed scroll, acquisition and field to see its preview.';
@@ -888,7 +905,7 @@ pick(0,false);
       image.alt = selected.scroll + ', acquisition ' + selected.volume + ': ' + (direction === 'xy' ? 'top' : 'side') + ' view of ' + (selected.preview_kind === 'cos' ? 'Layer pattern (cos), ' + selected.model : 'the model field');
       empty.textContent = 'Loading the published preview...';
       image.onload = () => { image.hidden = false; empty.hidden = true; };
-      image.onerror = () => { image.hidden = true; empty.hidden = false; empty.textContent = 'This preview could not load. Published access links remain available under Get normals.'; };
+      image.onerror = () => { if(displayMode==='smoothed'&&smoothedPreview(selected,direction)){displayMode='original';preview();return;} image.hidden = true; empty.hidden = false; empty.textContent = 'This preview could not load. Published access links remain available under Get normals.'; };
       image.src = source;
     }
     el('caption').textContent = selected ? (selected.preview_kind === 'cos' ? cosCaption(selected,direction) : 'Grayscale shows the layer pattern; color shows surface direction. ' + (selected.model || 'Published model') + '. Model output, not a reading.') : 'Field availability is specific to the selected scan acquisition.';
@@ -915,7 +932,7 @@ pick(0,false);
     const facts = [['Scroll',el('scroll').value],['Acquisition',el('volume').value],['Model',f.model],['Source',f.source],['Made by',f.made_by],['Voxel size',f.voxel_um != null ? f.voxel_um+' µm' : null],['CT input level',f.read_level],['Normal source',f.normal_source],['Checkpoint',p.checkpoint_revision],['Published size',f.bytes != null ? gb(f.bytes) : null],['Availability status',f.availability?.status]];
     el('facts').replaceChildren(...facts.filter(([,v]) => v !== undefined && v !== null && v !== '').flatMap(([k,v]) => { const dt = document.createElement('dt'), dd = document.createElement('dd'); dt.textContent = k; dd.textContent = String(v); return [dt,dd]; }));
     el('note').textContent = f.note || '';
-    direction = f.preview_xy ? 'xy' : 'xz'; preview();
+    displayMode='smoothed'; direction = f.preview_xy ? 'xy' : 'xz'; preview();
   }
   function acquisition(requestedField = null) {
     const rows = rowsFor(), invalid = requestedField !== null && !rows.some(f => fieldId(f) === requestedField);
@@ -952,6 +969,7 @@ pick(0,false);
   el('volume').onchange = () => { notice(); acquisition(); };
   el('field').onchange = () => { notice(); showField(); };
   for (const view of ['xy','xz']) el(view).onclick = () => { direction=view; preview(); };
+  for (const mode of ['original','smoothed']) el(mode).onclick = () => { displayMode=mode; preview(); };
   el('theme').onclick = () => document.getElementById('theme').click();
   el('normals-toggle').onclick = () => { const panel=el('normals-panel'); panel.hidden=!panel.hidden; el('normals-toggle').setAttribute('aria-expanded',String(!panel.hidden)); };
   el('copy').onclick = () => copy(normalContext(),'Both normals links, manifest and field context copied.');
