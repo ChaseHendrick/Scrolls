@@ -1,6 +1,6 @@
 # lasagna-fields: explore published layer fields
 
-Choose a scroll and scan, view an available preview, and open the published field's dataset or manifest. Lasagna and Lasagnetta fields are identified by model. The Space also offers villa's Lasagna model for small boxes through its page, API or MCP server.
+Choose a scroll and scan, view top and side previews, and open the published field's dataset or manifest. Lasagna and Lasagnetta fields are identified by model. The Space also offers villa's Lasagna model for small boxes through its page, API or MCP server.
 
 | Field | Value |
 | --- | --- |
@@ -27,6 +27,8 @@ villa's lasagna surface fitting, and the spiral fit that builds on it, read a la
 The Space's first tab, **Every field**, lists 56 public fields across all 35 scroll catalog entries and four fragment entries with catalog volumes. Fifteen scrolls with existing public Lasagna fields were omitted by an old listing restriction; their links are now included. The complete catalog contains 45 samples, 67 scans and 74 reconstructed volumes. Eighteen additional volumes have no known Lasagna or Lasagnetta field. Six fragments have no catalog volume.
 
 Coverage means a field is available for at least one volume of each scroll. The 8 November 2026 audit read manifests, array headers and chunk listings, and compared metadata for 598 dataset parts. It did not read arrays or exhaustively verify sparse chunk coverage. `whole_volume_complete: null` means unverified. Lasagnetta remains labeled as a student preview; m7-derived normals and fiber predictions are separate products and do not count as Lasagna or Lasagnetta.
+
+All 56 listed fields have top and side previews. Fifteen newly added preview pairs show the published layer pattern (`cos`) on fixed central planes, with lossless PNGs and source/credit sidecars. Their captions identify the channel. The existing colored-normal preview pairs retain their sources. The All fields thumbnails also open previews.
 
 The metadata API `list_coverage(scroll="")` returns the summary and all matching samples, including every reconstructed volume, missing fields and the limits of the audit. `list_fields` retains its arguments and existing keys, adding `normal_source`, `availability`, `provenance` and `normals_access`. `bytes`, `preview_xy` and `preview_xz` may be null when no measured size or preview is available. Missing previews do not require reading scientific data to expose public field links. The full source inventory is `coverage.json`.
 
@@ -58,7 +60,7 @@ Do not use it:
 ## Quick start
 
 1. **Select a scan.** Find a scroll, then choose the field for the scan and voxel size you need. Check whether its model is Lasagna or Lasagnetta.
-2. **Preview the field.** Open an available preview to see the layer signal and normals. If no preview is available, use the published source link.
+2. **Preview the field.** Every listed field has top and side views. Open **All fields** and click a scroll thumbnail or **Preview**. Captions distinguish combined layer/normal images from layer-pattern-only images; **Get normals** opens the original normal data in either case.
 3. **Open the source.** Follow the dataset link for downloads and its documentation, or the manifest link for the field's array paths and coordinate metadata.
 
 A preview shows model output. It does not establish scientific accuracy or whole-volume completeness. The field metadata records provenance and coverage separately; an unknown completion status is not a pass. Lasagnetta previews remain labeled as student output, and m7-derived normals are a separate product. For agents, `list_coverage` reports missing volumes and these limits, while `list_fields` returns the published field links.

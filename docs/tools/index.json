@@ -7312,7 +7312,7 @@
    "id": "lasagna-fields",
    "name": "lasagna-fields",
    "tagline": "explore published layer fields",
-   "summary": "Choose a scroll and scan, view an available preview, and open the published field's dataset or manifest. Lasagna and Lasagnetta fields are identified by model. The Space also offers villa's Lasagna model for small boxes through its page, API or MCP server.",
+   "summary": "Choose a scroll and scan, view top and side previews, and open the published field's dataset or manifest. Lasagna and Lasagnetta fields are identified by model. The Space also offers villa's Lasagna model for small boxes through its page, API or MCP server.",
    "status": "Current",
    "kind": [
     "data",
@@ -7383,91 +7383,91 @@
     {
      "name": "What it does",
      "start_line": 23,
-     "end_line": 44,
+     "end_line": 46,
      "applicable": true
     },
     {
      "name": "When to use it",
-     "start_line": 45,
-     "end_line": 57,
+     "start_line": 47,
+     "end_line": 59,
      "applicable": true
     },
     {
      "name": "Quick start",
-     "start_line": 58,
-     "end_line": 136,
+     "start_line": 60,
+     "end_line": 138,
      "applicable": true
     },
     {
      "name": "Checks and controls",
-     "start_line": 137,
-     "end_line": 157,
+     "start_line": 139,
+     "end_line": 159,
      "applicable": true
     },
     {
      "name": "Commands and options",
-     "start_line": 158,
-     "end_line": 180,
+     "start_line": 160,
+     "end_line": 182,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 181,
-     "end_line": 190,
+     "start_line": 183,
+     "end_line": 192,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 191,
-     "end_line": 194,
+     "start_line": 193,
+     "end_line": 196,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 195,
-     "end_line": 222,
+     "start_line": 197,
+     "end_line": 224,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 223,
-     "end_line": 236,
+     "start_line": 225,
+     "end_line": 238,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 237,
-     "end_line": 240,
+     "start_line": 239,
+     "end_line": 242,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 241,
-     "end_line": 246,
+     "start_line": 243,
+     "end_line": 248,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 247,
-     "end_line": 259,
+     "start_line": 249,
+     "end_line": 261,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 260,
-     "end_line": 263,
+     "start_line": 262,
+     "end_line": 265,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 264,
-     "end_line": 274,
+     "start_line": 266,
+     "end_line": 276,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 275,
-     "end_line": 278,
+     "start_line": 277,
+     "end_line": 280,
      "applicable": true
     }
    ]

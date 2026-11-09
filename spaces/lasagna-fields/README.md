@@ -64,7 +64,7 @@ tags:
 
 Explore published layer fields for Herculaneum scroll scans:
 
-- **Browse fields**: choose a scroll and scan, view a preview where one is available, then open its published
+- **Browse fields**: choose a scroll and scan, view top and side previews, then open its published
   dataset or manifest. Each field identifies its scan, voxel size and model. Fields from
   [Lasagnetta](https://huggingface.co/SharpMeow/lasagnetta) are labeled separately from villa's Lasagna fields.
 - **Make a field** for any box of any public scan: pick a scan and a point, and the Space runs villa's own lasagna
@@ -76,8 +76,7 @@ per papyrus layer), its gradient size **grad_mag**, and the surface normal (**nx
 geometry inputs, not a reading of any text.
 
 The catalog records source links, model provenance and coverage status. A listed field or preview does not prove
-whole-volume completeness. An unknown coverage status means completeness has not been verified. A missing preview
-or size estimate means it is unavailable.
+whole-volume completeness. An unknown coverage status means completeness has not been verified. A missing size estimate means it is unavailable.
 
 ## Reference fields
 

@@ -1,7 +1,7 @@
 {
   "schema": "lasagna-fields-list/1",
   "checked": "2026-11-08",
-  "about": "Public Lasagna and Lasagnetta fields. Presence checks are metadata only; whole-volume completeness is unverified. Empty preview and size values mean not available or not measured.",
+  "about": "Public Lasagna and Lasagnetta fields with top and side previews. Presence checks are metadata only; whole-volume completeness is unverified. Empty size values mean not measured.",
   "sources": {
     "open_data": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/metadata.json",
     "datasets": "https://huggingface.co/SharpMeow"
@@ -564,8 +564,8 @@
       "stream": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0125/representations/predictions/lasagna/20250821151825-lasagna-20260419180421",
       "gallery": false,
       "note": "Published normals; metadata and chunk presence checked. Full chunk completeness not verified.",
-      "preview_xy": null,
-      "preview_xz": null,
+      "preview_xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/PHerc0125-20250821151825-90be7bc4da9d-cos-xy.png",
+      "preview_xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/PHerc0125-20250821151825-90be7bc4da9d-cos-xz.png",
       "browse": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/index.html#PHerc0125/representations/predictions/lasagna/20250821151825-lasagna-20260419180421/",
       "normal_source": "lasagna",
       "availability": {
@@ -705,7 +705,13 @@
         },
         "whole_volume_complete": null,
         "coordinate_note": "Array levels and scaledown use the manifest base frame. CT input level is separate; do not add the two levels."
-      }
+      },
+      "preview_kind": "cos",
+      "preview_caption": {
+        "xy": "PHerc0125, scan 20250821151825, villa predict3d. Layer pattern (cos), top view. Vesuvius Challenge data, CC BY-NC 4.0.",
+        "xz": "PHerc0125, scan 20250821151825, villa predict3d. Layer pattern (cos), side view. Vesuvius Challenge data, CC BY-NC 4.0."
+      },
+      "preview_thumb": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/thumbs/PHerc0125-20250821151825-90be7bc4da9d-cos.png"
     },
     {
       "scroll": "PHerc0139",
@@ -3208,8 +3214,8 @@
       "stream": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0191/representations/predictions/lasagna/20250821151635-lasagna-20260419180421",
       "gallery": false,
       "note": "Published normals; metadata and chunk presence checked. Full chunk completeness not verified.",
-      "preview_xy": null,
-      "preview_xz": null,
+      "preview_xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/PHerc0191-20250821151635-0ef9a67a0327-cos-xy.png",
+      "preview_xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/PHerc0191-20250821151635-0ef9a67a0327-cos-xz.png",
       "browse": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/index.html#PHerc0191/representations/predictions/lasagna/20250821151635-lasagna-20260419180421/",
       "normal_source": "lasagna",
       "availability": {
@@ -3349,7 +3355,13 @@
         },
         "whole_volume_complete": null,
         "coordinate_note": "Array levels and scaledown use the manifest base frame. CT input level is separate; do not add the two levels."
-      }
+      },
+      "preview_kind": "cos",
+      "preview_caption": {
+        "xy": "PHerc0191, scan 20250821151635, villa predict3d. Layer pattern (cos), top view. Vesuvius Challenge data, CC BY-NC 4.0.",
+        "xz": "PHerc0191, scan 20250821151635, villa predict3d. Layer pattern (cos), side view. Vesuvius Challenge data, CC BY-NC 4.0."
+      },
+      "preview_thumb": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/thumbs/PHerc0191-20250821151635-0ef9a67a0327-cos.png"
     },
     {
       "scroll": "PHerc0211",
@@ -3368,8 +3380,8 @@
       "stream": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0211/representations/predictions/lasagna/20250821151803-lasagna-20260419180421",
       "gallery": false,
       "note": "Published normals; metadata and chunk presence checked. Full chunk completeness not verified.",
-      "preview_xy": null,
-      "preview_xz": null,
+      "preview_xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/PHerc0211-20250821151803-559e59ea4457-cos-xy.png",
+      "preview_xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/PHerc0211-20250821151803-559e59ea4457-cos-xz.png",
       "browse": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/index.html#PHerc0211/representations/predictions/lasagna/20250821151803-lasagna-20260419180421/",
       "normal_source": "lasagna",
       "availability": {
@@ -3509,7 +3521,13 @@
         },
         "whole_volume_complete": null,
         "coordinate_note": "Array levels and scaledown use the manifest base frame. CT input level is separate; do not add the two levels."
-      }
+      },
+      "preview_kind": "cos",
+      "preview_caption": {
+        "xy": "PHerc0211, scan 20250821151803, villa predict3d. Layer pattern (cos), top view. Vesuvius Challenge data, CC BY-NC 4.0.",
+        "xz": "PHerc0211, scan 20250821151803, villa predict3d. Layer pattern (cos), side view. Vesuvius Challenge data, CC BY-NC 4.0."
+      },
+      "preview_thumb": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/thumbs/PHerc0211-20250821151803-559e59ea4457-cos.png"
     },
     {
       "scroll": "PHerc0257",
@@ -3528,8 +3546,8 @@
       "stream": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0257/representations/predictions/lasagna/20250821151750-lasagna-20260419180421",
       "gallery": false,
       "note": "Published normals; metadata and chunk presence checked. Full chunk completeness not verified.",
-      "preview_xy": null,
-      "preview_xz": null,
+      "preview_xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/PHerc0257-20250821151750-eabf3770843f-cos-xy.png",
+      "preview_xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/PHerc0257-20250821151750-eabf3770843f-cos-xz.png",
       "browse": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/index.html#PHerc0257/representations/predictions/lasagna/20250821151750-lasagna-20260419180421/",
       "normal_source": "lasagna",
       "availability": {
@@ -3669,7 +3687,13 @@
         },
         "whole_volume_complete": null,
         "coordinate_note": "Array levels and scaledown use the manifest base frame. CT input level is separate; do not add the two levels."
-      }
+      },
+      "preview_kind": "cos",
+      "preview_caption": {
+        "xy": "PHerc0257, scan 20250821151750, villa predict3d. Layer pattern (cos), top view. Vesuvius Challenge data, CC BY-NC 4.0.",
+        "xz": "PHerc0257, scan 20250821151750, villa predict3d. Layer pattern (cos), side view. Vesuvius Challenge data, CC BY-NC 4.0."
+      },
+      "preview_thumb": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/thumbs/PHerc0257-20250821151750-eabf3770843f-cos.png"
     },
     {
       "scroll": "PHerc0268",
@@ -3688,8 +3712,8 @@
       "stream": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0268/representations/predictions/lasagna/20251110183117-lasagna-20260419180421",
       "gallery": false,
       "note": "Published normals; metadata and chunk presence checked. Full chunk completeness not verified.",
-      "preview_xy": null,
-      "preview_xz": null,
+      "preview_xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/PHerc0268-20251110183117-3b951e959d70-cos-xy.png",
+      "preview_xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/PHerc0268-20251110183117-3b951e959d70-cos-xz.png",
       "browse": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/index.html#PHerc0268/representations/predictions/lasagna/20251110183117-lasagna-20260419180421/",
       "normal_source": "lasagna",
       "availability": {
@@ -3829,7 +3853,13 @@
         },
         "whole_volume_complete": null,
         "coordinate_note": "Array levels and scaledown use the manifest base frame. CT input level is separate; do not add the two levels."
-      }
+      },
+      "preview_kind": "cos",
+      "preview_caption": {
+        "xy": "PHerc0268, scan 20251110183117, villa predict3d. Layer pattern (cos), top view. Vesuvius Challenge data, CC BY-NC 4.0.",
+        "xz": "PHerc0268, scan 20251110183117, villa predict3d. Layer pattern (cos), side view. Vesuvius Challenge data, CC BY-NC 4.0."
+      },
+      "preview_thumb": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/thumbs/PHerc0268-20251110183117-3b951e959d70-cos.png"
     },
     {
       "scroll": "PHerc0306B",
@@ -4512,8 +4542,8 @@
       "stream": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0358/representations/predictions/lasagna/20250821151737-lasagna-20260419180421",
       "gallery": false,
       "note": "Published normals; metadata and chunk presence checked. Full chunk completeness not verified.",
-      "preview_xy": null,
-      "preview_xz": null,
+      "preview_xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/PHerc0358-20250821151737-fefa7e2e6230-cos-xy.png",
+      "preview_xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/PHerc0358-20250821151737-fefa7e2e6230-cos-xz.png",
       "browse": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/index.html#PHerc0358/representations/predictions/lasagna/20250821151737-lasagna-20260419180421/",
       "normal_source": "lasagna",
       "availability": {
@@ -4653,7 +4683,13 @@
         },
         "whole_volume_complete": null,
         "coordinate_note": "Array levels and scaledown use the manifest base frame. CT input level is separate; do not add the two levels."
-      }
+      },
+      "preview_kind": "cos",
+      "preview_caption": {
+        "xy": "PHerc0358, scan 20250821151737, villa predict3d. Layer pattern (cos), top view. Vesuvius Challenge data, CC BY-NC 4.0.",
+        "xz": "PHerc0358, scan 20250821151737, villa predict3d. Layer pattern (cos), side view. Vesuvius Challenge data, CC BY-NC 4.0."
+      },
+      "preview_thumb": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/thumbs/PHerc0358-20250821151737-fefa7e2e6230-cos.png"
     },
     {
       "scroll": "PHerc0483A",
@@ -5540,8 +5576,8 @@
       "stream": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0800/representations/predictions/lasagna/20250521135224-lasagna-20260419180421",
       "gallery": false,
       "note": "Published normals; metadata and chunk presence checked. Full chunk completeness not verified.",
-      "preview_xy": null,
-      "preview_xz": null,
+      "preview_xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/PHerc0800-20250521135224-d200dbf56d31-cos-xy.png",
+      "preview_xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/PHerc0800-20250521135224-d200dbf56d31-cos-xz.png",
       "browse": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/index.html#PHerc0800/representations/predictions/lasagna/20250521135224-lasagna-20260419180421/",
       "normal_source": "lasagna",
       "availability": {
@@ -5681,7 +5717,13 @@
         },
         "whole_volume_complete": null,
         "coordinate_note": "Array levels and scaledown use the manifest base frame. CT input level is separate; do not add the two levels."
-      }
+      },
+      "preview_kind": "cos",
+      "preview_caption": {
+        "xy": "PHerc0800, scan 20250521135224, villa predict3d. Layer pattern (cos), top view. Vesuvius Challenge data, CC BY-NC 4.0.",
+        "xz": "PHerc0800, scan 20250521135224, villa predict3d. Layer pattern (cos), side view. Vesuvius Challenge data, CC BY-NC 4.0."
+      },
+      "preview_thumb": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/thumbs/PHerc0800-20250521135224-d200dbf56d31-cos.png"
     },
     {
       "scroll": "PHerc0813",
@@ -5700,8 +5742,8 @@
       "stream": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0813/representations/predictions/lasagna/20250821151723-lasagna-20260419180421",
       "gallery": false,
       "note": "Published normals; metadata and chunk presence checked. Full chunk completeness not verified.",
-      "preview_xy": null,
-      "preview_xz": null,
+      "preview_xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/PHerc0813-20250821151723-fb5ce0731d2e-cos-xy.png",
+      "preview_xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/PHerc0813-20250821151723-fb5ce0731d2e-cos-xz.png",
       "browse": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/index.html#PHerc0813/representations/predictions/lasagna/20250821151723-lasagna-20260419180421/",
       "normal_source": "lasagna",
       "availability": {
@@ -5841,7 +5883,13 @@
         },
         "whole_volume_complete": null,
         "coordinate_note": "Array levels and scaledown use the manifest base frame. CT input level is separate; do not add the two levels."
-      }
+      },
+      "preview_kind": "cos",
+      "preview_caption": {
+        "xy": "PHerc0813, scan 20250821151723, villa predict3d. Layer pattern (cos), top view. Vesuvius Challenge data, CC BY-NC 4.0.",
+        "xz": "PHerc0813, scan 20250821151723, villa predict3d. Layer pattern (cos), side view. Vesuvius Challenge data, CC BY-NC 4.0."
+      },
+      "preview_thumb": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/thumbs/PHerc0813-20250821151723-fb5ce0731d2e-cos.png"
     },
     {
       "scroll": "PHerc0814",
@@ -6380,8 +6428,8 @@
       "stream": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0826/representations/predictions/lasagna/20250821151701-lasagna-20260419180421",
       "gallery": false,
       "note": "Published normals; metadata and chunk presence checked. Full chunk completeness not verified.",
-      "preview_xy": null,
-      "preview_xz": null,
+      "preview_xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/PHerc0826-20250821151701-183b9a0c9362-cos-xy.png",
+      "preview_xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/PHerc0826-20250821151701-183b9a0c9362-cos-xz.png",
       "browse": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/index.html#PHerc0826/representations/predictions/lasagna/20250821151701-lasagna-20260419180421/",
       "normal_source": "lasagna",
       "availability": {
@@ -6521,7 +6569,13 @@
         },
         "whole_volume_complete": null,
         "coordinate_note": "Array levels and scaledown use the manifest base frame. CT input level is separate; do not add the two levels."
-      }
+      },
+      "preview_kind": "cos",
+      "preview_caption": {
+        "xy": "PHerc0826, scan 20250821151701, villa predict3d. Layer pattern (cos), top view. Vesuvius Challenge data, CC BY-NC 4.0.",
+        "xz": "PHerc0826, scan 20250821151701, villa predict3d. Layer pattern (cos), side view. Vesuvius Challenge data, CC BY-NC 4.0."
+      },
+      "preview_thumb": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/thumbs/PHerc0826-20250821151701-183b9a0c9362-cos.png"
     },
     {
       "scroll": "PHerc0841",
@@ -7236,8 +7290,8 @@
       "stream": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc1203/representations/predictions/lasagna/20250820131727-lasagna-20260419180421",
       "gallery": false,
       "note": "Published normals; metadata and chunk presence checked. Full chunk completeness not verified.",
-      "preview_xy": null,
-      "preview_xz": null,
+      "preview_xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/PHerc1203-20250820131727-19b2b6aa6508-cos-xy.png",
+      "preview_xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/PHerc1203-20250820131727-19b2b6aa6508-cos-xz.png",
       "browse": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/index.html#PHerc1203/representations/predictions/lasagna/20250820131727-lasagna-20260419180421/",
       "normal_source": "lasagna",
       "availability": {
@@ -7377,7 +7431,13 @@
         },
         "whole_volume_complete": null,
         "coordinate_note": "Array levels and scaledown use the manifest base frame. CT input level is separate; do not add the two levels."
-      }
+      },
+      "preview_kind": "cos",
+      "preview_caption": {
+        "xy": "PHerc1203, scan 20250820131727, villa predict3d. Layer pattern (cos), top view. Vesuvius Challenge data, CC BY-NC 4.0.",
+        "xz": "PHerc1203, scan 20250820131727, villa predict3d. Layer pattern (cos), side view. Vesuvius Challenge data, CC BY-NC 4.0."
+      },
+      "preview_thumb": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/thumbs/PHerc1203-20250820131727-19b2b6aa6508-cos.png"
     },
     {
       "scroll": "PHerc1218",
@@ -7396,8 +7456,8 @@
       "stream": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc1218/representations/predictions/lasagna/20250521120456-lasagna-20260419180421",
       "gallery": false,
       "note": "Published normals; metadata and chunk presence checked. Full chunk completeness not verified.",
-      "preview_xy": null,
-      "preview_xz": null,
+      "preview_xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/PHerc1218-20250521120456-4c6737b54822-cos-xy.png",
+      "preview_xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/PHerc1218-20250521120456-4c6737b54822-cos-xz.png",
       "browse": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/index.html#PHerc1218/representations/predictions/lasagna/20250521120456-lasagna-20260419180421/",
       "normal_source": "lasagna",
       "availability": {
@@ -7537,7 +7597,13 @@
         },
         "whole_volume_complete": null,
         "coordinate_note": "Array levels and scaledown use the manifest base frame. CT input level is separate; do not add the two levels."
-      }
+      },
+      "preview_kind": "cos",
+      "preview_caption": {
+        "xy": "PHerc1218, scan 20250521120456, villa predict3d. Layer pattern (cos), top view. Vesuvius Challenge data, CC BY-NC 4.0.",
+        "xz": "PHerc1218, scan 20250521120456, villa predict3d. Layer pattern (cos), side view. Vesuvius Challenge data, CC BY-NC 4.0."
+      },
+      "preview_thumb": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/thumbs/PHerc1218-20250521120456-4c6737b54822-cos.png"
     },
     {
       "scroll": "PHerc1299",
@@ -7716,8 +7782,8 @@
       "stream": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc1447/representations/predictions/lasagna/20250521151220-lasagna-20260419180421",
       "gallery": false,
       "note": "Published normals; metadata and chunk presence checked. Full chunk completeness not verified.",
-      "preview_xy": null,
-      "preview_xz": null,
+      "preview_xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/PHerc1447-20250521151220-8ca871946cce-cos-xy.png",
+      "preview_xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/PHerc1447-20250521151220-8ca871946cce-cos-xz.png",
       "browse": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/index.html#PHerc1447/representations/predictions/lasagna/20250521151220-lasagna-20260419180421/",
       "normal_source": "lasagna",
       "availability": {
@@ -7857,7 +7923,13 @@
         },
         "whole_volume_complete": null,
         "coordinate_note": "Array levels and scaledown use the manifest base frame. CT input level is separate; do not add the two levels."
-      }
+      },
+      "preview_kind": "cos",
+      "preview_caption": {
+        "xy": "PHerc1447, scan 20250521151220, villa predict3d. Layer pattern (cos), top view. Vesuvius Challenge data, CC BY-NC 4.0.",
+        "xz": "PHerc1447, scan 20250521151220, villa predict3d. Layer pattern (cos), side view. Vesuvius Challenge data, CC BY-NC 4.0."
+      },
+      "preview_thumb": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/thumbs/PHerc1447-20250521151220-8ca871946cce-cos.png"
     },
     {
       "scroll": "PHerc1451",
@@ -7876,8 +7948,8 @@
       "stream": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc1451/representations/predictions/lasagna/20260319101107-lasagna-20260419180421-L2",
       "gallery": false,
       "note": "Published normals; metadata and chunk presence checked. Full chunk completeness not verified.",
-      "preview_xy": null,
-      "preview_xz": null,
+      "preview_xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/PHerc1451-20260319101107-016b9e169895-cos-xy.png",
+      "preview_xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/PHerc1451-20260319101107-016b9e169895-cos-xz.png",
       "browse": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/index.html#PHerc1451/representations/predictions/lasagna/20260319101107-lasagna-20260419180421-L2/",
       "normal_source": "lasagna",
       "availability": {
@@ -8017,7 +8089,13 @@
         },
         "whole_volume_complete": null,
         "coordinate_note": "Array levels and scaledown use the manifest base frame. CT input level is separate; do not add the two levels."
-      }
+      },
+      "preview_kind": "cos",
+      "preview_caption": {
+        "xy": "PHerc1451, scan 20260319101107, villa predict3d. Layer pattern (cos), top view. Vesuvius Challenge data, CC BY-NC 4.0.",
+        "xz": "PHerc1451, scan 20260319101107, villa predict3d. Layer pattern (cos), side view. Vesuvius Challenge data, CC BY-NC 4.0."
+      },
+      "preview_thumb": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/thumbs/PHerc1451-20260319101107-016b9e169895-cos.png"
     },
     {
       "scroll": "PHerc1545",
@@ -8036,8 +8114,8 @@
       "stream": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc1545/representations/predictions/lasagna/20250821151648-lasagna-20260419180421",
       "gallery": false,
       "note": "Published normals; metadata and chunk presence checked. Full chunk completeness not verified.",
-      "preview_xy": null,
-      "preview_xz": null,
+      "preview_xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/PHerc1545-20250821151648-2e1211979d17-cos-xy.png",
+      "preview_xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/PHerc1545-20250821151648-2e1211979d17-cos-xz.png",
       "browse": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/index.html#PHerc1545/representations/predictions/lasagna/20250821151648-lasagna-20260419180421/",
       "normal_source": "lasagna",
       "availability": {
@@ -8177,7 +8255,13 @@
         },
         "whole_volume_complete": null,
         "coordinate_note": "Array levels and scaledown use the manifest base frame. CT input level is separate; do not add the two levels."
-      }
+      },
+      "preview_kind": "cos",
+      "preview_caption": {
+        "xy": "PHerc1545, scan 20250821151648, villa predict3d. Layer pattern (cos), top view. Vesuvius Challenge data, CC BY-NC 4.0.",
+        "xz": "PHerc1545, scan 20250821151648, villa predict3d. Layer pattern (cos), side view. Vesuvius Challenge data, CC BY-NC 4.0."
+      },
+      "preview_thumb": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/thumbs/PHerc1545-20250821151648-2e1211979d17-cos.png"
     },
     {
       "scroll": "PHerc1667",
@@ -9408,8 +9492,8 @@
       "stream": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHercParis4/representations/predictions/lasagna/20260411134726-lasagna-20260419180421-L2",
       "gallery": false,
       "note": "Published normals; metadata and chunk presence checked. Full chunk completeness not verified.",
-      "preview_xy": null,
-      "preview_xz": null,
+      "preview_xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/PHercParis4-20260411134726-e18d1074759e-cos-xy.png",
+      "preview_xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/PHercParis4-20260411134726-e18d1074759e-cos-xz.png",
       "browse": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/index.html#PHercParis4/representations/predictions/lasagna/20260411134726-lasagna-20260419180421-L2/",
       "normal_source": "lasagna",
       "availability": {
@@ -9549,7 +9633,13 @@
         },
         "whole_volume_complete": null,
         "coordinate_note": "Array levels and scaledown use the manifest base frame. CT input level is separate; do not add the two levels."
-      }
+      },
+      "preview_kind": "cos",
+      "preview_caption": {
+        "xy": "PHercParis4, scan 20260411134726, villa predict3d. Layer pattern (cos), top view. Vesuvius Challenge data, CC BY-NC 4.0.",
+        "xz": "PHercParis4, scan 20260411134726, villa predict3d. Layer pattern (cos), side view. Vesuvius Challenge data, CC BY-NC 4.0."
+      },
+      "preview_thumb": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/thumbs/PHercParis4-20260411134726-e18d1074759e-cos.png"
     }
   ]
 }
