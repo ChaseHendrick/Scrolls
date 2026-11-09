@@ -267,7 +267,7 @@ def result_text(r):
 def list_scans():
     """List the scans this Space can make a lasagna field for.
 
-    Every volume of the Vesuvius Challenge open data (its metadata.json) except PHercParis4, with its voxel size,
+    Every volume of the Vesuvius Challenge open data (its metadata.json), with its voxel size,
     shape, and the CT level the model reads. Returns a list of {volume, sample, voxel_um, shape_zyx, level, url}.
     """
     return [{k: v[k] for k in ("volume", "sample", "voxel_um", "shape_zyx", "level", "url")}
@@ -295,9 +295,22 @@ def list_fields(scroll: str = ""):
     browse the page to download it from (the dataset, or the open data's file browser).
     """
     keep = ("scroll", "volume", "zarr", "voxel_um", "read_level", "model", "source", "made_by", "bytes", "url",
-            "dataset", "manifest", "stream", "preview_xy", "preview_xz", "browse", "note")
+            "dataset", "manifest", "stream", "preview_xy", "preview_xz", "browse", "note",
+            "normal_source", "availability", "provenance", "normals_access")
     q = str(scroll or "").strip().lower()
     return [{k: f.get(k) for k in keep} for f in field_doc().get("fields", []) if q in f["scroll"].lower()]
+
+
+def list_coverage(scroll: str = ""):
+    """List coverage for every catalog sample and volume, with metadata-only limits.
+
+    Lasagna and Lasagnetta count as available fields. m7-derived normals and fiber
+    predictions do not. whole_volume_complete=null means not verified. Existing
+    fields list and make-field endpoints keep their current arguments.
+    """
+    doc = json.loads((HERE / "coverage.json").read_text(encoding="utf-8"))
+    query = str(scroll or "").strip().lower()
+    return {**doc, "samples": [s for s in doc["samples"] if query in s["scroll"].lower()]}
 
 
 def field_counts():
@@ -370,10 +383,10 @@ def make_field(volume: str, z: float, y: float, x: float, size: float = 256, mod
 # ---------------------------------------------------------------- the page
 
 INTRO = """\
-Pick a scan and a point: the Space runs **villa's own lasagna model** on the box around it, checks the result
-against the field the open data already publishes for that scan, and gives you pictures and a download in villa's
-layout. New here? Start with the example and press **Make the field**.
+Make a small field from a scan. Start with an example, or choose your own acquisition and location.
+This runs villa's model using your Hugging Face GPU quota. The result is model output, not a reading.
 """
+
 
 ABOUT_MODEL = """\
 **villa lasagna (exact)** runs villa's own code, `lasagna/preprocess_cos_omezarr.py predict3d` at commit
@@ -525,18 +538,19 @@ stream it names). Coordinates are level-0 (full resolution) voxels, z then y the
 
 CSS = """
 :root, .dark { --lf-accent:#c2462b; }
-.gradio-container { width: 100% !important; max-width: 1600px !important; margin: 0 auto !important; }
+.gradio-container { width: 100% !important; max-width: 1200px !important; margin: 0 auto !important; }
 .lf-head { display:flex; align-items:center; gap:14px; padding:6px 2px 2px; }
 .lf-head .layers { width:30px; height:24px; border-radius:5px; flex:none;
   background:repeating-linear-gradient(180deg,#c2462b 0 4px,#e07a3f 4px 7px,#f3e2bf 7px 10px,#4f7a3a 10px 11px,#f3e2bf 11px 12px); }
 .lf-head h1 { white-space:nowrap; font-family: Fraunces, Georgia, serif; font-weight:650; font-size:30px; margin:0; letter-spacing:-.01em; }
+.lf-head { padding:14px 6px 16px; }
 .lf-head span { color: var(--body-text-color-subdued); font-size:15px; }
 /* no fixed height: onescroll.html fits the guide's frame to the guide, so the page scrolls and the frame does not;
    min-height only holds the place until it has */
 .lf-guide iframe { width:100%; min-height:640px; border:0; border-radius:12px; background:#f7f2ea; }
 .lf-note p { font-size:13px; color: var(--body-text-color-subdued); margin:0; }
 .lf-est p { font-size:13.5px; color: var(--body-text-color-subdued); }
-.lf-point { flex-wrap: nowrap !important; }
+.lf-point { flex-wrap: wrap !important; }
 .lf-credit { text-align:center; font-size:13px; color: var(--body-text-color-subdued); padding:18px 0 6px; }
 .lf-credit a { color: var(--lf-accent) !important; padding:0 !important; margin:0 !important; }
 .lf-howto img { border-radius:10px; border:1px solid var(--border-color-primary); max-width:min(100%, 760px); display:block; margin:8px 0; }
@@ -569,6 +583,7 @@ scroll, or villa's field made for any box of a public scan on ZeroGPU. API and M
 # one page scroll bar: fits the guide's frame to its content (written by python -m kit spaceconnect render)
 ONESCROLL = HERE / "onescroll.html"
 HEAD += ONESCROLL.read_text() if ONESCROLL.is_file() else ""
+HEAD += '<style>@media (max-width:640px){.app{padding:12px 8px!important}.lf-guide,.lf-guide .html-container{padding:0!important;border:0!important}#lf-tabs .tabitem,#lf-tabs [role="tabpanel"]{padding:0!important}}</style>'
 
 
 def theme():
@@ -607,6 +622,14 @@ def guide_html():
     data = json.dumps(field_doc(), ensure_ascii=False).replace("</", "<\\/")
     page = page.replace('<script id="fieldlist" type="application/json">null</script>',
                         f'<script id="fieldlist" type="application/json">{data}</script>', 1)
+    # UI metadata only: retain the coverage worker's acquisition list and its uncertainty.
+    try:
+        coverage = json.loads((HERE / "coverage.json").read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        coverage = {}
+    coverage_data = json.dumps(coverage, ensure_ascii=False).replace("</", "<\\/")
+    page = page.replace('<script id="coverage-list" type="application/json">null</script>',
+                        f'<script id="coverage-list" type="application/json">{coverage_data}</script>', 1)
     return f'<iframe title="Every lasagna field" srcdoc="{html.escape(page, quote=True)}"></iframe>'
 
 
@@ -658,9 +681,8 @@ def build_demo():
 
     with gr.Blocks(title="Lasagna Fields", delete_cache=(1800, 3600)) as demo:
         n = field_counts()
-        gr.HTML('<div class="lf-head"><div class="layers"></div><h1>Lasagna Fields</h1><span>Lasagna fields for '
-                f'{n["scrolls"]} Herculaneum scrolls, listed by scroll, and villa’s field made for any box on demand.'
-                '</span></div>')
+        gr.HTML('<div class="lf-head"><div class="layers" aria-hidden="true"></div>'
+                '<h1>Lasagna Fields</h1><span>Explore the layers of Herculaneum scrolls</span></div>')
         with gr.Tabs(elem_id="lf-tabs"):
             with gr.Tab("Every field", id="scans"):
                 gr.HTML(guide_html(), elem_classes="lf-guide")
@@ -669,21 +691,23 @@ def build_demo():
                 with gr.Row(equal_height=False):
                     with gr.Column(scale=2, min_width=300):
                         ex = gr.Dropdown([(e["label"], i) for i, e in enumerate(EXAMPLES)], value=0,
-                                         label="Example point (scans on no prize list)")
-                        vid = gr.Dropdown(choices, value=first["volume"], label="Scan (any public volume)",
+                                         label="Start with an example")
+                        vid = gr.Dropdown(choices, value=first["volume"], label="Scan acquisition",
                                           filterable=True)
-                        vinfo = gr.Markdown(volume_text(first["volume"]), elem_classes="lf-note")
-                        with gr.Row(elem_classes="lf-point"):
-                            z = gr.Number(first["z"], label="z", precision=0, minimum=0, min_width=80)
-                            y = gr.Number(first["y"], label="y", precision=0, minimum=0, min_width=80)
-                            x = gr.Number(first["x"], label="x", precision=0, minimum=0, min_width=80)
-                        gr.Markdown("Point in full-resolution (level 0) voxels, as the data browser and VC3D show "
-                                    "them.", elem_classes="lf-note")
-                        size = gr.Radio([("256 voxels", 256), ("512 voxels", 512)], value=256, label="Box side")
-                        model = gr.Radio(offered, value="lasagna", label="Model")
-                        go = gr.Button("Make the field", variant="primary", size="lg")
+                        with gr.Accordion("Location, box size and model", open=True):
+                            with gr.Accordion("Scan details", open=False):
+                                vinfo = gr.Markdown(volume_text(first["volume"]), elem_classes="lf-note")
+                            with gr.Row(elem_classes="lf-point"):
+                                z = gr.Number(first["z"], label="Depth (z)", precision=0, minimum=0, min_width=80)
+                                y = gr.Number(first["y"], label="Row (y)", precision=0, minimum=0, min_width=80)
+                                x = gr.Number(first["x"], label="Column (x)", precision=0, minimum=0, min_width=80)
+                            gr.Markdown("Point in full-resolution (level 0) voxels, as the data browser and VC3D show "
+                                        "them.", elem_classes="lf-note")
+                            size = gr.Radio([("256 voxels", 256), ("512 voxels", 512)], value=256, label="Box side")
+                            model = gr.Radio(offered, value="lasagna", label="Model")
                         est = gr.Markdown(estimate_text(first["volume"], first["z"], first["y"], first["x"], 256),
                                           elem_classes="lf-est")
+                        go = gr.Button("Make the field", variant="primary", size="lg")
                     with gr.Column(scale=3, min_width=320):
                         example = MEDIA / "example-result.png"
                         pic = gr.Image(str(example) if example.is_file() else None,
@@ -694,7 +718,7 @@ def build_demo():
                                               "the model (about a minute).")
                         dl = gr.File(label="Download: villa output folder, field.npz, receipt.json", height=88,
                                      elem_id="lf-dl")
-                        with gr.Accordion("Receipt", open=False):
+                        with gr.Accordion("Technical receipt", open=False):
                             receipt = gr.JSON(max_height=None, elem_id="lf-receipt")
                         with gr.Accordion("About the model", open=False):
                             gr.Markdown(ABOUT_MODEL.format(commit=L.VILLA["commit"][:12],
@@ -703,7 +727,7 @@ def build_demo():
                 gr.Markdown(HOW_TO, elem_classes="lf-howto")
             with gr.Tab("Agents and API", id="agents"):
                 gr.Markdown(AGENTS.format(host=host))
-                with gr.Accordion("Connect your tool: the fields and scans by URL", open=True):
+                with gr.Accordion("Connect your tool: the fields and scans by URL", open=False):
                     # the data's URLs and ready snippets, made by python -m kit spaceconnect render from connect.json
                     gr.HTML(CONNECT_HTML.read_text() if CONNECT_HTML.exists() else "")
         gr.HTML('<footer class="lf-credit">Made by <a href="https://github.com/ChaseHendrick">Chase Hendrick</a> · '
@@ -718,7 +742,7 @@ def build_demo():
             a_size = gr.Number(256, precision=0, label="size")
             a_json, a_img, a_file = gr.JSON(), gr.Image(type="numpy", format="png"), gr.File()
             a_scroll = gr.Textbox("", label="scroll")
-            a_btns = [gr.Button() for _ in range(6)]
+            a_btns = [gr.Button() for _ in range(7)]
 
         hidden = dict(api_visibility="private")
         vid.change(volume_text, vid, vinfo, **hidden)
@@ -733,7 +757,8 @@ def build_demo():
                                     (a_btns[2], example_points, [], a_json, "example_points"),
                                     (a_btns[3], plan_field, ins, a_json, "plan_field"),
                                     (a_btns[4], make_field, ins, [a_img, a_json, a_file], "make_field"),
-                                    (a_btns[5], list_fields, [a_scroll], a_json, "list_fields")):
+                                    (a_btns[5], list_fields, [a_scroll], a_json, "list_fields"),
+                                    (a_btns[6], list_coverage, [a_scroll], a_json, "list_coverage")):
             heavy = name == "make_field"
             btn.click(guard(fn), i, o, api_name=name, api_description=fn.__doc__.split("\n\n")[0],
                       concurrency_id="model" if heavy else None, concurrency_limit=2 if heavy else 8)

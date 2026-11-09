@@ -1,0 +1,2518 @@
+{
+  "schema": "lasagna-fields-coverage/1",
+  "checked": "2026-11-08",
+  "summary": {
+    "counting_unit": "catalog sample entries; physical identity not audited",
+    "samples": 45,
+    "scrolls": 35,
+    "scrolls_with_field_metadata": 35,
+    "samples_with_catalog_volumes": 39,
+    "catalog_scans": 67,
+    "catalog_volumes": 74,
+    "live_fields": 41,
+    "candidate_fields": 56,
+    "added_scrolls": [
+      "PHerc0125",
+      "PHerc0191",
+      "PHerc0211",
+      "PHerc0257",
+      "PHerc0268",
+      "PHerc0358",
+      "PHerc0800",
+      "PHerc0813",
+      "PHerc0826",
+      "PHerc1203",
+      "PHerc1218",
+      "PHerc1447",
+      "PHerc1451",
+      "PHerc1545",
+      "PHercParis4"
+    ],
+    "volumes_with_fields": 56,
+    "volumes_without_fields": 18,
+    "dataset_parts_metadata_checked": 598,
+    "dataset_part_metadata_errors": [],
+    "whole_volume_complete_count": null
+  },
+  "samples": [
+    {
+      "scroll": "PHerc0009B",
+      "sample_type": "fragment",
+      "catalog_volumes": 3,
+      "live_listed_fields": 3,
+      "known_fields": 3,
+      "models": [
+        "lasagnetta"
+      ],
+      "coverage": "field_metadata_available",
+      "whole_volume_complete": null,
+      "volumes": [
+        {
+          "scroll": "PHerc0009B",
+          "sample_type": "fragment",
+          "volume": "20250521125136",
+          "scan_id": "20250509053741",
+          "zarr": "20250521125136-8.640um-1.2m-116keV-masked.zarr",
+          "voxel_um": 8.64,
+          "superseded_by": null,
+          "read_level": 0,
+          "ct_url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0009B/volumes/20250521125136-8.640um-1.2m-116keV-masked.zarr/",
+          "input_shape_zyx": [
+            9598,
+            7837,
+            7837
+          ],
+          "exposed_in_live_space": true,
+          "available_models": [
+            "lasagnetta"
+          ],
+          "manifests": [
+            "https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHerc0009B/representations/predictions/lasagna/20250521125136-lasagnetta-0.1.1/PHerc0009B.lasagna.json"
+          ],
+          "status": "field_metadata_available",
+          "whole_volume_complete": null,
+          "chunks_checked": "sample presence only"
+        },
+        {
+          "scroll": "PHerc0009B",
+          "sample_type": "fragment",
+          "volume": "20250820154339",
+          "scan_id": "20250718080859",
+          "zarr": "20250820154339-2.401um-0.3m-77keV-masked.zarr",
+          "voxel_um": 2.401,
+          "superseded_by": null,
+          "read_level": 2,
+          "ct_url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0009B/volumes/20250820154339-2.401um-0.3m-77keV-masked.zarr/",
+          "input_shape_zyx": [
+            7278,
+            7065,
+            7065
+          ],
+          "exposed_in_live_space": true,
+          "available_models": [
+            "lasagnetta"
+          ],
+          "manifests": [
+            "https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHerc0009B/representations/predictions/lasagna/20250820154339-lasagnetta-0.1.1/PHerc0009B-20250820154339.lasagna.json"
+          ],
+          "status": "field_metadata_available",
+          "whole_volume_complete": null,
+          "chunks_checked": "sample presence only"
+        },
+        {
+          "scroll": "PHerc0009B",
+          "sample_type": "fragment",
+          "volume": "20260319104112",
+          "scan_id": "20250718080859",
+          "zarr": "20260319104112-2.401um-0.3m-77keV-masked.zarr",
+          "voxel_um": 2.401,
+          "superseded_by": null,
+          "read_level": 2,
+          "ct_url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0009B/volumes/20260319104112-2.401um-0.3m-77keV-masked.zarr/",
+          "input_shape_zyx": [
+            7278,
+            7065,
+            7065
+          ],
+          "exposed_in_live_space": true,
+          "available_models": [
+            "lasagnetta"
+          ],
+          "manifests": [
+            "https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHerc0009B/representations/predictions/lasagna/20260319104112-lasagnetta-0.1.1/PHerc0009B-20260319104112.lasagna.json"
+          ],
+          "status": "field_metadata_available",
+          "whole_volume_complete": null,
+          "chunks_checked": "sample presence only"
+        }
+      ]
+    },
+    {
+      "scroll": "PHerc0125",
+      "sample_type": "scroll",
+      "catalog_volumes": 1,
+      "live_listed_fields": 0,
+      "known_fields": 1,
+      "models": [
+        "lasagna"
+      ],
+      "coverage": "field_metadata_available",
+      "whole_volume_complete": null,
+      "volumes": [
+        {
+          "scroll": "PHerc0125",
+          "sample_type": "scroll",
+          "volume": "20250821151825",
+          "scan_id": "20250720091415",
+          "zarr": "20250821151825-9.362um-1.2m-113keV-masked.zarr",
+          "voxel_um": 9.362,
+          "superseded_by": null,
+          "read_level": 0,
+          "ct_url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0125/volumes/20250821151825-9.362um-1.2m-113keV-masked.zarr/",
+          "input_shape_zyx": [
+            20840,
+            8387,
+            8387
+          ],
+          "exposed_in_live_space": false,
+          "available_models": [
+            "lasagna"
+          ],
+          "manifests": [
+            "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0125/representations/predictions/lasagna/20250821151825-lasagna-20260419180421/PHerc0125.lasagna.json"
+          ],
+          "status": "field_metadata_available",
+          "whole_volume_complete": null,
+          "chunks_checked": "sample presence only"
+        }
+      ]
+    },
+    {
+      "scroll": "PHerc0139",
+      "sample_type": "scroll",
+      "catalog_volumes": 10,
+      "live_listed_fields": 10,
+      "known_fields": 10,
+      "models": [
+        "lasagna",
+        "lasagnetta"
+      ],
+      "coverage": "field_metadata_available",
+      "whole_volume_complete": null,
+      "volumes": [
+        {
+          "scroll": "PHerc0139",
+          "sample_type": "scroll",
+          "volume": "20250728140407",
+          "scan_id": "20250720065842",
+          "zarr": "20250728140407-9.362um-1.2m-113keV-masked.zarr",
+          "voxel_um": 9.362,
+          "superseded_by": null,
+          "read_level": 0,
+          "ct_url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0139/volumes/20250728140407-9.362um-1.2m-113keV-masked.zarr/",
+          "input_shape_zyx": [
+            20974,
+            6621,
+            6621
+          ],
+          "exposed_in_live_space": true,
+          "available_models": [
+            "lasagnetta"
+          ],
+          "manifests": [
+            "https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHerc0139/representations/predictions/lasagna/20250728140407-lasagnetta-0.1.1/PHerc0139-20250728140407.lasagna.json"
+          ],
+          "status": "field_metadata_available",
+          "whole_volume_complete": null,
+          "chunks_checked": "sample presence only"
+        },
+        {
+          "scroll": "PHerc0139",
+          "sample_type": "scroll",
+          "volume": "20250820105138",
+          "scan_id": "20250722040659",
+          "zarr": "20250820105138-2.403um-0.2m-77keV-masked.zarr",
+          "voxel_um": 2.403,
+          "superseded_by": null,
+          "read_level": 2,
+          "ct_url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0139/volumes/20250820105138-2.403um-0.2m-77keV-masked.zarr/",
+          "input_shape_zyx": [
+            4849,
+            6527,
+            6527
+          ],
+          "exposed_in_live_space": true,
+          "available_models": [
+            "lasagnetta"
+          ],
+          "manifests": [
+            "https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHerc0139/representations/predictions/lasagna/20250820105138-lasagnetta-0.1.1/PHerc0139-20250820105138.lasagna.json"
+          ],
+          "status": "field_metadata_available",
+          "whole_volume_complete": null,
+          "chunks_checked": "sample presence only"
+        },
+        {
+          "scroll": "PHerc0139",
+          "sample_type": "scroll",
+          "volume": "20250822062710",
+          "scan_id": "20250720235903",
+          "zarr": "20250822062710-2.403um-0.2m-77keV-masked.zarr",
+          "voxel_um": 2.403,
+          "superseded_by": null,
+          "read_level": 2,
+          "ct_url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0139/volumes/20250822062710-2.403um-0.2m-77keV-masked.zarr/",
+          "input_shape_zyx": [
+            3785,
+            6516,
+            6516
+          ],
+          "exposed_in_live_space": true,
+          "available_models": [
+            "lasagnetta"
+          ],
+          "manifests": [
+            "https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHerc0139/representations/predictions/lasagna/20250822062710-lasagnetta-0.1.1/PHerc0139-20250822062710.lasagna.json"
+          ],
+          "status": "field_metadata_available",
+          "whole_volume_complete": null,
+          "chunks_checked": "sample presence only"
+        },
+        {
+          "scroll": "PHerc0139",
+          "sample_type": "scroll",
+          "volume": "20251107132835",
+          "scan_id": "20250720065842",
+          "zarr": "20251107132835-9.362um-1.2m-113keV-pag0-masked.zarr",
+          "voxel_um": 9.362,
+          "superseded_by": null,
+          "read_level": 0,
+          "ct_url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0139/volumes/20251107132835-9.362um-1.2m-113keV-pag0-masked.zarr/",
+          "input_shape_zyx": [
+            20961,
+            6621,
+            6621
+          ],
+          "exposed_in_live_space": true,
+          "available_models": [
+            "lasagnetta"
+          ],
+          "manifests": [
+            "https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHerc0139/representations/predictions/lasagna/20251107132835-lasagnetta-0.1.1/PHerc0139-20251107132835.lasagna.json"
+          ],
+          "status": "field_metadata_available",
+          "whole_volume_complete": null,
+          "chunks_checked": "sample presence only"
+        },
+        {
+          "scroll": "PHerc0139",
+          "sample_type": "scroll",
+          "volume": "20251107135911",
+          "scan_id": "20250720065842",
+          "zarr": "20251107135911-9.362um-1.2m-113keV-pag50-masked.zarr",
+          "voxel_um": 9.362,
+          "superseded_by": null,
+          "read_level": 0,
+          "ct_url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0139/volumes/20251107135911-9.362um-1.2m-113keV-pag50-masked.zarr/",
+          "input_shape_zyx": [
+            20961,
+            6621,
+            6621
+          ],
+          "exposed_in_live_space": true,
+          "available_models": [
+            "lasagnetta"
+          ],
+          "manifests": [
+            "https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHerc0139/representations/predictions/lasagna/20251107135911-lasagnetta-0.1.1/PHerc0139-20251107135911.lasagna.json"
+          ],
+          "status": "field_metadata_available",
+          "whole_volume_complete": null,
+          "chunks_checked": "sample presence only"
+        },
+        {
+          "scroll": "PHerc0139",
+          "sample_type": "scroll",
+          "volume": "20260102150214",
+          "scan_id": "20251205005141",
+          "zarr": "20260102150214-2.399um-0.2m-78keV-masked.zarr",
+          "voxel_um": 2.399,
+          "superseded_by": {
+            "volume_id": "20260930100252",
+            "date": "2026-10-05",
+            "reason": "remasked with scrollmask_august_t_4000 at mask_scale 16, replacing scrollmask_finetune_new_t_12000 at mask_scale 8; identical voxel frame"
+          },
+          "read_level": 2,
+          "ct_url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0139/volumes/20260102150214-2.399um-0.2m-78keV-masked.zarr/",
+          "input_shape_zyx": [
+            19239,
+            6628,
+            6628
+          ],
+          "exposed_in_live_space": true,
+          "available_models": [
+            "lasagna"
+          ],
+          "manifests": [
+            "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0139/representations/predictions/lasagna/20260102150214-lasagna-20260419180421-L2/PHerc0139-20260102150214-lasagna-20260724.lasagna.json"
+          ],
+          "status": "field_metadata_available",
+          "whole_volume_complete": null,
+          "chunks_checked": "sample presence only"
+        },
+        {
+          "scroll": "PHerc0139",
+          "sample_type": "scroll",
+          "volume": "20260319133050",
+          "scan_id": "20250720235903",
+          "zarr": "20260319133050-2.403um-0.2m-77keV-masked.zarr",
+          "voxel_um": 2.403,
+          "superseded_by": null,
+          "read_level": 2,
+          "ct_url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0139/volumes/20260319133050-2.403um-0.2m-77keV-masked.zarr/",
+          "input_shape_zyx": [
+            3785,
+            6516,
+            6516
+          ],
+          "exposed_in_live_space": true,
+          "available_models": [
+            "lasagnetta"
+          ],
+          "manifests": [
+            "https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHerc0139/representations/predictions/lasagna/20260319133050-lasagnetta-0.1.1/PHerc0139-20260319133050.lasagna.json"
+          ],
+          "status": "field_metadata_available",
+          "whole_volume_complete": null,
+          "chunks_checked": "sample presence only"
+        },
+        {
+          "scroll": "PHerc0139",
+          "sample_type": "scroll",
+          "volume": "20260319133554",
+          "scan_id": "20250722040659",
+          "zarr": "20260319133554-2.403um-0.2m-77keV-masked.zarr",
+          "voxel_um": 2.403,
+          "superseded_by": null,
+          "read_level": 2,
+          "ct_url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0139/volumes/20260319133554-2.403um-0.2m-77keV-masked.zarr/",
+          "input_shape_zyx": [
+            4842,
+            6527,
+            6527
+          ],
+          "exposed_in_live_space": true,
+          "available_models": [
+            "lasagnetta"
+          ],
+          "manifests": [
+            "https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHerc0139/representations/predictions/lasagna/20260319133554-lasagnetta-0.1.1/PHerc0139-20260319133554.lasagna.json"
+          ],
+          "status": "field_metadata_available",
+          "whole_volume_complete": null,
+          "chunks_checked": "sample presence only"
+        },
+        {
+          "scroll": "PHerc0139",
+          "sample_type": "scroll",
+          "volume": "20260413113053",
+          "scan_id": "20251202104544",
+          "zarr": "20260413113053-1.129um-0.2m-59keV-masked.zarr",
+          "voxel_um": 1.129,
+          "superseded_by": null,
+          "read_level": 3,
+          "ct_url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0139/volumes/20260413113053-1.129um-0.2m-59keV-masked.zarr/",
+          "input_shape_zyx": [
+            2413,
+            4497,
+            4040
+          ],
+          "exposed_in_live_space": true,
+          "available_models": [
+            "lasagnetta"
+          ],
+          "manifests": [
+            "https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHerc0139/representations/predictions/lasagna/20260413113053-lasagnetta-0.1.1/PHerc0139-20260413113053.lasagna.json"
+          ],
+          "status": "field_metadata_available",
+          "whole_volume_complete": null,
+          "chunks_checked": "sample presence only"
+        },
+        {
+          "scroll": "PHerc0139",
+          "sample_type": "scroll",
+          "volume": "20260930100252",
+          "scan_id": "20251205005141",
+          "zarr": "20260930100252-2.399um-0.2m-78keV-masked.zarr",
+          "voxel_um": 2.399,
+          "superseded_by": null,
+          "read_level": 2,
+          "ct_url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0139/volumes/20260930100252-2.399um-0.2m-78keV-masked.zarr/",
+          "input_shape_zyx": [
+            19237,
+            6628,
+            6628
+          ],
+          "exposed_in_live_space": true,
+          "available_models": [
+            "lasagnetta"
+          ],
+          "manifests": [
+            "https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHerc0139/representations/predictions/lasagna/20260930100252-lasagnetta-0.1.1/PHerc0139-20260930100252.lasagna.json"
+          ],
+          "status": "field_metadata_available",
+          "whole_volume_complete": null,
+          "chunks_checked": "sample presence only"
+        }
+      ]
+    },
+    {
+      "scroll": "PHerc0172",
+      "sample_type": "scroll",
+      "catalog_volumes": 2,
+      "live_listed_fields": 2,
+      "known_fields": 2,
+      "models": [
+        "lasagnetta"
+      ],
+      "coverage": "field_metadata_available",
+      "whole_volume_complete": null,
+      "volumes": [
+        {
+          "scroll": "PHerc0172",
+          "sample_type": "scroll",
+          "volume": "20241024131838",
+          "scan_id": "20241024131838",
+          "zarr": "20241024131838-7.910um-53keV-masked.zarr",
+          "voxel_um": 7.91,
+          "superseded_by": null,
+          "read_level": 0,
+          "ct_url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0172/volumes/20241024131838-7.910um-53keV-masked.zarr/",
+          "input_shape_zyx": [
+            21000,
+            6700,
+            9100
+          ],
+          "exposed_in_live_space": true,
+          "available_models": [
+            "lasagnetta"
+          ],
+          "manifests": [
+            "https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHerc0172/representations/predictions/lasagna/20241024131838-lasagnetta-0.1.1/PHerc0172.lasagna.json"
+          ],
+          "status": "field_metadata_available",
+          "whole_volume_complete": null,
+          "chunks_checked": "sample presence only"
+        },
+        {
+          "scroll": "PHerc0172",
+          "sample_type": "scroll",
+          "volume": "20241024131839",
+          "scan_id": "20241024131838",
+          "zarr": "20241024131839-7.910um-53keV-masked.zarr",
+          "voxel_um": 7.91,
+          "superseded_by": null,
+          "read_level": 0,
+          "ct_url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0172/volumes/20241024131839-7.910um-53keV-masked.zarr/",
+          "input_shape_zyx": [
+            20820,
+            6700,
+            9100
+          ],
+          "exposed_in_live_space": true,
+          "available_models": [
+            "lasagnetta"
+          ],
+          "manifests": [
+            "https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHerc0172/representations/predictions/lasagna/20241024131839-lasagnetta-0.1.1/PHerc0172-20241024131839.lasagna.json"
+          ],
+          "status": "field_metadata_available",
+          "whole_volume_complete": null,
+          "chunks_checked": "sample presence only"
+        }
+      ]
+    },
+    {
+      "scroll": "PHerc0175A",
+      "sample_type": "scroll",
+      "catalog_volumes": 1,
+      "live_listed_fields": 1,
+      "known_fields": 1,
+      "models": [
+        "lasagna"
+      ],
+      "coverage": "field_metadata_available",
+      "whole_volume_complete": null,
+      "volumes": [
+        {
+          "scroll": "PHerc0175A",
+          "sample_type": "scroll",
+          "volume": "20250521115057",
+          "scan_id": "20250511125731",
+          "zarr": "20250521115057-8.640um-1.2m-116keV-masked.zarr",
+          "voxel_um": 8.64,
+          "superseded_by": null,
+          "read_level": 0,
+          "ct_url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0175A/volumes/20250521115057-8.640um-1.2m-116keV-masked.zarr/",
+          "input_shape_zyx": [
+            12748,
+            9363,
+            9363
+          ],
+          "exposed_in_live_space": true,
+          "available_models": [
+            "lasagna"
+          ],
+          "manifests": [
+            "https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHerc0175A/representations/predictions/lasagna/20250521115057-lasagna-de45f011/PHerc0175A.lasagna.json"
+          ],
+          "status": "field_metadata_available",
+          "whole_volume_complete": null,
+          "chunks_checked": "sample presence only"
+        }
+      ]
+    },
+    {
+      "scroll": "PHerc0175B",
+      "sample_type": "scroll",
+      "catalog_volumes": 1,
+      "live_listed_fields": 1,
+      "known_fields": 1,
+      "models": [
+        "lasagna"
+      ],
+      "coverage": "field_metadata_available",
+      "whole_volume_complete": null,
+      "volumes": [
+        {
+          "scroll": "PHerc0175B",
+          "sample_type": "scroll",
+          "volume": "20250521125822",
+          "scan_id": "20250510115222",
+          "zarr": "20250521125822-8.640um-1.2m-116keV-masked.zarr",
+          "voxel_um": 8.64,
+          "superseded_by": null,
+          "read_level": 0,
+          "ct_url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0175B/volumes/20250521125822-8.640um-1.2m-116keV-masked.zarr/",
+          "input_shape_zyx": [
+            15897,
+            9613,
+            9613
+          ],
+          "exposed_in_live_space": true,
+          "available_models": [
+            "lasagna"
+          ],
+          "manifests": [
+            "https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHerc0175B/representations/predictions/lasagna/20250521125822-lasagna-de45f011/PHerc0175B.lasagna.json"
+          ],
+          "status": "field_metadata_available",
+          "whole_volume_complete": null,
+          "chunks_checked": "sample presence only"
+        }
+      ]
+    },
+    {
+      "scroll": "PHerc0191",
+      "sample_type": "scroll",
+      "catalog_volumes": 1,
+      "live_listed_fields": 0,
+      "known_fields": 1,
+      "models": [
+        "lasagna"
+      ],
+      "coverage": "field_metadata_available",
+      "whole_volume_complete": null,
+      "volumes": [
+        {
+          "scroll": "PHerc0191",
+          "sample_type": "scroll",
+          "volume": "20250821151635",
+          "scan_id": "20250720024445",
+          "zarr": "20250821151635-9.362um-1.2m-113keV-masked.zarr",
+          "voxel_um": 9.362,
+          "superseded_by": null,
+          "read_level": 0,
+          "ct_url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0191/volumes/20250821151635-9.362um-1.2m-113keV-masked.zarr/",
+          "input_shape_zyx": [
+            18977,
+            8387,
+            8387
+          ],
+          "exposed_in_live_space": false,
+          "available_models": [
+            "lasagna"
+          ],
+          "manifests": [
+            "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0191/representations/predictions/lasagna/20250821151635-lasagna-20260419180421/PHerc0191.lasagna.json"
+          ],
+          "status": "field_metadata_available",
+          "whole_volume_complete": null,
+          "chunks_checked": "sample presence only"
+        }
+      ]
+    },
+    {
+      "scroll": "PHerc0211",
+      "sample_type": "scroll",
+      "catalog_volumes": 1,
+      "live_listed_fields": 0,
+      "known_fields": 1,
+      "models": [
+        "lasagna"
+      ],
+      "coverage": "field_metadata_available",
+      "whole_volume_complete": null,
+      "volumes": [
+        {
+          "scroll": "PHerc0211",
+          "sample_type": "scroll",
+          "volume": "20250821151803",
+          "scan_id": "20250720140115",
+          "zarr": "20250821151803-9.362um-1.2m-113keV-masked.zarr",
+          "voxel_um": 9.362,
+          "superseded_by": null,
+          "read_level": 0,
+          "ct_url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0211/volumes/20250821151803-9.362um-1.2m-113keV-masked.zarr/",
+          "input_shape_zyx": [
+            19416,
+            7948,
+            7948
+          ],
+          "exposed_in_live_space": false,
+          "available_models": [
+            "lasagna"
+          ],
+          "manifests": [
+            "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0211/representations/predictions/lasagna/20250821151803-lasagna-20260419180421/PHerc0211.lasagna.json"
+          ],
+          "status": "field_metadata_available",
+          "whole_volume_complete": null,
+          "chunks_checked": "sample presence only"
+        }
+      ]
+    },
+    {
+      "scroll": "PHerc0257",
+      "sample_type": "scroll",
+      "catalog_volumes": 1,
+      "live_listed_fields": 0,
+      "known_fields": 1,
+      "models": [
+        "lasagna"
+      ],
+      "coverage": "field_metadata_available",
+      "whole_volume_complete": null,
+      "volumes": [
+        {
+          "scroll": "PHerc0257",
+          "sample_type": "scroll",
+          "volume": "20250821151750",
+          "scan_id": "20250720113058",
+          "zarr": "20250821151750-9.362um-1.2m-113keV-masked.zarr",
+          "voxel_um": 9.362,
+          "superseded_by": null,
+          "read_level": 0,
+          "ct_url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0257/volumes/20250821151750-9.362um-1.2m-113keV-masked.zarr/",
+          "input_shape_zyx": [
+            18872,
+            8388,
+            8388
+          ],
+          "exposed_in_live_space": false,
+          "available_models": [
+            "lasagna"
+          ],
+          "manifests": [
+            "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0257/representations/predictions/lasagna/20250821151750-lasagna-20260419180421/PHerc0257.lasagna.json"
+          ],
+          "status": "field_metadata_available",
+          "whole_volume_complete": null,
+          "chunks_checked": "sample presence only"
+        }
+      ]
+    },
+    {
+      "scroll": "PHerc0268",
+      "sample_type": "scroll",
+      "catalog_volumes": 1,
+      "live_listed_fields": 0,
+      "known_fields": 1,
+      "models": [
+        "lasagna"
+      ],
+      "coverage": "field_metadata_available",
+      "whole_volume_complete": null,
+      "volumes": [
+        {
+          "scroll": "PHerc0268",
+          "sample_type": "scroll",
+          "volume": "20251110183117",
+          "scan_id": "20250511054932",
+          "zarr": "20251110183117-8.640um-1.2m-116keV-masked.zarr",
+          "voxel_um": 8.64,
+          "superseded_by": null,
+          "read_level": 0,
+          "ct_url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0268/volumes/20251110183117-8.640um-1.2m-116keV-masked.zarr/",
+          "input_shape_zyx": [
+            14833,
+            12145,
+            12145
+          ],
+          "exposed_in_live_space": false,
+          "available_models": [
+            "lasagna"
+          ],
+          "manifests": [
+            "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0268/representations/predictions/lasagna/20251110183117-lasagna-20260419180421/PHerc0268.lasagna.json"
+          ],
+          "status": "field_metadata_available",
+          "whole_volume_complete": null,
+          "chunks_checked": "sample presence only"
+        }
+      ]
+    },
+    {
+      "scroll": "PHerc0306B",
+      "sample_type": "scroll",
+      "catalog_volumes": 1,
+      "live_listed_fields": 1,
+      "known_fields": 1,
+      "models": [
+        "lasagna"
+      ],
+      "coverage": "field_metadata_available",
+      "whole_volume_complete": null,
+      "volumes": [
+        {
+          "scroll": "PHerc0306B",
+          "sample_type": "scroll",
+          "volume": "20250521133212",
+          "scan_id": "20250510062844",
+          "zarr": "20250521133212-8.640um-1.2m-116keV-masked.zarr",
+          "voxel_um": 8.64,
+          "superseded_by": null,
+          "read_level": 0,
+          "ct_url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0306B/volumes/20250521133212-8.640um-1.2m-116keV-masked.zarr/",
+          "input_shape_zyx": [
+            15898,
+            8849,
+            8849
+          ],
+          "exposed_in_live_space": true,
+          "available_models": [
+            "lasagna"
+          ],
+          "manifests": [
+            "https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHerc0306B/representations/predictions/lasagna/20250521133212-lasagna-de45f011/PHerc0306B.lasagna.json"
+          ],
+          "status": "field_metadata_available",
+          "whole_volume_complete": null,
+          "chunks_checked": "sample presence only"
+        }
+      ]
+    },
+    {
+      "scroll": "PHerc0332",
+      "sample_type": "scroll",
+      "catalog_volumes": 4,
+      "live_listed_fields": 1,
+      "known_fields": 1,
+      "models": [
+        "lasagna"
+      ],
+      "coverage": "field_metadata_available",
+      "whole_volume_complete": null,
+      "volumes": [
+        {
+          "scroll": "PHerc0332",
+          "sample_type": "scroll",
+          "volume": "20231027191953",
+          "scan_id": "20231027191953",
+          "zarr": "20231027191953-3.240um-53keV-masked.zarr",
+          "voxel_um": 3.24,
+          "superseded_by": null,
+          "read_level": 2,
+          "ct_url": "https://data.aws.ash2txt.org/samples/PHerc0332/volumes/20231027191953-3.240um-53keV-masked.zarr/",
+          "input_shape_zyx": [
+            5733,
+            2354,
+            2354
+          ],
+          "exposed_in_live_space": false,
+          "available_models": [],
+          "manifests": [],
+          "status": "no_lasagna_or_lasagnetta_field_found",
+          "whole_volume_complete": null,
+          "chunks_checked": "not applicable"
+        },
+        {
+          "scroll": "PHerc0332",
+          "sample_type": "scroll",
+          "volume": "20231117143551",
+          "scan_id": "20231117143551",
+          "zarr": "20231117143551-7.910um-53keV-masked.zarr",
+          "voxel_um": 7.91,
+          "superseded_by": null,
+          "read_level": 0,
+          "ct_url": "https://data.aws.ash2txt.org/samples/PHerc0332/volumes/20231117143551-7.910um-53keV-masked.zarr/",
+          "input_shape_zyx": [
+            9777,
+            3550,
+            3400
+          ],
+          "exposed_in_live_space": false,
+          "available_models": [],
+          "manifests": [],
+          "status": "no_lasagna_or_lasagnetta_field_found",
+          "whole_volume_complete": null,
+          "chunks_checked": "not applicable"
+        },
+        {
+          "scroll": "PHerc0332",
+          "sample_type": "scroll",
+          "volume": "20231201141544",
+          "scan_id": "20231201141544",
+          "zarr": "20231201141544-3.240um-70keV-masked.zarr",
+          "voxel_um": 3.24,
+          "superseded_by": null,
+          "read_level": 2,
+          "ct_url": "https://data.aws.ash2txt.org/samples/PHerc0332/volumes/20231201141544-3.240um-70keV-masked.zarr/",
+          "input_shape_zyx": [
+            5733,
+            2354,
+            2354
+          ],
+          "exposed_in_live_space": false,
+          "available_models": [],
+          "manifests": [],
+          "status": "no_lasagna_or_lasagnetta_field_found",
+          "whole_volume_complete": null,
+          "chunks_checked": "not applicable"
+        },
+        {
+          "scroll": "PHerc0332",
+          "sample_type": "scroll",
+          "volume": "20251211183505",
+          "scan_id": "20251205210228",
+          "zarr": "20251211183505-2.399um-0.2m-78keV-masked.zarr",
+          "voxel_um": 2.399,
+          "superseded_by": null,
+          "read_level": 2,
+          "ct_url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0332/volumes/20251211183505-2.399um-0.2m-78keV-masked.zarr/",
+          "input_shape_zyx": [
+            8398,
+            3941,
+            3941
+          ],
+          "exposed_in_live_space": true,
+          "available_models": [
+            "lasagna"
+          ],
+          "manifests": [
+            "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0332/representations/predictions/lasagna/20251211183505-lasagna-20260419180421-L2/PHerc0332-20251211183505-lasagna-20260724.lasagna.json"
+          ],
+          "status": "field_metadata_available",
+          "whole_volume_complete": null,
+          "chunks_checked": "sample presence only"
+        }
+      ]
+    },
+    {
+      "scroll": "PHerc0343",
+      "sample_type": "scroll",
+      "catalog_volumes": 1,
+      "live_listed_fields": 1,
+      "known_fields": 1,
+      "models": [
+        "lasagna"
+      ],
+      "coverage": "field_metadata_available",
+      "whole_volume_complete": null,
+      "volumes": [
+        {
+          "scroll": "PHerc0343",
+          "sample_type": "scroll",
+          "volume": "20250521140437",
+          "scan_id": "20250509220833",
+          "zarr": "20250521140437-8.640um-1.2m-116keV-masked.zarr",
+          "voxel_um": 8.64,
+          "superseded_by": null,
+          "read_level": 0,
+          "ct_url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0343/volumes/20250521140437-8.640um-1.2m-116keV-masked.zarr/",
+          "input_shape_zyx": [
+            17998,
+            8595,
+            8595
+          ],
+          "exposed_in_live_space": true,
+          "available_models": [
+            "lasagna"
+          ],
+          "manifests": [
+            "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0343/representations/predictions/lasagna/20250521140437-lasagna-20260419180421/PHerc0343.lasagna.json"
+          ],
+          "status": "field_metadata_available",
+          "whole_volume_complete": null,
+          "chunks_checked": "sample presence only"
+        }
+      ]
+    },
+    {
+      "scroll": "PHerc0343P",
+      "sample_type": "fragment",
+      "catalog_volumes": 2,
+      "live_listed_fields": 1,
+      "known_fields": 1,
+      "models": [
+        "lasagna"
+      ],
+      "coverage": "field_metadata_available",
+      "whole_volume_complete": null,
+      "volumes": [
+        {
+          "scroll": "PHerc0343P",
+          "sample_type": "fragment",
+          "volume": "20250521134555",
+          "scan_id": "20250510090703",
+          "zarr": "20250521134555-8.640um-1.2m-116keV-masked.zarr",
+          "voxel_um": 8.64,
+          "superseded_by": null,
+          "read_level": 0,
+          "ct_url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0343P/volumes/20250521134555-8.640um-1.2m-116keV-masked.zarr/",
+          "input_shape_zyx": [
+            5398,
+            5057,
+            5057
+          ],
+          "exposed_in_live_space": false,
+          "available_models": [],
+          "manifests": [],
+          "status": "no_lasagna_or_lasagnetta_field_found",
+          "whole_volume_complete": null,
+          "chunks_checked": "not applicable"
+        },
+        {
+          "scroll": "PHerc0343P",
+          "sample_type": "fragment",
+          "volume": "20260304131111",
+          "scan_id": "20250512023932",
+          "zarr": "20260304131111-2.215um-0.4m-111keV-masked.zarr",
+          "voxel_um": 2.215,
+          "superseded_by": null,
+          "read_level": 2,
+          "ct_url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0343P/volumes/20260304131111-2.215um-0.4m-111keV-masked.zarr/",
+          "input_shape_zyx": [
+            5179,
+            3289,
+            3289
+          ],
+          "exposed_in_live_space": true,
+          "available_models": [
+            "lasagna"
+          ],
+          "manifests": [
+            "https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHerc0343P/representations/predictions/lasagna/20260304131111-lasagna/PHerc0343P.lasagna.json"
+          ],
+          "status": "field_metadata_available",
+          "whole_volume_complete": null,
+          "chunks_checked": "sample presence only"
+        }
+      ]
+    },
+    {
+      "scroll": "PHerc0358",
+      "sample_type": "scroll",
+      "catalog_volumes": 1,
+      "live_listed_fields": 0,
+      "known_fields": 1,
+      "models": [
+        "lasagna"
+      ],
+      "coverage": "field_metadata_available",
+      "whole_volume_complete": null,
+      "volumes": [
+        {
+          "scroll": "PHerc0358",
+          "sample_type": "scroll",
+          "volume": "20250821151737",
+          "scan_id": "20250719150703",
+          "zarr": "20250821151737-9.362um-1.2m-113keV-masked.zarr",
+          "voxel_um": 9.362,
+          "superseded_by": null,
+          "read_level": 0,
+          "ct_url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0358/volumes/20250821151737-9.362um-1.2m-113keV-masked.zarr/",
+          "input_shape_zyx": [
+            14744,
+            7783,
+            7783
+          ],
+          "exposed_in_live_space": false,
+          "available_models": [
+            "lasagna"
+          ],
+          "manifests": [
+            "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0358/representations/predictions/lasagna/20250821151737-lasagna-20260419180421/PHerc0358.lasagna.json"
+          ],
+          "status": "field_metadata_available",
+          "whole_volume_complete": null,
+          "chunks_checked": "sample presence only"
+        }
+      ]
+    },
+    {
+      "scroll": "PHerc0483A",
+      "sample_type": "scroll",
+      "catalog_volumes": 1,
+      "live_listed_fields": 1,
+      "known_fields": 1,
+      "models": [
+        "lasagna"
+      ],
+      "coverage": "field_metadata_available",
+      "whole_volume_complete": null,
+      "volumes": [
+        {
+          "scroll": "PHerc0483A",
+          "sample_type": "scroll",
+          "volume": "20250521140913",
+          "scan_id": "20250510022723",
+          "zarr": "20250521140913-8.640um-1.2m-116keV-masked.zarr",
+          "voxel_um": 8.64,
+          "superseded_by": null,
+          "read_level": 0,
+          "ct_url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0483A/volumes/20250521140913-8.640um-1.2m-116keV-masked.zarr/",
+          "input_shape_zyx": [
+            15898,
+            8849,
+            8849
+          ],
+          "exposed_in_live_space": true,
+          "available_models": [
+            "lasagna"
+          ],
+          "manifests": [
+            "https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHerc0483A/representations/predictions/lasagna/20250521140913-lasagna-de45f011/PHerc0483A.lasagna.json"
+          ],
+          "status": "field_metadata_available",
+          "whole_volume_complete": null,
+          "chunks_checked": "sample presence only"
+        }
+      ]
+    },
+    {
+      "scroll": "PHerc0483B",
+      "sample_type": "scroll",
+      "catalog_volumes": 1,
+      "live_listed_fields": 1,
+      "known_fields": 1,
+      "models": [
+        "lasagna"
+      ],
+      "coverage": "field_metadata_available",
+      "whole_volume_complete": null,
+      "volumes": [
+        {
+          "scroll": "PHerc0483B",
+          "sample_type": "scroll",
+          "volume": "20251124083638",
+          "scan_id": "20250509113134",
+          "zarr": "20251124083638-8.640um-1.2m-116keV-masked.zarr",
+          "voxel_um": 8.64,
+          "superseded_by": null,
+          "read_level": 0,
+          "ct_url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0483B/volumes/20251124083638-8.640um-1.2m-116keV-masked.zarr/",
+          "input_shape_zyx": [
+            11880,
+            8343,
+            8343
+          ],
+          "exposed_in_live_space": true,
+          "available_models": [
+            "lasagna"
+          ],
+          "manifests": [
+            "https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHerc0483B/representations/predictions/lasagna/20251124083638-lasagna-de45f011/PHerc0483B.lasagna.json"
+          ],
+          "status": "field_metadata_available",
+          "whole_volume_complete": null,
+          "chunks_checked": "sample presence only"
+        }
+      ]
+    },
+    {
+      "scroll": "PHerc0490A",
+      "sample_type": "scroll",
+      "catalog_volumes": 1,
+      "live_listed_fields": 1,
+      "known_fields": 1,
+      "models": [
+        "lasagna"
+      ],
+      "coverage": "field_metadata_available",
+      "whole_volume_complete": null,
+      "volumes": [
+        {
+          "scroll": "PHerc0490A",
+          "sample_type": "scroll",
+          "volume": "20250521151210",
+          "scan_id": "20250509181146",
+          "zarr": "20250521151210-8.640um-1.2m-116keV-masked.zarr",
+          "voxel_um": 8.64,
+          "superseded_by": null,
+          "read_level": 0,
+          "ct_url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0490A/volumes/20250521151210-8.640um-1.2m-116keV-masked.zarr/",
+          "input_shape_zyx": [
+            11698,
+            9101,
+            9101
+          ],
+          "exposed_in_live_space": true,
+          "available_models": [
+            "lasagna"
+          ],
+          "manifests": [
+            "https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHerc0490A/representations/predictions/lasagna/20250521151210-lasagna-de45f011/PHerc0490A.lasagna.json"
+          ],
+          "status": "field_metadata_available",
+          "whole_volume_complete": null,
+          "chunks_checked": "sample presence only"
+        }
+      ]
+    },
+    {
+      "scroll": "PHerc0490B",
+      "sample_type": "scroll",
+      "catalog_volumes": 1,
+      "live_listed_fields": 1,
+      "known_fields": 1,
+      "models": [
+        "lasagna"
+      ],
+      "coverage": "field_metadata_available",
+      "whole_volume_complete": null,
+      "volumes": [
+        {
+          "scroll": "PHerc0490B",
+          "sample_type": "scroll",
+          "volume": "20250521151215",
+          "scan_id": "20250509082300",
+          "zarr": "20250521151215-8.640um-1.2m-116keV-masked.zarr",
+          "voxel_um": 8.64,
+          "superseded_by": null,
+          "read_level": 0,
+          "ct_url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0490B/volumes/20250521151215-8.640um-1.2m-116keV-masked.zarr/",
+          "input_shape_zyx": [
+            10648,
+            8343,
+            8343
+          ],
+          "exposed_in_live_space": true,
+          "available_models": [
+            "lasagna"
+          ],
+          "manifests": [
+            "https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHerc0490B/representations/predictions/lasagna/20250521151215-lasagna-de45f011/PHerc0490B.lasagna.json"
+          ],
+          "status": "field_metadata_available",
+          "whole_volume_complete": null,
+          "chunks_checked": "sample presence only"
+        }
+      ]
+    },
+    {
+      "scroll": "PHerc0500P2",
+      "sample_type": "fragment",
+      "catalog_volumes": 4,
+      "live_listed_fields": 1,
+      "known_fields": 1,
+      "models": [
+        "lasagnetta"
+      ],
+      "coverage": "field_metadata_available",
+      "whole_volume_complete": null,
+      "volumes": [
+        {
+          "scroll": "PHerc0500P2",
+          "sample_type": "fragment",
+          "volume": "20250526151718",
+          "scan_id": "20250508033249",
+          "zarr": "20250526151718-2.215um-0.4m-111keV-masked.zarr",
+          "voxel_um": 2.215,
+          "superseded_by": null,
+          "read_level": 2,
+          "ct_url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0500P2/volumes/20250526151718-2.215um-0.4m-111keV-masked.zarr/",
+          "input_shape_zyx": [
+            7024,
+            4553,
+            4553
+          ],
+          "exposed_in_live_space": false,
+          "available_models": [],
+          "manifests": [],
+          "status": "no_lasagna_or_lasagnetta_field_found",
+          "whole_volume_complete": null,
+          "chunks_checked": "not applicable"
+        },
+        {
+          "scroll": "PHerc0500P2",
+          "sample_type": "fragment",
+          "volume": "20250528085330",
+          "scan_id": "20250507210011",
+          "zarr": "20250528085330-4.317um-1.2m-111keV-masked.zarr",
+          "voxel_um": 4.317,
+          "superseded_by": null,
+          "read_level": 1,
+          "ct_url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0500P2/volumes/20250528085330-4.317um-1.2m-111keV-masked.zarr/",
+          "input_shape_zyx": [
+            7919,
+            4712,
+            4712
+          ],
+          "exposed_in_live_space": false,
+          "available_models": [],
+          "manifests": [],
+          "status": "no_lasagna_or_lasagnetta_field_found",
+          "whole_volume_complete": null,
+          "chunks_checked": "not applicable"
+        },
+        {
+          "scroll": "PHerc0500P2",
+          "sample_type": "fragment",
+          "volume": "20250820143440",
+          "scan_id": "20250720125517",
+          "zarr": "20250820143440-9.362um-1.2m-113keV-masked.zarr",
+          "voxel_um": 9.362,
+          "superseded_by": null,
+          "read_level": 0,
+          "ct_url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0500P2/volumes/20250820143440-9.362um-1.2m-113keV-masked.zarr/",
+          "input_shape_zyx": [
+            7057,
+            4196,
+            4196
+          ],
+          "exposed_in_live_space": true,
+          "available_models": [
+            "lasagnetta"
+          ],
+          "manifests": [
+            "https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHerc0500P2/representations/predictions/lasagna/20250820143440-lasagnetta-0.1.1/PHerc0500P2.lasagna.json"
+          ],
+          "status": "field_metadata_available",
+          "whole_volume_complete": null,
+          "chunks_checked": "sample presence only"
+        },
+        {
+          "scroll": "PHerc0500P2",
+          "sample_type": "fragment",
+          "volume": "20250821110041",
+          "scan_id": "20250721125050",
+          "zarr": "20250821110041-0.550um-0.1m-65keV-masked.zarr",
+          "voxel_um": 0.55,
+          "superseded_by": null,
+          "read_level": 4,
+          "ct_url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0500P2/volumes/20250821110041-0.550um-0.1m-65keV-masked.zarr/",
+          "input_shape_zyx": [
+            770,
+            676,
+            244
+          ],
+          "exposed_in_live_space": false,
+          "available_models": [],
+          "manifests": [],
+          "status": "no_lasagna_or_lasagnetta_field_found",
+          "whole_volume_complete": null,
+          "chunks_checked": "not applicable"
+        }
+      ]
+    },
+    {
+      "scroll": "PHerc0800",
+      "sample_type": "scroll",
+      "catalog_volumes": 1,
+      "live_listed_fields": 0,
+      "known_fields": 1,
+      "models": [
+        "lasagna"
+      ],
+      "coverage": "field_metadata_available",
+      "whole_volume_complete": null,
+      "volumes": [
+        {
+          "scroll": "PHerc0800",
+          "sample_type": "scroll",
+          "volume": "20250521135224",
+          "scan_id": "20250510225703",
+          "zarr": "20250521135224-8.640um-1.2m-116keV-masked.zarr",
+          "voxel_um": 8.64,
+          "superseded_by": null,
+          "read_level": 0,
+          "ct_url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0800/volumes/20250521135224-8.640um-1.2m-116keV-masked.zarr/",
+          "input_shape_zyx": [
+            24298,
+            9867,
+            9867
+          ],
+          "exposed_in_live_space": false,
+          "available_models": [
+            "lasagna"
+          ],
+          "manifests": [
+            "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0800/representations/predictions/lasagna/20250521135224-lasagna-20260419180421/PHerc0800.lasagna.json"
+          ],
+          "status": "field_metadata_available",
+          "whole_volume_complete": null,
+          "chunks_checked": "sample presence only"
+        }
+      ]
+    },
+    {
+      "scroll": "PHerc0813",
+      "sample_type": "scroll",
+      "catalog_volumes": 1,
+      "live_listed_fields": 0,
+      "known_fields": 1,
+      "models": [
+        "lasagna"
+      ],
+      "coverage": "field_metadata_available",
+      "whole_volume_complete": null,
+      "volumes": [
+        {
+          "scroll": "PHerc0813",
+          "sample_type": "scroll",
+          "volume": "20250821151723",
+          "scan_id": "20250720160015",
+          "zarr": "20250821151723-9.362um-1.2m-113keV-masked.zarr",
+          "voxel_um": 9.362,
+          "superseded_by": null,
+          "read_level": 0,
+          "ct_url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0813/volumes/20250821151723-9.362um-1.2m-113keV-masked.zarr/",
+          "input_shape_zyx": [
+            16993,
+            7947,
+            7947
+          ],
+          "exposed_in_live_space": false,
+          "available_models": [
+            "lasagna"
+          ],
+          "manifests": [
+            "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0813/representations/predictions/lasagna/20250821151723-lasagna-20260419180421/PHerc0813.lasagna.json"
+          ],
+          "status": "field_metadata_available",
+          "whole_volume_complete": null,
+          "chunks_checked": "sample presence only"
+        }
+      ]
+    },
+    {
+      "scroll": "PHerc0814",
+      "sample_type": "scroll",
+      "catalog_volumes": 3,
+      "live_listed_fields": 3,
+      "known_fields": 3,
+      "models": [
+        "lasagna",
+        "lasagnetta"
+      ],
+      "coverage": "field_metadata_available",
+      "whole_volume_complete": null,
+      "volumes": [
+        {
+          "scroll": "PHerc0814",
+          "sample_type": "scroll",
+          "volume": "20250804134230",
+          "scan_id": "20250719170512",
+          "zarr": "20250804134230-9.362um-1.2m-113keV-masked.zarr",
+          "voxel_um": 9.362,
+          "superseded_by": null,
+          "read_level": 0,
+          "ct_url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0814/volumes/20250804134230-9.362um-1.2m-113keV-masked.zarr/",
+          "input_shape_zyx": [
+            19390,
+            5784,
+            5784
+          ],
+          "exposed_in_live_space": true,
+          "available_models": [
+            "lasagnetta"
+          ],
+          "manifests": [
+            "https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHerc0814/representations/predictions/lasagna/20250804134230-lasagnetta-0.1.1/PHerc0814-20250804134230.lasagna.json"
+          ],
+          "status": "field_metadata_available",
+          "whole_volume_complete": null,
+          "chunks_checked": "sample presence only"
+        },
+        {
+          "scroll": "PHerc0814",
+          "sample_type": "scroll",
+          "volume": "20260309142202",
+          "scan_id": "20251206184543",
+          "zarr": "20260309142202-2.399um-0.2m-78keV-masked.zarr",
+          "voxel_um": 2.399,
+          "superseded_by": null,
+          "read_level": 2,
+          "ct_url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0814/volumes/20260309142202-2.399um-0.2m-78keV-masked.zarr/",
+          "input_shape_zyx": [
+            18642,
+            5973,
+            5973
+          ],
+          "exposed_in_live_space": true,
+          "available_models": [
+            "lasagna"
+          ],
+          "manifests": [
+            "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0814/representations/predictions/lasagna/20260309142202-lasagna-20260419180421-L2/PHerc0814-20260309142202-lasagna-20260724.lasagna.json"
+          ],
+          "status": "field_metadata_available",
+          "whole_volume_complete": null,
+          "chunks_checked": "sample presence only"
+        },
+        {
+          "scroll": "PHerc0814",
+          "sample_type": "scroll",
+          "volume": "20260521123630",
+          "scan_id": "20251202233003",
+          "zarr": "20260521123630-1.129um-0.2m-59keV-masked.zarr",
+          "voxel_um": 1.129,
+          "superseded_by": null,
+          "read_level": 3,
+          "ct_url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0814/volumes/20260521123630-1.129um-0.2m-59keV-masked.zarr/",
+          "input_shape_zyx": [
+            5841,
+            2760,
+            2536
+          ],
+          "exposed_in_live_space": true,
+          "available_models": [
+            "lasagnetta"
+          ],
+          "manifests": [
+            "https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHerc0814/representations/predictions/lasagna/20260521123630-lasagnetta-0.1.1/PHerc0814-20260521123630.lasagna.json"
+          ],
+          "status": "field_metadata_available",
+          "whole_volume_complete": null,
+          "chunks_checked": "sample presence only"
+        }
+      ]
+    },
+    {
+      "scroll": "PHerc0826",
+      "sample_type": "scroll",
+      "catalog_volumes": 1,
+      "live_listed_fields": 0,
+      "known_fields": 1,
+      "models": [
+        "lasagna"
+      ],
+      "coverage": "field_metadata_available",
+      "whole_volume_complete": null,
+      "volumes": [
+        {
+          "scroll": "PHerc0826",
+          "sample_type": "scroll",
+          "volume": "20250821151701",
+          "scan_id": "20250720174915",
+          "zarr": "20250821151701-9.362um-1.2m-113keV-masked.zarr",
+          "voxel_um": 9.362,
+          "superseded_by": null,
+          "read_level": 0,
+          "ct_url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0826/volumes/20250821151701-9.362um-1.2m-113keV-masked.zarr/",
+          "input_shape_zyx": [
+            16920,
+            8169,
+            8169
+          ],
+          "exposed_in_live_space": false,
+          "available_models": [
+            "lasagna"
+          ],
+          "manifests": [
+            "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0826/representations/predictions/lasagna/20250821151701-lasagna-20260419180421/PHerc0826.lasagna.json"
+          ],
+          "status": "field_metadata_available",
+          "whole_volume_complete": null,
+          "chunks_checked": "sample presence only"
+        }
+      ]
+    },
+    {
+      "scroll": "PHerc0841",
+      "sample_type": "scroll",
+      "catalog_volumes": 2,
+      "live_listed_fields": 2,
+      "known_fields": 2,
+      "models": [
+        "lasagna",
+        "lasagnetta"
+      ],
+      "coverage": "field_metadata_available",
+      "whole_volume_complete": null,
+      "volumes": [
+        {
+          "scroll": "PHerc0841",
+          "sample_type": "scroll",
+          "volume": "20250821151531",
+          "scan_id": "20250719115350",
+          "zarr": "20250821151531-9.366um-1.2m-113keV-masked.zarr",
+          "voxel_um": 9.366,
+          "superseded_by": null,
+          "read_level": 0,
+          "ct_url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0841/volumes/20250821151531-9.366um-1.2m-113keV-masked.zarr/",
+          "input_shape_zyx": [
+            19400,
+            7703,
+            7703
+          ],
+          "exposed_in_live_space": true,
+          "available_models": [
+            "lasagna"
+          ],
+          "manifests": [
+            "https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHerc0841/representations/predictions/lasagna/20250821151531-lasagna-de45f011/PHerc0841.lasagna.json"
+          ],
+          "status": "field_metadata_available",
+          "whole_volume_complete": null,
+          "chunks_checked": "sample presence only"
+        },
+        {
+          "scroll": "PHerc0841",
+          "sample_type": "scroll",
+          "volume": "20260319124803",
+          "scan_id": "20250721195912",
+          "zarr": "20260319124803-2.403um-0.2m-77keV-masked.zarr",
+          "voxel_um": 2.403,
+          "superseded_by": null,
+          "read_level": 2,
+          "ct_url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0841/volumes/20260319124803-2.403um-0.2m-77keV-masked.zarr/",
+          "input_shape_zyx": [
+            3781,
+            7618,
+            7618
+          ],
+          "exposed_in_live_space": true,
+          "available_models": [
+            "lasagnetta"
+          ],
+          "manifests": [
+            "https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHerc0841/representations/predictions/lasagna/20260319124803-lasagnetta-0.1.1/PHerc0841-20260319124803.lasagna.json"
+          ],
+          "status": "field_metadata_available",
+          "whole_volume_complete": null,
+          "chunks_checked": "sample presence only"
+        }
+      ]
+    },
+    {
+      "scroll": "PHerc0846A",
+      "sample_type": "scroll",
+      "catalog_volumes": 2,
+      "live_listed_fields": 1,
+      "known_fields": 1,
+      "models": [
+        "lasagna"
+      ],
+      "coverage": "field_metadata_available",
+      "whole_volume_complete": null,
+      "volumes": [
+        {
+          "scroll": "PHerc0846A",
+          "sample_type": "scroll",
+          "volume": "20250728152254",
+          "scan_id": "20250719225346",
+          "zarr": "20250728152254-9.362um-1.2m-113keV-masked.zarr",
+          "voxel_um": 9.362,
+          "superseded_by": null,
+          "read_level": 0,
+          "ct_url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0846A/volumes/20250728152254-9.362um-1.2m-113keV-masked.zarr/",
+          "input_shape_zyx": [
+            14019,
+            7726,
+            7726
+          ],
+          "exposed_in_live_space": true,
+          "available_models": [
+            "lasagna"
+          ],
+          "manifests": [
+            "https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHerc0846A/representations/predictions/lasagna/20250728152254-lasagna-de45f011/PHerc0846A.lasagna.json"
+          ],
+          "status": "field_metadata_available",
+          "whole_volume_complete": null,
+          "chunks_checked": "sample presence only"
+        },
+        {
+          "scroll": "PHerc0846A",
+          "sample_type": "scroll",
+          "volume": "20260319102732",
+          "scan_id": "20250721134414",
+          "zarr": "20260319102732-2.403um-0.2m-77keV-masked.zarr",
+          "voxel_um": 2.403,
+          "superseded_by": null,
+          "read_level": 2,
+          "ct_url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0846A/volumes/20260319102732-2.403um-0.2m-77keV-masked.zarr/",
+          "input_shape_zyx": [
+            3785,
+            7397,
+            7397
+          ],
+          "exposed_in_live_space": false,
+          "available_models": [],
+          "manifests": [],
+          "status": "no_lasagna_or_lasagnetta_field_found",
+          "whole_volume_complete": null,
+          "chunks_checked": "not applicable"
+        }
+      ]
+    },
+    {
+      "scroll": "PHerc0846B",
+      "sample_type": "scroll",
+      "catalog_volumes": 1,
+      "live_listed_fields": 1,
+      "known_fields": 1,
+      "models": [
+        "lasagna"
+      ],
+      "coverage": "field_metadata_available",
+      "whole_volume_complete": null,
+      "volumes": [
+        {
+          "scroll": "PHerc0846B",
+          "sample_type": "scroll",
+          "volume": "20250804142305",
+          "scan_id": "20250719185515",
+          "zarr": "20250804142305-9.362um-1.2m-113keV-masked.zarr",
+          "voxel_um": 9.362,
+          "superseded_by": null,
+          "read_level": 0,
+          "ct_url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0846B/volumes/20250804142305-9.362um-1.2m-113keV-masked.zarr/",
+          "input_shape_zyx": [
+            13926,
+            7859,
+            7859
+          ],
+          "exposed_in_live_space": true,
+          "available_models": [
+            "lasagna"
+          ],
+          "manifests": [
+            "https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHerc0846B/representations/predictions/lasagna/20250804142305-lasagna-de45f011/PHerc0846B.lasagna.json"
+          ],
+          "status": "field_metadata_available",
+          "whole_volume_complete": null,
+          "chunks_checked": "sample presence only"
+        }
+      ]
+    },
+    {
+      "scroll": "PHerc1203",
+      "sample_type": "scroll",
+      "catalog_volumes": 2,
+      "live_listed_fields": 0,
+      "known_fields": 1,
+      "models": [
+        "lasagna"
+      ],
+      "coverage": "field_metadata_available",
+      "whole_volume_complete": null,
+      "volumes": [
+        {
+          "scroll": "PHerc1203",
+          "sample_type": "scroll",
+          "volume": "20250820131727",
+          "scan_id": "20250720004030",
+          "zarr": "20250820131727-9.362um-1.2m-113keV-masked.zarr",
+          "voxel_um": 9.362,
+          "superseded_by": null,
+          "read_level": 0,
+          "ct_url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc1203/volumes/20250820131727-9.362um-1.2m-113keV-masked.zarr/",
+          "input_shape_zyx": [
+            18977,
+            6844,
+            6844
+          ],
+          "exposed_in_live_space": false,
+          "available_models": [
+            "lasagna"
+          ],
+          "manifests": [
+            "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc1203/representations/predictions/lasagna/20250820131727-lasagna-20260419180421/PHerc1203.lasagna.json"
+          ],
+          "status": "field_metadata_available",
+          "whole_volume_complete": null,
+          "chunks_checked": "sample presence only"
+        },
+        {
+          "scroll": "PHerc1203",
+          "sample_type": "scroll",
+          "volume": "20260319130212",
+          "scan_id": "20250721080303",
+          "zarr": "20260319130212-2.403um-0.2m-77keV-masked.zarr",
+          "voxel_um": 2.403,
+          "superseded_by": null,
+          "read_level": 2,
+          "ct_url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc1203/volumes/20260319130212-2.403um-0.2m-77keV-masked.zarr/",
+          "input_shape_zyx": [
+            3785,
+            6624,
+            6624
+          ],
+          "exposed_in_live_space": false,
+          "available_models": [],
+          "manifests": [],
+          "status": "no_lasagna_or_lasagnetta_field_found",
+          "whole_volume_complete": null,
+          "chunks_checked": "not applicable"
+        }
+      ]
+    },
+    {
+      "scroll": "PHerc1218",
+      "sample_type": "scroll",
+      "catalog_volumes": 1,
+      "live_listed_fields": 0,
+      "known_fields": 1,
+      "models": [
+        "lasagna"
+      ],
+      "coverage": "field_metadata_available",
+      "whole_volume_complete": null,
+      "volumes": [
+        {
+          "scroll": "PHerc1218",
+          "sample_type": "scroll",
+          "volume": "20250521120456",
+          "scan_id": "20250510170249",
+          "zarr": "20250521120456-8.640um-1.2m-116keV-masked.zarr",
+          "voxel_um": 8.64,
+          "superseded_by": null,
+          "read_level": 0,
+          "ct_url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc1218/volumes/20250521120456-8.640um-1.2m-116keV-masked.zarr/",
+          "input_shape_zyx": [
+            23247,
+            7593,
+            7593
+          ],
+          "exposed_in_live_space": false,
+          "available_models": [
+            "lasagna"
+          ],
+          "manifests": [
+            "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc1218/representations/predictions/lasagna/20250521120456-lasagna-20260419180421/PHerc1218.lasagna.json"
+          ],
+          "status": "field_metadata_available",
+          "whole_volume_complete": null,
+          "chunks_checked": "sample presence only"
+        }
+      ]
+    },
+    {
+      "scroll": "PHerc1299",
+      "sample_type": "scroll",
+      "catalog_volumes": 1,
+      "live_listed_fields": 1,
+      "known_fields": 1,
+      "models": [
+        "lasagna"
+      ],
+      "coverage": "field_metadata_available",
+      "whole_volume_complete": null,
+      "volumes": [
+        {
+          "scroll": "PHerc1299",
+          "sample_type": "scroll",
+          "volume": "20260309130042",
+          "scan_id": "20251207084608",
+          "zarr": "20260309130042-2.399um-0.2m-78keV-masked.zarr",
+          "voxel_um": 2.399,
+          "superseded_by": null,
+          "read_level": 2,
+          "ct_url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc1299/volumes/20260309130042-2.399um-0.2m-78keV-masked.zarr/",
+          "input_shape_zyx": [
+            12309,
+            5145,
+            5145
+          ],
+          "exposed_in_live_space": true,
+          "available_models": [
+            "lasagna"
+          ],
+          "manifests": [
+            "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc1299/representations/predictions/lasagna/20260309130042-lasagna-20260419180421-L2/PHerc1299-20260309130042-lasagna-20260724.lasagna.json"
+          ],
+          "status": "field_metadata_available",
+          "whole_volume_complete": null,
+          "chunks_checked": "sample presence only"
+        }
+      ]
+    },
+    {
+      "scroll": "PHerc1447",
+      "sample_type": "scroll",
+      "catalog_volumes": 1,
+      "live_listed_fields": 0,
+      "known_fields": 1,
+      "models": [
+        "lasagna"
+      ],
+      "coverage": "field_metadata_available",
+      "whole_volume_complete": null,
+      "volumes": [
+        {
+          "scroll": "PHerc1447",
+          "sample_type": "scroll",
+          "volume": "20250521151220",
+          "scan_id": "20250509011039",
+          "zarr": "20250521151220-8.640um-1.2m-116keV-masked.zarr",
+          "voxel_um": 8.64,
+          "superseded_by": null,
+          "read_level": 0,
+          "ct_url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc1447/volumes/20250521151220-8.640um-1.2m-116keV-masked.zarr/",
+          "input_shape_zyx": [
+            24297,
+            8343,
+            8343
+          ],
+          "exposed_in_live_space": false,
+          "available_models": [
+            "lasagna"
+          ],
+          "manifests": [
+            "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc1447/representations/predictions/lasagna/20250521151220-lasagna-20260419180421/PHerc1447.lasagna.json"
+          ],
+          "status": "field_metadata_available",
+          "whole_volume_complete": null,
+          "chunks_checked": "sample presence only"
+        }
+      ]
+    },
+    {
+      "scroll": "PHerc1451",
+      "sample_type": "scroll",
+      "catalog_volumes": 2,
+      "live_listed_fields": 0,
+      "known_fields": 1,
+      "models": [
+        "lasagna"
+      ],
+      "coverage": "field_metadata_available",
+      "whole_volume_complete": null,
+      "volumes": [
+        {
+          "scroll": "PHerc1451",
+          "sample_type": "scroll",
+          "volume": "20250521151225",
+          "scan_id": "20250509145349",
+          "zarr": "20250521151225-8.640um-1.2m-116keV-masked.zarr",
+          "voxel_um": 8.64,
+          "superseded_by": null,
+          "read_level": 0,
+          "ct_url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc1451/volumes/20250521151225-8.640um-1.2m-116keV-masked.zarr/",
+          "input_shape_zyx": [
+            17998,
+            5815,
+            5815
+          ],
+          "exposed_in_live_space": false,
+          "available_models": [],
+          "manifests": [],
+          "status": "no_lasagna_or_lasagnetta_field_found",
+          "whole_volume_complete": null,
+          "chunks_checked": "not applicable"
+        },
+        {
+          "scroll": "PHerc1451",
+          "sample_type": "scroll",
+          "volume": "20260319101107",
+          "scan_id": "20251206024238",
+          "zarr": "20260319101107-2.399um-0.2m-78keV-masked.zarr",
+          "voxel_um": 2.399,
+          "superseded_by": null,
+          "read_level": 2,
+          "ct_url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc1451/volumes/20260319101107-2.399um-0.2m-78keV-masked.zarr/",
+          "input_shape_zyx": [
+            14986,
+            5203,
+            5203
+          ],
+          "exposed_in_live_space": false,
+          "available_models": [
+            "lasagna"
+          ],
+          "manifests": [
+            "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc1451/representations/predictions/lasagna/20260319101107-lasagna-20260419180421-L2/PHerc1451-20260319101107-lasagna-20260724.lasagna.json"
+          ],
+          "status": "field_metadata_available",
+          "whole_volume_complete": null,
+          "chunks_checked": "sample presence only"
+        }
+      ]
+    },
+    {
+      "scroll": "PHerc1545",
+      "sample_type": "scroll",
+      "catalog_volumes": 1,
+      "live_listed_fields": 0,
+      "known_fields": 1,
+      "models": [
+        "lasagna"
+      ],
+      "coverage": "field_metadata_available",
+      "whole_volume_complete": null,
+      "volumes": [
+        {
+          "scroll": "PHerc1545",
+          "sample_type": "scroll",
+          "volume": "20250821151648",
+          "scan_id": "20250720045926",
+          "zarr": "20250821151648-9.362um-1.2m-113keV-masked.zarr",
+          "voxel_um": 9.362,
+          "superseded_by": null,
+          "read_level": 0,
+          "ct_url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc1545/volumes/20250821151648-9.362um-1.2m-113keV-masked.zarr/",
+          "input_shape_zyx": [
+            20961,
+            7506,
+            7506
+          ],
+          "exposed_in_live_space": false,
+          "available_models": [
+            "lasagna"
+          ],
+          "manifests": [
+            "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc1545/representations/predictions/lasagna/20250821151648-lasagna-20260419180421/PHerc1545.lasagna.json"
+          ],
+          "status": "field_metadata_available",
+          "whole_volume_complete": null,
+          "chunks_checked": "sample presence only"
+        }
+      ]
+    },
+    {
+      "scroll": "PHerc1667",
+      "sample_type": "scroll",
+      "catalog_volumes": 4,
+      "live_listed_fields": 2,
+      "known_fields": 2,
+      "models": [
+        "lasagna",
+        "lasagnetta"
+      ],
+      "coverage": "field_metadata_available",
+      "whole_volume_complete": null,
+      "volumes": [
+        {
+          "scroll": "PHerc1667",
+          "sample_type": "scroll",
+          "volume": "20231107190228",
+          "scan_id": "20231107190228",
+          "zarr": "20231107190228-3.240um-88keV-masked.zarr",
+          "voxel_um": 3.24,
+          "superseded_by": null,
+          "read_level": 2,
+          "ct_url": "https://data.aws.ash2txt.org/samples/PHerc1667/volumes/20231107190228-3.240um-88keV-masked.zarr/",
+          "input_shape_zyx": [
+            6533,
+            1990,
+            2030
+          ],
+          "exposed_in_live_space": false,
+          "available_models": [],
+          "manifests": [],
+          "status": "no_lasagna_or_lasagnetta_field_found",
+          "whole_volume_complete": null,
+          "chunks_checked": "not applicable"
+        },
+        {
+          "scroll": "PHerc1667",
+          "sample_type": "scroll",
+          "volume": "20231117161658",
+          "scan_id": "20231117161658",
+          "zarr": "20231117161658-7.910um-53keV-masked.zarr",
+          "voxel_um": 7.91,
+          "superseded_by": null,
+          "read_level": 0,
+          "ct_url": "https://data.aws.ash2txt.org/samples/PHerc1667/volumes/20231117161658-7.910um-53keV-masked.zarr/",
+          "input_shape_zyx": [
+            11173,
+            3340,
+            3440
+          ],
+          "exposed_in_live_space": false,
+          "available_models": [],
+          "manifests": [],
+          "status": "no_lasagna_or_lasagnetta_field_found",
+          "whole_volume_complete": null,
+          "chunks_checked": "not applicable"
+        },
+        {
+          "scroll": "PHerc1667",
+          "sample_type": "scroll",
+          "volume": "20251217075048",
+          "scan_id": "20251204164204",
+          "zarr": "20251217075048-2.399um-0.2m-78keV-masked.zarr",
+          "voxel_um": 2.399,
+          "superseded_by": null,
+          "read_level": 2,
+          "ct_url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc1667/volumes/20251217075048-2.399um-0.2m-78keV-masked.zarr/",
+          "input_shape_zyx": [
+            9269,
+            3808,
+            3808
+          ],
+          "exposed_in_live_space": true,
+          "available_models": [
+            "lasagna"
+          ],
+          "manifests": [
+            "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc1667/representations/predictions/lasagna/20251217075048-lasagna-20260419180421-L2/PHerc1667-20251217075048-lasagna-20260724.lasagna.json"
+          ],
+          "status": "field_metadata_available",
+          "whole_volume_complete": null,
+          "chunks_checked": "sample presence only"
+        },
+        {
+          "scroll": "PHerc1667",
+          "sample_type": "scroll",
+          "volume": "20260323082859",
+          "scan_id": "20251208002146",
+          "zarr": "20260323082859-1.129um-0.2m-59keV-masked.zarr",
+          "voxel_um": 1.129,
+          "superseded_by": null,
+          "read_level": 3,
+          "ct_url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc1667/volumes/20260323082859-1.129um-0.2m-59keV-masked.zarr/",
+          "input_shape_zyx": [
+            5277,
+            2766,
+            2535
+          ],
+          "exposed_in_live_space": true,
+          "available_models": [
+            "lasagnetta"
+          ],
+          "manifests": [
+            "https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHerc1667/representations/predictions/lasagna/20260323082859-lasagnetta-0.1.1/PHerc1667-20260323082859.lasagna.json"
+          ],
+          "status": "field_metadata_available",
+          "whole_volume_complete": null,
+          "chunks_checked": "sample presence only"
+        }
+      ]
+    },
+    {
+      "scroll": "PHerc1667Cr1Fr3",
+      "sample_type": "fragment",
+      "catalog_volumes": 0,
+      "live_listed_fields": 0,
+      "known_fields": 0,
+      "models": [],
+      "coverage": "no_catalog_volume",
+      "whole_volume_complete": null,
+      "volumes": []
+    },
+    {
+      "scroll": "PHerc51Cr4Fr8",
+      "sample_type": "fragment",
+      "catalog_volumes": 0,
+      "live_listed_fields": 0,
+      "known_fields": 0,
+      "models": [],
+      "coverage": "no_catalog_volume",
+      "whole_volume_complete": null,
+      "volumes": []
+    },
+    {
+      "scroll": "PHercMAN5",
+      "sample_type": "scroll",
+      "catalog_volumes": 1,
+      "live_listed_fields": 1,
+      "known_fields": 1,
+      "models": [
+        "lasagnetta"
+      ],
+      "coverage": "field_metadata_available",
+      "whole_volume_complete": null,
+      "volumes": [
+        {
+          "scroll": "PHercMAN5",
+          "sample_type": "scroll",
+          "volume": "20260311104824",
+          "scan_id": "20251204111131",
+          "zarr": "20260311104824-2.399um-0.2m-78keV-masked.zarr",
+          "voxel_um": 2.399,
+          "superseded_by": null,
+          "read_level": 2,
+          "ct_url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHercMAN5/volumes/20260311104824-2.399um-0.2m-78keV-masked.zarr/",
+          "input_shape_zyx": [
+            7910,
+            4374,
+            4374
+          ],
+          "exposed_in_live_space": true,
+          "available_models": [
+            "lasagnetta"
+          ],
+          "manifests": [
+            "https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHercMAN5/representations/predictions/lasagna/20260311104824-lasagnetta-0.1.1/PHercMAN5.lasagna.json"
+          ],
+          "status": "field_metadata_available",
+          "whole_volume_complete": null,
+          "chunks_checked": "sample presence only"
+        }
+      ]
+    },
+    {
+      "scroll": "PHercMANB",
+      "sample_type": "scroll",
+      "catalog_volumes": 1,
+      "live_listed_fields": 1,
+      "known_fields": 1,
+      "models": [
+        "lasagnetta"
+      ],
+      "coverage": "field_metadata_available",
+      "whole_volume_complete": null,
+      "volumes": [
+        {
+          "scroll": "PHercMANB",
+          "sample_type": "scroll",
+          "volume": "20260323091048",
+          "scan_id": "20251203155939",
+          "zarr": "20260323091048-2.399um-0.2m-78keV-masked.zarr",
+          "voxel_um": 2.399,
+          "superseded_by": null,
+          "read_level": 2,
+          "ct_url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHercMANB/volumes/20260323091048-2.399um-0.2m-78keV-masked.zarr/",
+          "input_shape_zyx": [
+            18171,
+            6681,
+            6681
+          ],
+          "exposed_in_live_space": true,
+          "available_models": [
+            "lasagnetta"
+          ],
+          "manifests": [
+            "https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHercMANB/representations/predictions/lasagna/20260323091048-lasagnetta-0.1.1/PHercMANB.lasagna.json"
+          ],
+          "status": "field_metadata_available",
+          "whole_volume_complete": null,
+          "chunks_checked": "sample presence only"
+        }
+      ]
+    },
+    {
+      "scroll": "PHercMANBp",
+      "sample_type": "fragment",
+      "catalog_volumes": 2,
+      "live_listed_fields": 2,
+      "known_fields": 2,
+      "models": [
+        "lasagna",
+        "lasagnetta"
+      ],
+      "coverage": "field_metadata_available",
+      "whole_volume_complete": null,
+      "volumes": [
+        {
+          "scroll": "PHercMANBp",
+          "sample_type": "fragment",
+          "volume": "20251216152116",
+          "scan_id": "20251203091858",
+          "zarr": "20251216152116-2.399um-0.2m-78keV-masked.zarr",
+          "voxel_um": 2.399,
+          "superseded_by": null,
+          "read_level": 2,
+          "ct_url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHercMANBp/volumes/20251216152116-2.399um-0.2m-78keV-masked.zarr/",
+          "input_shape_zyx": [
+            4287,
+            3145,
+            3145
+          ],
+          "exposed_in_live_space": true,
+          "available_models": [
+            "lasagna"
+          ],
+          "manifests": [
+            "https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHercMANBp/representations/predictions/lasagna/20251216152116-lasagna/PHercMANBp.lasagna.json"
+          ],
+          "status": "field_metadata_available",
+          "whole_volume_complete": null,
+          "chunks_checked": "sample presence only"
+        },
+        {
+          "scroll": "PHercMANBp",
+          "sample_type": "fragment",
+          "volume": "20260427100434",
+          "scan_id": "20251207170127",
+          "zarr": "20260427100434-1.129um-0.2m-59keV-masked.zarr",
+          "voxel_um": 1.129,
+          "superseded_by": null,
+          "read_level": 3,
+          "ct_url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHercMANBp/volumes/20260427100434-1.129um-0.2m-59keV-masked.zarr/",
+          "input_shape_zyx": [
+            4378,
+            2768,
+            2536
+          ],
+          "exposed_in_live_space": true,
+          "available_models": [
+            "lasagnetta"
+          ],
+          "manifests": [
+            "https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHercMANBp/representations/predictions/lasagna/20260427100434-lasagnetta-0.1.1/PHercMANBp-20260427100434.lasagna.json"
+          ],
+          "status": "field_metadata_available",
+          "whole_volume_complete": null,
+          "chunks_checked": "sample presence only"
+        }
+      ]
+    },
+    {
+      "scroll": "PHercParis1Fr34",
+      "sample_type": "fragment",
+      "catalog_volumes": 0,
+      "live_listed_fields": 0,
+      "known_fields": 0,
+      "models": [],
+      "coverage": "no_catalog_volume",
+      "whole_volume_complete": null,
+      "volumes": []
+    },
+    {
+      "scroll": "PHercParis1Fr39",
+      "sample_type": "fragment",
+      "catalog_volumes": 0,
+      "live_listed_fields": 0,
+      "known_fields": 0,
+      "models": [],
+      "coverage": "no_catalog_volume",
+      "whole_volume_complete": null,
+      "volumes": []
+    },
+    {
+      "scroll": "PHercParis2Fr143",
+      "sample_type": "fragment",
+      "catalog_volumes": 0,
+      "live_listed_fields": 0,
+      "known_fields": 0,
+      "models": [],
+      "coverage": "no_catalog_volume",
+      "whole_volume_complete": null,
+      "volumes": []
+    },
+    {
+      "scroll": "PHercParis2Fr47",
+      "sample_type": "fragment",
+      "catalog_volumes": 0,
+      "live_listed_fields": 0,
+      "known_fields": 0,
+      "models": [],
+      "coverage": "no_catalog_volume",
+      "whole_volume_complete": null,
+      "volumes": []
+    },
+    {
+      "scroll": "PHercParis3",
+      "sample_type": "scroll",
+      "catalog_volumes": 1,
+      "live_listed_fields": 1,
+      "known_fields": 1,
+      "models": [
+        "lasagna"
+      ],
+      "coverage": "field_metadata_available",
+      "whole_volume_complete": null,
+      "volumes": [
+        {
+          "scroll": "PHercParis3",
+          "sample_type": "scroll",
+          "volume": "20260427095331",
+          "scan_id": "20260313010827",
+          "zarr": "20260427095331-2.400um-0.2m-78keV-masked.zarr",
+          "voxel_um": 2.4,
+          "superseded_by": null,
+          "read_level": 2,
+          "ct_url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHercParis3/volumes/20260427095331-2.400um-0.2m-78keV-masked.zarr/",
+          "input_shape_zyx": [
+            17105,
+            10601,
+            10601
+          ],
+          "exposed_in_live_space": true,
+          "available_models": [
+            "lasagna"
+          ],
+          "manifests": [
+            "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHercParis3/representations/predictions/lasagna/20260427095331-lasagna-20260419180421-L2/PHercParis3-20260427095331-lasagna-20260724.lasagna.json"
+          ],
+          "status": "field_metadata_available",
+          "whole_volume_complete": null,
+          "chunks_checked": "sample presence only"
+        }
+      ]
+    },
+    {
+      "scroll": "PHercParis4",
+      "sample_type": "scroll",
+      "catalog_volumes": 7,
+      "live_listed_fields": 0,
+      "known_fields": 1,
+      "models": [
+        "lasagna"
+      ],
+      "coverage": "field_metadata_available",
+      "whole_volume_complete": null,
+      "volumes": [
+        {
+          "scroll": "PHercParis4",
+          "sample_type": "scroll",
+          "volume": "20230205180739",
+          "scan_id": "20230205180739",
+          "zarr": "20230205180739-7.910um-54keV-masked.zarr",
+          "voxel_um": 7.91,
+          "superseded_by": null,
+          "read_level": 0,
+          "ct_url": "https://data.aws.ash2txt.org/samples/PHercParis4/volumes/20230205180739-7.910um-54keV-masked.zarr/",
+          "input_shape_zyx": [
+            14258,
+            7888,
+            8096
+          ],
+          "exposed_in_live_space": false,
+          "available_models": [],
+          "manifests": [],
+          "status": "no_lasagna_or_lasagnetta_field_found",
+          "whole_volume_complete": null,
+          "chunks_checked": "not applicable"
+        },
+        {
+          "scroll": "PHercParis4",
+          "sample_type": "scroll",
+          "volume": "20230206171837",
+          "scan_id": "20230206171837",
+          "zarr": "20230206171837-7.910um-54keV-masked.zarr",
+          "voxel_um": 7.91,
+          "superseded_by": null,
+          "read_level": 0,
+          "ct_url": "https://data.aws.ash2txt.org/samples/PHercParis4/volumes/20230206171837-7.910um-54keV-masked.zarr/",
+          "input_shape_zyx": [
+            10529,
+            7812,
+            8316
+          ],
+          "exposed_in_live_space": false,
+          "available_models": [],
+          "manifests": [],
+          "status": "no_lasagna_or_lasagnetta_field_found",
+          "whole_volume_complete": null,
+          "chunks_checked": "not applicable"
+        },
+        {
+          "scroll": "PHercParis4",
+          "sample_type": "scroll",
+          "volume": "20260310170716",
+          "scan_id": "20260310152857",
+          "zarr": "20260310170716-45.532um-11.0m-74keV-masked.zarr",
+          "voxel_um": 45.532,
+          "superseded_by": null,
+          "read_level": 0,
+          "ct_url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHercParis4/volumes/20260310170716-45.532um-11.0m-74keV-masked.zarr/",
+          "input_shape_zyx": [
+            4071,
+            2264,
+            2264
+          ],
+          "exposed_in_live_space": false,
+          "available_models": [],
+          "manifests": [],
+          "status": "no_lasagna_or_lasagnetta_field_found",
+          "whole_volume_complete": null,
+          "chunks_checked": "not applicable"
+        },
+        {
+          "scroll": "PHercParis4",
+          "sample_type": "scroll",
+          "volume": "20260310173927",
+          "scan_id": "20260310160232",
+          "zarr": "20260310173927-45.532um-11.0m-110keV-masked.zarr",
+          "voxel_um": 45.532,
+          "superseded_by": null,
+          "read_level": 0,
+          "ct_url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHercParis4/volumes/20260310173927-45.532um-11.0m-110keV-masked.zarr/",
+          "input_shape_zyx": [
+            4066,
+            2264,
+            2264
+          ],
+          "exposed_in_live_space": false,
+          "available_models": [],
+          "manifests": [],
+          "status": "no_lasagna_or_lasagnetta_field_found",
+          "whole_volume_complete": null,
+          "chunks_checked": "not applicable"
+        },
+        {
+          "scroll": "PHercParis4",
+          "sample_type": "scroll",
+          "volume": "20260323153942",
+          "scan_id": "20260315072529",
+          "zarr": "20260323153942-2.400um-0.2m-137keV-masked.zarr",
+          "voxel_um": 2.4,
+          "superseded_by": null,
+          "read_level": 2,
+          "ct_url": "https://data.aws.ash2txt.org/samples/PHercParis4/volumes/20260323153942-2.400um-0.2m-137keV-masked.zarr/",
+          "input_shape_zyx": [
+            1657,
+            2108,
+            2108
+          ],
+          "exposed_in_live_space": false,
+          "available_models": [],
+          "manifests": [],
+          "status": "no_lasagna_or_lasagnetta_field_found",
+          "whole_volume_complete": null,
+          "chunks_checked": "not applicable"
+        },
+        {
+          "scroll": "PHercParis4",
+          "sample_type": "scroll",
+          "volume": "20260411134726",
+          "scan_id": "20260311024914",
+          "zarr": "20260411134726-2.400um-0.2m-78keV-masked.zarr",
+          "voxel_um": 2.4,
+          "superseded_by": null,
+          "read_level": 2,
+          "ct_url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHercParis4/volumes/20260411134726-2.400um-0.2m-78keV-masked.zarr/",
+          "input_shape_zyx": [
+            18946,
+            8174,
+            8174
+          ],
+          "exposed_in_live_space": false,
+          "available_models": [
+            "lasagna"
+          ],
+          "manifests": [
+            "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHercParis4/representations/predictions/lasagna/20260411134726-lasagna-20260419180421-L2/PHercParis4-20260411134726-las-sd2-5b17ff6c.lasagna.json"
+          ],
+          "status": "field_metadata_available",
+          "whole_volume_complete": null,
+          "chunks_checked": "sample presence only"
+        },
+        {
+          "scroll": "PHercParis4",
+          "sample_type": "scroll",
+          "volume": "20260608103018",
+          "scan_id": "20260315102010",
+          "zarr": "20260608103018-1.129um-0.2m-78keV-masked.zarr",
+          "voxel_um": 1.129,
+          "superseded_by": null,
+          "read_level": 3,
+          "ct_url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHercParis4/volumes/20260608103018-1.129um-0.2m-78keV-masked.zarr/",
+          "input_shape_zyx": [
+            7497,
+            4501,
+            4045
+          ],
+          "exposed_in_live_space": false,
+          "available_models": [],
+          "manifests": [],
+          "status": "no_lasagna_or_lasagnetta_field_found",
+          "whole_volume_complete": null,
+          "chunks_checked": "not applicable"
+        }
+      ]
+    }
+  ],
+  "limitations": [
+    "Metadata and sampled chunk presence only. No scan or prediction values read.",
+    "A Zarr fill value, manifest or one chunk does not establish full coverage.",
+    "Fiber predictions tagged lasagna in the source catalog are excluded by origin path and channel schema.",
+    "m7-derived normals do not count as Lasagna or Lasagnetta."
+  ]
+}
