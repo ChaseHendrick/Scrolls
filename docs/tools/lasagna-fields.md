@@ -74,7 +74,7 @@ Do not use it:
 ## Quick start
 
 1. **Select a scan.** Find a scroll, then choose the field for the scan and voxel size you need. Check whether its model is Lasagna or Lasagnetta.
-2. **Preview the field.** Every listed field has top and side views. Open **All fields** and click a scroll thumbnail or **Preview**. Captions distinguish combined layer/normal images from layer-pattern-only images; **Get normals** opens the original normal data in either case.
+2. **Preview the field.** Every listed field has top and side views. Open **All fields** and click a scroll thumbnail or **Preview**. Captions distinguish combined layer/normal images from layer-pattern-only images; **Normals (nx)** and **Normals (ny)** provide **Open** and **Copy URL** actions for the original normal data in either case.
 3. **Open the source.** Follow the dataset link for downloads and its documentation, or the manifest link for the field's array paths and coordinate metadata.
 
 A preview shows model output. It does not establish scientific accuracy or whole-volume completeness. The field metadata records provenance and coverage separately; an unknown completion status is not a pass. Lasagnetta previews remain labeled as student output, and m7-derived normals are a separate product. For agents, `list_coverage` reports missing volumes and these limits, while `list_fields` returns the published field links.
