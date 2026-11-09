@@ -37,7 +37,7 @@ Smoothed is the default for the 34 fields with colored-normal previews (68 PNGs)
 ### Get normals or download a field
 
 1. In **Every field**, find the scroll, then choose the acquisition and field. Different acquisitions can have different field sources.
-2. **Data and downloads** shows the actual URLs. The two normal channels, **nx** and **ny**, come first. Use **Open** to inspect a source or **Copy** to copy its URL. The field manifest describes the channel layout.
+2. **Data and downloads** shows the actual URLs. The two normal channels, **nx** and **ny**, come first. For a Zarr array, **Open** displays its metadata file; **Copy URL** keeps the raw store address for your tools. A store root is not a downloadable file. File and source links open their listed targets. The field manifest describes the channel layout.
 3. For a complete local field, open **TAR bundle files** when available. Download all parts listed in the bundle index, unpack them, then unpack the final metadata and pyramid archive last. The final archive alone is not the field. Other sources provide chunked Zarr arrays rather than a single download file.
 4. Expand **Download and developer recipes** for commands tied to the field selected above. Fields with an indexed dataset get a download command pinned to its recorded revision. Other fields get their exact Zarr URLs. The region-download helper appears only for a matching indexed bundle.
 5. **Copy page link** shares the current selection. **Copy normals links** copies the two data URLs, manifest and acquisition details.

@@ -276,6 +276,36 @@ const bad=structuredClone(other);bad.normals_access.download.finalize_archives[0
 assert.equal(fieldRecipes(bad).download,'');
 """)
 
+    def test_array_open_controls_use_metadata_but_copy_and_recipes_keep_store_roots(self):
+        self.run_js(r"""
+(async()=>{
+ const sample=fields.find(f=>f.scroll==='PHerc0139'&&f.volume==='20250728140407');
+ const root='https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHerc0139/representations/predictions/lasagna/20250728140407-lasagnetta-0.1.1/';
+ const expected={nx:root+'PHerc0139-20250728140407_nx.ome.zarr/2/.zarray',
+  ny:root+'PHerc0139-20250728140407_ny.ome.zarr/2/.zarray',
+  cos:root+'PHerc0139-20250728140407_cos.ome.zarr/1/.zarray',
+  grad_mag:root+'PHerc0139-20250728140407_grad_mag.ome.zarr/2/.zarray'};
+ for(const f of fields){
+  showDataLinks(f);const rows=dataLinks(f),recipe=fieldRecipes(f).python;
+  for(const row of rows){
+   const openTarget=row.kind==='zarr'?row.href.replace(/\/+$/,'')+'/.zarray':row.href;
+   const card=[...el('data-arrays').children,...el('data-files').children].find(c=>c.dataset.key===row.key);
+   assert.equal(card.children[2].children[0].href,openTarget);
+   assert.equal(card.children[3].href,row.kind==='zarr'?undefined:row.href); // array roots are text; actual files stay linked
+   await card.children[2].children[1].onclick();assert.equal(copied.at(-1),row.href);
+   const quick=el('quick-links').children.find(c=>c.dataset.key===row.key);
+   if(quick){assert.equal(quick.children[1].href,openTarget);await quick.children[2].onclick();assert.equal(copied.at(-1),row.href)}
+   if(row.kind==='zarr'){
+    assert.notEqual(openTarget,row.href);assert.ok(recipe.includes(JSON.stringify(row.href)));
+    assert.ok(!recipe.includes(openTarget));if(f===sample)assert.equal(openTarget,expected[row.key]);
+   }
+  }
+ }
+ assert.equal(arrayMetadataURL('https://example.org/a.zarr/2/?token=x#h'),'https://example.org/a.zarr/2/.zarray?token=x#h');
+ assert.equal(arrayMetadataURL('https://example.org/a.zarr/2'),'https://example.org/a.zarr/2/.zarray');
+})().catch(e=>{console.error(e);process.exitCode=1});
+""")
+
     def test_recipes_follow_bundle_open_data_missing_and_alternate_acquisition(self):
         self.run_js("""
 assert.ok(regionBundle(bundle)>=0);assert.equal(regionBundle(other),-1);assert.equal(regionBundle(open),-1);
@@ -303,10 +333,10 @@ for(const f of [bundle,open,other,null,{...bundle,volume:other.volume}]){
   const quick=el('quick-links').children;
   assert.equal(quick.length,rows.filter(r=>r.kind==='zarr'||r.key==='source').length);
   for(const line of quick){const row=rows.find(r=>r.key===line.dataset.key);
-   assert.equal(line.children[1].href,row.href);await line.children[2].onclick();assert.equal(copied.at(-1),row.href);
+   assert.equal(line.children[1].href,row.openHref);await line.children[2].onclick();assert.equal(copied.at(-1),row.href);
   }
   for(const card of cards){const row=rows.find(r=>r.key===card.dataset.key),actions=card.children[2];
-   assert.equal(card.children[3].textContent,row.href);assert.equal(actions.children[0].href,row.href);
+   assert.equal(card.children[3].textContent,row.href);assert.equal(actions.children[0].href,row.openHref);
    assert.equal(actions.children[0].target,'_blank');assert.equal(actions.children[0].rel,'noopener');
    await actions.children[1].onclick();assert.equal(copied.at(-1),row.href);
   }

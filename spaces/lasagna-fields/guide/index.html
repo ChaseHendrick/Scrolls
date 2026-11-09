@@ -376,6 +376,7 @@ footer .wrap{max-width:1120px}#top[hidden]{display:none!important}
       </div>
       <div class="human-status" aria-live="polite"><span id="human-availability"></span></div>
       <div id="human-quick-links" class="human-quick-links" aria-label="Selected field data links"></div>
+      <p class="human-help">For arrays, Open shows metadata. Copy URL gives the Zarr address for your tools.</p>
       <div class="human-actions"><button id="human-share" type="button">Copy page link</button>
         <p class="human-help">Share this scroll, scan and field selection.</p></div>
       <a class="human-make" href="?tab=make">Need a new field? Make a small box</a>
@@ -392,7 +393,7 @@ footer .wrap{max-width:1120px}#top[hidden]{display:none!important}
     <section class="human-data" id="human-data" aria-labelledby="human-data-title">
       <h3 id="human-data-title">Data and downloads</h3><p id="human-data-selection"></p>
       <h4>Field arrays</h4>
-      <p>Copy a Zarr URL into a compatible reader. These are chunked arrays, not single-file downloads; opening a root in a browser may not show a page.</p>
+      <p>Open shows the array's metadata. Copy URL gives its Zarr address for a compatible reader. These are chunked arrays, not single-file downloads.</p>
       <div id="human-data-arrays" class="human-data-list"></div>
       <h4>Files and source</h4><p id="human-download-help"></p>
       <div id="human-data-files" class="human-data-list"></div>
@@ -838,10 +839,15 @@ function fallback(t,done){const a=document.createElement('textarea');a.value=t;d
     const arrays = f?.availability?.arrays;
     return {nx:url(arrays?.nx?.url), ny:url(arrays?.ny?.url)};
   }
+  function arrayMetadataURL(value) {
+    const address=new URL(value);
+    address.pathname=address.pathname.replace(/\/+$/,'')+'/.zarray';
+    return address.href;
+  }
   function dataLinks(f) {
     if (!f) return [];
     const a=f.normals_access || {}, d=a.download || {}, n=normals(f), rows=[];
-    const add=(key,label,format,value,kind)=>{const href=url(value);if(href)rows.push({key,label,format,href,kind});};
+    const add=(key,label,format,value,kind)=>{const href=url(value);if(href)rows.push({key,label,format,href,openHref:kind==='zarr'?arrayMetadataURL(href):href,kind});};
     for (const [key,label] of [['nx','Normals (nx)'],['ny','Normals (ny)'],['cos','Layer pattern (cos)'],['grad_mag','Gradient magnitude']]) {
       const array=f.availability?.arrays?.[key];
       add(key,label,'Zarr array',key==='nx'||key==='ny'?n[key]:array?.url,'zarr');
@@ -893,7 +899,7 @@ function fallback(t,done){const a=document.createElement('textarea');a.value=t;d
     el('quick-links').replaceChildren(...rows.filter(row=>row.kind==='zarr'||row.key==='source').map(row=>{
       const line=document.createElement('div');line.className='human-quick-row';line.dataset.key=row.key;
       const name=document.createElement('span');name.textContent=row.kind==='zarr'?row.label:d.kind==='hf_dataset_bundle'?'TAR bundle files':'Source files';
-      const open=document.createElement('a');open.href=row.href;open.target='_blank';open.rel='noopener';open.textContent='Open';open.setAttribute('aria-label','Open '+row.label);
+      const open=document.createElement('a');open.href=row.openHref;open.target='_blank';open.rel='noopener';open.textContent='Open';open.setAttribute('aria-label','Open '+row.label);
       const button=document.createElement('button');button.type='button';button.textContent='Copy URL';button.setAttribute('aria-label','Copy URL for '+row.label);
       button.onclick=async()=>{const ok=await copy(row.href,row.label+' URL copied.');button.textContent=ok?'Copied':'Select URL below';setTimeout(()=>{button.textContent='Copy URL';},1600);};
       line.append(name,open,button);return line;
@@ -909,10 +915,11 @@ function fallback(t,done){const a=document.createElement('textarea');a.value=t;d
         const title=document.createElement('strong');title.textContent=row.label;
         const format=document.createElement('small');format.textContent=row.format;
         const actions=document.createElement('div');actions.className='human-data-actions';
-        const open=document.createElement('a');open.href=row.href;open.target='_blank';open.rel='noopener';open.textContent='Open';open.setAttribute('aria-label','Open '+row.label);
+        const open=document.createElement('a');open.href=row.openHref;open.target='_blank';open.rel='noopener';open.textContent='Open';open.setAttribute('aria-label','Open '+row.label);
         const button=document.createElement('button');button.type='button';button.textContent='Copy URL';button.setAttribute('aria-label','Copy URL for '+row.label);
         button.onclick=async()=>{const ok=await copy(row.href,row.label+' URL copied.');button.textContent=ok?'Copied':'Select URL';setTimeout(()=>{button.textContent='Copy URL';},1600);};
-        const address=document.createElement('a');address.className='human-data-url';address.href=row.href;address.target='_blank';address.rel='noopener';address.textContent=row.href;
+        const address=document.createElement(row.kind==='zarr'?'code':'a');address.className='human-data-url';address.textContent=row.href;
+        if(row.kind!=='zarr'){address.href=row.href;address.target='_blank';address.rel='noopener';}
         actions.append(open,button);card.append(title,format,actions,address);return card;
       }));
       if (!list.length) el('data-'+group).textContent='No '+(group==='arrays'?'array':'file')+' links listed for this selection.';
