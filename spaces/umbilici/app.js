@@ -21,11 +21,12 @@ const hexOf = (l) => SRC_HEX[l.source] || '#89f0ff';
 const COARSE = matchMedia('(pointer: coarse)').matches;
 // the Array view's opening camera: high enough that its three rows (people, Center Finder, not on the prize page) stand apart
 const ARRAY_CAM = [-620, 760, 2300];
+const DEFAULT_EX = 2;
 const $ = (id) => document.getElementById(id);
 
 // ---------- state ----------
 const S = {
-  data: null, las: null, mode: 'array', sel: null, hot: null, ex: 3, z: null,
+  data: null, las: null, mode: 'array', sel: null, hot: null, ex: DEFAULT_EX, z: null,
   ct: true, render: 'xray', gain: 44, sheets: true, needles: true, ct2: false, ori: false, blend: 70,
   outside: false, // draw the end runs that lie outside the scroll in the CT (hidden by default; URL outside=1)
   dirty: true, status: '',
@@ -856,7 +857,12 @@ $('c-close').addEventListener('click', () => setMode('array'));
 $('b-about').addEventListener('click', () => { markSeen(); openGuide(); });
 $('b-connect').addEventListener('click', () => { markSeen(); openGuide('connect'); });
 let exQueued = false;
-$('ex').addEventListener('input', (e) => { S.ex = +e.target.value; $('ex-v').textContent = S.ex; if (!exQueued) { exQueued = true; requestAnimationFrame(() => { exQueued = false; buildArray(); }); } syncURLSoon(); });
+function setEx(value) {
+  S.ex = value; $('ex').value = S.ex; $('ex-v').textContent = S.ex;
+  if (!exQueued) { exQueued = true; requestAnimationFrame(() => { exQueued = false; buildArray(); }); }
+  syncURLSoon();
+}
+$('ex').addEventListener('input', (e) => setEx(+e.target.value));
 $('t-ct').addEventListener('change', (e) => { S.ct = e.target.checked; applyVolUniforms(); });
 function setOutside(on) { S.outside = on === undefined ? !S.outside : !!on; $('t-outside').checked = S.outside; linesChanged(); return { outside: S.outside }; }
 $('t-outside').addEventListener('change', (e) => setOutside(e.target.checked));
@@ -1002,7 +1008,7 @@ $('s-turn').addEventListener('change', (e) => { SET.turn = e.target.checked; app
 $('t-turn').addEventListener('change', (e) => { SET.turn = e.target.checked; applySettings(); });
 $('i-hide').addEventListener('click', () => { SET.inset = false; applySettings(); });
 $('i-show').addEventListener('click', () => { SET.inset = true; applySettings(); });
-$('s-reset').addEventListener('click', () => { Object.assign(SET, SET_DEFAULT); applySettings(); });
+$('s-reset').addEventListener('click', () => { Object.assign(SET, SET_DEFAULT); setEx(DEFAULT_EX); applySettings(); });
 
 // first visit
 function seen() { try { return localStorage.getItem('umbilici.seen') === '1'; } catch { return true; } }
@@ -1054,7 +1060,7 @@ function syncURLSoon() { clearTimeout(urlT); urlT = setTimeout(syncURL, 300); }
 function syncURL() {
   const q = new URLSearchParams();
   if (S.mode !== 'array') { q.set('mode', S.mode); q.set('scan', S.sel.scroll); q.set('z', Math.round(S.z)); }
-  if (S.ex !== 3) q.set('ex', S.ex);
+  if (S.ex !== DEFAULT_EX) q.set('ex', S.ex);
   const off = [...OFF.src, ...OFF.line]; if (off.length) q.set('off', off.join(','));
   if (S.outside) q.set('outside', '1');
   history.replaceState(null, '', q.toString() ? `?${q}` : location.pathname);
