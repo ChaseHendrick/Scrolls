@@ -187,8 +187,8 @@
         "coordinate_note": "Array levels and scaledown use the manifest base frame. CT input level is separate; do not add the two levels."
       },
       "preview_smoothed": {
-        "xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed/PHerc0009B-20250521125136-8376b930d492-xy.png",
-        "xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed/PHerc0009B-20250521125136-5ecd8d54ba04-xz.png"
+        "xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed-v2/PHerc0009B-20250521125136-8376b930d492-xy.png",
+        "xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed-v2/PHerc0009B-20250521125136-5ecd8d54ba04-xz.png"
       }
     },
     {
@@ -371,8 +371,8 @@
         "coordinate_note": "Array levels and scaledown use the manifest base frame. CT input level is separate; do not add the two levels."
       },
       "preview_smoothed": {
-        "xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed/PHerc0009B-20250820154339-f23fd18e22ad-xy.png",
-        "xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed/PHerc0009B-20250820154339-56cc56d96c4b-xz.png"
+        "xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed-v2/PHerc0009B-20250820154339-f23fd18e22ad-xy.png",
+        "xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed-v2/PHerc0009B-20250820154339-56cc56d96c4b-xz.png"
       }
     },
     {
@@ -555,8 +555,8 @@
         "coordinate_note": "Array levels and scaledown use the manifest base frame. CT input level is separate; do not add the two levels."
       },
       "preview_smoothed": {
-        "xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed/PHerc0009B-20260319104112-03255b40c268-xy.png",
-        "xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed/PHerc0009B-20260319104112-c822efe9223b-xz.png"
+        "xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed-v2/PHerc0009B-20260319104112-03255b40c268-xy.png",
+        "xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed-v2/PHerc0009B-20260319104112-c822efe9223b-xz.png"
       }
     },
     {
@@ -905,8 +905,8 @@
         "coordinate_note": "Array levels and scaledown use the manifest base frame. CT input level is separate; do not add the two levels."
       },
       "preview_smoothed": {
-        "xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed/PHerc0139-20250728140407-1dee6bde3f2f-xy.png",
-        "xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed/PHerc0139-20250728140407-2ba9424da6fa-xz.png"
+        "xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed-v2/PHerc0139-20250728140407-1dee6bde3f2f-xy.png",
+        "xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed-v2/PHerc0139-20250728140407-2ba9424da6fa-xz.png"
       }
     },
     {
@@ -1089,8 +1089,8 @@
         "coordinate_note": "Array levels and scaledown use the manifest base frame. CT input level is separate; do not add the two levels."
       },
       "preview_smoothed": {
-        "xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed/PHerc0139-20250820105138-708adf5bb66d-xy.png",
-        "xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed/PHerc0139-20250820105138-3eef69a5cc39-xz.png"
+        "xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed-v2/PHerc0139-20250820105138-708adf5bb66d-xy.png",
+        "xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed-v2/PHerc0139-20250820105138-3eef69a5cc39-xz.png"
       }
     },
     {
@@ -1273,8 +1273,8 @@
         "coordinate_note": "Array levels and scaledown use the manifest base frame. CT input level is separate; do not add the two levels."
       },
       "preview_smoothed": {
-        "xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed/PHerc0139-20250822062710-6a26b7a0117a-xy.png",
-        "xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed/PHerc0139-20250822062710-a9be0ac6e294-xz.png"
+        "xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed-v2/PHerc0139-20250822062710-6a26b7a0117a-xy.png",
+        "xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed-v2/PHerc0139-20250822062710-a9be0ac6e294-xz.png"
       }
     },
     {
@@ -1457,8 +1457,8 @@
         "coordinate_note": "Array levels and scaledown use the manifest base frame. CT input level is separate; do not add the two levels."
       },
       "preview_smoothed": {
-        "xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed/PHerc0139-20251107132835-b7c2a7688e96-xy.png",
-        "xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed/PHerc0139-20251107132835-a47051576c5d-xz.png"
+        "xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed-v2/PHerc0139-20251107132835-b7c2a7688e96-xy.png",
+        "xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed-v2/PHerc0139-20251107132835-a47051576c5d-xz.png"
       }
     },
     {
@@ -1641,8 +1641,8 @@
         "coordinate_note": "Array levels and scaledown use the manifest base frame. CT input level is separate; do not add the two levels."
       },
       "preview_smoothed": {
-        "xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed/PHerc0139-20251107135911-b7b11d3c8178-xy.png",
-        "xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed/PHerc0139-20251107135911-8259f1764c35-xz.png"
+        "xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed-v2/PHerc0139-20251107135911-b7b11d3c8178-xy.png",
+        "xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed-v2/PHerc0139-20251107135911-8259f1764c35-xz.png"
       }
     },
     {
@@ -1985,8 +1985,8 @@
         "coordinate_note": "Array levels and scaledown use the manifest base frame. CT input level is separate; do not add the two levels."
       },
       "preview_smoothed": {
-        "xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed/PHerc0139-20260319133050-92b3bcf97d99-xy.png",
-        "xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed/PHerc0139-20260319133050-25fe4714400c-xz.png"
+        "xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed-v2/PHerc0139-20260319133050-92b3bcf97d99-xy.png",
+        "xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed-v2/PHerc0139-20260319133050-25fe4714400c-xz.png"
       }
     },
     {
@@ -2169,8 +2169,8 @@
         "coordinate_note": "Array levels and scaledown use the manifest base frame. CT input level is separate; do not add the two levels."
       },
       "preview_smoothed": {
-        "xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed/PHerc0139-20260319133554-a40102363800-xy.png",
-        "xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed/PHerc0139-20260319133554-ea4a4bf4a650-xz.png"
+        "xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed-v2/PHerc0139-20260319133554-a40102363800-xy.png",
+        "xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed-v2/PHerc0139-20260319133554-ea4a4bf4a650-xz.png"
       }
     },
     {
@@ -2353,8 +2353,8 @@
         "coordinate_note": "Array levels and scaledown use the manifest base frame. CT input level is separate; do not add the two levels."
       },
       "preview_smoothed": {
-        "xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed/PHerc0139-20260413113053-2c245565ed8f-xy.png",
-        "xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed/PHerc0139-20260413113053-3bf49129feac-xz.png"
+        "xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed-v2/PHerc0139-20260413113053-2c245565ed8f-xy.png",
+        "xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed-v2/PHerc0139-20260413113053-3bf49129feac-xz.png"
       }
     },
     {
@@ -2537,8 +2537,8 @@
         "coordinate_note": "Array levels and scaledown use the manifest base frame. CT input level is separate; do not add the two levels."
       },
       "preview_smoothed": {
-        "xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed/PHerc0139-20260930100252-e4bd61ac0731-xy.png",
-        "xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed/PHerc0139-20260930100252-3487fc5caf19-xz.png"
+        "xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed-v2/PHerc0139-20260930100252-e4bd61ac0731-xy.png",
+        "xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed-v2/PHerc0139-20260930100252-3487fc5caf19-xz-display1920.png"
       }
     },
     {
@@ -2721,8 +2721,8 @@
         "coordinate_note": "Array levels and scaledown use the manifest base frame. CT input level is separate; do not add the two levels."
       },
       "preview_smoothed": {
-        "xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed/PHerc0172-20241024131838-05cdc26688e3-xy.png",
-        "xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed/PHerc0172-20241024131838-1bca443f992c-xz.png"
+        "xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed-v2/PHerc0172-20241024131838-05cdc26688e3-xy.png",
+        "xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed-v2/PHerc0172-20241024131838-1bca443f992c-xz.png"
       }
     },
     {
@@ -2905,8 +2905,8 @@
         "coordinate_note": "Array levels and scaledown use the manifest base frame. CT input level is separate; do not add the two levels."
       },
       "preview_smoothed": {
-        "xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed/PHerc0172-20241024131839-544ff05449ce-xy.png",
-        "xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed/PHerc0172-20241024131839-3953c7c95e61-xz.png"
+        "xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed-v2/PHerc0172-20241024131839-544ff05449ce-xy.png",
+        "xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed-v2/PHerc0172-20241024131839-3953c7c95e61-xz.png"
       }
     },
     {
@@ -3081,8 +3081,8 @@
         "coordinate_note": "Array levels and scaledown use the manifest base frame. CT input level is separate; do not add the two levels."
       },
       "preview_smoothed": {
-        "xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed/PHerc0175A-20250521115057-d8dee5ec2705-xy.png",
-        "xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed/PHerc0175A-20250521115057-581288eee584-xz.png"
+        "xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed-v2/PHerc0175A-20250521115057-d8dee5ec2705-xy.png",
+        "xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed-v2/PHerc0175A-20250521115057-581288eee584-xz.png"
       }
     },
     {
@@ -3257,8 +3257,8 @@
         "coordinate_note": "Array levels and scaledown use the manifest base frame. CT input level is separate; do not add the two levels."
       },
       "preview_smoothed": {
-        "xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed/PHerc0175B-20250521125822-fe9c76b9fc0a-xy.png",
-        "xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed/PHerc0175B-20250521125822-b1dc452f9e10-xz.png"
+        "xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed-v2/PHerc0175B-20250521125822-fe9c76b9fc0a-xy.png",
+        "xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed-v2/PHerc0175B-20250521125822-b1dc452f9e10-xz.png"
       }
     },
     {
@@ -4097,8 +4097,8 @@
         "coordinate_note": "Array levels and scaledown use the manifest base frame. CT input level is separate; do not add the two levels."
       },
       "preview_smoothed": {
-        "xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed/PHerc0306B-20250521133212-67341612ec6a-xy.png",
-        "xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed/PHerc0306B-20250521133212-feab4e7e27a6-xz.png"
+        "xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed-v2/PHerc0306B-20250521133212-67341612ec6a-xy.png",
+        "xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed-v2/PHerc0306B-20250521133212-feab4e7e27a6-xz.png"
       }
     },
     {
@@ -4593,8 +4593,8 @@
         "coordinate_note": "Array levels and scaledown use the manifest base frame. CT input level is separate; do not add the two levels."
       },
       "preview_smoothed": {
-        "xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed/PHerc0343P-20260304131111-3c906e37540d-xy.png",
-        "xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed/PHerc0343P-20260304131111-666954684249-xz.png"
+        "xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed-v2/PHerc0343P-20260304131111-3c906e37540d-xy.png",
+        "xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed-v2/PHerc0343P-20260304131111-666954684249-xz.png"
       }
     },
     {
@@ -4935,8 +4935,8 @@
         "coordinate_note": "Array levels and scaledown use the manifest base frame. CT input level is separate; do not add the two levels."
       },
       "preview_smoothed": {
-        "xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed/PHerc0483A-20250521140913-be3f2c687ba7-xy.png",
-        "xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed/PHerc0483A-20250521140913-21c824c130a9-xz.png"
+        "xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed-v2/PHerc0483A-20250521140913-be3f2c687ba7-xy.png",
+        "xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed-v2/PHerc0483A-20250521140913-21c824c130a9-xz.png"
       }
     },
     {
@@ -5111,8 +5111,8 @@
         "coordinate_note": "Array levels and scaledown use the manifest base frame. CT input level is separate; do not add the two levels."
       },
       "preview_smoothed": {
-        "xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed/PHerc0483B-20251124083638-d46acb08f08d-xy.png",
-        "xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed/PHerc0483B-20251124083638-65c74504d56d-xz.png"
+        "xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed-v2/PHerc0483B-20251124083638-d46acb08f08d-xy.png",
+        "xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed-v2/PHerc0483B-20251124083638-65c74504d56d-xz.png"
       }
     },
     {
@@ -5287,8 +5287,8 @@
         "coordinate_note": "Array levels and scaledown use the manifest base frame. CT input level is separate; do not add the two levels."
       },
       "preview_smoothed": {
-        "xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed/PHerc0490A-20250521151210-32ef37dc3976-xy.png",
-        "xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed/PHerc0490A-20250521151210-9e37b5970010-xz.png"
+        "xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed-v2/PHerc0490A-20250521151210-32ef37dc3976-xy.png",
+        "xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed-v2/PHerc0490A-20250521151210-9e37b5970010-xz.png"
       }
     },
     {
@@ -5463,8 +5463,8 @@
         "coordinate_note": "Array levels and scaledown use the manifest base frame. CT input level is separate; do not add the two levels."
       },
       "preview_smoothed": {
-        "xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed/PHerc0490B-20250521151215-66209904ee93-xy.png",
-        "xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed/PHerc0490B-20250521151215-283abba3c8ad-xz.png"
+        "xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed-v2/PHerc0490B-20250521151215-66209904ee93-xy.png",
+        "xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed-v2/PHerc0490B-20250521151215-283abba3c8ad-xz.png"
       }
     },
     {
@@ -5647,8 +5647,8 @@
         "coordinate_note": "Array levels and scaledown use the manifest base frame. CT input level is separate; do not add the two levels."
       },
       "preview_smoothed": {
-        "xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed/PHerc0500P2-20250820143440-5398e3cf95dd-xy.png",
-        "xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed/PHerc0500P2-20250820143440-08d231c5d7a4-xz.png"
+        "xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed-v2/PHerc0500P2-20250820143440-5398e3cf95dd-xy.png",
+        "xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed-v2/PHerc0500P2-20250820143440-08d231c5d7a4-xz.png"
       }
     },
     {
@@ -6163,8 +6163,8 @@
         "coordinate_note": "Array levels and scaledown use the manifest base frame. CT input level is separate; do not add the two levels."
       },
       "preview_smoothed": {
-        "xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed/PHerc0814-20250804134230-d508660ea622-xy.png",
-        "xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed/PHerc0814-20250804134230-e296828d3ec6-xz.png"
+        "xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed-v2/PHerc0814-20250804134230-d508660ea622-xy.png",
+        "xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed-v2/PHerc0814-20250804134230-e296828d3ec6-xz.png"
       }
     },
     {
@@ -6507,8 +6507,8 @@
         "coordinate_note": "Array levels and scaledown use the manifest base frame. CT input level is separate; do not add the two levels."
       },
       "preview_smoothed": {
-        "xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed/PHerc0814-20260521123630-15c893b54234-xy.png",
-        "xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed/PHerc0814-20260521123630-9775031e29c3-xz.png"
+        "xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed-v2/PHerc0814-20260521123630-15c893b54234-xy.png",
+        "xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed-v2/PHerc0814-20260521123630-9775031e29c3-xz.png"
       }
     },
     {
@@ -6849,8 +6849,8 @@
         "coordinate_note": "Array levels and scaledown use the manifest base frame. CT input level is separate; do not add the two levels."
       },
       "preview_smoothed": {
-        "xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed/PHerc0841-20250821151531-f52efe47e22c-xy.png",
-        "xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed/PHerc0841-20250821151531-a585b6861e1f-xz.png"
+        "xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed-v2/PHerc0841-20250821151531-f52efe47e22c-xy.png",
+        "xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed-v2/PHerc0841-20250821151531-a585b6861e1f-xz.png"
       }
     },
     {
@@ -7033,8 +7033,8 @@
         "coordinate_note": "Array levels and scaledown use the manifest base frame. CT input level is separate; do not add the two levels."
       },
       "preview_smoothed": {
-        "xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed/PHerc0841-20260319124803-2273338528ab-xy.png",
-        "xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed/PHerc0841-20260319124803-93b3d3793b8c-xz.png"
+        "xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed-v2/PHerc0841-20260319124803-2273338528ab-xy.png",
+        "xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed-v2/PHerc0841-20260319124803-93b3d3793b8c-xz.png"
       }
     },
     {
@@ -7209,8 +7209,8 @@
         "coordinate_note": "Array levels and scaledown use the manifest base frame. CT input level is separate; do not add the two levels."
       },
       "preview_smoothed": {
-        "xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed/PHerc0846A-20250728152254-593f9e48b6f6-xy.png",
-        "xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed/PHerc0846A-20250728152254-0f256a1ad692-xz.png"
+        "xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed-v2/PHerc0846A-20250728152254-593f9e48b6f6-xy.png",
+        "xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed-v2/PHerc0846A-20250728152254-0f256a1ad692-xz.png"
       }
     },
     {
@@ -7385,8 +7385,8 @@
         "coordinate_note": "Array levels and scaledown use the manifest base frame. CT input level is separate; do not add the two levels."
       },
       "preview_smoothed": {
-        "xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed/PHerc0846B-20250804142305-b9e9ff7f8a3a-xy.png",
-        "xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed/PHerc0846B-20250804142305-df796ef6e0e2-xz.png"
+        "xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed-v2/PHerc0846B-20250804142305-b9e9ff7f8a3a-xy.png",
+        "xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed-v2/PHerc0846B-20250804142305-df796ef6e0e2-xz.png"
       }
     },
     {
@@ -8719,8 +8719,8 @@
         "coordinate_note": "Array levels and scaledown use the manifest base frame. CT input level is separate; do not add the two levels."
       },
       "preview_smoothed": {
-        "xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed/PHerc1667-20260323082859-20c5afa7524b-xy.png",
-        "xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed/PHerc1667-20260323082859-cb24f3b3bac3-xz.png"
+        "xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed-v2/PHerc1667-20260323082859-20c5afa7524b-xy.png",
+        "xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed-v2/PHerc1667-20260323082859-cb24f3b3bac3-xz.png"
       }
     },
     {
@@ -8903,8 +8903,8 @@
         "coordinate_note": "Array levels and scaledown use the manifest base frame. CT input level is separate; do not add the two levels."
       },
       "preview_smoothed": {
-        "xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed/PHercMAN5-20260311104824-66d5ff4f05ce-xy.png",
-        "xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed/PHercMAN5-20260311104824-8a5fe2b4b2d9-xz.png"
+        "xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed-v2/PHercMAN5-20260311104824-66d5ff4f05ce-xy.png",
+        "xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed-v2/PHercMAN5-20260311104824-8a5fe2b4b2d9-xz.png"
       }
     },
     {
@@ -9087,8 +9087,8 @@
         "coordinate_note": "Array levels and scaledown use the manifest base frame. CT input level is separate; do not add the two levels."
       },
       "preview_smoothed": {
-        "xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed/PHercMANB-20260323091048-880cafd44283-xy.png",
-        "xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed/PHercMANB-20260323091048-addc38aae984-xz.png"
+        "xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed-v2/PHercMANB-20260323091048-880cafd44283-xy.png",
+        "xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed-v2/PHercMANB-20260323091048-addc38aae984-xz-display1920.png"
       }
     },
     {
@@ -9263,8 +9263,8 @@
         "coordinate_note": "Array levels and scaledown use the manifest base frame. CT input level is separate; do not add the two levels."
       },
       "preview_smoothed": {
-        "xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed/PHercMANBp-20251216152116-730767b90103-xy.png",
-        "xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed/PHercMANBp-20251216152116-18dbdb973859-xz.png"
+        "xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed-v2/PHercMANBp-20251216152116-730767b90103-xy.png",
+        "xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed-v2/PHercMANBp-20251216152116-18dbdb973859-xz.png"
       }
     },
     {
@@ -9447,8 +9447,8 @@
         "coordinate_note": "Array levels and scaledown use the manifest base frame. CT input level is separate; do not add the two levels."
       },
       "preview_smoothed": {
-        "xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed/PHercMANBp-20260427100434-b9ac1720de25-xy.png",
-        "xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed/PHercMANBp-20260427100434-1c1b9a21a5be-xz.png"
+        "xy": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed-v2/PHercMANBp-20260427100434-b9ac1720de25-xy.png",
+        "xz": "https://huggingface.co/spaces/SharpMeow/lasagna-fields/resolve/main/assets/previews/smoothed-v2/PHercMANBp-20260427100434-1c1b9a21a5be-xz.png"
       }
     },
     {

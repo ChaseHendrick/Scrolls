@@ -30,7 +30,19 @@ Coverage means a field is available for at least one volume of each scroll. The 
 
 All 56 listed fields have top and side previews. Fifteen newly added preview pairs show the published layer pattern (`cos`) on fixed central planes, with lossless PNGs and source/credit sidecars. Their captions identify the channel. The existing colored-normal preview pairs retain their sources. The All fields thumbnails also open previews.
 
-Smoothed is the default where a separate published preview exists (34 fields, 68 PNGs released in [PR #351](https://github.com/ChaseHendrick/Scrolls/pull/351) and [Space revision 8133999](https://huggingface.co/spaces/SharpMeow/lasagna-fields/commit/8133999a62c37605d45fb3eaa0d1e818fffc0cc8), 9 November 2026). Original switches to the original image URL. Smoothing is for display only and can look subtle at the page's reduced size; **Enlarge** opens the same selected view and mode in the preview dialog. Downloadable field values are unchanged. Missing or identical smoothing URLs use Original; a failed smoothed image is labeled as a fallback and its button is disabled for the session. If both images fail, the preview says it is unavailable. `tests/test_lasagna_fields_preview.py` checks routing, fallback and stale image responses without reading scientific arrays. The decorative field drawing is cropped below its horizon, preserving its existing fade.
+Smoothed is the default for the 34 fields with colored-normal previews (68 PNGs). It reduces visible color speckling while preserving broad direction changes. Original remains available for inspecting the source detail. Smoothing changes only the preview's color panel, not the downloadable normals or layer pattern. Missing-data boundaries can still look stepped. Two oversized side views are resized to a maximum dimension of 1920 pixels for display; their credit sidecars disclose this resize. PNG encoding is lossless, but resizing is not.
+
+**Enlarge** opens the selected view and mode within the visible page, including when the guide is embedded in the Space. Missing or identical smoothing URLs use Original; a failed smoothed image is labeled as a fallback and its button is disabled for the session. If both images fail, the preview says it is unavailable. The preview tests check routing, fallback, copied links and out-of-order image responses without reading scientific arrays. The decorative field drawing is cropped below its horizon, preserving its existing fade.
+
+### Get normals or download a field
+
+1. In **Every field**, find the scroll, then choose the acquisition and field. Different acquisitions can have different field sources.
+2. **Data and downloads** shows the actual URLs. The two normal channels, **nx** and **ny**, come first. Use **Open** to inspect a source or **Copy** to copy its URL. The field manifest describes the channel layout.
+3. For a complete local field, open **TAR bundle files** when available. Download all parts listed in the bundle index, unpack them, then unpack the final metadata and pyramid archive last. The final archive alone is not the field. Other sources provide chunked Zarr arrays rather than a single download file.
+4. Expand **Download and developer recipes** for commands tied to the field selected above. Fields with an indexed dataset get a download command pinned to its recorded revision. Other fields get their exact Zarr URLs. The region-download helper appears only for a matching indexed bundle.
+5. **Copy page link** shares the current selection. **Copy normals links** copies the two data URLs, manifest and acquisition details.
+
+The page counts 56 field acquisitions across 35 scrolls and four fragments. The ten original bundle recipes cover a subset of that catalog; they are not a second scroll inventory.
 
 The metadata API `list_coverage(scroll="")` returns the summary and all matching samples, including every reconstructed volume, missing fields and the limits of the audit. `list_fields` retains its arguments and existing keys, adding `normal_source`, `availability`, `provenance` and `normals_access`. `bytes`, `preview_xy` and `preview_xz` may be null when no measured size or preview is available. Missing previews do not require reading scientific data to expose public field links. The full source inventory is `coverage.json`.
 
@@ -62,7 +74,7 @@ Do not use it:
 ## Quick start
 
 1. **Select a scan.** Find a scroll, then choose the field for the scan and voxel size you need. Check whether its model is Lasagna or Lasagnetta.
-2. **Preview the field.** Every listed field has top and side views. Open **All fields** and click a scroll thumbnail or **Preview**. Captions distinguish combined layer/normal images from layer-pattern-only images; **Get normals** opens the original normal data in either case.
+2. **Preview the field.** Every listed field has top and side views. Open **All fields** and click a scroll thumbnail or **Preview**. Captions distinguish combined layer/normal images from layer-pattern-only images; **Normals (nx)** and **Normals (ny)** provide **Open** and **Copy URL** actions for the original normal data in either case.
 3. **Open the source.** Follow the dataset link for downloads and its documentation, or the manifest link for the field's array paths and coordinate metadata.
 
 A preview shows model output. It does not establish scientific accuracy or whole-volume completeness. The field metadata records provenance and coverage separately; an unknown completion status is not a pass. Lasagnetta previews remain labeled as student output, and m7-derived normals are a separate product. For agents, `list_coverage` reports missing volumes and these limits, while `list_fields` returns the published field links.
