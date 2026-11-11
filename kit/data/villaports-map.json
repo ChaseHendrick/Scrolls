@@ -101,7 +101,7 @@
    "name": "upsampling",
    "new_module": "vc_reader.tifxyz",
    "new_name": "Surface",
-   "use": "tifxyz.Surface(xyz).points_at(rows, cols, interpolation=\"smooth\") returns (xyz, valid) in place of upsampling.interpolate_at_points(..., method=\"catmull_rom\")",
+   "use": "tifxyz.Surface(xyz).points_at(rows, cols, interpolation=\"bicubic\") returns (xyz, valid) in place of upsampling.interpolate_at_points(..., method=\"catmull_rom\")",
    "villa": "vc_reader/src/vc_reader/tifxyz.py",
    "commit": "baf5e605bb42a3d55a62b7c5c728e0908137225c",
    "pr": 2440
@@ -110,7 +110,7 @@
    "old": "vesuvius.tifxyz.upsampling",
    "new_module": "vc_reader.tifxyz",
    "new_name": "Surface",
-   "use": "tifxyz.Surface(xyz).points_at(rows, cols, interpolation=\"smooth\") returns (xyz, valid) in place of interpolate_at_points(..., method=\"catmull_rom\")",
+   "use": "tifxyz.Surface(xyz).points_at(rows, cols, interpolation=\"bicubic\") returns (xyz, valid) in place of interpolate_at_points(..., method=\"catmull_rom\")",
    "villa": "vc_reader/src/vc_reader/tifxyz.py",
    "commit": "baf5e605bb42a3d55a62b7c5c728e0908137225c",
    "pr": 2440

@@ -9,7 +9,7 @@
 | Kind | kit command, kit module |
 | Area | Planning and prizes |
 | Run | `python -m kit prizes`, `from kit import prizes` |
-| Code | `kit/prizes.py`, `kit/data/prizes-2026-11-03.json`, `kit/data/prizes-2026-10-11.json`, `kit/data/prizes-2026-10-06.json`, `kit/cli.py` (`cmd_prizes`) |
+| Code | `kit/prizes.py`, `kit/data/prizes-2026-11-11.json`, `kit/data/prizes-2026-11-03.json`, `kit/data/prizes-2026-10-11.json`, `kit/data/prizes-2026-10-06.json`, `kit/cli.py` (`cmd_prizes`) |
 | Tests | `tests/test_kit.py`, `tests/test_packaging.py`, `tests/test_cli_parser_cache.py` |
 | Needs | Python 3.10 or newer, standard library only (json, datetime, pathlib) |
 | Runs on | Any machine. 0.31 to 0.56 s per call for the table and 0.45 to 0.60 s for `--json`, almost all of it Python start-up and importing `kit.cli` (5 runs each, measured 2026-10-16, 4-core Xeon cloud container) |
@@ -18,7 +18,7 @@
 | Go-ahead | Not needed |
 | Released | Public `main` since 2026-10-06 (`2daee8e`); the 11 October snapshot since 2026-10-11 ([PR #40](https://github.com/ChaseHendrick/Scrolls/pull/40)). Also inside the AutoPipeline release copy at `faada83`, and as `scrolls-workbench prizes` in the installable package since 2026-10-14 (`2582ab7`) |
 | Guide | [prizes.md](../prizes.md) (the prize terms in prose, from the same snapshot) |
-| Checked | 2026-11-03 against commit `3ce3b48` |
+| Checked | 2026-11-11 against commit `1ad9fb5` |
 
 ## What it does
 
@@ -30,7 +30,7 @@ Other tools read the same file through this module. `kit plan` refuses a scroll 
 
 It does not fetch the live page, so it knows nothing that changed after the snapshot's `checked` date. "Days left" counts calendar days from this machine's local date to the deadline's date and ignores the time of day (the deadlines are 23:59 Pacific). Eligibility is a dated fact about the prize rules, not a judgment about whether a scroll holds text, and the snapshot is not the full terms: what a submission must contain is in [prizes.md](../prizes.md) and on the live page.
 
-Three snapshots are kept. The current one is `prizes.SNAPSHOT`, 3 November 2026: 13 Grand Prize volumes, 20 First Letters volumes, First Letters at $50,000 a scroll for a maximum of 8 more scrolls ($400,000), with two awards recorded (PHerc0343 and PHerc0306B). The 11 October 2026 file had 21 First Letters volumes including PHerc0306B and a maximum of 9 ($450,000); the 6 October 2026 file had 22 including PHerc0343 and a maximum of 10 ($500,000). The command never prints the older two, but `prizes.load(path)` reads them.
+Four snapshots are kept. The current one is `prizes.SNAPSHOT`, 11 November 2026: 13 Grand Prize volumes, 20 First Letters volumes, First Letters at $50,000 a scroll for a maximum of 8 more scrolls ($400,000), with two awards recorded (PHerc0343 and PHerc0306B); the Grand Prize goes in through its Submission Form, no longer by email (villa [#2503](https://github.com/ScrollPrize/villa/pull/2503)), and the Progress Prizes deadline is 11:59pm Pacific on 30 November 2026, with the November form. The 3 November 2026 file has the same money and lists, the email route and the 31 October deadline. The 11 October 2026 file had 21 First Letters volumes including PHerc0306B and a maximum of 9 ($450,000); the 6 October 2026 file had 22 including PHerc0343 and a maximum of 10 ($500,000). The command never prints the older three, but `prizes.load(path)` reads them.
 
 ## When to use it
 
@@ -53,35 +53,35 @@ python -m kit prizes
 python -m kit prizes --json > prizes.json
 ```
 
-Run on 2026-11-03 with `--today 2026-11-03` (the same as no option on that day), it printed, shortened here:
+Run on 2026-11-11 with `--today 2026-11-11` (the same as no option on that day), it printed, shortened here:
 
 ```
-Open prizes, snapshot checked 2026-11-03 (https://scrollprize.org/prizes)
+Open prizes, snapshot checked 2026-11-11 (https://scrollprize.org/prizes)
 
-2027 Grand Prize             $1,000,000  2027-06-25  234 days left
+2027 Grand Prize             $1,000,000  2027-06-25  226 days left
     Fully unroll one eligible sealed scroll and make it readable: 100% of the recto surface meshed, at least 70% of each counted column's preserved characters legible.
     Eligible (13): PHerc0125, PHerc0191, PHerc0211, PHerc0257, PHerc0268, PHerc0358, PHerc0800, PHerc0813, PHerc0826, PHerc1203, PHerc1218, PHerc1447, PHerc1545
 
-First Letters                  $400,000  2027-06-25  234 days left
+First Letters                  $400,000  2027-06-25  226 days left
     First team to show 10 legible letters within a single 4 cm2 area of an eligible scroll.
     Eligible (20): PHerc0125, PHerc0175A, PHerc0175B, ... PHerc1218, PHerc1545
 
-PHerc. Paris 4 title            $50,000  2027-06-25  234 days left
+PHerc. Paris 4 title            $50,000  2027-06-25  226 days left
     ...
-Progress Prizes             $590,000/yr  2026-10-31  deadline passed 3 days ago; re-check
+Progress Prizes             $590,000/yr  2026-11-30  19 days left
     ...
-Snapshot of the prizes page body on 2026-11-03, not the homepage banner. The live page wins if it disagrees. ...
+Snapshot of the prizes page body on 2026-11-11, not the homepage banner. The live page wins if it disagrees. ...
 ```
 
-It worked when the exit code is 0 and the first line names the snapshot date. The Progress Prizes line above says `deadline passed` because on 3 November 2026 the live page itself still named 31 October 2026 as the next deadline; the snapshot copies the page. If that date is more than about a month old, or any line says `deadline passed`, re-check the live page and add a new snapshot (How it works).
+It worked when the exit code is 0 and the first line names the snapshot date. On 3 November 2026 the Progress Prizes line said `deadline passed` because the live page itself still named 31 October 2026 as the next deadline; the snapshot copies the page. The page switches the monthly form by hand after each deadline (villa [#2492](https://github.com/ScrollPrize/villa/pull/2492)), so for a day or more the old date can still show. If that date is more than about a month old, or any line says `deadline passed`, re-check the live page and add a new snapshot (How it works).
 
 ## Checks and controls
 
-- **The live page is the control.** The snapshot is right only while it matches https://scrollprize.org/prizes. On 2026-11-03 this page's author fetched the live page: it said First Letters prizes "will be awarded for a maximum of 8 more scrolls", up to $400,000, with the deadline June 25th, 2027 (11:59pm Pacific); its Grand Prize list named the same 13 volumes and its First Letters list the same 20 as the snapshot, and `python -m kit.prizewatch` found every snapshot amount and volume on the page. Its only remark was the Progress Prizes deadline of 31 October 2026, which the page still named.
+- **The live page is the control.** The snapshot is right only while it matches https://scrollprize.org/prizes. On 2026-11-11 this page's author fetched the live page: the Grand Prize section links only its Submission Form (https://forms.gle/wvNK7DkNKuRKjHJdA) and no email, the Progress Prizes line says "The next deadline is 11:59pm Pacific, November 30th, 2026!", and the eligible lists match villa's `prizeEligibility.json` at `f0e4410` volume for volume; `python -m kit.prizewatch` said the page agrees with the snapshot (13 amounts, dates 2026-11-30 and 2027-06-25, 21 volume ids).
 - **The tests pin the snapshot's arithmetic and counts** (`PrizeSnapshotTest`): the Grand Prize tiers add up to $1,000,000, First Letters per-scroll money times the maximum equals its total, there are 13 Grand Prize and 20 First Letters volumes, PHerc0343 and PHerc0306B are out of First Letters and PHerc1447 is only in the Grand Prize, every eligible zarr name starts with its volume id, and every voxel size is 8.64 or 9.362 um. A snapshot edited without updating the tests fails them.
 - **A stale deadline shows itself.** After a deadline, its line reads `deadline passed N days ago; re-check` instead of a count (for example `python -m kit prizes --today 2026-11-02` for the Progress Prizes line).
 
-Claim label: Sourced fact, for the amounts, deadlines and eligible volumes, copied from scrollprize.org/prizes and villa's `prizeEligibility.json` at commit `deb1b695` on 2026-11-03; days left is arithmetic on the machine's date.
+Claim label: Sourced fact, for the amounts, deadlines and eligible volumes, copied from scrollprize.org/prizes and villa's `prizeEligibility.json` at commit `f0e44101` on 2026-11-11; days left is arithmetic on the machine's date.
 
 ## Commands and options
 
@@ -107,7 +107,7 @@ print(prizes.format_table(snap))
 
 | Function | Returns | Raises | Notes |
 | --- | --- | --- | --- |
-| `load(path=SNAPSHOT)` | dict, the parsed snapshot (fields under Outputs) | `FileNotFoundError` for a missing file, `json.JSONDecodeError` for a broken one | `SNAPSHOT` is `kit/data/prizes-2026-11-03.json`; pass `prizes.DATA_DIR / "prizes-2026-10-11.json"` for the previous one |
+| `load(path=SNAPSHOT)` | dict, the parsed snapshot (fields under Outputs) | `FileNotFoundError` for a missing file, `json.JSONDecodeError` for a broken one | `SNAPSHOT` is `kit/data/prizes-2026-11-11.json`; pass `prizes.DATA_DIR / "prizes-2026-11-03.json"` for the previous one |
 | `deadline_date(prize)` | `datetime.date` | `KeyError` without `deadline`, `ValueError` for a malformed one | The date part of the ISO deadline, in the deadline's own time zone (Pacific) |
 | `days_left(prize, today=None)` | int, negative after the deadline | As `deadline_date` | `today` defaults to `date.today()`, the machine's local date. The deadline day itself gives 0 |
 | `find(snapshot, prize_id)` | dict, the prize | `KeyError(prize_id)` for an unknown id | Ids in the current snapshot: `grand-prize-2027`, `first-letters-2027`, `first-title`, `progress-prizes` |
@@ -123,7 +123,7 @@ Module constants: `DATA_DIR` (`kit/data`), `SNAPSHOT` (the current snapshot file
 
 | Input | Format | Notes |
 | --- | --- | --- |
-| The snapshot | JSON at `kit/data/prizes-2026-11-03.json` (`prizes.SNAPSHOT`), about 10 KB | Fixed: no option chooses another file. Its fields are listed under Outputs. Installed packages carry it as package data (`kit = ["data/*.json"]` in `pyproject.toml`) |
+| The snapshot | JSON at `kit/data/prizes-2026-11-11.json` (`prizes.SNAPSHOT`), about 10 KB | Fixed: no option chooses another file. Its fields are listed under Outputs. Installed packages carry it as package data (`kit = ["data/*.json"]` in `pyproject.toml`) |
 | `--today` | `YYYY-MM-DD` | Optional; the machine's local date otherwise |
 
 ## Outputs
@@ -164,7 +164,7 @@ With `--json`, the snapshot file as it is:
 | `ValueError: Invalid isoformat string: '16-10-2026'` and a traceback, exit code 1 | `--today` not written `YYYY-MM-DD` | Write the date as `2026-10-16` |
 | `ValueError: month must be in 1..12` (or `day is out of range for month`) and a traceback, exit code 1 | `--today` is not a real date | Give a real date |
 | `deadline passed N days ago; re-check` in a prize's line, exit code 0 | The snapshot is older than that deadline: for the Progress Prizes it names only the next monthly deadline | Read the live page and add a new snapshot (How it works) |
-| `FileNotFoundError: ... prizes-2026-11-03.json` and a traceback, exit code 1 | A copy of `kit/` without its `data/` folder | Run from a clone, or reinstall the package, which ships `kit/data/*.json` |
+| `FileNotFoundError: ... prizes-2026-11-11.json` and a traceback, exit code 1 | A copy of `kit/` without its `data/` folder | Run from a clone, or reinstall the package, which ships `kit/data/*.json` |
 | `KeyError: 'PRIZE_ID'` from `find`, `eligible_entry` or `eligible_volume` | An id not in the snapshot | Use one of the ids under Python API |
 | `BrokenPipeError` after `python -m kit prizes --json \| head` | The reader closed the pipe before the JSON ended | Harmless; write to a file instead |
 
@@ -198,10 +198,11 @@ python -m unittest tests.test_kit.PrizeSnapshotTest tests.test_kit.CliTest -v
 python -m unittest tests.test_packaging.ConsoleScriptTest tests.test_cli_parser_cache -v
 ```
 
-`PrizeSnapshotTest` (8 tests) pins the totals, tiers, deadlines, counts and awards of the 3 November snapshot, the 11 October file's 21 First Letters volumes and maximum of 9, the 6 October file's 22 First Letters volumes and maximum of 10, PHerc1447 on the Grand Prize only, a zarr name for every eligible volume, name normalization and the deadline arithmetic. `CliTest` runs `prizes --today 2026-10-06` and expects `262 days left`. The packaging tests check that `scrolls-workbench prizes --json` prints exactly the snapshot and that the snapshots live in `kit/data/`; the parser cache test runs `prizes --json` 20 times in under 5 s. They do not compare the snapshot with the live page, and they do not cover a malformed `--today`.
+`PrizeSnapshotTest` (9 tests) pins the totals, tiers, deadlines, counts, awards and submit routes of the 11 November snapshot, that the 3 November file differs from it only in the Grand Prize `submit` and the Progress Prizes deadline, note and form, the 11 October file's 21 First Letters volumes and maximum of 9, the 6 October file's 22 First Letters volumes and maximum of 10, PHerc1447 on the Grand Prize only, a zarr name for every eligible volume, name normalization and the deadline arithmetic. `CliTest` runs `prizes --today 2026-10-06` and expects `262 days left`. The packaging tests check that `scrolls-workbench prizes --json` prints exactly the snapshot and that the snapshots live in `kit/data/`; the parser cache test runs `prizes --json` 20 times in under 5 s. They do not compare the snapshot with the live page, and they do not cover a malformed `--today`.
 
 ## History
 
+- 2026-11-11: the 11 November snapshot becomes current: the Grand Prize is submitted through its form (villa #2503), the Progress Prizes deadline is 30 November 2026 with the November form; money and eligible lists unchanged; the 3 November file is kept ([PR #355](https://github.com/ChaseHendrick/Scrolls/pull/355)).
 - 2026-11-03: the 3 November snapshot becomes current: First Letters at $50,000 a scroll for a maximum of 8 more scrolls ($400,000), 20 eligible volumes after the PHerc0306B award announced on 2 November 2026, which joins the `awarded` list; the 11 October file is kept ([PR #314](https://github.com/ChaseHendrick/Scrolls/pull/314)).
 - 2026-10-14: `scrolls-workbench prizes` in the installable package, which ships the snapshots as package data (`2582ab7`, [PR #58](https://github.com/ChaseHendrick/Scrolls/pull/58)).
 - 2026-10-11: the 11 October snapshot becomes current: First Letters at $50,000 a scroll for a maximum of 9 more scrolls ($450,000), 21 eligible volumes after the PHerc0343 award, and an `awarded` list; the 6 October file is kept (`f4092cd`, [PR #40](https://github.com/ChaseHendrick/Scrolls/pull/40)).

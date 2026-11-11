@@ -22,7 +22,7 @@
 
 ## What it does
 
-The organizers' ink detection tutorial ([scrollprize.org/tutorial5](https://scrollprize.org/tutorial5)) shows how to render a traced papyrus surface into a surface volume (a stack of images at depths above and below the surface) and run villa's ink model on it. `kit plan SCROLL` prints that workflow as a commented shell script, filled in for one scroll that is First Letters eligible in the prize snapshot: the scroll's volume id, its zarr path in the open-data bucket and its voxel size come from `kit/data/prizes-2026-11-03.json` ([prizes](prizes.md)). It prints and never runs anything. The commands were copied from the tutorial at villa commit `e0bbb8b`, checked 2026-10-06; paths and flags change upstream, so the tutorial wins when a printed command fails.
+The organizers' ink detection tutorial ([scrollprize.org/tutorial5](https://scrollprize.org/tutorial5)) shows how to render a traced papyrus surface into a surface volume (a stack of images at depths above and below the surface) and run villa's ink model on it. `kit plan SCROLL` prints that workflow as a commented shell script, filled in for one scroll that is First Letters eligible in the prize snapshot: the scroll's volume id, its zarr path in the open-data bucket and its voxel size come from `kit/data/prizes-2026-11-11.json` ([prizes](prizes.md)). It prints and never runs anything. The commands were copied from the tutorial at villa commit `e0bbb8b`, checked 2026-10-06; paths and flags change upstream, so the tutorial wins when a printed command fails.
 
 The plan, in order:
 
@@ -162,7 +162,7 @@ chain = plan.spiral_chain("PHerc0826")               # the --spiral chain as one
 | Input | Format | Notes |
 | --- | --- | --- |
 | `scroll` | A scroll name | Matched after `normalize_scroll`: upper case, spaces and dots removed, digits zero-padded to 4 |
-| The prize snapshot | `kit/data/prizes-2026-11-03.json` through `prizes.load()` | Gives the eligible list, each scroll's `volume`, `zarr` and `voxel_um`, the `awarded` list, and the First Letters `submit` form URL |
+| The prize snapshot | `kit/data/prizes-2026-11-11.json` through `prizes.load()` | Gives the eligible list, each scroll's `volume`, `zarr` and `voxel_um`, the `awarded` list, and the First Letters `submit` form URL |
 | `kit/data/spiral-inputs-2026-10-24.json` | JSON | For `--spiral`: per eligible scan the volume, its slice count and the two catalog properties from the open data's `metadata.json`, and its lasagna source (`bucket` prefix or Hugging Face `dataset`), all read 24 Oct 2026; every store's level 2 is a 4x downsample by its own `.zattrs` |
 | `kit cost` numbers | Floats | Hours and USD per hour; no unit conversion, no currency other than USD |
 
