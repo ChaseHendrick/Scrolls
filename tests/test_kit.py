@@ -19,7 +19,7 @@ class PrizeSnapshotTest(unittest.TestCase):
         self.snap = prizes.load()
 
     def test_snapshot_matches_prize_page_totals(self):
-        self.assertEqual(self.snap["checked"], "2026-11-03")
+        self.assertEqual(self.snap["checked"], "2026-11-11")
         grand = prizes.find(self.snap, "grand-prize-2027")
         self.assertEqual(grand["total_usd"], 1_000_000)
         self.assertEqual(grand["tiers_usd"], {"1st": 800_000, "2nd": 100_000, "3rd": 50_000, "4th": 50_000})
@@ -47,7 +47,10 @@ class PrizeSnapshotTest(unittest.TestCase):
         self.assertEqual(progress["monthly_best_usd"], 20_000)
         self.assertEqual(progress["typical_tiers_usd"][0], 20_000)
         self.assertEqual(progress["typical_tiers_usd"][-1], 250)
-        self.assertTrue(progress["deadline"].startswith("2026-10-31T23:59:00"))
+        self.assertEqual(progress["deadline"], "2026-11-30T23:59:00-08:00", "11:59pm Pacific (PST) on 30 Nov 2026")
+        self.assertIn("1FAIpQLSeB6MC_", progress["submit"])
+        self.assertEqual(grand["submit"], "https://forms.gle/wvNK7DkNKuRKjHJdA",
+                         "villa #2503: the Grand Prize goes in through its form, not by email")
 
     def test_every_eligible_volume_has_a_resolved_zarr(self):
         for prize_id in ("grand-prize-2027", "first-letters-2027"):
@@ -62,6 +65,18 @@ class PrizeSnapshotTest(unittest.TestCase):
         for scroll in ("PHerc0343", "PHerc0306B"):
             self.assertNotIn(scroll, [entry["scroll"] for entry in letters])
             self.assertIsNone(prizes.eligible_volume(self.snap, scroll))
+
+    def test_november_3_snapshot_is_kept_and_differs_only_in_submit_and_progress(self):
+        old = prizes.load(prizes.DATA_DIR / "prizes-2026-11-03.json")
+        self.assertEqual(old["checked"], "2026-11-03")
+        self.assertEqual(prizes.find(old, "grand-prize-2027")["submit"], "grandprize@scrollprize.org")
+        self.assertTrue(prizes.find(old, "progress-prizes")["deadline"].startswith("2026-10-31T23:59:00"))
+        for prize_id in ("grand-prize-2027", "first-letters-2027", "first-title", "progress-prizes"):
+            before, after = dict(prizes.find(old, prize_id)), dict(prizes.find(self.snap, prize_id))
+            changed = sorted(k for k in set(before) | set(after) if before.get(k) != after.get(k))
+            expected = {"grand-prize-2027": ["submit"],
+                        "progress-prizes": ["deadline", "deadline_note", "submit"]}.get(prize_id, [])
+            self.assertEqual(changed, expected, prize_id)
 
     def test_october_11_snapshot_still_has_21_including_pherc0306b(self):
         old = prizes.load(prizes.DATA_DIR / "prizes-2026-10-11.json")

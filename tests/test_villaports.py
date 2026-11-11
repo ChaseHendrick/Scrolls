@@ -349,6 +349,15 @@ class MapLookup(Fixture):
             self.assertTrue(e["villa"].startswith(("vesuvius/src/", "vc_reader/src/")), e["villa"])
             self.assertTrue(e["old"].split(".")[0] in data["packages"])
 
+    def test_real_map_points_at_hints_ask_for_bicubic(self):
+        """vc_reader's points_at() accepts "linear" or "bicubic"; villa #2506 (f0e4410) made villa's own callers ask
+        for "bicubic", so no hint may suggest "smooth", which raises there."""
+        hints = [e["use"] for e in vp.load_map()["entries"] if "points_at(" in e["use"]]
+        self.assertEqual(len(hints), 2)
+        for use in hints:
+            self.assertIn('interpolation="bicubic"', use)
+            self.assertNotIn('"smooth"', use)
+
 
 class Commands(Fixture):
     def test_scan(self):
