@@ -16,10 +16,14 @@ winding order from them. It never looks at ink, and it adds no new label: every 
             radial edge (the next sheet out) whose difference is not 1 plus the start-ray shift
     sure    a piece is sure when its graph distance, over the slice's continuity and radial edges, to the nearest
             bad piece is at least D_SURE (3); a slice with no bad piece makes every piece sure
+    main    Ringleader solves each connected component of its graph on its own, so every component carries its
+            own free offset and labels compare only inside one component (the files' `comp` array). A slice's
+            ladder holds the sure pieces of one component, the one with the most sure pieces (the smallest
+            component number on a tie); the sure pieces of the other components are counted and left out
     points  up to K (8) pixels per sure piece, spread evenly along it (both ends kept), mapped to the fit's grid
             (fit = M (x, y, z, 1) / scale; on PHerc0139 M is the catalog transform from scan 20250728140407, where
             m7 lives, to 20260102150214, and scale 4 for a fit on that scan's L2 grid), rounded to 0.001
-    wind_a  the piece's Ringleader label minus the slice's smallest sure label
+    wind_a  the piece's Ringleader label minus the smallest label written for the slice
     order   points are numbered by theta' ascending (then r): villa's strip loss walks a collection's points in id
             order and unwraps the angle between neighbors, so the walk never crosses the start ray, and a slice
             whose neighboring points are pi or more apart is refused
@@ -29,13 +33,16 @@ the same points with every step between neighboring winding levels made one wind
 control should score worse than one taught by the ladder; if it does not, the ladder's gain is not from its windings.
 
 `grow` (round 2, optional). After a fit taught by round 1, `fitlabel.py convert` reads it as one label per piece on
-the same skeleton (`--conv`). G keeps round 1's points and adds the K points of each uncertified piece whose fit label
-minus its Ringleader label equals the slice's offset (the most common such difference over the sure pieces' pixels):
-pieces where the taught fit and Ringleader agree. Q, its control, is the plus-one control of G's levels (shifted to
-start at 0 and back). `grow` checks that round 1's ladder rebuilds exactly from `--geo` before it adds anything.
+the same skeleton (`--conv`). G keeps round 1's points and adds the K points of each uncertified piece of the same
+component whose fit label minus its Ringleader label equals the slice's offset (the most common such difference over
+the written sure pieces' pixels): pieces where the taught fit and Ringleader agree. Q, its control, is the plus-one
+control of G's levels (shifted to start at 0 and back). `grow` checks that round 1's ladder rebuilds exactly from
+`--geo` before it adds anything.
 
-This is the method of the frozen test of 4 November 2026 (PHerc0139 z 1,960 to 2,300; see
-docs/tools/ringleader.md), with the same constants. Standard library and numpy (scipy for the graph distance).
+Versions up to 1.1.0 had no `main` step: they wrote the sure pieces of every component on one offset, which is wrong
+for every component but one. The frozen tests of 4 and 6 November 2026 (docs/tools/ringleader.md) were run that
+way. `--all-components` writes those ladders again, only so that the tests' files can be rebuilt; do not teach a fit
+with it. The constants are those tests'. Standard library and numpy (scipy for the graph distance).
 """
 
 from __future__ import annotations
@@ -52,7 +59,7 @@ import numpy as np
 HERE = Path(__file__).resolve()
 D_SURE = 3
 K = 8
-VERSION = "1.1.0"
+VERSION = "1.2.0"
 
 
 class LadderError(ValueError):
@@ -102,6 +109,35 @@ def sure_mask(d, d_sure: int = D_SURE):
     has_px = np.zeros(len(lp), bool)
     has_px[pid[pid >= 0]] = True
     return (dist >= d_sure) & np.isfinite(lp) & has_px, has_px, dist, bad, lp
+
+
+def piece_component(d, npc: int):
+    """Per piece, the connected component of Ringleader's graph it was solved in (-1 where the piece has no pixel
+    or no label). Refuses a slice file without the `comp` array."""
+    if "comp" not in d:
+        raise LadderError("the slice file has no comp array, so its labels cannot be told apart by component "
+                          "(run_slices.py and slab3d.py write it)")
+    pid = np.asarray(d["pid"])
+    out = np.full(npc, -1, np.int64)
+    out[pid[pid >= 0]] = np.asarray(d["comp"]).astype(np.int64)[pid >= 0]
+    return out
+
+
+def main_component(d, sure, all_components: bool = False):
+    """(written, same, component, components) for one slice. Labels of two components share no offset, so one
+    ladder takes one component: the one holding the most sure pieces (the smallest component number on a tie).
+    written marks its sure pieces, same every piece of it, components counts the components holding a sure piece.
+    all_components is the rule of versions up to 1.1.0: every sure piece, whatever its component (component None)."""
+    sure = np.asarray(sure, bool)
+    if all_components:
+        return sure.copy(), np.ones(len(sure), bool), None, None
+    pc = piece_component(d, len(sure))
+    if (pc[sure] < 0).any():
+        raise LadderError("a sure piece has no component")
+    ids, counts = np.unique(pc[sure], return_counts=True)
+    component = int(ids[np.argmax(counts)])
+    same = pc == component
+    return sure & same, same, component, int(len(ids))
 
 
 # ---------------------------------------------------------------- points
@@ -211,21 +247,33 @@ def load_slices(geo: Path, zs=None) -> dict:
     return out
 
 
-def build_e(slices: dict, frame, arm: str = "E", k: int = K, d_sure: int = D_SURE):
-    """Round 1 over the slices: (villa point collections document, record). Refuses a slice without a sure piece or
-    a walk with a step of pi or more."""
-    cols, rec, nid = {}, {"arm": arm, "D_SURE": d_sure, "K": k, "slices": {}}, 1
+def component_note(z: int, d, sure, all_components: bool):
+    """main_component with the slice named in its refusals."""
+    try:
+        return main_component(d, sure, all_components)
+    except LadderError as e:
+        raise LadderError(f"z {z}: {e}") from None
+
+
+def build_e(slices: dict, frame, arm: str = "E", k: int = K, d_sure: int = D_SURE, all_components: bool = False):
+    """Round 1 over the slices: (villa point collections document, record). Each slice's ladder holds the sure
+    pieces of one component (main_component). Refuses a slice without a sure piece or a walk with a step of pi or
+    more."""
+    cols, nid = {}, 1
+    rec = {"arm": arm, "D_SURE": d_sure, "K": k, "components": "all" if all_components else "main", "slices": {}}
     for n, z in enumerate(sorted(slices), start=1):
         d = slices[z]
         sure, has_px, dist, bad, lp = sure_mask(d, d_sure)
         if not sure.any():
             raise LadderError(f"z {z}: no sure piece")
-        base = float(np.nanmin(lp[sure]))
-        pts = slice_points(d, z, frame, np.flatnonzero(sure), lp, base, k)
+        written, same, component, ncomp = component_note(z, d, sure, all_components)
+        base = float(np.nanmin(lp[written]))
+        pts = slice_points(d, z, frame, np.flatnonzero(written), lp, base, k)
         gap = max_gap(pts["theta"])
         if gap >= math.pi:
             raise LadderError(f"z {z}: neighboring ladder points {gap:.2f} rad apart (villa needs under pi)")
-        cols[str(n)] = collection(pts, z, arm, int(d["hand"]), nid, {"base_label": base}, k, d_sure)
+        extra = {"base_label": base} if all_components else {"base_label": base, "component": component}
+        cols[str(n)] = collection(pts, z, arm, int(d["hand"]), nid, extra, k, d_sure)
         nid += len(pts["wind_a"])
         lv = np.unique(pts["wind_a"])
         rec["slices"][str(z)] = {"pieces": int(has_px.sum()), "bad": int(bad.sum()), "sure": int(sure.sum()),
@@ -233,9 +281,15 @@ def build_e(slices: dict, frame, arm: str = "E", k: int = K, d_sure: int = D_SUR
                                  "pixels": int((np.asarray(d["pid"]) >= 0).sum()), "points": int(len(pts["wind_a"])),
                                  "levels": int(len(lv)), "span": float(lv.max() - lv.min()), "base_label": base,
                                  "hand": int(d["hand"]), "max_theta_gap": round(gap, 4)}
+        if not all_components:
+            rec["slices"][str(z)].update({"written": int(written.sum()), "component": component,
+                                          "components_with_sure": ncomp,
+                                          "sure_left_out": int(sure.sum() - written.sum())})
     doc = {"vc_pointcollections_json_version": "1", "collections": cols}
     rec["points"] = sum(v["points"] for v in rec["slices"].values())
     rec["collections"] = len(cols)
+    if not all_components:
+        rec["sure_left_out"] = sum(v["sure_left_out"] for v in rec["slices"].values())
     return doc, rec
 
 
@@ -270,14 +324,15 @@ def points_of(doc):
     return sorted((tuple(p["p"]), p["wind_a"]) for c in doc["collections"].values() for p in c["points"].values())
 
 
-def build_g(slices: dict, conv: dict, frame, e_doc: dict, k: int = K, d_sure: int = D_SURE):
+def build_g(slices: dict, conv: dict, frame, e_doc: dict, k: int = K, d_sure: int = D_SURE,
+            all_components: bool = False):
     """Round 2 from one taught fit read by fitlabel.py (conv): round 1's points plus the K points of each
-    uncertified piece whose fit label equals its Ringleader label up to the slice's offset. Checks that round 1
-    rebuilds e_doc exactly. (doc, record)."""
-    rebuilt, _ = build_e(slices, frame, "E", k, d_sure)
+    uncertified piece of the same component whose fit label equals its Ringleader label up to the slice's offset.
+    Checks that round 1 rebuilds e_doc exactly. (doc, record)."""
+    rebuilt, _ = build_e(slices, frame, "E", k, d_sure, all_components)
     if points_of(rebuilt) != points_of(e_doc):
         raise LadderError("the round 1 ladder does not rebuild from this geometry")
-    cols, rec, nid = {}, {"arm": "G", "slices": {}}, 1
+    cols, rec, nid = {}, {"arm": "G", "components": "all" if all_components else "main", "slices": {}}, 1
     for n, z in enumerate(sorted(slices), start=1):
         if z not in conv:
             raise LadderError(f"z {z}: no fitlabel conversion")
@@ -287,28 +342,34 @@ def build_g(slices: dict, conv: dict, frame, e_doc: dict, k: int = K, d_sure: in
             raise LadderError(f"z {z}: the conversion is not on this geometry's pixels")
         pid = np.asarray(d["pid"])
         sure, has_px, dist, bad, lp = sure_mask(d, d_sure)
-        base = float(np.nanmin(lp[sure]))
+        written, same, component, ncomp = component_note(z, d, sure, all_components)
+        base = float(np.nanmin(lp[written]))
         cl = np.asarray(c["label"], float)
         fl = piece_label(cl, pid, len(lp))
-        sp = np.isin(pid, np.flatnonzero(sure)) & np.isfinite(cl)
+        sp = np.isin(pid, np.flatnonzero(written)) & np.isfinite(cl)
         diff = (cl - np.asarray(d["label"], float))[sp]
         if not len(diff):
             raise LadderError(f"z {z}: the fit labels no sure pixel")
         v, cnt = np.unique(diff, return_counts=True)
         off = float(v[cnt.argmax()])
-        unc = ~sure & np.isfinite(lp) & has_px
+        unc = ~written & same & np.isfinite(lp) & has_px     # another component's labels are on another offset
         agree = unc & np.isfinite(fl) & (fl - lp == off)
-        pts = slice_points(d, z, frame, np.flatnonzero(sure | agree), lp, base, k)
+        pts = slice_points(d, z, frame, np.flatnonzero(written | agree), lp, base, k)
         gap = max_gap(pts["theta"])
         if gap >= math.pi:
             raise LadderError(f"z {z}: neighboring ladder points {gap:.2f} rad apart (villa needs under pi)")
-        cols[str(n)] = collection(pts, z, "G", int(d["hand"]), nid, {"base_label": base, "offset": off,
-                                                                     "fit_hand": int(c["hand"])}, k, d_sure)
+        extra = {"base_label": base, "offset": off, "fit_hand": int(c["hand"])}
+        if not all_components:
+            extra["component"] = component
+        cols[str(n)] = collection(pts, z, "G", int(d["hand"]), nid, extra, k, d_sure)
         nid += len(pts["wind_a"])
         rec["slices"][str(z)] = {"sure": int(sure.sum()), "uncertified": int(unc.sum()), "agree": int(agree.sum()),
                                  "offset": off, "offset_share": float(cnt.max() / max(cnt.sum(), 1)),
                                  "points": int(len(pts["wind_a"])), "fit_hand": int(c["hand"]),
                                  "ringleader_hand": int(d["hand"]), "max_theta_gap": round(gap, 4)}
+        if not all_components:
+            rec["slices"][str(z)].update({"written": int(written.sum()), "component": component,
+                                          "sure_left_out": int(sure.sum() - written.sum())})
     doc = {"vc_pointcollections_json_version": "1", "collections": cols}
     rec["points"] = sum(v["points"] for v in rec["slices"].values())
     rec["agree"] = sum(v["agree"] for v in rec["slices"].values())
@@ -352,7 +413,7 @@ def check_excluded(zs, text):
 def cmd_ladders(a) -> int:
     slices = load_slices(Path(a.geo), a.z)
     check_excluded(list(slices), a.exclude_z)
-    e, rec = build_e(slices, frame_from(a), "E", a.k, a.d_sure)
+    e, rec = build_e(slices, frame_from(a), "E", a.k, a.d_sure, a.all_components)
     out = Path(a.out)
     rec["version"] = VERSION
     rec["files"] = {"E": {"file": "relative_windings.json", "sha256": write_json(out / "relative_windings.json", e)}}
@@ -362,7 +423,8 @@ def cmd_ladders(a) -> int:
                              "sha256": write_json(out / "relative_windings_control.json", q)}
     rec["geometry"] = {f"z{z:05d}.npz": sha256_file(Path(a.geo) / f"z{z:05d}.npz") for z in sorted(slices)}
     (out / "ladders.json").write_text(json.dumps(rec, indent=1) + "\n")
-    print(json.dumps({k: rec[k] for k in ("points", "collections", "files")}), flush=True)
+    print(json.dumps({k: rec[k] for k in ("points", "collections", "sure_left_out", "files") if k in rec}),
+          flush=True)
     return 0
 
 
@@ -371,7 +433,7 @@ def cmd_grow(a) -> int:
     zs = sorted(int(c["metadata"]["z"]) for c in e_doc["collections"].values())
     slices = load_slices(Path(a.geo), zs)
     conv = load_slices(Path(a.conv), zs)
-    g, rec = build_g(slices, conv, frame_from(a), e_doc, a.k, a.d_sure)
+    g, rec = build_g(slices, conv, frame_from(a), e_doc, a.k, a.d_sure, a.all_components)
     q = plus_one_levels(g, "G", "Q")
     out = Path(a.out)
     rec["version"] = VERSION
@@ -399,6 +461,9 @@ def main(argv=None) -> int:
         p.add_argument("--k", type=int, default=K, help=f"points per sure piece (default {K})")
         p.add_argument("--d-sure", type=int, default=D_SURE, help=f"sure distance in pieces (default {D_SURE})")
         p.add_argument("--exclude-z", default=None, help="z ranges never to use, lo:hi,lo:hi or a file of them")
+        p.add_argument("--all-components", action="store_true", help="the rule of versions up to 1.1.0: write the "
+                       "sure pieces of every component on one offset (wrong; only to rebuild the 4 and 6 November "
+                       "2026 test files)")
 
     p = sub.add_parser("ladders", help="round 1: sure pieces as villa relative windings (label-free)")
     common(p)
