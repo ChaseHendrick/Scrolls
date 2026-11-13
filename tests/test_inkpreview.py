@@ -6,7 +6,10 @@ import contextlib, http.client, importlib.util, io, json, os, subprocess, sys, t
 import urllib.error, urllib.parse, urllib.request
 from unittest import mock
 
-import numpy as np
+try:
+    import numpy as np
+except ImportError:  # pragma: no cover - the whole module needs numpy, like the other map tests
+    raise unittest.SkipTest("needs numpy (python -m pip install numpy)")
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SCRIPT = os.path.join(HERE, "..", "scripts", "ane", "inkpreview.py")
