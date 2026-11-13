@@ -30,7 +30,7 @@ HILITE = "#fff1bf"
 COMP = {1: "#2a78d6", 2: "#eb6834", 3: "#6250d6"}
 TRUE_TO_LABEL = {1: 0, 2: -5, 3: -1}   # each component's free offset: label = true winding + offset
 DOTS = 4                                # dots per sure piece in the drawing (ladders.py uses up to 8)
-DURATIONS = [6000, 6000, 6000, 6000, 6000, 9000]
+DURATIONS = [10000, 10000, 10000, 10000, 10000, 14000]
 STEPS = [
     "1. One slice: its sure pieces fall into three connected components",
     "2. Ringleader solves each component with its own free offset",
