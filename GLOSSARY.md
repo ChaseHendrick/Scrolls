@@ -204,9 +204,13 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **ink map (ink probability map)**: A model's per-pixel prediction of ink. It is model output, not a reading; only papyrologists decide what letters an image shows.
 
+**ink preview (ink preview api 1)**: An ink model's output for only the window of a segment a viewer has on screen, served by the local server `scripts/ane/inkpreview.py`. Ink preview api 1 is its HTTP protocol: a status request, and `POST /preview`, which in stack mode (the viewer uploads the layers under the view) answers 409 with the canvas rectangle to upload until every patch of the view is cached or uploaded; in path mode the server reads a surface volume from disk. A window backend (inkrs) tiles a whole window itself, and the window rule says which of its pixels equal the whole map's. A preview is model output, not a reading ([page](docs/tools/inkpreview.md)).
+
 **ink_9um**: The Vesuvius Challenge's cross-scroll ink models for scans at about 9 µm.
 
 **Inkfilter**: The released package that combines fixed image filters to make a map from a surface volume, with a reverse-depth control and no trained model. Its output is not a reading. See [Inkfilter](docs/tools/inkfilter.md).
+
+**inkrs**: Praveen Perera's GPU engine for villa's flat ink readers ([praveenperera/inkrs](https://github.com/praveenperera/inkrs), MIT or Apache 2.0; `inkrs` on PyPI). It keeps the model resident on the GPU (Metal or CUDA), tiles and blends a window itself and returns villa's uint8 map. The ink preview server uses it as one of its backends ([page](docs/tools/inkpreview.md)).
 
 **intercolumn**: The blank space between two columns of text.
 
