@@ -1065,6 +1065,22 @@
       "summary": "Two opt-in settings for villa's beam fiber tracer, both off by default. The stop score ([villa #2377](https://github.com/ScrollPrize/villa/pull/2377)) ends a trace before a step where fiber presence, how well the fiber direction matches the step, and a stronger fiber just to the side say it is about to leave the fiber; the sheet-plane penalty ([villa #2265](https://github.com/ScrollPrize/villa/pull/2265)) charges each step for leaving the lasagna sheet plane. Settings were fixed on PHerc0139 development fibers, then each test ran once under rules written beforehand (Model output scored against the annotators' public fibers). On 84 PHerc1451 fibers drawn in VC3D's shared fiber store from 1 to 3 November 2026, the stop score left the annotated fiber 0.73 times as often per voxel kept as a presence cutoff that stops about as often (95 % interval 0.64 to 0.86), at the same traced length, as on 193 earlier PHerc1451 fibers (0.73); from fixed seeds its length precision was 0.914 against 0.839 for the stock beam settings, 0.93 of villa's fiber_tracer_large, which reached about a quarter as many annotated control points (175 against 713). Shuffled and random stops at the same kept length did worse (0.865, 0.824). Limits: new fibers on a scroll the public fiber prediction trained on, not a new scroll; the sheet-plane penalty's own gain resolved on PHerc0139 only. Model output, not a reading.",
       "details": "Page: [docs/tools/fiber-stop-score.md](docs/tools/fiber-stop-score.md). The code is in the two villa draft PRs (villa's license, MIT), not in this repository; merge both branches and use the beam backend. Fiber predictions, normals and annotations: Vesuvius Challenge open data, CC BY-NC 4.0.",
       "where": "main"
+    },
+    {
+      "id": "inkpreview",
+      "title": "Ink preview server (an ink model's map of the view on screen)",
+      "line": "A local server that maps only the window a viewer shows with an ink model, on villa's flat inference grid, with a reversed-layer control view.",
+      "area": "Viewers and apps",
+      "page": "docs/tools/inkpreview.md",
+      "released": "2026-11-13",
+      "summary": "The ink preview server takes the rectangle of a segment's flat image that a viewer has on screen, cuts it into patches on the grid villa's flat ink inference uses for a whole map (128 px patches at stride 64 for ink_9um, last row and column flush to the edge), runs only those patches through an ink model and blends them, so a pan computes only the new strip. A client either gives a surface volume path or uploads the layer stack itself after a 409 reply that names the rectangle it needs (ink preview api 1: GET /health and POST /preview). Backends: inkrs (Metal or CUDA), Core ML on the Apple Neural Engine, TorchScript, and a fake test pattern. Variant r runs the same view with the layers reversed, the control. The shipped tests check the tiling against a whole-canvas map to 1e-6 with the fake model and against a stand-in inkrs module exactly; they never check a model's numbers, and inkpreview_inkrs_check.py checks real inkrs on your own machine. Limits: listens on 127.0.0.1 only; Core ML runs in float16 and is not bit-equal to villa's float32 maps; speed with a real model is not measured on the page. Code Apache 2.0. Model output, not a reading.",
+      "commands": [
+        "python3 scripts/ane/inkpreview.py serve --backend inkrs --model EXPORT.safetensors --model-name ink_9um",
+        "python3 scripts/ane/inkpreview.py check --segment SEGMENT",
+        "python3 scripts/ane/inkpreview_inkrs_check.py --model EXPORT.safetensors --segment SEGMENT"
+      ],
+      "details": "Page: [docs/tools/inkpreview.md](docs/tools/inkpreview.md); tests: `tests/test_inkpreview.py`. inkrs (by Praveen Perera, MIT or Apache 2.0) is not included; the inkrs backend needs `pip install inkrs`. Scans are the Vesuvius Challenge open data (CC BY-NC 4.0), read by the user, never rehosted.",
+      "where": "main"
     }
   ]
 }
