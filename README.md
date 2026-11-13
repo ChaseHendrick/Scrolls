@@ -31,6 +31,7 @@ Every released tool, one line each; each name opens its guide. Generated from [`
 | --- | --- |
 | [AutoPipeline](docs/tools/autopipeline.md) | Runs villa's VC3D tools and ink detection on a released scan, from surface checks to ink maps scored with controls (package, 0.1.11). |
 | [Unroll (interactive 3D scroll viewer)](docs/tools/unroll.md) | Virtually unrolls scroll scans in 3D in your browser, with ink layers, CT tools and an Ink Bench for comparing ink models (Space). |
+| [Ink preview server (an ink model's map of the view on screen)](docs/tools/inkpreview.md) | A local server that maps only the window a viewer shows with an ink model, on villa's flat inference grid, with a reversed-layer control view. |
 | [Fiber stop score (two opt-in settings for villa's beam fiber tracer)](docs/tools/fiber-stop-score.md) | Ends a beam fiber trace before it slides onto the next fiber; with the sheet-plane penalty it was tested with. villa draft PRs #2377 and #2265. |
 | [Ringleader (winding labels for every sheet in a z-slice, in one solve)](docs/tools/ringleader.md) | Labels every m7 sheet pixel of a z-slice with its winding in one solve; 1.1.0 hands its surest labels to villa's spiral fit as relative windings. |
 | [Umbilici (center lines of 35 Herculaneum scans)](docs/tools/umbilici.md) | Every public center line (umbilicus) we know of for 35 scans, 91 lines from seven sources, in 3D over the CT, with line ends outside the scroll hidden (Space). |

@@ -6548,6 +6548,155 @@
    ]
   },
   {
+   "id": "inkpreview",
+   "name": "inkpreview",
+   "tagline": "local model server that maps the view on screen with an ink model",
+   "summary": "`scripts/ane/inkpreview.py` is a local HTTP server that turns the layer stack under the window a viewer shows into an ink model's map of that window (model output, not a reading), on Core ML, TorchScript or inkrs, with a reversed-layer control view.",
+   "status": "Current",
+   "kind": [
+    "script folder"
+   ],
+   "area": "Viewers and apps",
+   "commands": [
+    "python3 scripts/ane/inkpreview.py serve",
+    "python3 scripts/ane/inkpreview.py snapshot",
+    "python3 scripts/ane/inkpreview.py check",
+    "python3 scripts/ane/inkpreview_inkrs_check.py",
+    "python scripts/ane/export_ckpt.py",
+    "python scripts/ane/convert.py",
+    "python scripts/ane/coreml_server.py"
+   ],
+   "imports": [],
+   "code": [
+    {
+     "path": "scripts/ane/",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_inkpreview.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed to run it on your own machine. Posting a preview picture or what it shows needs Chase's yes (the go-ahead rule, hard rule 8), and a preview of a prize-eligible scroll is never published or described (the possible-findings rule, hard rule 1)"
+   },
+   "checked": {
+    "date": "2026-11-13",
+    "commit": "aba138c"
+   },
+   "license": "This repository's Apache 2.0 ([LICENSE](../../LICENSE)). inkrs, used by the `inkrs` backend and not included here, is by Praveen Perera under MIT or Apache 2.0",
+   "fields": {
+    "Id": "`inkpreview`",
+    "Status": "Current",
+    "Kind": "script folder",
+    "Area": "Viewers and apps",
+    "Run": "`python3 scripts/ane/inkpreview.py serve`, `python3 scripts/ane/inkpreview.py snapshot`, `python3 scripts/ane/inkpreview.py check`, `python3 scripts/ane/inkpreview_inkrs_check.py`, `python scripts/ane/export_ckpt.py`, `python scripts/ane/convert.py`, `python scripts/ane/coreml_server.py`",
+    "Code": "`scripts/ane/`",
+    "Tests": "`tests/test_inkpreview.py`",
+    "Needs": "Python 3 with numpy (run here on Python 3.13.18 with numpy 2.5.3). Path mode also needs tifffile (layer TIFFs) or zarr (a zarr). One backend: `coreml` needs macOS 15 or later and a Python with coremltools (`COREML_PY`); `torchscript` needs torch; `inkrs` needs [inkrs](https://github.com/praveenperera/inkrs) (`pip install inkrs`, 0.2.0 on PyPI on 2026-11-13) and a Metal or CUDA GPU; `fake` needs nothing. `export_ckpt.py` needs torch and villa's `vesuvius` package; `convert.py` needs torch and coremltools. Model weights and scroll data are not in this repository",
+    "Runs on": "Any machine; the server listens on `127.0.0.1` only. With the `fake` backend (no model) on a synthetic stack, a cold 1920 by 1080 view took 3.8 s and a 96 px pan 0.3 to 0.5 s (measured 2026-11-13, cloud container, 4 shared vCPU). With a real model: Not measured here",
+    "Network": "None. It listens on `127.0.0.1` and contacts no host",
+    "Writes": "`serve` and `check`: nothing. `snapshot`: the file `--out`. `inkpreview_inkrs_check.py`: the file `--json`, when given. `export_ckpt.py`: `OUT.pt`. `convert.py`: `OUT.mlpackage`",
+    "Go-ahead": "Not needed to run it on your own machine. Posting a preview picture or what it shows needs Chase's yes (the go-ahead rule, hard rule 8), and a preview of a prize-eligible scroll is never published or described (the possible-findings rule, hard rule 1)",
+    "Released": "Public `main` since November 2026, with the change that added this page",
+    "License": "This repository's Apache 2.0 ([LICENSE](../../LICENSE)). inkrs, used by the `inkrs` backend and not included here, is by Praveen Perera under MIT or Apache 2.0",
+    "Checked": "2026-11-13 against commit `aba138c`"
+   },
+   "page": "docs/tools/inkpreview.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 23,
+     "end_line": 43,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 44,
+     "end_line": 59,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 60,
+     "end_line": 108,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 109,
+     "end_line": 120,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 121,
+     "end_line": 347,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 348,
+     "end_line": 373,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 374,
+     "end_line": 380,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 381,
+     "end_line": 425,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 426,
+     "end_line": 495,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 496,
+     "end_line": 516,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 517,
+     "end_line": 525,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 526,
+     "end_line": 535,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 536,
+     "end_line": 546,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 547,
+     "end_line": 550,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 551,
+     "end_line": 559,
+     "applicable": true
+    }
+   ]
+  },
+  {
    "id": "integrity",
    "name": "integrity",
    "tagline": "research integrity checks for Vesuvius Challenge claims",
