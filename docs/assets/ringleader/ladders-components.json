@@ -1,0 +1,37 @@
+{
+  "schema": "scrolls-media/1",
+  "name": "ladders-components",
+  "label": "Synthetic demo",
+  "alt": "Six slow frames on a drawn spiral of seven windings: the sure pieces of one slice in three connected components (blue, 24 pieces; orange and violet, 4 each) with an untraced sheet between them; each component's Ringleader labels on its own offset; version 1.1.0 writing all of them into one relative-winding collection; a ringed pair across components written -3 windings apart where the true difference is +2; version 1.2.0 keeping only the blue component, the one with the most sure pieces; and a 1.1.0 versus 1.2.0 summary.",
+  "caption": "Synthetic demo of why scripts/ringleader/ladders.py 1.2.0 writes one connected component per slice. No scan data; geometry, not a reading.",
+  "license": "Apache-2.0",
+  "release_id": null,
+  "data": null,
+  "sources": [],
+  "outputs": [
+    {
+      "file": "ladders-components.gif",
+      "bytes": 262166,
+      "sha256": "e6c03e79507ca1de45fb64f3c520bcd64fec8889bf22dbb5d8ec3ce50ce7e3c3",
+      "width": 1400,
+      "height": 800
+    },
+    {
+      "file": "ladders-components.png",
+      "bytes": 171235,
+      "sha256": "6064bb3dae0789215165019a38fd693e05d984074e629c131076d86271e4443d",
+      "width": 1400,
+      "height": 800
+    }
+  ],
+  "inputs": [],
+  "made": "2026-11-13",
+  "tool": {
+    "scripts": [
+      "scripts/experiments/ringleader-ladders/components_gif.py"
+    ],
+    "scripts_sha256": "a0040d820ad6c15890a61c953e00ba50042fadafc29fc39c4850c324fb4cfde7",
+    "base_commit": "bb5972ae6ca857d2224f823c847a81e418fcbf93"
+  },
+  "command": "python3 scripts/experiments/ringleader-ladders/components_gif.py --out docs/assets/ringleader/ladders-components.gif"
+}

@@ -344,7 +344,7 @@
   "real-runs-need-villa-s-vc3d-tools-python3": {
    "line": 43,
    "sources": {
-    "docs/releases.json": "45c0e89d0ffcadb87b1f042253f9e96ba99c23380cbae2c5a4b872cebd3bd0c6"
+    "docs/releases.json": "25cfd59240722661e4007e6aa0643cdcaef390f8597c7d7cd5499db6d18b769a"
    },
    "doc": "docs/pipeline-october-2026.md",
    "reasons": {
@@ -354,26 +354,26 @@
   "ringleader-labeled-every-m7-sheet-pixel-of-held": {
    "line": 273,
    "sources": {
-    "docs/tools/ringleader.md": "8c77ad81f8560470f9b4371b92ea9da10e9bf0943dae47789ce08848de9ee5ff"
+    "docs/tools/ringleader.md": "2f6e55973f4479596e95c2e04d9d2132531eb97002a9a8766be8e5dd5bcd96ce"
    }
   },
   "ringleader-s-ladders-made-villa-s-spiral-fit": {
    "line": 283,
    "sources": {
-    "docs/tools/ringleader.md": "8c77ad81f8560470f9b4371b92ea9da10e9bf0943dae47789ce08848de9ee5ff"
+    "docs/tools/ringleader.md": "2f6e55973f4479596e95c2e04d9d2132531eb97002a9a8766be8e5dd5bcd96ce"
    }
   },
   "ringleader-s-ladders-made-villa-s-spiral-fit-2": {
    "line": 24,
    "sources": {
-    "docs/tools/ringleader.md": "8c77ad81f8560470f9b4371b92ea9da10e9bf0943dae47789ce08848de9ee5ff"
+    "docs/tools/ringleader.md": "2f6e55973f4479596e95c2e04d9d2132531eb97002a9a8766be8e5dd5bcd96ce"
    },
    "doc": "docs/FINDINGS.md"
   },
   "ringleader-s-one-solve-winding-labels-passed-frozen": {
    "line": 18,
    "sources": {
-    "docs/tools/ringleader.md": "8c77ad81f8560470f9b4371b92ea9da10e9bf0943dae47789ce08848de9ee5ff"
+    "docs/tools/ringleader.md": "2f6e55973f4479596e95c2e04d9d2132531eb97002a9a8766be8e5dd5bcd96ce"
    },
    "doc": "docs/FINDINGS.md"
   },
