@@ -12,7 +12,7 @@
     {
       "file": "ladders-components.gif",
       "bytes": 262166,
-      "sha256": "2d85516ff5e9fd67c5c3540e6d3d8ee1f2a7ab0fb82c72d999003ac31efed696",
+      "sha256": "45731a9b31d50f30f283be7e1b1164d14dcbf813288c51978e147b2bf0de6ab1",
       "width": 1400,
       "height": 800
     },
@@ -30,8 +30,8 @@
     "scripts": [
       "scripts/experiments/ringleader-ladders/components_gif.py"
     ],
-    "scripts_sha256": "1ee5178020b46eaa3f124e69a2cc1c64e8a829cc7a9b6c6f98af417040f2d85c",
-    "base_commit": "92345ba2b56fc56e93efa7e8832e9cc39f8762a3"
+    "scripts_sha256": "86fc906a0123e496877bce36aa13665527560f64addea556abe05617e26a791b",
+    "base_commit": "37e9a5036f687158fe535c3f9819174b8807d229"
   },
   "command": "python3 scripts/experiments/ringleader-ladders/components_gif.py --out docs/assets/ringleader/ladders-components.gif"
 }
