@@ -13646,5 +13646,51 @@
     14336
    ]
   }
+ ],
+ "slicechains_checks": [
+  {
+   "key": "slicechains_1116",
+   "date": "2026-11-17",
+   "label": "Model output against the open-data catalog",
+   "about": "slicechains v1.0 (scripts/spiralsense/slicechains.py, --symmetric, 400 planes of the m7 surface prediction at level 1, r < 1500 level-0 voxels round a public center line, decide at >= 5 votes and >= 0.8 share) run blind on 12 scrolls with a catalog winding direction; developed on six other scrolls with known direction (6 of 6 right, 498 of 511 votes)",
+   "rule": "fixed in writing before the run; answers committed before the scorer read the catalog (open-data metadata.json of 16 Nov 2026); WIN when no decided call is wrong and one-sided binomial p < 0.01",
+   "verdict": "WIN",
+   "decided": 9,
+   "right": 9,
+   "wrong": 0,
+   "abstained": 3,
+   "p_one_sided": 0.001953125,
+   "truth_counts": {
+    "CW": 5,
+    "ACW": 7
+   },
+   "reused_truth_scrolls": 7,
+   "held_out": false,
+   "named_scrolls": {
+    "PHerc0306B": {
+     "call": "ACW",
+     "planes_voting": 113,
+     "right": true
+    },
+    "PHerc0343": {
+     "call": "CW",
+     "planes_voting": 83,
+     "right": true
+    },
+    "PHerc0814": {
+     "call": "ACW",
+     "planes_voting": 50,
+     "right": true
+    },
+    "PHerc0841": {
+     "call": "ACW",
+     "planes_voting": 153,
+     "right": true
+    }
+   },
+   "not_named": "the other eight scored scrolls are prize-eligible",
+   "compute": "17 Hugging Face cpu-upgrade Jobs, 15 to 26 min each, under 0.25 USD in all",
+   "source": "docs/tools/slicechains.md"
+  }
  ]
 }
