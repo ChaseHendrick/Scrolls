@@ -204,14 +204,14 @@
   "labelsnap-moved-published-surface-labels-closer-to-the": {
    "line": 264,
    "sources": {
-    "docs/results.json": "947ce6a98cfaadbdaab9e23436a3a472cc2fa5be57def92507b16b5474c08f7b",
+    "docs/results.json": "ff3e5af3ff88c1abb86955e73e79b377b8be12d89eae5b590199f0082f6f8c58",
     "docs/tools/snapped-labels.md": "3369d672268fb54e79d37f1c1bdf4bbb39ca96560361b7762855be0d31d65116"
    }
   },
   "labelsnap-moved-published-surface-labels-closer-to-the-2": {
    "line": 15,
    "sources": {
-    "docs/results.json": "947ce6a98cfaadbdaab9e23436a3a472cc2fa5be57def92507b16b5474c08f7b",
+    "docs/results.json": "ff3e5af3ff88c1abb86955e73e79b377b8be12d89eae5b590199f0082f6f8c58",
     "docs/tools/snapped-labels.md": "3369d672268fb54e79d37f1c1bdf4bbb39ca96560361b7762855be0d31d65116"
    },
    "doc": "docs/FINDINGS.md"
@@ -344,7 +344,7 @@
   "real-runs-need-villa-s-vc3d-tools-python3": {
    "line": 43,
    "sources": {
-    "docs/releases.json": "25cfd59240722661e4007e6aa0643cdcaef390f8597c7d7cd5499db6d18b769a"
+    "docs/releases.json": "3c5500b5c73056693dab00f0e8e4d8080f28992e2b400af2254dae3cf0261092"
    },
    "doc": "docs/pipeline-october-2026.md",
    "reasons": {
@@ -399,6 +399,21 @@
     "640": "setting: the crop is a 640 px window (the glossary's Crop)",
     "0.03": "derived: 0.821 minus 0.793 is 0.028, rounded"
    }
+  },
+  "slicechains-called-the-winding-direction-of-9-of": {
+   "line": 285,
+   "sources": {
+    "r:slicechains_checks/0": "6779aa2bdcbdd787315f63611eb2808e7bf63e1ea8b9239c2db9b7226571e15b",
+    "docs/tools/slicechains.md": "067b3e0e546b2e4a8998357a6daecd1e4624a8a29d05305545ae40e418fbb9b4"
+   }
+  },
+  "slicechains-called-the-winding-direction-of-9-of-2": {
+   "line": 25,
+   "sources": {
+    "r:slicechains_checks/0": "6779aa2bdcbdd787315f63611eb2808e7bf63e1ea8b9239c2db9b7226571e15b",
+    "docs/tools/slicechains.md": "067b3e0e546b2e4a8998357a6daecd1e4624a8a29d05305545ae40e418fbb9b4"
+   },
+   "doc": "docs/FINDINGS.md"
   },
   "sqrecipe-on-pherc0332-a-finer-dls-scan-brought": {
    "line": 276,

@@ -188,7 +188,7 @@ Measured: 72 s for 24 planes of PHerc0343 on a 4-core cloud container (2026-11-1
 
 ## History
 
-- 2026-11-17: released v1.0, the rule of the blind test (16 Nov 2026).
+- 2026-11-17: released v1.0, the rule of the blind test (16 Nov 2026) ([#358](https://github.com/ChaseHendrick/Scrolls/pull/358), `5760897`).
 
 ## Related
 
