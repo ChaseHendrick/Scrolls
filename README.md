@@ -80,7 +80,7 @@ Command-line tools, benchmarks and script folders that run from a clone of this 
 </details>
 
 <details>
-<summary><b>Surfaces and tracing</b> (16)</summary>
+<summary><b>Surfaces and tracing</b> (17)</summary>
 
 | Tool | What it does |
 | --- | --- |
@@ -100,6 +100,7 @@ Command-line tools, benchmarks and script folders that run from a clone of this 
 | [Surface overlap and map comparison](docs/tools/overlap.md) | Checks whether traced surfaces cover the same sheet and compares their labels or ink maps with controls. |
 | [Touching-sheets benchmark](docs/tools/hopbench.md) | Plants sheet hops at real contacts between PHerc0139's hand-traced windings and measures how often a one-sheet check misses them. |
 | [UV overlap gate](docs/tools/uvgate.md) | Checks a flattened sheet's UV triangles for any overlap, with exact arithmetic, plus coverage. |
+| [Winding direction from the surface prediction](docs/tools/slicechains.md) | Calls a scroll's winding direction (CW or ACW, the spiral fit's spiral_outward_sense) from its m7 surface prediction, with no labels. |
 
 </details>
 
@@ -281,6 +282,7 @@ Every command is in [`docs/tools/cli.md`](docs/tools/cli.md), and every tool has
 <!-- New block so GitHub keeps the number 29. -->
 
 29. **Ringleader's ladders made villa's spiral fit put more sheet pixels on the right winding on two scrolls** (on PHerc0172 z 9,680 to 9,904, on-winding E0 0.288 with the ladders against 0.069 alone and 0.037 for a plus-one control, bar +0.10, got +0.219; on PHerc0139 0.409 against 0.227; a test on a third scroll in between missed its bar, and the PHerc0172 band was picked after that miss; the taught fit stays below Ringleader's own labels; rules frozen before each read, each read once; 4 and 6 November 2026, model output; code released under Apache-2.0: [tool page](docs/tools/ringleader.md#checks-and-controls)).
+30. **slicechains called the winding direction of 9 of 9 decided scrolls right from the m7 surface prediction alone, with no labels** (one-sided p 0.0020, 3 of 12 abstained, truth 5 CW and 7 ACW; 7 of the 12 were reused truth, so not held out; 17 November 2026, model output against the open-data catalog).
 
 **Pipeline and reader checks** ([details](docs/FINDINGS.md#pipeline-and-reader-checks))
 

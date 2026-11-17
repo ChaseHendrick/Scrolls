@@ -114,7 +114,7 @@
       "line": "Command-line tools, benchmarks and script folders that run from a clone of this repository.",
       "area": "Releases and repository",
       "page": "docs/tools/cli.md",
-      "released": "2026-11-05",
+      "released": "2026-11-17",
       "summary": "Command-line tools, benchmarks and script folders that run from a clone of this repository. Each line gives the tool's release date, its weights where it has them, one command to start with, its tool page and its evidence; each page lists the tool's own needs. Their outputs are model output or geometry measurements for a person to check, not readings.",
       "commands": [
         "git clone --depth 1 https://github.com/ChaseHendrick/Scrolls.git",
@@ -816,6 +816,17 @@
           "evidence": "[tests, controls and weaknesses](docs/tools/autocrop.md#checks-and-controls)",
           "line": "Keeps the regions of a villa spiral fit most likely on the right winding and writes them as relative windings, with controls.",
           "area": "Surfaces and tracing"
+        },
+        {
+          "id": "slicechains",
+          "name": "Winding direction from the surface prediction",
+          "line": "Calls a scroll's winding direction (CW or ACW, the spiral fit's spiral_outward_sense) from its m7 surface prediction, with no labels.",
+          "area": "Surfaces and tracing",
+          "released": "2026-11-17",
+          "version": "1.0",
+          "summary": "Links thinned sheets in single z slices of the m7 surface prediction into chains; every chain that winds a full turn votes by whether its radius grows going round, and each slice also runs mirrored with its votes added flipped. Run blind on 12 scrolls with a catalog direction under a rule fixed beforehand (Model output): 9 of 9 decided right, none wrong, 3 abstained (one-sided p 0.0020); 7 of the 12 were reused truth, so not held out. CPU only, public data.",
+          "command": "python3 scripts/spiralsense/slicechains.py --m7 URL --line LINE --voxel-um V --pitch P --z-edges Z0,Z1 --planes 400 --symmetric --out OUT.json",
+          "page": "docs/tools/slicechains.md"
         }
       ],
       "where": "main"

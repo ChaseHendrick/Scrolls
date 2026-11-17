@@ -14065,6 +14065,150 @@
    ]
   },
   {
+   "id": "slicechains",
+   "name": "slicechains",
+   "tagline": "tell a scroll's winding direction from its surface prediction",
+   "summary": "slicechains reads a scroll's published m7 surface prediction in single z slices and calls its winding direction (CW or ACW, the `spiral_outward_sense` villa's spiral fit needs) from sheet chains that wind a full turn, with no labels.",
+   "status": "Experimental",
+   "kind": [
+    "script"
+   ],
+   "area": "Surfaces and tracing",
+   "commands": [
+    "python3 scripts/spiralsense/slicechains.py",
+    "python3 scripts/spiralsense/slicechains.py --selftest"
+   ],
+   "imports": [],
+   "code": [
+    {
+     "path": "scripts/spiralsense/slicechains.py",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_slicechains.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed: CPU only, public data, local files"
+   },
+   "checked": {
+    "date": "2026-11-17",
+    "commit": "fa9acc9"
+   },
+   "license": "Apache License 2.0 ([`scripts/spiralsense/LICENSE`](../../scripts/spiralsense/LICENSE))",
+   "fields": {
+    "Id": "`slicechains`",
+    "Status": "Experimental",
+    "Kind": "script",
+    "Area": "Surfaces and tracing",
+    "Run": "`python3 scripts/spiralsense/slicechains.py`, `python3 scripts/spiralsense/slicechains.py --selftest`",
+    "Code": "`scripts/spiralsense/slicechains.py`",
+    "Tests": "`tests/test_slicechains.py` (synthetic spirals only; skipped without its packages)",
+    "Needs": "Python 3.10 or newer (run on 3.13 and 3.14); numpy, scipy (`ndimage`, `cKDTree`), scikit-image (`skeletonize`), numcodecs (blosc chunks). Data: a scroll's m7 surface prediction zarr (binary, `...-surface-m7-L0-th0.2.zarr`, read at level 1) and its center line",
+    "Runs on": "Any CPU; no GPU. 24 planes of PHerc0343: 72 s wall on a 4-core cloud container (measured 2026-11-17). 400 planes: 15 to 26 minutes a scroll on one Hugging Face `cpu-upgrade` Job (measured 2026-11-16)",
+    "Network": "The volume's host over HTTPS (for open data, `vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com`): the zarr's level 1 `.zarray` and the chunks of each plane's core box. Nothing else",
+    "Writes": "The `--out` JSON. With `--cache DIR`, one `TAG_L1_zZ.npz` per plane in DIR, reused on a rerun",
+    "Go-ahead": "Not needed: CPU only, public data, local files",
+    "Released": "Public `main` from the merge of its pull request (prepared 17 Nov 2026), v1.0",
+    "License": "Apache License 2.0 ([`scripts/spiralsense/LICENSE`](../../scripts/spiralsense/LICENSE))",
+    "Checked": "2026-11-17 against commit `fa9acc9`"
+   },
+   "page": "docs/tools/slicechains.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 23,
+     "end_line": 32,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 33,
+     "end_line": 42,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 43,
+     "end_line": 66,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 67,
+     "end_line": 85,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 86,
+     "end_line": 118,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 119,
+     "end_line": 128,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 129,
+     "end_line": 133,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 134,
+     "end_line": 153,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 154,
+     "end_line": 162,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 163,
+     "end_line": 170,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 171,
+     "end_line": 174,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 175,
+     "end_line": 184,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 185,
+     "end_line": 188,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 189,
+     "end_line": 192,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 193,
+     "end_line": 197,
+     "applicable": true
+    }
+   ]
+  },
+  {
    "id": "snap",
    "name": "snap",
    "tagline": "move a tifxyz mesh along its normals onto a predicted sheet, the CT sheet midline or a band face",
