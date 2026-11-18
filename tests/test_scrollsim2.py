@@ -33,7 +33,7 @@ class ScrollSim2GeometryTest(unittest.TestCase):
         self.assertGreater(int((l2 >= 0).sum()), 1000)
         self.assertLess(float(np.abs(d1 - d2).max()), 1e-9)
         self.assertLess(float(np.abs(np.where(l1 >= 0, t1 - t2, 0)).max()), 1e-9)
-        self.assertFalse(ink.any())                     # ink is off in this release
+        self.assertFalse(ink.any())                     # ink is off by default
         self.assertTrue(np.isfinite(near[l2 >= 0]).all())
 
     def test_same_parameters_same_scroll(self):
@@ -450,6 +450,165 @@ class ScrollSim2MakeTest(unittest.TestCase):
         self.assertEqual(e["blocks"], 2 * 5 * 5)
         self.assertGreater(e["sheet_blocks"], 0)
         self.assertGreater(e["seconds_per_sheet_block"], 0)
+
+
+# the ink writer at sizes a unit test renders quickly: 8 um deposit and 8 um absorbed at 8 um voxels (one voxel
+# each), small letters so a 48-voxel-tall box holds two lines
+INK = {"ink_um": 8.0, "ink_depth_um": 8.0, "ink_rho": 0.3, "ink_tex": 0.5, "ink_letter": 14.0, "ink_line": 20.0,
+       "ink_col": 200.0, "ink_gap": 40.0, "ink_margin": 4.0}
+
+
+@unittest.skipUnless(HAVE, "needs numpy and scipy")
+class ScrollSim2InkTest(unittest.TestCase):
+    def test_ink_is_off_by_default_and_refuses_bad_values(self):
+        from kit import scrollsim2 as s2
+        sc = s2.Scroll2(dict(TINY))
+        self.assertFalse(sc.ink_on)
+        self.assertEqual(sc.ink_report(), {"on": False})
+        self.assertTrue(s2.Scroll2(dict(TINY, ink_um=4.0)).ink_on)
+        for bad in ({"ink_um": -1.0}, {"ink_rho": -1.0}, {"ink_tex": 1.5}, {"ink_off": 2}, {"ink_line": 10.0},
+                    {"ink_glyphs": "cursive"}, {"ink_space": 1.0}, {"ink_col": 5.0}):
+            with self.assertRaises(s2.SimError, msg=str(bad)):
+                s2.params(dict(INK, **bad))
+        a, src = s2.ink_glyphs("strokes")
+        self.assertEqual(src, "strokes")
+        self.assertEqual(a.shape, (24, s2.INK_PX, round(0.8 * s2.INK_PX)))
+        self.assertTrue(0.05 < a.mean() < 0.6 and a.max() == 1.0)
+        # partial volume: the share of a slab conserves its thickness over every voxel position and is at most 1
+        d = np.linspace(-6, 6, 24001)
+        for a_, b_ in ((1.0, 0.0), (1.2, 0.7), (0.3, 1.9)):
+            sh = s2.ink_share(np, d, -0.4, 0.1, a_, b_)
+            self.assertAlmostEqual(float(sh.sum() * (d[1] - d[0])), 0.5, places=3)
+            self.assertLessEqual(float(sh.max()), 1.0 + 1e-12)
+
+    def test_inked_voxels_lie_at_the_recto_face(self):
+        # every 3D ink voxel center lies within the deposit plus the absorbed depth plus one voxel of the recto
+        # surface (the verso face of the same winding lies about 4.8 voxels away at this thickness and crush)
+        from scipy.spatial import cKDTree
+        from kit import scrollsim2 as s2
+        sc = s2.Scroll2(dict(TINY, thick=7.0, pitch=14.0, **INK))
+        box = (8, 40, 20, 140, 20, 140)
+        _, _, _, ink = sc.scan_block(*box, with_ink=True)
+        self.assertGreater(int(ink.sum()), 300)
+        zz, yy, xx = np.nonzero(ink)
+        pts = np.stack([xx + box[4], yy + box[2], zz + box[0]], 1).astype(float)
+        rec = sc.surface(0.25, "recto")
+        P = rec["P"][rec["valid"]]
+        P = P[(P[:, 2] > box[0] - 4) & (P[:, 2] < box[1] + 4)]
+        dist = cKDTree(P).query(pts)[0]
+        bound = (INK["ink_um"] + INK["ink_depth_um"]) / 8.0 + 1.0
+        self.assertLessEqual(float(dist.max()), bound)
+        cen = sc.surface(0.25, "center")
+        C = cen["P"][cen["valid"]]
+        dc = cKDTree(C[(C[:, 2] > box[0] - 4) & (C[:, 2] < box[1] + 4)]).query(pts)[0]
+        self.assertGreater(float(np.median(dc)), float(np.median(dist)))     # the recto side, not the middle
+
+    def test_gray_excess_matches_the_ink_mass(self):
+        # no blur, noise, crush or bend: the CT excess over the noink twin, summed, equals the deposit's mass
+        # (thickness times 1 + ink_rho times the inked area of the recto surface). The deposit is half a voxel thick,
+        # so only an honest partial volume gets this right at one sample per voxel.
+        from kit import scrollsim2 as s2
+        p = dict(TINY, shape=[24, 128, 128], squash=1.0, warp=0.0, thick_sd=0.0, delam=0.0, holes=0.0, fiber=0.0,
+                 contact_share=0.0, noise=0.0, rings=0.0, bias=0.0, blur=0.0, edge=0.0, noise_corr=0.0,
+                 ink_um=4.0, ink_rho=0.25, ink_letter=14.0, ink_line=20.0, ink_col=200.0, ink_gap=40.0,
+                 ink_margin=2.0)
+        box = (0, 24, 0, 128, 0, 128)
+        sc = s2.Scroll2(dict(p))
+        ct, _, _, ink = sc.scan_block(*box, with_ink=True)
+        tw, _, _, ink2 = s2.Scroll2(s2.noink(p)).scan_block(*box, with_ink=True)
+        self.assertTrue(np.array_equal(ink, ink2))
+        diff = ct.astype(float) - tw
+        gain = float(s2.DEFAULTS["bright"]) - float(s2.DEFAULTS["air"])
+        measured = diff.sum() / gain
+        rec = sc.surface(0.5, "recto")
+        cov = sc.ink_cover(sc.s_at(rec["theta"].ravel()), rec["z_rolled"].ravel()).reshape(rec["theta"].shape)
+        P = rec["P"]
+        ds = np.gradient(P, axis=1)
+        dz = np.gradient(P, axis=0)
+        area = np.linalg.norm(np.cross(ds, dz), axis=-1)
+        expected = 0.5 * 1.25 * float((cov * area)[rec["valid"]].sum())
+        self.assertGreater(expected, 50)
+        self.assertLess(abs(measured / expected - 1), 0.05, (measured, expected))
+        on = diff[ink > 0]
+        self.assertGreater(float(on.mean()), 2.0)                 # the truth voxels carry the excess
+        self.assertGreater(float(on.sum()), 0.85 * float(diff.sum()))
+
+    def test_noink_twin_differs_only_near_inked_recto_faces(self):
+        from scipy import ndimage
+        from kit import scrollsim2 as s2
+        p = dict(TINY, edge=0.0, **INK)                           # blur 0.9: a change spreads 4 voxels at most
+        box = (8, 40, 20, 140, 20, 140)
+        ct, lab, _, ink = s2.Scroll2(dict(p)).scan_block(*box, with_ink=True)
+        tw, lab2, _, ink2 = s2.Scroll2(s2.noink(p)).scan_block(*box, with_ink=True)
+        plain, lab3, _ = s2.Scroll2(dict(TINY, edge=0.0)).scan_block(*box)
+        self.assertTrue(np.array_equal(tw, plain))                # the twin is the scroll without ink
+        self.assertTrue(np.array_equal(lab, lab3) and np.array_equal(lab2, lab3))
+        self.assertTrue(np.array_equal(ink, ink2))
+        changed = ct != tw
+        self.assertGreater(int(changed.sum()), 1000)
+        near = ndimage.binary_dilation(ink > 0, np.ones((3, 3, 3), bool), iterations=6)
+        self.assertEqual(int((changed & ~near).sum()), 0)
+        self.assertGreater(float(np.abs(ct.astype(float) - tw)[ink > 0].mean()), 3.0)
+
+    @unittest.skipUnless(HAVE_ZARR, "needs zarr")
+    def test_ink_tif_matches_the_3d_truth_and_the_pattern_share(self):
+        import zarr
+        from kit import scrollsim2 as s2
+        from kit import vc3d_io
+        with tempfile.TemporaryDirectory() as t:
+            a = Path(t) / "a"
+            # wide procedural strokes (8 voxels), so letter edges, where a voxel center and a vertex may fall on
+            # either side, are a small share
+            p = dict(TINY, **dict(INK, ink_letter=28.0, ink_line=36.0, ink_glyphs="strokes", ink_stroke=0.3))
+            doc = s2.make(a, p, workers=4, block=32, levels=1, chunk=32, surfaces=True, progress=None)
+            ink3 = zarr.open_group(str(a / "truth" / "ink.zarr"), mode="r")["0"][:]
+            sd = a / "truth" / "surfaces" / "spiral-recto"
+            r = vc3d_io.read_tiff(sd / "ink.tif")
+            tif = np.frombuffer(bytes(r.data), np.uint8).reshape(r.h, r.w)
+            self.assertEqual((sd.parent / "spiral-center" / "ink.tif").read_bytes(), (sd / "ink.tif").read_bytes())
+            xyz = []
+            for c in "xyz":
+                q = vc3d_io.read_tiff(sd / f"{c}.tif")
+                xyz.append(np.frombuffer(bytes(q.data), np.float32).reshape(q.h, q.w))
+            x, y, z = xyz
+            valid = x >= 0
+            self.assertEqual(tif.shape, x.shape)
+            self.assertFalse(tif[~valid].any())
+            vi = np.clip(np.rint(np.stack([z[valid], y[valid], x[valid]], 1)).astype(int), 0,
+                         np.array(ink3.shape) - 1)
+            at = ink3[vi[:, 0], vi[:, 1], vi[:, 2]]
+            t2 = tif[valid]
+            self.assertGreater(int(t2.sum()), 100)
+            self.assertGreater(float((at == t2).mean()), 0.95)
+            self.assertGreater(float(at[t2 > 0].mean()), 0.9)       # where the surface is inked the volume is too
+            info = json.loads((a / "truth.json").read_text())
+            self.assertTrue(info["ink"]["on"] and info["ink"]["painted"])
+            self.assertEqual(info["ink"]["thickness_vox"], 1.0)
+            share = info["ink"]["pattern_share"]
+            self.assertGreater(share, 0.01)
+            self.assertLess(abs(doc["ink_surface_share"] / share - 1), 0.25)
+            self.assertLess(abs(float(at.mean()) / share - 1), 0.25)
+            rep = s2.publish(a, Path(t) / "pub")
+            self.assertTrue(rep["ok"])
+            pub = zarr.open_group(str(Path(t) / "pub" / "truth" / "ink.zarr"), mode="r")["0"][:]
+            self.assertTrue(np.array_equal(pub, ink3))
+
+    def test_ink_render_is_block_independent(self):
+        from kit import scrollsim2 as s2
+        p = dict(TINY, edge=0.0, **INK)                           # a narrower halo keeps the test quick
+        whole, lw, _, iw = s2.Scroll2(dict(p)).scan_block(8, 40, 40, 120, 40, 120, with_ink=True)
+        self.assertGreater(int(iw.sum()), 300)
+        parts, lp, ip = np.zeros_like(whole), np.zeros_like(lw), np.zeros_like(iw)
+        sc = s2.Scroll2(dict(p))                                  # another instance: the ink comes from the seed
+        for z0 in (8, 24):
+            for y0 in (40, 80):
+                for x0 in (40, 80):
+                    c, lab, _, ik = sc.scan_block(z0, z0 + 16, y0, y0 + 40, x0, x0 + 40, with_ink=True)
+                    sl = (slice(z0 - 8, z0 + 8), slice(y0 - 40, y0), slice(x0 - 40, x0))
+                    parts[sl], lp[sl], ip[sl] = c, lab, ik
+        self.assertTrue(np.array_equal(whole, parts))
+        self.assertTrue(np.array_equal(lw, lp))
+        self.assertTrue(np.array_equal(iw, ip))
 
 
 class ScrollSim2WorkersTest(unittest.TestCase):
