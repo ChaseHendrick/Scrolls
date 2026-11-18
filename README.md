@@ -80,7 +80,7 @@ Command-line tools, benchmarks and script folders that run from a clone of this 
 </details>
 
 <details>
-<summary><b>Surfaces and tracing</b> (17)</summary>
+<summary><b>Surfaces and tracing</b> (18)</summary>
 
 | Tool | What it does |
 | --- | --- |
@@ -94,6 +94,7 @@ Command-line tools, benchmarks and script folders that run from a clone of this 
 | [Relative winding consistency check](docs/tools/windconsistency.md) | Passes relative winding counts only when every one is an integer and all of them can hold at once. |
 | [Relative windings in a box](docs/tools/windlabel-box.md) | Grows chains of sheet crossings around a point and writes villa's relative_windings.json for a spiral fit, with a VC3D plugin. |
 | [Scroll center (umbilicus) finder and coverage polish](docs/tools/umbilicus.md) | Finds a scroll's winding center line (umbilicus) in its CT scan with two small U-Nets and writes umbilicus.json for VC3D. |
+| [scrollsim2: full-scale synthetic scroll with exact winding truth](docs/tools/scrollsim2.md) | Makes a full-scale synthetic scroll volume with the exact winding of every voxel, for testing tracers. |
 | [Segment Atlas](docs/tools/atlas.md) | Measures published segment meshes with the same geometry checks and builds a searchable table. |
 | [Segment stack check](docs/tools/stackcheck.md) | Checks a stack of consecutive tifxyz segments against the umbilicus from geometry alone: winding order, spacing, gaps and overlaps. |
 | [Segments without VC3D](docs/tools/tifxyz.md) | Reads a tifxyz segment, local or from the open-data bucket, and reports its true area, grid, holes and folds, with numpy and tifffile only. |

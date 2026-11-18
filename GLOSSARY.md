@@ -166,6 +166,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 ## H
 
+**halo (block rendering)**: Extra voxels rendered around a block and cut away afterwards, wide enough for every filter, so a block-by-block render gives the same volume as one pass; how [`kit.scrollsim2`](docs/tools/scrollsim2.md) renders a whole scroll.
+
 **Harness2 (Harness squared)**: An optional framework for testing changes to the software around an agent while keeping model weights fixed. Scrolls uses a bounded local adapter to compare provenance workflows on generated files; it does not train an ink reader. See [the adapter guide](docs/tools/harness2.md).
 
 **Headless VC3D**: The released `vc3d-agent` package, which exposes villa tools through shell commands and an MCP server so scripts and agents can trace, check, flatten and render surfaces without a graphical display. See [the tool page](docs/tools/vc3d-agent.md).
@@ -330,6 +332,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **papyrologist**: A scholar of ancient papyri. Only the Vesuvius Challenge papyrology team decides whether an image is legible.
 
+**partial volume**: A voxel that holds part sheet and part gap shows a gray between the two; simulators average sub-samples (supersampling) to reproduce it.
+
 **Parting**: Our contact classifier: where two papyrus layers touch, it scores whether a candidate point lies on the same layer as a reference point or on the next one, from base dinovol token, CT and normal-profile features of the two points. Trained on hand-traced windings of PHerc0139 and PHerc0172; code released under Apache-2.0 and the model file on Hugging Face as SharpMeow/parting-v1 (30 October 2026). Passed one of three preregistered tests on fragments it never saw (it missed on the other two), and adds little where layers are fused ([log](docs/logs/2026-10-29-parting-fragment-contact.md)). Model output.
 
 **patch**: A small piece. In tracing, a patch is one traced piece of surface that can be merged with others. In ink detection, a patch is the small 3D block of a surface volume that a model reads at one time.
@@ -403,6 +407,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 **Scroll Text Reader**: Formerly Greek Letter Reader. The `scrolls-letterread` tool proposes Greek letters with LineNet or words with explicitly installed local Tesseract language packs. Both routes record model provenance and controls; neither verifies a reading ([guide](docs/letter-reader.md)).
 
 **Scrolls Starter**: The local browser introduction to the released tools, with a synthetic controls exercise, setup checks and a Scroll Text Reader command builder. Its portable edition opens without Python and leaves setup unchecked. See [starter](docs/tools/starter.md).
+
+**scrollsim2**: The full-scale synthetic scroll in [`kit.scrollsim2`](docs/tools/scrollsim2.md): one sheet rolled, pressed and crushed, rendered with exact winding truth for every voxel. Model output on synthetic data, never evidence about a real scroll.
 
 **seam (of a spiral fit)**: The angle at which a spiral fit's winding count steps by one as it goes around the roll. A fit may put it anywhere, so a sheet that crosses it is not an error; `kit.seamswitch` allows for it in seam cells of 10 degrees by 250 voxels ([`docs/tools/seamswitch.md`](docs/tools/seamswitch.md)).
 

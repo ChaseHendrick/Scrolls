@@ -13113,6 +13113,153 @@
    ]
   },
   {
+   "id": "scrollsim2",
+   "name": "scrollsim2",
+   "tagline": "a full-scale synthetic scroll rendered block by block, with exact truth",
+   "summary": "`python -m kit.scrollsim2` rolls, presses and crushes one synthetic papyrus sheet into a whole-scroll CT volume, renders it block by block into OME-zarr, and writes the exact winding of every voxel beside it, so tracers can be scored on synthetic data.",
+   "status": "Experimental",
+   "kind": [
+    "kit entry point",
+    "kit module"
+   ],
+   "area": "Surfaces and tracing",
+   "commands": [
+    "python -m kit.scrollsim2 make",
+    "python -m kit.scrollsim2 estimate",
+    "python -m kit.scrollsim2 stats"
+   ],
+   "imports": [
+    "from kit import scrollsim2"
+   ],
+   "code": [
+    {
+     "path": "kit/scrollsim2.py",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_scrollsim2.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed locally. A run on rented machines follows hard rule 11"
+   },
+   "checked": {
+    "date": "2026-11-18",
+    "commit": "c2cb575"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`scrollsim2`",
+    "Status": "Experimental",
+    "Kind": "kit entry point, kit module",
+    "Area": "Surfaces and tracing",
+    "Run": "`python -m kit.scrollsim2 make`, `python -m kit.scrollsim2 estimate`, `python -m kit.scrollsim2 stats`, `from kit import scrollsim2`",
+    "Code": "`kit/scrollsim2.py`",
+    "Tests": "`tests/test_scrollsim2.py`",
+    "Needs": "Python 3.10 or newer, numpy and scipy (the `maps` extra); zarr 3 for `make`, `pyramid`, `verify` and `publish` (checked with scipy 1.18.1 and zarr 3.4.2 on Python 3.13.18). `make` forks its workers, so it needs a system with `fork` (Linux or macOS)",
+    "Runs on": "Any CPU. The `smoke` preset (64 x 208 x 208, about 5 windings) takes 5.2 s wall on 4 workers; a `pilot` (1,024 x 1,728 x 3,264, about 150 windings) took 1,512 s for its 2,912 blocks on a 32 vCPU cloud machine (measured 2026-11-18)",
+    "Network": "None",
+    "Writes": "`make OUT`: `OUT/ct.zarr` (levels 0 to L), `OUT/truth/labels.zarr`, `OUT/truth/done.txt`, `OUT/truth/make-key.json`, `OUT/truth.json`, and with `--surfaces` `OUT/truth/surfaces/spiral-center/` and `spiral-recto/` (tifxyz and `winding.npy`). `publish` writes DST; `library` writes one `.npz`; `stats --out` one JSON",
+    "Go-ahead": "Not needed locally. A run on rented machines follows hard rule 11",
+    "Released": "Public `main` from the PR that adds this page (2026-11-18)",
+    "Checked": "2026-11-18 against commit `c2cb575`"
+   },
+   "page": "docs/tools/scrollsim2.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 22,
+     "end_line": 37,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 38,
+     "end_line": 48,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 49,
+     "end_line": 60,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 61,
+     "end_line": 75,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 76,
+     "end_line": 158,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 159,
+     "end_line": 182,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 183,
+     "end_line": 188,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 189,
+     "end_line": 201,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 202,
+     "end_line": 230,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 231,
+     "end_line": 237,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 238,
+     "end_line": 243,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 244,
+     "end_line": 254,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 255,
+     "end_line": 262,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 263,
+     "end_line": 266,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 267,
+     "end_line": 271,
+     "applicable": true
+    }
+   ]
+  },
+  {
    "id": "seamswitch",
    "name": "seamswitch",
    "tagline": "count seam-aware winding switches of a spiral fit",
