@@ -98,7 +98,8 @@ jobs:
 
   verify:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    # the scrollsim2 render tests run here (numpy, scipy and zarr installed): about 10 minutes of the job
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-python@v6

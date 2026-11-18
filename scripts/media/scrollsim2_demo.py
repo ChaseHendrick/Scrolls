@@ -9,10 +9,12 @@ It makes two scrolls with kit.scrollsim2 (the smoke preset, and a 96 x 640 x 640
                            and bent (the defaults)
   scrollsim2-surface.png   the whole sheet's center surface (tifxyz) in 3D, colored by winding number
   scrollsim2-zscroll.gif   a slow pass through z, CT beside labels
+  scrollsim2-scan.png      one crop of the medium scroll under three scan models (none, --scan synchrotron,
+                           --scan lab) and each one's noise power spectrum
 
 Each with a sidecar JSON (scripts/media/common.py). Needs numpy, scipy, zarr, tifffile, matplotlib and Pillow.
 
-  python scripts/media/scrollsim2_demo.py --work WORK --out-dir docs/assets/scrollsim2
+  python scripts/media/scrollsim2_demo.py --work WORK --out-dir docs/assets/scrollsim2 [--only NAME ...]
 """
 
 import argparse
@@ -207,14 +209,60 @@ def gif_z(np, d, out, scale=0.5):
     return frames[0].size, {"frames": len(frames), "z_step": 4, "frame_ms": 200}
 
 
+SCAN_CROP = (40, 56, 128, 512, 128, 512)       # z, y, x of the medium scroll: the middle third of the roll
+
+
+def fig_scan(plt, np, out):
+    """The same crop rendered with no scan model, --scan synchrotron and --scan lab (scan_block, so only the crop
+    is rendered), and the noise power spectrum of each, measured by kit.scrollsim2.measure_nps on an air box."""
+    from kit import scrollsim2 as s2
+    z0, z1, y0, y1, x0, x1 = SCAN_CROP
+    zc = (z1 - z0) // 2
+    rows = [("No scan model (release 1)", ""), ("--scan synchrotron", "synchrotron"), ("--scan lab", "lab")]
+    cols = ["#3B6FB6", "#E08A2E", "#8A55B0"]
+    fig, axs = plt.subplots(1, 4, figsize=(19.2, 5.4), gridspec_kw={"width_ratios": [1, 1, 1, 1.15]})
+    info = {"crop_zyx": list(SCAN_CROP), "slice_z": z0 + zc, "nps": {}}
+    for ax, (title, scan), col in zip(axs[:3], rows, cols):
+        sc = s2.Scroll2(dict(MEDIUM, scan=scan))
+        sc.prepare()
+        ct = sc.scan_block(z0, z1, y0, y1, x0, x1)[0]
+        ax.imshow(ct[zc], cmap="gray", vmin=0, vmax=255, interpolation="nearest",
+                  extent=(x0 - 0.5, x1 - 0.5, y1 - 0.5, y0 - 0.5))
+        ax.set_title(title)
+        ax.set_xlabel("x (voxels)")
+        ax.set_ylabel("y (voxels)")
+        air = sc.scan_block(0, 64, -700, -636, -700, -636)[0].astype(float)
+        m = s2.measure_nps(air, tile=32, share=1.0)
+        fr, ps = np.array(m["freq"]), np.array(m["psd"])
+        keep = (fr > 0) & (fr <= 0.5)
+        axs[3].plot(fr[keep], ps[keep], color=col, lw=2.4, label=f"{title.split(' (')[0]}, sd {m['variance'] ** 0.5:.1f}")
+        info["nps"][scan or "none"] = {"variance": round(m["variance"], 3)}
+    a = axs[3]
+    a.set_title("Noise power spectrum in air")
+    a.set_xlabel("frequency (cycles per voxel)")
+    a.set_ylabel("power (gray levels squared)")
+    a.set_yscale("log")
+    a.grid(True, color="#E4DFD6", lw=0.8)
+    a.legend(frameon=False, fontsize=11, loc="upper right")
+    for sp in ("top", "right"):
+        a.spines[sp].set_visible(False)
+    fig.suptitle(f"ScrollSim v2 scan models on one synthetic crop, slice z = {z0 + zc}; presets are a starting "
+                 "point, not a calibration", fontsize=13, color=MUTED, y=0.03)
+    fig.tight_layout(rect=(0, 0.05, 1, 1))
+    size = save(fig, out, 100)
+    plt.close(fig)
+    return size, info
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--work", required=True, help="scratch folder for the two synthetic scrolls (reused if present)")
     ap.add_argument("--out-dir", required=True)
+    ap.add_argument("--only", nargs="+", help="draw only these files (names as listed above)")
     a = ap.parse_args(argv)
     import numpy as np
     plt = _style()
-    runs = make_runs(a.work)
+    runs = make_runs(a.work) if not a.only or set(a.only) - {"scrollsim2-scan.png"} else {}
     out_dir = Path(a.out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
     jobs = [
@@ -237,7 +285,19 @@ def main(argv=None):
          "Animation through z of a synthetic scroll: gray CT on the left and the same slice tinted by winding "
          "number on the right; the spiral shifts slowly as the slices pass.",
          "Synthetic demo: a pass through z of a ScrollSim v2 scroll, CT beside its winding labels. No scan data."),
+        ("scrollsim2-scan.png", lambda p: fig_scan(plt, np, p),
+         "Four panels: the same synthetic crop of papyrus windings three times, first plain, then with synchrotron "
+         "settings (sharper sheet edges with a bright rim, fine grainy noise and faint rings), then with lab settings "
+         "(softer, blotchier noise, stronger rings and slightly darker sheets toward the middle of the roll); the "
+         "fourth panel is a line chart of each version's noise power against frequency on a log scale.",
+         "Synthetic demo: one ScrollSim v2 crop under no scan model, --scan synchrotron and --scan lab, with each "
+         "noise power spectrum. No scan data."),
     ]
+    if a.only:
+        unknown = set(a.only) - {j[0] for j in jobs}
+        if unknown:
+            ap.error(f"unknown --only name(s): {', '.join(sorted(unknown))}")
+        jobs = [j for j in jobs if j[0] in a.only]
     for name, draw, alt, caption in jobs:
         path = out_dir / name
         meta = common.check_meta({"label": "Synthetic demo", "alt": alt, "caption": caption, "license": "Apache-2.0"})

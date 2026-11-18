@@ -9763,67 +9763,67 @@
     {
      "name": "Commands and options",
      "start_line": 85,
-     "end_line": 319,
+     "end_line": 331,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 320,
-     "end_line": 323,
+     "start_line": 332,
+     "end_line": 335,
      "applicable": false
     },
     {
      "name": "Inputs",
-     "start_line": 324,
-     "end_line": 330,
+     "start_line": 336,
+     "end_line": 342,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 331,
-     "end_line": 367,
+     "start_line": 343,
+     "end_line": 379,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 368,
-     "end_line": 429,
+     "start_line": 380,
+     "end_line": 442,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 430,
-     "end_line": 452,
+     "start_line": 443,
+     "end_line": 465,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 453,
-     "end_line": 468,
+     "start_line": 466,
+     "end_line": 481,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 469,
-     "end_line": 478,
+     "start_line": 482,
+     "end_line": 491,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 479,
-     "end_line": 482,
+     "start_line": 492,
+     "end_line": 495,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 483,
-     "end_line": 493,
+     "start_line": 496,
+     "end_line": 506,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 494,
-     "end_line": 499,
+     "start_line": 507,
+     "end_line": 512,
      "applicable": true
     }
    ]
@@ -13859,6 +13859,10 @@
     "verify",
     "publish",
     "vc3d",
+    "nps",
+    "library",
+    "g1",
+    "g1-compare",
     "info"
    ],
    "imports": [
@@ -13887,13 +13891,13 @@
     "Status": "Experimental",
     "Kind": "kit module",
     "Area": "Surfaces and tracing",
-    "Run": "`python -m kit.scrollsim2 make`, `estimate`, `pyramid`, `verify`, `publish`, `vc3d`, `info`; library `from kit import scrollsim2`",
+    "Run": "`python -m kit.scrollsim2 make`, `estimate`, `pyramid`, `verify`, `publish`, `vc3d`, `nps`, `library`, `g1`, `g1-compare`, `info`; library `from kit import scrollsim2`",
     "Code": "`kit/scrollsim2.py`",
     "Tests": "`tests/test_scrollsim2.py`",
     "Needs": "Python 3.10 or newer, numpy, scipy (ndimage), zarr 3 for `make` (it writes zarr format 2); all in `pip install -e \".[maps]\"`. No scroll data",
     "Runs on": "CPU, any core count (forked workers, at most 16 by default). Smoke scroll (64 x 208 x 208, 4.8 turns): 7.2 s wall on 4 workers, 98 MB peak per process (measured 2026-11-18, 4-core cloud container)",
     "Network": "None",
-    "Writes": "`make OUT`: `OUT/ct.zarr`, `OUT/truth/labels.zarr`, `OUT/truth.json`, `OUT/truth/make-key.json`, `OUT/truth/done.txt`, and with `--surfaces` `OUT/truth/surfaces/spiral-center/` and `spiral-recto/`. `publish SRC DST`: a copy in `DST`. `pyramid OUT`: rewrites CT levels 1 and up. `vc3d SIM OUT`: `OUT/scrollsim2.volpkg.json`, `OUT/volumes/` (links, or copies with `--copy`), `OUT/paths/`",
+    "Writes": "`make OUT`: `OUT/ct.zarr`, `OUT/truth/labels.zarr` (levels as the CT), `OUT/truth.json`, `OUT/truth/make-key.json`, `OUT/truth/done.txt`, with `--truth contact,uvw` `OUT/truth/contact.zarr` and `OUT/truth/uvw.zarr`, and with `--surfaces` `OUT/truth/surfaces/spiral-center/` and `spiral-recto/`; with ink on, `OUT/truth/ink.zarr` and an `ink.tif` in each surface folder. `publish SRC DST`: a copy in `DST`. `pyramid OUT`: rewrites CT and label levels 1 and up. `vc3d SIM OUT`: `OUT/scrollsim2.volpkg.json`, `OUT/volumes/` (links, or copies with `--copy`), `OUT/paths/`",
     "Go-ahead": "Not needed on a local CPU. A rented run follows hard rule 11",
     "Released": "Public `main` since 2026-11-18",
     "Checked": "2026-11-18 against commit `424fb42`"
@@ -13903,103 +13907,103 @@
     {
      "name": "What it does",
      "start_line": 22,
-     "end_line": 51,
+     "end_line": 80,
      "applicable": true
     },
     {
      "name": "Realism: in progress",
-     "start_line": 52,
-     "end_line": 59,
+     "start_line": 81,
+     "end_line": 89,
      "applicable": true
     },
     {
      "name": "When to use it",
-     "start_line": 60,
-     "end_line": 71,
+     "start_line": 90,
+     "end_line": 102,
      "applicable": true
     },
     {
      "name": "Quick start",
-     "start_line": 72,
-     "end_line": 82,
+     "start_line": 103,
+     "end_line": 113,
      "applicable": true
     },
     {
      "name": "Tutorials",
-     "start_line": 83,
-     "end_line": 272,
+     "start_line": 114,
+     "end_line": 303,
      "applicable": true
     },
     {
      "name": "Checks and controls",
-     "start_line": 273,
-     "end_line": 287,
+     "start_line": 304,
+     "end_line": 337,
      "applicable": true
     },
     {
      "name": "Commands and options",
-     "start_line": 288,
-     "end_line": 395,
+     "start_line": 338,
+     "end_line": 521,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 396,
-     "end_line": 416,
+     "start_line": 522,
+     "end_line": 561,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 417,
-     "end_line": 437,
+     "start_line": 562,
+     "end_line": 618,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 438,
-     "end_line": 463,
+     "start_line": 619,
+     "end_line": 652,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 464,
-     "end_line": 495,
+     "start_line": 653,
+     "end_line": 723,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 496,
-     "end_line": 503,
+     "start_line": 724,
+     "end_line": 750,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 504,
-     "end_line": 510,
+     "start_line": 751,
+     "end_line": 757,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 511,
-     "end_line": 522,
+     "start_line": 758,
+     "end_line": 770,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 523,
-     "end_line": 526,
+     "start_line": 771,
+     "end_line": 774,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 527,
-     "end_line": 532,
+     "start_line": 775,
+     "end_line": 785,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 533,
-     "end_line": 536,
+     "start_line": 786,
+     "end_line": 789,
      "applicable": true
     }
    ]
