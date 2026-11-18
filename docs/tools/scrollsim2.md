@@ -262,7 +262,7 @@ python -m unittest tests.test_scrollsim2 -v
 
 ## History
 
-- 2026-11-18: released to public Scrolls (`RELEASE_COMMIT`). Before that it was developed outside this repository from earlier miniature simulators, adding the full-scale lookups, block rendering, the scan model, the texture library, the statistics and resumable OME-zarr output.
+- 2026-11-18: released to public Scrolls (`16f1031`). Before that it was developed outside this repository from earlier miniature simulators, adding the full-scale lookups, block rendering, the scan model, the texture library, the statistics and resumable OME-zarr output.
 
 ## Related
 
