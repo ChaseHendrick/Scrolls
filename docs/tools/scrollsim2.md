@@ -302,7 +302,7 @@ Stage registry: no stage option. The registry's stages read a real scroll; Scrol
 
 ## History
 
-- 2026-11-18: first public release (version 1): full-scale geometry, block rendering and exact winding and surface truth; ink off.
+- 2026-11-18: first public release (version 1): full-scale geometry, block rendering and exact winding and surface truth; ink off (`49d26fe`).
 
 ## Related
 
