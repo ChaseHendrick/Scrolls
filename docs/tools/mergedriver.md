@@ -179,7 +179,7 @@ python -m unittest tests.test_mergedriver -v
 
 ## History
 
-- 2026-11-18: released to public Scrolls (`RELEASE_COMMIT`): the csv, json and lines drivers with configurable CSV key columns. Developed outside this repository from 31 Oct 2026.
+- 2026-11-18: released to public Scrolls (`f25ddd4`): the csv, json and lines drivers with configurable CSV key columns. Developed outside this repository from 31 Oct 2026.
 
 ## Related
 
