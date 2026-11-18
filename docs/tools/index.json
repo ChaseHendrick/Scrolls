@@ -13128,6 +13128,7 @@
     "pyramid",
     "verify",
     "publish",
+    "vc3d",
     "info"
    ],
    "imports": [
@@ -13156,13 +13157,13 @@
     "Status": "Experimental",
     "Kind": "kit module",
     "Area": "Surfaces and tracing",
-    "Run": "`python -m kit.scrollsim2 make`, `estimate`, `pyramid`, `verify`, `publish`, `info`; library `from kit import scrollsim2`",
+    "Run": "`python -m kit.scrollsim2 make`, `estimate`, `pyramid`, `verify`, `publish`, `vc3d`, `info`; library `from kit import scrollsim2`",
     "Code": "`kit/scrollsim2.py`",
     "Tests": "`tests/test_scrollsim2.py`",
     "Needs": "Python 3.10 or newer, numpy, scipy (ndimage), zarr 3 for `make` (it writes zarr format 2); all in `pip install -e \".[maps]\"`. No scroll data",
     "Runs on": "CPU, any core count (forked workers, at most 16 by default). Smoke scroll (64 x 208 x 208, 4.8 turns): 7.2 s wall on 4 workers, 98 MB peak per process (measured 2026-11-18, 4-core cloud container)",
     "Network": "None",
-    "Writes": "`make OUT`: `OUT/ct.zarr`, `OUT/truth/labels.zarr`, `OUT/truth.json`, `OUT/truth/make-key.json`, `OUT/truth/done.txt`, and with `--surfaces` `OUT/truth/surfaces/spiral-center/` and `spiral-recto/`. `publish SRC DST`: a copy in `DST`. `pyramid OUT`: rewrites CT levels 1 and up",
+    "Writes": "`make OUT`: `OUT/ct.zarr`, `OUT/truth/labels.zarr`, `OUT/truth.json`, `OUT/truth/make-key.json`, `OUT/truth/done.txt`, and with `--surfaces` `OUT/truth/surfaces/spiral-center/` and `spiral-recto/`. `publish SRC DST`: a copy in `DST`. `pyramid OUT`: rewrites CT levels 1 and up. `vc3d SIM OUT`: `OUT/scrollsim2.volpkg.json`, `OUT/volumes/` (links, or copies with `--copy`), `OUT/paths/`",
     "Go-ahead": "Not needed on a local CPU. A rented run follows hard rule 11",
     "Released": "Public `main` since 2026-11-18",
     "Checked": "2026-11-18 against commit `424fb42`"
@@ -13196,79 +13197,79 @@
     {
      "name": "Tutorials",
      "start_line": 83,
-     "end_line": 222,
+     "end_line": 272,
      "applicable": true
     },
     {
      "name": "Checks and controls",
-     "start_line": 223,
-     "end_line": 237,
+     "start_line": 273,
+     "end_line": 287,
      "applicable": true
     },
     {
      "name": "Commands and options",
-     "start_line": 238,
-     "end_line": 331,
+     "start_line": 288,
+     "end_line": 395,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 332,
-     "end_line": 351,
+     "start_line": 396,
+     "end_line": 416,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 352,
-     "end_line": 372,
+     "start_line": 417,
+     "end_line": 437,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 373,
-     "end_line": 398,
-     "applicable": true
-    },
-    {
-     "name": "Failure modes",
-     "start_line": 399,
-     "end_line": 427,
-     "applicable": true
-    },
-    {
-     "name": "How it works",
-     "start_line": 428,
-     "end_line": 435,
-     "applicable": true
-    },
-    {
-     "name": "Cost and time",
-     "start_line": 436,
-     "end_line": 442,
-     "applicable": true
-    },
-    {
-     "name": "For agents",
-     "start_line": 443,
-     "end_line": 454,
-     "applicable": true
-    },
-    {
-     "name": "Tests",
-     "start_line": 455,
-     "end_line": 458,
-     "applicable": true
-    },
-    {
-     "name": "History",
-     "start_line": 459,
+     "start_line": 438,
      "end_line": 463,
      "applicable": true
     },
     {
-     "name": "Related",
+     "name": "Failure modes",
      "start_line": 464,
-     "end_line": 467,
+     "end_line": 495,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 496,
+     "end_line": 503,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 504,
+     "end_line": 510,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 511,
+     "end_line": 522,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 523,
+     "end_line": 526,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 527,
+     "end_line": 532,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 533,
+     "end_line": 536,
      "applicable": true
     }
    ]

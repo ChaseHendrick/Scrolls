@@ -526,7 +526,7 @@ Stage registry: no stage option. The registry's stages read a real scroll; Scrol
 
 ## History
 
-- 2026-11-18: `vc3d`, a folder VC3D opens, tested with VC3D build 7154682 (VC3DCOMMIT).
+- 2026-11-18: `vc3d`, a folder VC3D opens, tested with VC3D build 7154682 (`9195926`).
 - 2026-11-18: pictures and four tutorials, every command run on a fresh clone (`49eb2a5`).
 - 2026-11-18: first public release (version 1): full-scale geometry, block rendering and exact winding and surface truth; ink off (`49d26fe`).
 
