@@ -70,7 +70,7 @@ Claim label: Sourced fact for the measured timings in `docs/evidence/2026-11-18-
 | `run --scale` | `1.0` | work per kernel (1 is about 1 to 4 s a kernel on a 2026 Xeon core) |
 | `run --kernels` | `pyloop,compute,stream,blas` | which kernels to time; an empty or unknown list skips them (scrollsim2 and I/O only) |
 | `run --mount` | none | a directory (bucket mount) to time small-file writes in, beside local disk |
-| `run --scrollsim2` | off | also time scrollsim2 pilot sheet blocks at each P (needs `kit.scrollsim2`, released in [#362](https://github.com/ChaseHendrick/Scrolls/pull/362)) |
+| `run --scrollsim2` | off | also time scrollsim2 pilot sheet blocks at each P (needs [scrollsim2](scrollsim2.md)) |
 | `run --out` | none | write the JSON here, saved after each phase |
 | `compare HERE THERE` | | two `run` JSON files; prints THERE's seconds over HERE's at matching P |
 
@@ -181,5 +181,5 @@ The cgroup quota parser (v1, v2, unlimited, missing), lscpu parsing, `compare` a
 ## Related
 
 - [runlength](runlength.md): `python -m kit.runlength cpu`, the CPU flavor table this tool measured.
-- scrollsim2 (`kit.scrollsim2`, [#362](https://github.com/ChaseHendrick/Scrolls/pull/362)): the render whose slowdown this explained.
+- [scrollsim2](scrollsim2.md): the render whose slowdown this explained.
 - Evidence: [`docs/evidence/2026-11-18-hf-cpu-diag/`](../evidence/2026-11-18-hf-cpu-diag/README.md).
