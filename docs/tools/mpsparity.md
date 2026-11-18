@@ -36,8 +36,8 @@ It says nothing about a model's quality, and nothing about the data loading, whi
 Do not use it:
 
 - To check that one model's ink maps agree between devices: use [`verify`](verify.md) (`python -m kit verify --control`) on a real map pair.
-- To pick the device and precision a script runs with: use `kit.accel` ([#359](https://github.com/ChaseHendrick/Scrolls/pull/359)), whose `--check` compares a toy forward pass only.
-- To time two implementations of the same function: use `kit.accelbench` ([#359](https://github.com/ChaseHendrick/Scrolls/pull/359)).
+- To pick the device and precision a script runs with: use [`accel`](accel.md), whose `--check` compares a toy forward pass only.
+- To time two implementations of the same function: use [`accelbench`](accelbench.md).
 
 ## Quick start
 
@@ -231,5 +231,5 @@ python -m unittest tests.test_mpsparity -v
 
 ## Related
 
-- `kit.accel` and `kit.accelbench` ([#359](https://github.com/ChaseHendrick/Scrolls/pull/359)): the device and precision rule, and correctness-gated timing.
+- `kit.accel` and [`accelbench`](accelbench.md): the device and precision rule, and correctness-gated timing.
 - [verify](verify.md): device agreement for real maps, with a control.

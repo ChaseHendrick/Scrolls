@@ -80,7 +80,7 @@ Command-line tools, benchmarks and script folders that run from a clone of this 
 </details>
 
 <details>
-<summary><b>Surfaces and tracing</b> (17)</summary>
+<summary><b>Surfaces and tracing</b> (18)</summary>
 
 | Tool | What it does |
 | --- | --- |
@@ -94,6 +94,7 @@ Command-line tools, benchmarks and script folders that run from a clone of this 
 | [Relative winding consistency check](docs/tools/windconsistency.md) | Passes relative winding counts only when every one is an integer and all of them can hold at once. |
 | [Relative windings in a box](docs/tools/windlabel-box.md) | Grows chains of sheet crossings around a point and writes villa's relative_windings.json for a spiral fit, with a VC3D plugin. |
 | [Scroll center (umbilicus) finder and coverage polish](docs/tools/umbilicus.md) | Finds a scroll's winding center line (umbilicus) in its CT scan with two small U-Nets and writes umbilicus.json for VC3D. |
+| [ScrollSim v2: a full-scale synthetic scroll](docs/tools/scrollsim2.md) | Renders a synthetic scroll of 100 plus windings block by block, with every voxel's exact winding and the sheet's surfaces as truth. |
 | [Segment Atlas](docs/tools/atlas.md) | Measures published segment meshes with the same geometry checks and builds a searchable table. |
 | [Segment stack check](docs/tools/stackcheck.md) | Checks a stack of consecutive tifxyz segments against the umbilicus from geometry alone: winding order, spacing, gaps and overlaps. |
 | [Segments without VC3D](docs/tools/tifxyz.md) | Reads a tifxyz segment, local or from the open-data bucket, and reports its true area, grid, holes and folds, with numpy and tifffile only. |
@@ -188,10 +189,11 @@ Command-line tools, benchmarks and script folders that run from a clone of this 
 </details>
 
 <details>
-<summary><b>Compute and cost</b> (5)</summary>
+<summary><b>Compute and cost</b> (6)</summary>
 
 | Tool | What it does |
 | --- | --- |
+| [accelbench: time a faster version only after its output matches](docs/tools/accelbench.md) | Times a faster version of some code only after its output matches the original, with a control. |
 | [Hugging Face Jobs ledger importer](docs/tools/hf-rows.md) | Adds finished Hugging Face Jobs to a cost ledger with the cost from Hugging Face's own bill, once per Job, and restricts public ledgers to generic work. |
 | [Local run time and cost log](docs/tools/run-local.md) | Runs a local command and records its elapsed time and estimated electricity cost, or adds records of past runs. |
 | [Modal ledger row importer](docs/tools/modal-row.md) | Adds a recorded job to a cost ledger once and restricts public ledgers to rows marked generic. |

@@ -6,6 +6,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 ## A
 
+**ABBA order**: Timing two code paths A and B as A, B, then B, A, alternating each sample, so neither always runs first; how [`kit.accelbench`](docs/tools/accelbench.md) times its two arms.
+
 **absorption contrast**: Image contrast that comes from how strongly different materials absorb X-rays.
 
 **acquisition recipe**: The settings a CT scan was taken with: voxel size, beam energy, propagation distance and the like. Two scans of one scroll with different recipes can show its sheets differently; `sqrecipe` compares them region by region ([page](docs/tools/sqrecipe.md)).
@@ -31,6 +33,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 **AUC (pixel AUC)**: Area under the ROC curve. Here it measures how well an ink map ranks labeled ink pixels above labeled non-ink pixels, inside a segment's supervision mask (`kit auc`). 0.5 is chance and 1.0 is perfect. An AUC is reported beside the same reader's reverse-depth map as the control.
 
 **Auto3DSeg**: NVIDIA's automatic 3D segmentation pipeline in MONAI (AutoRunner). It analyzes a dataset, trains SegResNet, DiNTS and Swin UNETR and ensembles them. `kit segzoo datalist` writes the datalist it reads from an nnU-Net dataset ([page](docs/tools/segzoo.md)).
+
+**autocast**: PyTorch's mixed precision: inside it, matmuls and convolutions run in a 16-bit type (bf16 or fp16) while the rest stays fp32. [`kit.accel`](docs/tools/accel.md) picks it per device.
 
 **AutoPipeline (AP)**: The released package that drives villa's VC3D tools and ink detection from a scan through surface checks, rendering and controlled scoring. It records the choices for a run and keeps a control beside each check. See [AutoPipeline](docs/autopipeline/README.md) and the README's released tools list for the current version.
 
@@ -167,6 +171,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 **GrowPatch**: A VC3D tracer that grows a surface mesh outward step by step by optimization.
 
 ## H
+
+**halo (block halo)**: The margin rendered around a block and then cut away, wide enough for every filter, so a voxel's value does not depend on which block rendered it. ScrollSim v2 uses one ([page](docs/tools/scrollsim2.md)).
 
 **Harness2 (Harness squared)**: An optional framework for testing changes to the software around an agent while keeping model weights fixed. Scrolls uses a bounded local adapter to compare provenance workflows on generated files; it does not train an ink reader. See [the adapter guide](docs/tools/harness2.md).
 
@@ -338,6 +344,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **Pearson correlation (Pearson r)**: A measure of how closely two sets of values vary together in a straight-line relationship. Ink Bench applies it to aligned image pixels. Correlation with a model-generated reference is agreement with that reference, not proof of ink.
 
+**perturbed control**: In [`kit.accelbench`](docs/tools/accelbench.md), the reference output with one element moved just past the comparison rule; it must fail the rule, or the rule cannot tell outputs apart and no speed is reported.
+
 **phase contrast**: Image contrast from the shift in phase of X-rays passing through a sample, made visible by letting the beam travel to the detector.
 
 **PHerc.**: Short for Papyrus Herculanensis, followed by an inventory number, for example PHerc. 0139 or PHerc0139. PHerc. Paris 4 is also called Scroll 1.
@@ -401,6 +409,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 **scroll2ink**: `python -m kit scroll2ink`, one command from a public scan and a seed point to a grown, checked, flattened and rendered surface and its ink map with the reverse-depth control, each step a Headless VC3D tool ([`docs/tools/scroll2ink.md`](docs/tools/scroll2ink.md)).
 
 **Scrolls kit**: The grouped release entry for command-line tools maintained in this repository. It links each listed tool to its command, documentation and evidence; standalone products keep their own entries. The public [release registry](docs/releases.json) identifies the group as `scrolls-kit`.
+
+**ScrollSim v2 (scrollsim2)**: `python -m kit.scrollsim2`, a simulator that renders a synthetic rolled, pressed and crushed papyrus scroll at full scale (100 plus windings) block by block, with the exact winding of every voxel and the sheet's center and recto surfaces as truth. Its output is synthetic data, not real CT; it is not yet calibrated against real scrolls ([page](docs/tools/scrollsim2.md)).
 
 **Scroll Text Reader**: Formerly Greek Letter Reader. The `scrolls-letterread` tool proposes Greek letters with LineNet or words with explicitly installed local Tesseract language packs. Both routes record model provenance and controls; neither verifies a reading ([guide](docs/letter-reader.md)).
 
@@ -473,6 +483,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 **tifxyz**: A surface format of three float32 TIFF images giving the x, y and z position of each grid cell, with -1 for missing cells.
 
 **tile**: One fixed-size square piece of a map or surface volume, processed on its own and then put back together. Inference wrappers log how many tiles they ran; StrokeNet's tile grid pilot scores a map tile by tile.
+
+**timing receipt**: The JSON record [`kit.accelbench`](docs/tools/accelbench.md) writes for a benchmark: the comparison, the control, every timing sample, the machine and the git state. Only a `pass` receipt carries a speedup.
 
 **tool page**: The reference page of one tool in [`docs/tools/`](docs/tools/README.md): what it does, a quick start, its checks and controls, every option with its default, inputs, outputs, failure modes, cost, rules for agents, tests and history, written to [`docs/TOOL-DOCS.md`](docs/TOOL-DOCS.md) and checked against the code by `python -m kit.tooldocs check`. Pages still to be written are listed in `docs/tools/pending.json`.
 
