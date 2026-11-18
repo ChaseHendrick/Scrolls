@@ -310,6 +310,18 @@ Stills and slow GIFs of a snap for the [snapped-labels](snapped-labels.md) Space
 | `--center X Y` | the piece nearest the plane's centroid | `real` only: the window center, in voxels |
 | `--data` | `https://huggingface.co/datasets/SharpMeow/vesuvius-snapped-labels/resolve/main` | `real` only: another copy of the dataset |
 
+### `python scripts/media/scrollsim2_demo.py`
+
+```text
+usage: python scripts/media/scrollsim2_demo.py --work WORK --out-dir OUT_DIR [--only NAME ...]
+```
+
+| Option | Default | Meaning |
+| --- | --- | --- |
+| `--work` | required | Scratch folder for the synthetic scrolls the pictures are drawn from; reused when present |
+| `--out-dir` | required | Folder for the PNG pictures and their sidecars, such as `docs/assets/scrollsim2` |
+| `--only NAME ...` | every picture | Draw only these files, named as the script's docstring lists them; `--only scrollsim2-scan.png` renders its own crop and makes no full scroll |
+
 ### Environment variables
 
 | Variable | Default | Meaning |
@@ -370,6 +382,7 @@ The sidecar (`common.write_sidecar`, schema `scrolls-media/1`):
 | What you see | Why | What to do |
 | --- | --- | --- |
 | `usage: ...` then `error: ...` on stderr, exit code 2 | A missing or wrong argument | Check the command against Commands and options |
+| `unknown --only name(s): NAME` | `scrollsim2_demo.py --only` names a file the script does not draw | Use a name from the script's docstring, such as `scrollsim2-scan.png` |
 | `PATH: no kit/switchfix.py; give the AutoPipeline package folder` | `barrier_demo.py --package` points somewhere else | Give the package folder of branch `submission/progress-2026-10-fix9` |
 | `the barrier did not cut the hop and keep the control; no media written` | The barrier kept or cut differently on the made-up cases | Check the package version; do not publish pictures of a barrier that fails its own tests |
 | `PATH was over the public size limit and was removed` | `barrier_demo.py`'s GIF or MP4 came out over 1920 px or 4 MB under `docs/assets/` | Shorten the clip or lower its width |
