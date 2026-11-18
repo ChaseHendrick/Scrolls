@@ -223,7 +223,7 @@ The upload itself was not run here (it publishes, and needs your account); `hf u
 
 ### Open a synthetic scroll in VC3D
 
-`vc3d` turns a finished `make` into a folder that VC3D (villa's volume-cartographer) opens: the CT and the winding labels as two zarr volumes, each with the `meta.json` VC3D's volume loader requires, the truth surfaces as tifxyz segments, and a project file. Make the scroll with `--surfaces` to get the segments.
+`vc3d` turns a finished `make` into a folder that VC3D (villa's volume-cartographer) opens: the CT and the winding labels as two zarr volumes, each with the `meta.json` VC3D's volume loader reads (`type`, `uuid`, `width`, `height`, `slices`, and `voxelsize`), the truth surfaces as tifxyz segments, and a project file. Make the scroll with `--surfaces` to get the segments.
 
 ```bash
 python -m kit.scrollsim2 vc3d sim sim-vc3d
@@ -268,7 +268,7 @@ EOF
 
 It printed 5,540 of 6,392 vertices on a labeled voxel and 0.9973 agreement. Reading the TIFF needs `imagecodecs` (VC3D writes LZW). The renderer was run from the extracted AppImage (`squashfs-root/AppRun vc_render_tifxyz ...`), which dispatches to the same tool.
 
-Which VC3D: this was tested with villa's VC3D build `7154682` of 28 October 2026, which opens `*.volpkg.json` projects. Villa's main branch since moved to `.vcproj` projects whose segments live in a `.vcobj` object store (villa `volume-cartographer/core/src/ProjectDocument.cpp`, read on 18 November 2026 at commit `8e21d01`). With such a build, create a project in VC3D, attach the two volume folders, and import `sim-vc3d/paths` with its Import from Folder dialog, or with `vc_object_ingest --surface sim-vc3d/paths`. The segments' `meta.json` `uuid` is already a canonical UUID, as that import requires. That newer route was not tested here.
+Which VC3D: this was tested with villa's VC3D build `7154682` of 28 October 2026, which opens `*.volpkg.json` projects. Villa's main branch since moved to `.vcproj` projects whose segments live in a `.vcobj` object store (villa `volume-cartographer/core/src/ProjectDocument.cpp`, read on 18 November 2026 at commit `8e21d01`). With such a build, create a project in VC3D, attach the two volume folders, and import `sim-vc3d/paths` with its Import from Folder dialog, or with villa's `vc_object_ingest --db STORE.vcobj --author NAME --surface sim-vc3d/paths`. The segments' `meta.json` `uuid` is already a canonical UUID, so no `--derive-uuids` namespace is needed. That newer route was not tested here.
 
 ## Checks and controls
 

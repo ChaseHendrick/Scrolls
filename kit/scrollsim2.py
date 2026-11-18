@@ -901,8 +901,10 @@ def _vc3d_volume(src, dst, uid, name, voxel_um, copy):
     (dst / ".zgroup").write_text(json.dumps({"zarr_format": 2}) + "\n")
     ds = [{"path": lev, "coordinateTransformations": [{"type": "scale", "scale": [2.0 ** int(lev)] * 3}]}
           for lev in levels]
+    # no unit on the axes: a micrometer unit with scale 1 would declare 1 um voxels, and VC3D lets a size from the
+    # store's metadata override meta.json's voxelsize
     (dst / ".zattrs").write_text(json.dumps({"multiscales": [{"version": "0.4", "name": name, "axes": [
-        {"name": n, "type": "space", "unit": "micrometer"} for n in "zyx"], "datasets": ds}]}, indent=1) + "\n")
+        {"name": n, "type": "space"} for n in "zyx"], "datasets": ds}]}, indent=1) + "\n")
     meta = {"uuid": uid, "name": name, "type": "vol", "format": "zarr", "width": int(x), "height": int(y),
             "slices": int(z), "voxelsize": float(voxel_um), "min": 0.0,
             "max": 255.0 if g[levels[0]].dtype.itemsize == 1 else 65535.0}

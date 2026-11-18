@@ -11,8 +11,8 @@
   "outputs": [
     {
       "file": "scrollsim2-vc3d.png",
-      "bytes": 214159,
-      "sha256": "775cfae2f6fc96053ba310a3b32f77a0c874971f8f5966a15bb35ae0d5c8e2ed",
+      "bytes": 215263,
+      "sha256": "9efa3007f5f0ffcb08f063eea3c0fb273058f7f6595e92ff5b3ffbdec2281f2d",
       "width": 796,
       "height": 796,
       "kind": "still",
@@ -23,10 +23,11 @@
   "made": "2026-11-18",
   "tool": {
     "scripts": [
-      "common.py"
+      "common.py",
+      "scrollsim2_demo.py"
     ],
-    "scripts_sha256": "6725bbe212ecacfb2949c0f35812616c0c91dceb342f6c88f784356f838dc03d",
-    "base_commit": "2d522d44c4598be8393e2c191bf05b3ccc5c460c"
+    "scripts_sha256": "6e1ef78a32db34fc80738b6169c3165bba1a43cbd3a2abfd6fb0ee1e14d54d3a",
+    "base_commit": "50354cc1dc38a5cc190ffa9c82a61f05fe9b3032"
   },
   "command": "python -m kit.scrollsim2 vc3d SIM OUT on the 96 x 640 x 640 scroll of scrollsim2_demo.py, then VC3D 7154682 (villa AppImage of 28 Oct 2026) offscreen with its agent bridge: open OUT/scrollsim2.volpkg.json, attach both surfaces, viewer.zoom 3 on the XY, XZ and YZ viewers, screenshot.capture of the window",
   "vc3d": {
@@ -38,5 +39,8 @@
       "viewer.zoom",
       "screenshot.capture"
     ]
-  }
+  },
+  "code": [
+    "kit/scrollsim2.py"
+  ]
 }
