@@ -216,10 +216,7 @@ python -m unittest tests.test_accel -v
 
 ## History
 
-- 2026-11-18: released to public Scrolls with [accelbench](accelbench.md).
-- 2026-10-23: `--precision auto` is fp32 on MPS (was fp16), after the M1 Pro measurement above; `fp16` and `bf16` stay available.
-- 2026-10-16: `--check` with its depth-reversed control and a TF32 bound for fp32 on CUDA.
-- 2026-10-15: first version: one device and precision choice for torch scripts.
+- 2026-11-18: released to public Scrolls with [accelbench](accelbench.md) (`9f89964`). Before that it was developed outside this repository: first version 15 Oct 2026, `--check` with its control and the TF32 bound 16 Oct, `--precision auto` fp32 on MPS (was fp16) after the M1 Pro measurement, 23 Oct.
 
 ## Related
 

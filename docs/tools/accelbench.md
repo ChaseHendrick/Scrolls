@@ -327,9 +327,7 @@ The tests cover the gate (a faster wrong candidate is refused and never timed), 
 
 ## History
 
-- 2026-11-18: released to public Scrolls with [accel](accel.md) and the precision script.
-- 2026-10-23: `scripts/accelbench/mps_precision.py`, fp32 against fp16 and bf16 autocast for 2D and 3D conv nets on MPS or CUDA.
-- 2026-10-15: first version: the correctness-gated `benchmark`, `time_callable`, `compare_outputs`, the perturbed control, receipts with `write_receipt` and `check_receipt`.
+- 2026-11-18: released to public Scrolls with [accel](accel.md) and the precision script (`9f89964`). Before that it was developed outside this repository: the gate, the perturbed control and the receipts from 15 Oct 2026, the precision script from 23 Oct 2026.
 
 ## Related
 
