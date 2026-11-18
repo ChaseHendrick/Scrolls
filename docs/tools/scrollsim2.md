@@ -14,7 +14,7 @@ ScrollSim v2 renders a synthetic rolled, pressed and crushed papyrus scroll at f
 | Needs | Python 3.10 or newer, numpy, scipy (ndimage), zarr 3 for `make` (it writes zarr format 2); all in `pip install -e ".[maps]"`. No scroll data |
 | Runs on | CPU, any core count (forked workers, at most 16 by default). Smoke scroll (64 x 208 x 208, 4.8 turns): 7.2 s wall on 4 workers, 98 MB peak per process (measured 2026-11-18, 4-core cloud container) |
 | Network | None |
-| Writes | `make OUT`: `OUT/ct.zarr`, `OUT/truth/labels.zarr` (levels as the CT), `OUT/truth.json`, `OUT/truth/make-key.json`, `OUT/truth/done.txt`, with `--truth contact,uvw` `OUT/truth/contact.zarr` and `OUT/truth/uvw.zarr`, and with `--surfaces` `OUT/truth/surfaces/spiral-center/` and `spiral-recto/`. `publish SRC DST`: a copy in `DST`. `pyramid OUT`: rewrites CT and label levels 1 and up. `vc3d SIM OUT`: `OUT/scrollsim2.volpkg.json`, `OUT/volumes/` (links, or copies with `--copy`), `OUT/paths/` |
+| Writes | `make OUT`: `OUT/ct.zarr`, `OUT/truth/labels.zarr` (levels as the CT), `OUT/truth.json`, `OUT/truth/make-key.json`, `OUT/truth/done.txt`, with `--truth contact,uvw` `OUT/truth/contact.zarr` and `OUT/truth/uvw.zarr`, and with `--surfaces` `OUT/truth/surfaces/spiral-center/` and `spiral-recto/`; with ink on, `OUT/truth/ink.zarr` and an `ink.tif` in each surface folder. `publish SRC DST`: a copy in `DST`. `pyramid OUT`: rewrites CT and label levels 1 and up. `vc3d SIM OUT`: `OUT/scrollsim2.volpkg.json`, `OUT/volumes/` (links, or copies with `--copy`), `OUT/paths/` |
 | Go-ahead | Not needed on a local CPU. A rented run follows hard rule 11 |
 | Released | Public `main` since 2026-11-18 |
 | Checked | 2026-11-18 against commit `424fb42` |
@@ -48,7 +48,13 @@ What works today:
   - *Carbonization bubbles* (`bubbles`, `bubble_r`): small voids inside the sheet. Labels kept.
   - *Density variation between plies* (`ply_var`, `ply_var_len`): the recto and verso plies each get their own smooth density gain.
 
-Ink is off in this release: the volume holds no ink and the label volume carries windings only.
+- **Ink writer** (off by default, 2026-11-18). Setting `ink_um` or `ink_depth_um` above 0 writes text on the recto face of the sheet and its exact truth. All ink keys default to 0 or off, so a render without them is unchanged bit for bit (checked against the previous commit on six parameter sets and a whole `make`):
+  - *Page*: rows of letter-like glyphs in sheet coordinates (arc length along the sheet and z), in columns with margins. The glyphs are the 24 Greek capitals in DejaVu Sans, rendered with Pillow when it finds the font, else procedural strokes (`ink_glyphs`). Which glyph sits at each place comes from a hash of the seed, the column, the line and the place, so the page is the same in every block and is never stored. Another Pillow, FreeType or font version may draw the glyphs a little differently; `truth.json` records the atlas hash, and `ink_glyphs` `strokes` gives the same glyphs on every machine. Letter height, advance, line pitch, column width, gaps, margins and the share of blank places are parameters; the defaults are assumptions chosen so a test box holds whole letters, not measurements of real letters.
+  - *Physics*: where the page is inked, a deposit of thickness `ink_um` lies on the recto face, with density 1 + `ink_rho` times a ply's peak; within `ink_depth_um` inside the face the papyrus density is scaled by 1 + `ink_rho` and its fiber texture is blended toward a fine isotropic grain by `ink_tex`. Thicknesses are micrometers, converted with `voxel_um`. Each voxel gets the exact share of its volume that the thin layer fills (its extent along the sheet normal is the sum of its edges' projections), so a deposit half a voxel thick adds half a voxel of mass, not all or nothing. The model follows Parker et al., [From invisibility to readability: Recovering the ink of Herculaneum](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0215775), PLoS ONE 14(5): e0215775, 2019 (read 2026-11-18): the ink layer is 3 to 5 um thick, absorption adds 4 to 12 um of depth, and x-rays pass through the carbon ink and carbonized papyrus in almost exactly the same way. So the cue is weak by design: a small mass excess of a few micrometers and a texture change over a voxel or two.
+  - *Truth*: `truth/ink.zarr/0` (uint8) marks every voxel the ink reaches (deposit or absorbed zone) where the page is inked (coverage 0.5 or more); with `--surfaces`, `ink.tif` (uint8, on the vertex grid of the recto surface, copied beside the center surface too) marks which surface points are inked. `truth.json` records the ink parameters, the glyph source and its atlas hash, and the inked share.
+  - *noink twin*: `make --noink` (or `noink(over)` in Python) renders the same scroll with the same seed and parameters, writes the same ink truth, and leaves the ink out of the CT, so a paired ink effect can be scored voxel by voxel.
+
+  No real ink reader has been shown to see this ink. An ink score on these volumes is model output on synthetic data, never a reading, and this layer model is not claimed to look like real ink in real CT.
 
 ![Synthetic demo: a ScrollSim v2 slice of about 21 windings, gray CT on the left and the same slice tinted by exact winding number on the right](../assets/scrollsim2/scrollsim2-slice.png)
 
@@ -86,12 +92,13 @@ The volumes do not yet look or score like real CT. The CT scan model above gives
 - To test a tracer, a winding tool or a surface pipeline end to end on a volume whose windings and surfaces are known exactly.
 - To check that a pipeline handles a full-scale volume (OME-Zarr levels, chunking, 100 plus windings) before it meets real data.
 - To estimate a full render's time and memory before you start it (`estimate`).
+- To test an ink pipeline's plumbing (surface sampling, coordinates, scoring code) against exact ink truth, with the noink twin as the paired control.
 
 Do not use it:
 
 - To claim anything about a real scroll, or to rank methods for real scrolls: use published labels and the scorers in [auc](auc.md).
 - To train a model meant for real CT: it is not calibrated yet (see above).
-- For ink: ink is off in this release.
+- To judge an ink reader for real scrolls, or to claim that ink looks like this in real CT: the ink model is uncalibrated and no real ink reader has been shown to see it.
 
 ## Quick start
 
@@ -322,8 +329,9 @@ The tests are the controls; each can fail:
 - Texture library: a library cut from a ScrollSim v2 render holds both sheet and gap cubes, and blank or flat crops and odd patch sizes are refused. A textured render differs from the plain one by exactly the added residual, rounded (within 1 gray level), with labels unchanged, open air untouched, and `lib_gain` 0 equal to the plain render; whole versus eight blocks, and a block with odd edges, give identical CT with the library on.
 - Realism statistics: `g1stats` is deterministic and ignores a gray offset and gain; `g1distance` of a crop with itself is 0 and grows with added noise; `g1compare` judges one of the real crops inside the spread and a crop with three times the noise outside it on gap noise, and judges nothing when every crop comes from one scan; `resample` keeps the mean when it shrinks or grows a crop.
 
+- Ink: every 3D ink voxel lies within the deposit plus the absorbed depth plus one voxel of the recto surface, and nearer it than the center surface; with blur, noise, crush and bend off, the CT excess over the noink twin, summed, matches the deposit's mass (thickness times 1 + `ink_rho` times the inked area of the recto surface) within 5 percent for a deposit half a voxel thick; the twin equals the scroll rendered with no ink keys, and differs from the inked scroll only within the blur's reach of ink truth; `ink.tif` agrees with the 3D truth at the voxels its surface points land in (95 percent or more), and both inked shares lie within 25 percent of the page's share; rendering whole versus in eight blocks gives identical CT, labels and ink truth with ink on.
 
-Scope: these are correctness checks on the simulator's own truth, geometry, scan model and storage, and on the realism tools with synthetic inputs. No realism or calibration check against real CT has run, so nothing here says how close a volume is to real CT.
+Scope: these are correctness checks on the simulator's own truth, geometry, scan model and storage, and on the realism tools with synthetic inputs. No realism or calibration check against real CT has run, so nothing here says how close a volume is to real CT, or its ink to real ink.
 
 Claim label: None (a simulator; its output is synthetic data, and scores on it are Model output about the simulator only).
 
@@ -335,7 +343,7 @@ Claim label: None (a simulator; its output is synthetic data, and scores on it a
 usage: python -m kit.scrollsim2 make [-h] [--levels LEVELS] [--chunk CHUNK]
                                      [--surfaces] [--resume]
                                      [--max-blocks MAX_BLOCKS]
-                                     [--order {zyx,middle}] [--truth TRUTH]
+                                     [--order {zyx,middle}] [--truth TRUTH] [--noink]
                                      [--preset {pilot,smoke}]
                                      [--scan {lab,synchrotron}] [--set SET]
                                      [--seed SEED] [--workers WORKERS]
@@ -353,6 +361,7 @@ usage: python -m kit.scrollsim2 make [-h] [--levels LEVELS] [--chunk CHUNK]
 | `--max-blocks N` | stop after N new blocks (a timing probe; exit 75) |
 | `--order zyx|middle` | block order: index order, or blocks nearest the center first |
 | `--truth contact,uvw` | extra truth volumes beside the CT, comma-separated (default none): `contact` writes `truth/contact.zarr`, `uvw` writes `truth/uvw.zarr`; `--resume` needs the same list |
+| `--noink` | the noink twin: same parameters and seed, ink truth written, no ink in the CT (sets `ink_off` 1) |
 | `--preset NAME` | `smoke` or `pilot` |
 | `--scan NAME` | a scan preset, `synchrotron` or `lab` (same as `--set scan=NAME`); applied after `--preset`, before `--set` |
 | `--set KEY=VALUE` | override one parameter (repeatable; VALUE is JSON) |
@@ -518,7 +527,10 @@ usage: python -m kit.scrollsim2 info [-h] sim
 | `params(over=None, preset=None)` | dict of every parameter | `SimError` on an unknown key, preset or scan preset, or a value out of range | DEFAULTS, then the preset, then the scan preset named by `scan`, then OVER |
 | `hashed_normal(seed, z0, z1, y0, y1, x0, x1, salt=HASH_SALT['noise'])` | float32 array (z, y, x) | | Standard normal noise on the box, a function of each voxel's position and the seed only |
 | `Roll(p)` | object | `SimError` when the box holds less than two windings | The sheet geometry: radius, thickness, contacts, delamination, holes and displacement fields; `voxels_all_turns(out)` is the slow reference lookup |
-| `Scroll2(p)` | object | `SimError` as `params`, or when the box is too short in y for a fixed crush | Full-scale lookups and rendering: `voxels(out)`, `scan_block(z0, z1, y0, y1, x0, x1)` returns (CT uint8, labels uint16, air flag), `truth_block(z0, z1, y0, y1, x0, x1, kinds=TRUTH_KINDS, air=None)` returns a dict of `labels` and the extra truth arrays of the box (`contact` uint8; `u`, `v`, `w` float32, NaN in air), `truth_points(out, kinds)` the same at any points (N, 3) as x, y, z, `surface(step, which)` |
+| `Scroll2(p)` | object | `SimError` as `params`, or when the box is too short in y for a fixed crush | Full-scale lookups and rendering: `voxels(out, width=1.0, ink=True)` (density, turn, theta, 3D ink truth, distance), `scan_block(z0, z1, y0, y1, x0, x1, air=None, with_ink=False)` returns (CT uint8, labels uint16, air flag) and with `with_ink` the box's ink truth (uint8) fourth, `truth_block(z0, z1, y0, y1, x0, x1, kinds=TRUTH_KINDS, air=None)` returns a dict of `labels` and the extra truth arrays of the box (`contact` uint8; `u`, `v`, `w` float32, NaN in air), `truth_points(out, kinds)` the same at any points (N, 3) as x, y, z, `surface(step, which)`; ink: `ink_on`, `ink_cover(s, z)` (page coverage 0 to 1 at sheet coordinates), `ink_surface(surf)` (uint8 ink truth on a surface grid), `ink_report()` (the `ink` record of `truth.json`) |
+| `noink(over=None)` | dict | | OVER with `ink_off` 1: the noink twin's parameters |
+| `ink_glyphs(mode='auto', advance=0.8, stroke=0.12)` | (float32 atlas (24, 48, W), source) | `SimError` for `font` when Pillow or DejaVu Sans is missing | The glyph atlas: coverage 0 to 1 per glyph; source `font:DejaVuSans` or `strokes` |
+| `ink_share(np, d, lo, hi, a, b)` | float array | | Share of a voxel at normal coordinate D, whose extent along the normal is a box of width A plus one of width B, inside the slab [LO, HI] (the exact partial volume of a flat layer) |
 | `make(out, over=None, preset=None, workers=1, block=128, levels=5, chunk=128, surfaces=False, progress=print, resume=False, max_blocks=None, environ=None, order='zyx', truth=())` | dict (as `truth.json`) | `SimError` on a non-empty OUT without `resume`, a block that is not a multiple of the chunk, other parameters or truth volumes on resume, an unknown truth volume, or missing chunks | Renders one scroll; see Outputs |
 | `estimate(over=None, preset=None, workers=1, block=128, sample=4, seed=0, progress=print)` | dict | `SimError` as `params` | Times SAMPLE sheet blocks on one core and scales by the sheet block count over WORKERS |
 | `verify(out)` | dict with `ok` | | Every CT chunk of every level on disk, no `.partial` file; under `labels`, every CT level has a label level, a label chunk of level L is on disk exactly when a level L - 1 chunk under it is, and the `contact`, `u`, `v`, `w` chunks lie exactly where label level 0 has chunks |
@@ -574,8 +586,14 @@ None from disk. Parameters come from `--preset` (`smoke`, 64 x 208 x 208; `pilot
 | `cracks`, `crack_len`, `crack_w`, `crack_depth` | 0, 24, 0.6, 0.95 | cracks per 10,000 square voxels of sheet face (0 off), length, half width (sigma) and the share of density removed on the line |
 | `bubbles`, `bubble_r` | 0, 1.2 | share of 6^3 cells holding a void in the sheet (0 off) and its radius (sigma) |
 | `ply_var`, `ply_var_len` | 0, 120 | sd of each ply's smooth density gain (0 off, at most 0.9) and its correlation length |
+| `ink_um`, `ink_depth_um` | 0, 0 | ink deposit on the recto face and the depth inside it the ink reaches, micrometers (converted with `voxel_um`); either above 0 turns ink on. Parker et al. 2019 measured 3 to 5 um and 4 to 12 um more |
+| `ink_rho`, `ink_tex` | 0, 0 | ink density relative to the papyrus (the deposit is 1 + `ink_rho` of a ply's peak; inside the face the density is scaled by 1 + `ink_rho`; above -1), and the share of the recto fiber texture replaced by a fine grain inside the face (0 to 1) |
+| `ink_off` | 0 | 1 is the noink twin (`--noink`): ink truth written, nothing painted |
+| `ink_letter`, `ink_advance`, `ink_line` | 40, 0.8, 64 | letter height (voxels), letter advance as a share of it, line pitch in z (voxels) |
+| `ink_col`, `ink_gap`, `ink_margin` | 1024, 192, 48 | column width and the gap before each column along the sheet, top and bottom margin in z (voxels) |
+| `ink_space`, `ink_stroke`, `ink_glyphs` | 0.18, 0.12, `auto` | share of blank places, stroke width of procedural glyphs (share of the letter height), and the glyphs: `auto` (DejaVu Sans when found, else strokes), `font` or `strokes` |
 
-The defaults are set for about 8 um per voxel; they are not a calibration.
+The defaults are set for about 8 um per voxel; they are not a calibration. The ink layout keys are lengths in voxels like the sheet's; only `ink_um` and `ink_depth_um` are micrometers.
 
 CT scan model keys (all off at the defaults):
 
@@ -608,6 +626,8 @@ Scan presets (a starting point, not a calibration):
 - `OUT/truth/uvw.zarr` (with `--truth uvw`): float32 arrays `u`, `v`, `w`, level 0 only, NaN in air, voxels: `u` the arc length along the sheet from its inner end (as the surfaces' s), `v` the height in the rolled frame, `w` the signed offset from the winding's center surface along the rolled radius, positive on the recto (inner) side, where `surface(which="recto")` lies.
 - `OUT/truth/surfaces/spiral-center/` and `spiral-recto/` (with `--surfaces`): tifxyz (`x.tif`, `y.tif`, `z.tif`, `meta.json`) and `winding.npy`.
 - `OUT/truth/make-key.json` and `OUT/truth/done.txt`: what `--resume` checks and the blocks already written.
+- `OUT/truth/ink.zarr/0` (ink on): uint8, 1 for every voxel the ink reaches (deposit or absorbed zone) where the page is inked. `publish` copies it with the labels.
+- `ink.tif` in `spiral-recto/` and `spiral-center/` (ink on, with `--surfaces`): uint8 on the vertex grid of the recto surface, 1 where the surface point is inked; `vc3d` copies it with the segments.
 
 | Field | Type | Meaning |
 | --- | --- | --- |
@@ -621,6 +641,8 @@ Scan presets (a starting point, not a calibration):
 | `center_line` | list | (x, y, z) points of the roll's axis in the output frame (in `truth.json` only) |
 | `render` | object | blocks, blocks done, air blocks, `stopped` (`deadline`, `max_blocks` or null), seconds per phase, `peak_rss_mb`, `verified` |
 | `surface_residual_vox` | float | worst surface round-trip error (with `--surfaces`) |
+| `ink` | object | `{"on": false}` when ink is off; else `painted` (false for the noink twin), `twin`, the `ink_*` params, `thickness_vox`, `depth_vox`, `glyphs` and `atlas_sha256`, `lines_per_column`, `places_per_line`, `pattern_share` (share of the sheet's area inked, from about a million random sheet points), `pattern_cover_mean`, `source`, `note` |
+| `ink_surface_share` | float | share of valid recto surface points inked (ink on, with `--surfaces`) |
 
 | Exit code | Meaning |
 | --- | --- |
@@ -647,7 +669,7 @@ Scan presets (a starting point, not a calibration):
 | `--order is zyx or middle` | unknown order | use one of the two |
 | `unknown preset...; known:...` | unknown `--preset` | use `smoke` or `pilot` |
 | `unknown parameter...` | unknown `--set` key | see Inputs |
-| `...is 0 or more` | a negative scan-model or sheet-physics value | set 0 or more |
+| `...is 0 or more` | a negative scan-model, sheet-physics or ink value | set 0 or more |
 | `...is above 0` | `voxel_um`, `energy_kev` or `db_object` at 0 or below | give a positive value |
 | `unknown scan preset...; known:...` | unknown `--scan` | use `synchrotron` or `lab` |
 | `cupping lies in 0 to below 1` | cupping of 1 or more | set below 1 |
@@ -668,6 +690,15 @@ Scan presets (a starting point, not a calibration):
 | `crack_len lies in 4 to 256`, `crack_w lies above 0 and at most crack_len / 8`, `crack_depth lies in 0 to 1` | a crack value out of range | set it in range |
 | `cracks is at most 10000 / (2 crack_len)^2 ...` | more cracks than cells of twice their length | lower `cracks` or `crack_len` |
 | `ply_var lies in 0 to 0.9`, `ply_var_len is 16 voxels or more` | a ply variation out of range | set it in range |
+| `ink_tex lies in 0 to 1` | texture share out of range | set 0 to 1 |
+| `ink_rho is above -1` | the ink would have no or negative density | set above -1 |
+| `ink_off is 0 or 1` | bad twin flag | set 0 or 1, or use `--noink` |
+| `ink_letter is 4 voxels or more and ink_advance above 0` | letters too small to draw | raise them |
+| `ink_line is ink_letter or more` | lines would overlap | raise `ink_line` |
+| `ink_col holds at least one letter` | column narrower than one letter advance | widen `ink_col` |
+| `ink_space lies in 0 to below 1` | every place would be blank | set below 1 |
+| `ink_glyphs is auto, font or strokes` | unknown glyph source | use one of the three |
+| `ink_glyphs font needs Pillow and the DejaVu Sans font` | `font` asked for and the font was not found | install Pillow and DejaVu Sans, or use `auto` or `strokes` |
 | `the box holds less than two windings; raise shape or lower pitch` | box too small for the spiral | raise `shape` or lower `pitch` |
 | `...was made with other parameters, block, chunk, levels, code or truth volumes; resume needs the same` | `--resume` with other settings, code or `--truth` | resume with the same settings, or start a new folder |
 | `...: chunks missing after the pyramid:...` | a pyramid write was lost | run `pyramid OUT` |
@@ -701,7 +732,8 @@ Scan presets (a starting point, not a calibration):
    - *Cupping.* On a coarse grid (64 x 8 x 8 voxels) the sheet density is sampled, and for each point the line integral of density along rays through it is averaged over 24 angles in the slice; divided by its largest value, that field times `cupping` scales the sheet contrast down.
    - *Slabs and rings.* Slab k holds z from k x `slab_z`; it has its own gain and ring profile (radius from `axis_yx`), and slab 0's rings are the release-1 rings.
    - *Texture library.* The library's tiles lie on a global grid with half overlap; each cube is weighted by a periodic Hann window, whose half-overlapping shifts sum to 1, and a hash of the tile's grid position and the seed picks it.
-5. **Blocks.** `make` splits the volume into blocks (`--block`, a multiple of `--chunk`), renders each with a halo of about four filter widths, skips blocks no sheet can reach, writes level 0 in parallel and checks each chunk file landed, appends the block to `done.txt`, then builds the pyramid by 2 x 2 x 2 means and verifies it. A deadline in `KIT_JOB_DEADLINE` (epoch seconds) stops new blocks once less than `KIT_JOB_SPARE_S` (default 180 s) is left.
+5. **Ink** (when on). For each winding near a voxel, the page coverage at the winding's arc length and z (bilinear in the glyph atlas) scales the deposit and the absorbed zone; each one's share of the voxel comes from where the voxel center sits relative to the recto face (the ply's half maximum on its inner side) and the voxel's extent along the sheet normal after the crush. Only voxels the layer reaches look up the page. The 3D truth marks the voxels the layer reaches where coverage is 0.5 or more; `ink.tif` applies the same rule at the recto surface's vertices. Cupping is computed without the ink, so the twin and the inked scroll share every scan field.
+6. **Blocks.** `make` splits the volume into blocks (`--block`, a multiple of `--chunk`), renders each with a halo of about four filter widths, skips blocks no sheet can reach, writes level 0 in parallel and checks each chunk file landed, appends the block to `done.txt`, then builds the pyramid by 2 x 2 x 2 means and verifies it. A deadline in `KIT_JOB_DEADLINE` (epoch seconds) stops new blocks once less than `KIT_JOB_SPARE_S` (default 180 s) is left.
 6. **Sheet physics (stage S3).** Built once per scroll in `Scroll2._physics_build`, before any lookup, from the seed's own streams (`[seed, 41]` ripple, `[seed, 42]` joins, `[seed, 43]` ply gains) or from position hashes with their own salts (`PHYS_SALT`), so no earlier field moves.
    - *Ripple.* A random field on (along sheet, z) filtered by a difference of Gaussians, G(s) minus G(2 s) with s = 0.153 `wave_len`, so its spectrum peaks at `wave_len`; scaled to rms `wave_amp` and added to the radius grid. The z grid's step is 8 voxels, which is why `wave_len` is at least 32. Each turn is then kept outside the turn before by 0.75 of the contact spacing for the two windings' thicknesses (the base model's floor), so the binary turn search stays exact. Arc length `s` stays that of the unrippled sheet, so textures do not move.
    - *Kolleseis.* Join positions along the sheet start at a random offset and step by `kolle_every` times 1 plus a uniform jitter; each overlap is `kolle_len` long, jittered the same way. The thickness grid is multiplied by `kolle_thick` inside overlaps, for the whole height of the roll, so plies spread apart and widen, the label band widens with them, and the recto surface follows. The joins run parallel to the roll's axis.
@@ -729,18 +761,20 @@ Scan presets (a starting point, not a calibration):
 - **Parse:** the one JSON line on stdout: `complete`, `turns`, `render.blocks_done`, `render.stopped`, `render.verified.ok`, `surface_residual_vox`. Progress lines `PROGRESS n/N blocks` go to stderr.
 - **Rerun:** `make` never overwrites; rerun with `--resume` and the same settings to finish a stopped run. `verify` is read-only. `pyramid` rewrites levels 1 and up.
 - **Success:** exit 0 and `complete` true with `render.verified.ok` true. Exit 75 means stopped early: resume it.
+- **Ink:** `make OUT --set ink_um=4 --set ink_depth_um=8 --set ink_rho=0.1 --surfaces` and the same with `--noink` into another folder make a paired set; score against `OUT/truth/ink.zarr` or `ink.tif`, and report the twin's score beside it.
 - **Not a pass:** a tracer or ink score on a ScrollSim v2 volume is not evidence about any real scroll, and a method ranking on it is not a real ranking until the calibration in "Realism: in progress" passes.
 - **Go-ahead:** nothing for a local CPU run; a rented run follows hard rule 11.
-- **Never:** call its output real CT, mix its volumes into real training or test data unlabeled, or describe an ink map on it as a reading.
+- **Never:** call its output real CT, mix its volumes into real training or test data unlabeled, describe an ink map on it as a reading, or claim its ink looks like real ink.
 
 Stage registry: no stage option. The registry's stages read a real scroll; ScrollSim v2 makes test inputs for them rather than running as one.
 
 ## Tests
 
-`python -m unittest tests.test_scrollsim2 -v` (about 7 minutes on 4 cores; skips without numpy and scipy, and the make tests skip without zarr). Covered: lookup equality, determinism, parameter refusals, the narrow fixed-axis box, position-hashed noise, block independence, air skipping, make and its pyramid, stop and resume, deadline stop, lost-chunk detection and repair, publish, estimate, the worker cap and BLAS threads; the truth extras (label pyramid rule, contact share, u, v and w signs and bounds, their block independence, `--truth` on the command line and its resume check); the sheet physics (defaults off and refusals, the ripple's short-scale power with exact lookup and surfaces, thicker joins, gap debris without labels, cracks, bubbles and ply variation, block independence with every feature on); the scan model (presets and refusals, block independence with every part on, phase against an exact FFT filter, phase edges by retrieval mismatch, noise measured and fitted back, cupping, slabs and rings, make with the scan model and the `nps` command), the texture library (build, refusals, the residual it adds, block independence) and the realism statistics (determinism, distances, the spread judgment, resampling, the three commands), all on synthetic inputs. Not covered: the `pilot` preset at full size, a `make` run with a library, and any realism of the volumes against real CT.
+`python -m unittest tests.test_scrollsim2 -v` (about 7 minutes on 4 cores; skips without numpy and scipy, and the make tests skip without zarr). Covered: lookup equality, determinism, parameter refusals, the narrow fixed-axis box, position-hashed noise, block independence, air skipping, make and its pyramid, stop and resume, deadline stop, lost-chunk detection and repair, publish, estimate, the worker cap and BLAS threads; the truth extras (label pyramid rule, contact share, u, v and w signs and bounds, their block independence, `--truth` on the command line and its resume check); the sheet physics (defaults off and refusals, the ripple's short-scale power with exact lookup and surfaces, thicker joins, gap debris without labels, cracks, bubbles and ply variation, block independence with every feature on); the scan model (presets and refusals, block independence with every part on, phase against an exact FFT filter, phase edges by retrieval mismatch, noise measured and fitted back, cupping, slabs and rings, make with the scan model and the `nps` command), the texture library (build, refusals, the residual it adds, block independence) and the realism statistics (determinism, distances, the spread judgment, resampling, the three commands), all on synthetic inputs. ; ink off by default and its refusals, the partial-volume share, inked voxels at the recto face, the gray excess against the ink's mass, the noink twin, `ink.tif` against the 3D truth and the inked shares, and block independence with ink on. Not covered: the `pilot` preset at full size, ink at full scale, the `font` refusal on a machine without the font, a `make` run with a library, and any realism of the volumes against real CT.
 
 ## History
 
+- 2026-11-18: ink writer, off by default: Greek capitals on the recto face as a thin deposit with a density and texture change, exact 3D ink truth (`truth/ink.zarr`) and per-surface `ink.tif`, the noink twin (`--noink`), the inked share in `truth.json` (`dfa397b`).
 - 2026-11-18: sheet physics (stage S3), all off by default: short-scale waviness, kolleseis, gap debris (inclusions, strands, dust), cracks, carbonization bubbles and density variation between plies (`ec921ac`).
 - 2026-11-18: richer truth: a label pyramid beside the CT pyramid (most common nonzero label per cell), and `make --truth contact,uvw` for a contact map and material coordinates (u, v, w) written block by block with the CT; the CT and label level 0 at the defaults are unchanged (`3f7dc8c`).
 - 2026-11-18: texture library (`library`, the `library` and `lib_gain` parameters) and label-free realism statistics (`g1`, `g1-compare`); off by default, so earlier renders are unchanged (`d2a7727`).

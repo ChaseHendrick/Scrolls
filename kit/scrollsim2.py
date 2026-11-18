@@ -26,13 +26,16 @@ What it adds for a whole scroll:
   global grid of Hann-blended tiles, and label-free realism statistics (`g1`, `g1-compare`) that compare a crop of
   simulated CT with crops of real CT.
 
-Ink is off in this release. It is a simulator: a score on its volumes is model output on synthetic data and says
-nothing about a real scroll. It is not yet calibrated against real CT (see "Realism: in progress" on the tool page).
+An ink writer (off by default; the ink_* parameters) puts text-like Greek capitals on the recto face as a thin
+deposit with a weak density and texture change, and writes exact 3D and per-surface ink truth; `--noink` makes the
+twin without the ink. It is a simulator: a score on its volumes is model output on synthetic data and says nothing
+about a real scroll. It is not yet calibrated against real CT or real ink (see "Realism: in progress" on the tool
+page).
 
   python -m kit.scrollsim2 make OUT [--preset smoke|pilot] [--scan synchrotron|lab] [--set KEY=VALUE ...]
                                      [--workers N] [--block B]
                                      [--levels L] [--chunk C] [--surfaces] [--resume] [--max-blocks N]
-                                     [--truth contact,uvw]
+                                     [--truth contact,uvw] [--noink]
   python -m kit.scrollsim2 estimate [--preset ...] [--set ...] [--workers N] [--block B] [--sample K]
   python -m kit.scrollsim2 pyramid OUT [--workers N]     rebuild CT and label levels 1 and up, then verify
   python -m kit.scrollsim2 verify OUT                    every CT chunk on disk, no '.partial' temp file
@@ -138,6 +141,24 @@ EXTRA = {
     "bubble_r": 1.2,       # bubble radius (Gaussian sigma), voxels
     "ply_var": 0.0,        # sd of each ply's smooth density variation (recto and verso independent); 0 off
     "ply_var_len": 120.0,  # its correlation length along the sheet and z, voxels
+    # Ink writer ("Ink writer" on the tool page). Off at the defaults (ink_um and ink_depth_um 0), so the CT and
+    # labels are unchanged. Thicknesses are in micrometers (converted with voxel_um, in the rolled frame like the sheet); the
+    # page layout is in voxels along the sheet (arc length s) and z, like the other geometry lengths.
+    "ink_um": 0.0,         # ink deposit on the recto face, um; Parker et al. 2019 measured 3 to 5 um
+    "ink_depth_um": 0.0,   # depth inside the recto face the ink reaches, um; Parker et al. 2019: 4 to 12 um more
+    "ink_rho": 0.0,        # ink density relative to the papyrus (deposit: 1 + ink_rho of a ply's peak; inside the
+                           # face the papyrus density times 1 + ink_rho); above -1
+    "ink_tex": 0.0,        # share of the recto fiber texture replaced by a fine isotropic grain within ink_depth_um
+    "ink_off": 0,          # 1: the noink twin (ink truth written, nothing painted into the CT)
+    "ink_letter": 40.0,    # letter height, voxels (an assumption, set so a test box holds whole letters)
+    "ink_advance": 0.8,    # letter advance along the sheet, as a share of the letter height
+    "ink_line": 64.0,      # line pitch in z, voxels
+    "ink_col": 1024.0,     # column width along the sheet, voxels
+    "ink_gap": 192.0,      # gap between columns (and before the first), voxels
+    "ink_margin": 48.0,    # top and bottom margin in z, voxels
+    "ink_space": 0.18,     # share of letter places left blank (word spaces)
+    "ink_stroke": 0.12,    # stroke width of the procedural glyphs, share of the letter height
+    "ink_glyphs": "auto",  # auto (DejaVu Sans Greek capitals via Pillow when found, else strokes), font or strokes
 }
 DEFAULTS = dict(json.loads(json.dumps(BASE)), **EXTRA)
 PRESETS = {
@@ -224,6 +245,7 @@ def params(over=None, preset=None):
     _check_scan(p)
     _check_library(p)
     _check_physics(p)
+    _check_ink(p)
     if int(p["supersample"]) < 1:
         raise SimError("supersample is 1 or more")
     for k in ("psf_z", "psf_xy", "noise_corr", "edge"):
@@ -327,6 +349,34 @@ def _u01(np, h, k):
         x = _mix64(np, h + np.uint64(k) * np.uint64(0xD1B54A32D192ED03))
     return (x >> np.uint64(11)).astype(np.float64) / 9007199254740992.0
 # ------------------------------------------------------------------------------------------------ end sheet physics
+
+
+def _check_ink(p):
+    """Refuse ink-writer values out of range."""
+    for k in ("ink_um", "ink_depth_um", "ink_tex", "ink_gap", "ink_margin", "ink_stroke"):
+        if float(p[k]) < 0:
+            raise SimError(f"{k} is 0 or more")
+    if float(p["ink_tex"]) > 1:
+        raise SimError("ink_tex lies in 0 to 1")
+    if float(p["ink_rho"]) <= -1:
+        raise SimError("ink_rho is above -1")
+    if int(p["ink_off"]) not in (0, 1):
+        raise SimError("ink_off is 0 or 1")
+    if float(p["ink_letter"]) < 4 or float(p["ink_advance"]) <= 0:
+        raise SimError("ink_letter is 4 voxels or more and ink_advance above 0")
+    if float(p["ink_line"]) < float(p["ink_letter"]):
+        raise SimError("ink_line is ink_letter or more")
+    if float(p["ink_col"]) < float(p["ink_letter"]) * float(p["ink_advance"]):
+        raise SimError("ink_col holds at least one letter")
+    if not 0 <= float(p["ink_space"]) < 1:
+        raise SimError("ink_space lies in 0 to below 1")
+    if p["ink_glyphs"] not in ("auto", "font", "strokes"):
+        raise SimError("ink_glyphs is auto, font or strokes")
+
+
+def noink(over=None):
+    """The noink twin of OVER: the same parameters with the ink left out of the CT (its truth is still written)."""
+    return dict(over or {}, ink_off=1)
 
 
 def _base_params(p):
@@ -635,6 +685,107 @@ def scan_report(p):
             "axis_yx": p["axis_yx"] or None}
 
 
+# ------------------------------------------------------------------ ink writer (off by default)
+# Carbon ink on the recto face: a thin deposit outside the face, a zone just inside it with a density change and a
+# grain texture, and an exact truth of both. The physics follows Parker et al., "From invisibility to readability:
+# Recovering the ink of Herculaneum", PLoS ONE 14(5): e0215775 (2019),
+# https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0215775 (read 2026-11-18): the ink layer is 3 to
+# 5 um thick, absorption adds 4 to 12 um of depth, and x-rays pass through the carbon ink and carbonized papyrus in
+# almost exactly the same way. The layout numbers (letter size, lines, columns) are assumptions, not measurements.
+INK_GREEK = "".join(chr(c) for c in range(0x391, 0x3AA) if c != 0x3A2)   # the 24 Greek capitals
+INK_PX = 48                    # glyph atlas cell height, pixels
+INK_SALT = 300                 # hash salt of the page layout (300 the letter, 301 the line length)
+INK_FONTS = ("DejaVuSans.ttf", "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+             "/usr/share/fonts/TTF/DejaVuSans.ttf", "/usr/share/fonts/dejavu/DejaVuSans.ttf",
+             "/Library/Fonts/DejaVuSans.ttf", "/opt/homebrew/share/fonts/DejaVuSans.ttf")
+INK_SHARE_SAMPLES = 1 << 20    # random sheet points behind the recorded pattern share
+
+
+def _font_glyphs(np, H, W):
+    """Greek capitals in DejaVu Sans, rendered by Pillow at 4x and box-filtered to coverage; None when unavailable."""
+    try:
+        from PIL import Image, ImageDraw, ImageFont
+    except ImportError:
+        return None
+    font = None
+    for path in INK_FONTS:
+        try:
+            font = ImageFont.truetype(path, 100)
+            break
+        except OSError:
+            continue
+    if font is None:
+        return None
+    S = 4 * H
+    b = font.getbbox("Η")                     # the cap height of Eta sets the size: caps fill 70 percent
+    size = max(4, int(round(100 * 0.7 * S / max(1, b[3] - b[1]))))
+    font = ImageFont.truetype(font.path, size)
+    base = int(round(0.85 * S))
+    out = np.zeros((len(INK_GREEK), H, W), np.float32)
+    for g, ch in enumerate(INK_GREEK):
+        im = Image.new("L", (S, S), 0)
+        d = ImageDraw.Draw(im)
+        x0, _, x1, _ = d.textbbox((0, base), ch, font=font, anchor="ls")
+        d.text(((S - (x1 - x0)) / 2 - x0, base), ch, font=font, fill=255, anchor="ls")
+        out[g] = np.asarray(im.resize((W, H), Image.BOX), np.float32) / 255.0
+    return out
+
+
+def _stroke_glyphs(np, H, W, stroke):
+    """Procedural letter-like glyphs: two to four straight strokes between points of a 3 x 3 grid, a fixed alphabet."""
+    k = 4
+    yy, xx = np.mgrid[0:H * k, 0:W * k]
+    py = (yy + 0.5) / (H * k)
+    px = (xx + 0.5) / (W * k)
+    anchors = [(y, x) for y in (0.15, 0.5, 0.85) for x in (0.15, 0.5, 0.85)]
+    out = np.zeros((len(INK_GREEK), H, W), np.float32)
+    for g in range(len(INK_GREEK)):
+        rng = np.random.default_rng([INK_SALT, g])
+        dist = np.full(py.shape, np.inf)
+        for _ in range(2 + g % 3):
+            i, j = rng.choice(len(anchors), 2, replace=False)
+            (ay, ax), (by, bx) = anchors[i], anchors[j]
+            ay, by = ay * H, by * H                    # in letter-height units (pixels of H)
+            ax, bx = ax * W, bx * W
+            qy, qx = py * H, px * W
+            vy, vx = by - ay, bx - ax
+            t = np.clip(((qy - ay) * vy + (qx - ax) * vx) / (vy * vy + vx * vx), 0, 1)
+            dist = np.minimum(dist, np.hypot(qy - ay - t * vy, qx - ax - t * vx))
+        hit = (dist <= 0.5 * float(stroke) * H).astype(np.float32)
+        out[g] = hit.reshape(H, k, W, k).mean((1, 3))
+    return out
+
+
+def ink_glyphs(mode="auto", advance=0.8, stroke=0.12):
+    """The glyph atlas, float32 (24, INK_PX, W) coverage in 0 to 1 with W = advance * INK_PX, and its source:
+    'font:DejaVuSans' or 'strokes'. MODE auto takes the font when Pillow finds it; font refuses without it."""
+    np = _np()
+    H = INK_PX
+    W = max(4, int(round(float(advance) * H)))
+    if mode in ("auto", "font"):
+        a = _font_glyphs(np, H, W)
+        if a is not None:
+            return a, "font:DejaVuSans"
+        if mode == "font":
+            raise SimError("ink_glyphs font needs Pillow and the DejaVu Sans font")
+    return _stroke_glyphs(np, H, W, stroke), "strokes"
+
+
+def _box2_cdf(np, x, a, b):
+    """CDF at X of the sum of two centered uniform variables of widths A and B: a voxel's extent along a direction
+    that is the sum of two of its edges' projections."""
+    a, b = np.maximum(a, b), np.maximum(np.minimum(a, b), 1e-9)
+    t = x + 0.5 * (a + b)
+    return np.where(t <= 0, 0.0, np.where(t <= b, t * t / (2 * a * b), np.where(
+        t <= a, (t - 0.5 * b) / a, np.where(t < a + b, 1 - (a + b - t) ** 2 / (2 * a * b), 1.0))))
+
+
+def ink_share(np, d, lo, hi, a, b):
+    """Share of a voxel centered at normal coordinate D whose extent along the normal is a box of width A plus one of
+    width B, that lies in the slab [LO, HI]: the exact partial volume of a flat layer across a parallelepiped."""
+    return _box2_cdf(np, hi - d, a, b) - _box2_cdf(np, lo - d, a, b)
+
+
 class Roll:
     """The geometry and the truth of one rolled, pressed and crushed sheet, rebuilt exactly from its parameters.
     Every random field comes from the seed in a fixed order, so the same parameters give the same scroll."""
@@ -900,6 +1051,8 @@ class Scroll2(Roll):
         self.cl = self.center_line()
         self.r_outer = float(np.nanmax(np.where(np.isfinite(self.R[:self.n_end]), self.R[:self.n_end], np.nan)))
         self.r_inner = float(np.nanmin(self.R[:self.n_end]))
+        self._inkc = None
+        self.ink_on = float(p["ink_um"]) > 0 or float(p["ink_depth_um"]) > 0     # the ink writer (off by default)
 
     def at(self, grid, theta, z):
         """Roll's lookup without its per-call float64 copy of the whole grid (about 40 million values per
@@ -978,14 +1131,17 @@ class Scroll2(Roll):
             act = hi - lo > 1
         return rho, phi, z, lo
 
-    def voxels(self, out):
-        """As Roll.voxels_all_turns (density, label as turn index, its theta), then an all-false placeholder for
-        3D ink truth (ink is off), and the distance to the nearest winding center (voxels, inf outside the roll)."""
+    def voxels(self, out, width=1.0, ink=True):
+        """As Roll.voxels_all_turns (density, label as turn index, its theta), then the 3D ink truth (all false when
+        ink is off), and the distance to the nearest winding center (voxels, inf outside the roll). WIDTH is the edge
+        of the cube each point stands for (output voxels), for the ink's partial volume; INK false leaves ink out."""
         np = _np()
         p = self.p
         rolled = self.rolled(out)
         rho, phi, z, j = self.locate_turn(rolled)
         N = len(rho)
+        inked = np.zeros(N, bool)
+        ik = self._ink_ctx(phi, width) if (ink and self.ink_on) else None
         dens = np.zeros(N, np.float64)
         best = np.full(N, np.inf)
         near_any = np.full(N, np.inf)
@@ -1015,6 +1171,9 @@ class Scroll2(Roll):
             if self._crack_p > 0 or self._ply is not None:   # sheet physics: cracks and ply variation, labels kept
                 gr, gv = self._sheet_gains(s, z, ok & (np.abs(d) < half + 4 * sig))
                 recto, verso = recto * gr, verso * gv
+            if ik is not None:                                  # the ink writer
+                recto, hit = self._ink_apply(ik, ok, d, half, sig, s, z, hole, tr, recto, dens)
+                inked |= hit
             dens += np.where(ok, amp * (recto + verso), 0)
             band = np.abs(d) <= half + HALFMAX * sig
             near = ok & band & (np.abs(d) < best)
@@ -1022,7 +1181,7 @@ class Scroll2(Roll):
             lab = np.where(near, kk, lab)
             near_any = np.minimum(near_any, np.abs(d))
         theta = phi + 2 * math.pi * np.clip(lab, 0, self.max_k)
-        return dens, lab, theta, np.zeros(N, bool), near_any
+        return dens, lab, theta, inked, near_any
 
     def block_is_air(self, z0, z1, y0, y1, x0, x1, step=8):
         """True when no sheet can reach the box: every sampled rolled radius lies beyond the outermost winding (or
@@ -1086,7 +1245,7 @@ class Scroll2(Roll):
                 pts = np.stack([Xg.ravel(), Yg.ravel(), Zg.ravel()], 1)
                 d = np.zeros(len(pts))
                 for a in range(0, len(pts), POINTS_PER_PASS):
-                    d[a:a + POINTS_PER_PASS] = self.voxels(pts[a:a + POINTS_PER_PASS])[0]
+                    d[a:a + POINTS_PER_PASS] = self.voxels(pts[a:a + POINTS_PER_PASS], ink=False)[0]
                 occ += np.clip(d, 0, 1.6).reshape(occ.shape) / 4.0
         D = int(math.ceil(math.hypot(ny, nx))) + 2
         py, px = (D - ny) // 2, (D - nx) // 2
@@ -1148,7 +1307,8 @@ class Scroll2(Roll):
         return self._bias
 
     def density_block(self, z0, z1, y0, y1, x0, x1):
-        """Density, winding labels (id + 1, 0 none) and distance to the nearest winding on a box, no scan model."""
+        """Density, winding labels (id + 1, 0 none), distance to the nearest winding and the 3D ink truth (bool) on a
+        box, no scan model."""
         np = _np()
         shape = (z1 - z0, y1 - y0, x1 - x0)
         n = int(self.p2["supersample"])
@@ -1160,10 +1320,12 @@ class Scroll2(Roll):
         dens = np.zeros(N, np.float32)
         labels = np.zeros(N, np.uint16)
         near = np.zeros(N, np.float32)
+        inkv = np.zeros(N, bool)
         offs = (np.arange(n) + 0.5) / n - 0.5
         for a in range(0, N, POINTS_PER_PASS):           # bounded memory: about 1 GB per pass at most
             c = cen[a:a + POINTS_PER_PASS]
-            d0, lab, th, _, nr = self.voxels(c)
+            d0, lab, th, ik, nr = self.voxels(c)
+            inkv[a:a + len(c)] = ik
             wid = self.winding_id(th, c[:, :2], self.cl, c[:, 2])
             labels[a:a + len(c)] = np.where(lab >= 0, wid + 1, 0)
             near[a:a + len(c)] = nr
@@ -1174,15 +1336,16 @@ class Scroll2(Roll):
                 for oz in offs:
                     for oy in offs:
                         for ox in offs:
-                            acc += self.voxels(c + np.array([ox, oy, oz]))[0]
+                            acc += self.voxels(c + np.array([ox, oy, oz]), width=1.0 / n)[0]
                 dens[a:a + len(c)] = acc / n ** 3
-        dens, labels, near = dens.reshape(shape), labels.reshape(shape), near.reshape(shape)
+        dens, labels, near, inkv = dens.reshape(shape), labels.reshape(shape), near.reshape(shape), inkv.reshape(shape)
         if self._phys_vox:                               # sheet physics: gap debris and bubbles, hashed by position
             dens = self._physics_voxels(dens, labels, near, z0, z1, y0, y1, x0, x1)
-        return dens, labels, near
+        return dens, labels, near, inkv
 
-    def scan_block(self, z0, z1, y0, y1, x0, x1, air=None):
-        """The CT (uint8) and labels of the box, rendered with a halo so no filter sees the block edge."""
+    def scan_block(self, z0, z1, y0, y1, x0, x1, air=None, with_ink=False):
+        """The CT (uint8) and labels of the box, rendered with a halo so no filter sees the block edge. WITH_INK adds
+        a fourth value, the 3D ink truth of the box (uint8, 1 inside the ink)."""
         np = _np()
         nd = _ndi()
         p = self.p2
@@ -1195,8 +1358,9 @@ class Scroll2(Roll):
             dens = np.zeros(shape, np.float32)
             labels = np.zeros(shape, np.uint16)
             near = np.full(shape, np.inf, np.float32)
+            inkv = np.zeros(shape, bool)
         else:
-            dens, labels, near = self.density_block(Z0, Z1, Y0, Y1, X0, X1)
+            dens, labels, near, inkv = self.density_block(Z0, Z1, Y0, Y1, X0, X1)
         v = float(p["air"]) + (float(p["bright"]) - float(p["air"])) * np.clip(dens, 0, 1.6)
         if float(p["cupping"]) > 0 and not air:
             c = self._coarse_at(self._cup_field(), Z0, Z1, Y0, Y1, X0, X1)
@@ -1243,6 +1407,8 @@ class Scroll2(Roll):
             v = v + np.float32(sd / nps_band_gain(j)) * band
         ct = np.clip(np.rint(v), 0, 255).astype(np.uint8)
         core = (slice(h, h + z1 - z0), slice(h, h + y1 - y0), slice(h, h + x1 - x0))
+        if with_ink:
+            return ct[core], labels[core], bool(air), inkv[core].astype(np.uint8)
         return ct[core], labels[core], bool(air)
 
     # ------------------------------------------------------------------ texture library
@@ -1554,6 +1720,156 @@ class Scroll2(Roll):
             dens = dens * np.where(labels > 0, 1 - void, np.float32(1))
         return dens.astype(np.float32)
     # ------------------------------------------------------------------ end sheet physics
+
+    # ------------------------------------------------------------------ ink writer (off by default)
+    def _ink(self):
+        """The ink model, built once per scroll from the parameters and the seed: the glyph atlas (padded by one
+        zero pixel), the layout numbers, the grain tile, and the thicknesses in voxels."""
+        if self._inkc is not None:
+            return self._inkc
+        np = _np()
+        p = self.p2
+        atlas, src = ink_glyphs(p["ink_glyphs"], p["ink_advance"], p["ink_stroke"])
+        um = float(p["voxel_um"])
+        L = float(p["ink_letter"])
+        cw = L * float(p["ink_advance"])
+        room = self.Z - 2 * float(p["ink_margin"])
+        c = {"atlas": np.pad(atlas, ((0, 0), (1, 1), (1, 1))), "source": src,
+             "atlas_sha256": hashlib.sha256(atlas.tobytes()).hexdigest(),
+             "th": float(p["ink_um"]) / um, "dep": float(p["ink_depth_um"]) / um,
+             "rho": float(p["ink_rho"]), "tex": float(p["ink_tex"]), "paint": int(p["ink_off"]) == 0,
+             "L": L, "cw": cw, "nslot": int(float(p["ink_col"]) // cw),
+             "nlines": int((room - L) // float(p["ink_line"])) + 1 if room >= L else 0, "grain": None}
+        if c["tex"] > 0:
+            rng = np.random.default_rng([int(p["seed"]), 17])
+            g = _ndi().gaussian_filter(rng.standard_normal((256, 256)).astype(np.float32), 0.8, mode="wrap")
+            c["grain"] = g / (g.std() + 1e-9)
+        self._inkc = c
+        return c
+
+    def ink_cover(self, s, z):
+        """Ink coverage, 0 to 1, of the page at sheet coordinates S (arc length, voxels) and rolled Z: columns of
+        lines of letters, each letter a glyph chosen by a hash of the seed, column, line and place (block independent,
+        no stored page), sampled bilinearly from the anti-aliased atlas."""
+        np = _np()
+        p = self.p2
+        c = self._ink()
+        A = c["atlas"]
+        s = np.asarray(s, np.float64)
+        z = np.asarray(z, np.float64)
+        L, cw = c["L"], c["cw"]
+        gap, period = float(p["ink_gap"]), float(p["ink_col"]) + float(p["ink_gap"])
+        u0 = s - gap
+        col = np.floor(u0 / period)
+        u = u0 - col * period
+        zz = z - float(p["ink_margin"])
+        line = np.floor(zz / float(p["ink_line"]))
+        v = zz - line * float(p["ink_line"])
+        place = np.floor(u / cw)
+        x = u - place * cw
+        ok = ((u0 >= 0) & (u < float(p["ink_col"])) & (place < c["nslot"]) & (line >= 0) & (line < c["nlines"])
+              & (v < L) & (s >= 0) & (s <= self.s_end))
+        ci = np.where(ok, col, 0).astype(np.int64)
+        li = np.where(ok, line, 0).astype(np.int64)
+        pi = np.where(ok, place, 0).astype(np.int64)
+        h = _hash3(np, p["seed"], INK_SALT, ci, li, pi)
+        hl = _hash3(np, p["seed"], INK_SALT + 1, ci, li, np.zeros_like(pi))
+        cut = (hl % np.uint64(c["nslot"] // 3 + 1)).astype(np.int64)            # a ragged right edge
+        blank = (h >> np.uint64(11)).astype(np.float64) / 9007199254740992.0 < float(p["ink_space"])
+        ok &= (pi < c["nslot"] - cut) & ~blank
+        g = (h % np.uint64(len(INK_GREEK))).astype(np.int64)
+        H, W = A.shape[1] - 2, A.shape[2] - 2
+        fy = np.clip(np.where(ok, v, 0) / L * H + 0.5, 0, H + 1 - 1e-6)
+        fx = np.clip(np.where(ok, x, 0) / cw * W + 0.5, 0, W + 1 - 1e-6)
+        i0, j0 = fy.astype(np.int64), fx.astype(np.int64)
+        a, b = fy - i0, fx - j0
+        n1 = A.shape[2]
+        k = (g * A.shape[1] + i0) * n1 + j0
+        f = A.ravel()
+        val = (1 - a) * ((1 - b) * f[k] + b * f[k + 1]) + a * ((1 - b) * f[k + n1] + b * f[k + n1 + 1])
+        return np.where(ok, val, 0.0)
+
+    def _ink_ctx(self, phi, width):
+        """Per point: the widths of the voxel's extent along the sheet normal (rolled frame), from the crush's
+        stretch of the output voxel's x and y edges; the smooth bend's small gradient is left out."""
+        np = _np()
+        s = float(self.p["squash"])
+        ca, sa = math.cos(self.alpha), math.sin(self.alpha)
+        cp, sp = np.cos(phi), np.sin(phi)
+        u = cp * ca + sp * sa
+        v = (-cp * sa + sp * ca) / s
+        return {"a": np.abs(u * ca - v * sa) * float(width), "b": np.abs(u * sa + v * ca) * float(width)}
+
+    def _ink_apply(self, ik, ok, d, half, sig, s, z, hole, tr, recto, dens):
+        """Paint one winding's ink into RECTO (returned) and DENS (in place), and return its truth. The recto face is
+        at d = -(half + HALFMAX sig), the ply's half maximum on its inner side; the deposit fills [face - th, face]
+        with density 1 + rho, and within [face, face + dep] the ply's density is scaled by 1 + rho and its fiber
+        texture is blended toward the grain by tex. Each share is the voxel's exact partial volume of the slab."""
+        np = _np()
+        c = self._ink()
+        face = -(half + HALFMAX * sig)
+        dd = np.where(ok, d, 1e9)
+        lo, hi = face - c["th"], face + c["dep"]
+        ext = 0.5 * (ik["a"] + ik["b"])
+        touch = np.flatnonzero(ok & ~hole & (dd - ext < hi) & (dd + ext > lo))     # voxels the slab reaches
+        cov = np.zeros(len(dd))
+        if len(touch):
+            cov[touch] = self.ink_cover(np.broadcast_to(s, dd.shape)[touch], np.broadcast_to(z, dd.shape)[touch])
+        hit = cov >= 0.5
+        if not c["paint"] or not len(touch):
+            return recto, hit
+        t = touch
+        a, b, dt, cv = ik["a"][t], ik["b"][t], dd[t], cov[t]
+        if c["th"] > 0:
+            dens[t] += cv * (1 + c["rho"]) * ink_share(np, dt, lo[t], face[t], a, b)
+        if c["dep"] > 0 and (c["rho"] != 0 or c["tex"] > 0):
+            f = cv * ink_share(np, dt, face[t], hi[t], a, b)
+            rt = recto[t]
+            if c["tex"] > 0:
+                gt = c["grain"]
+                zt, st = np.broadcast_to(z, dd.shape)[t], np.broadcast_to(s, dd.shape)[t]
+                gr = gt[np.mod(np.rint(zt).astype(np.int64), gt.shape[0]),
+                        np.mod(np.rint(st).astype(np.int64), gt.shape[1])]
+                m = c["tex"] * f
+                tx = (1 - m) * tr[t] + m * gr
+                rt = np.exp(-0.5 * ((d[t] + half[t]) / sig[t]) ** 2) * (1 + float(self.p["fiber"]) * tx)
+            recto = recto.copy()
+            recto[t] = rt * (1 + c["rho"] * f)
+        return recto, hit
+
+    def ink_surface(self, surf):
+        """Ink truth on a surface grid (as surface() returns it): uint8, 1 where the vertex is valid, not in a hole
+        and the page there is inked (coverage 0.5 or more)."""
+        np = _np()
+        TH, ZZ = surf["theta"], surf["z_rolled"]
+        cov = self.ink_cover(self.s_at(TH.ravel()), ZZ.ravel()).reshape(TH.shape)
+        hole = self.hole_at(TH.ravel(), ZZ.ravel()).reshape(TH.shape)
+        return (surf["valid"] & ~hole & (cov >= 0.5)).astype(np.uint8)
+
+    def ink_report(self):
+        """The ink record for truth.json: on or off, the twin flag, thicknesses in voxels, the layout, the glyph
+        source and its atlas hash, and the pattern share (share of the sheet's area inked, from random points)."""
+        if not self.ink_on:
+            return {"on": False}
+        np = _np()
+        p = self.p2
+        c = self._ink()
+        rng = np.random.default_rng([int(p["seed"]), 16])
+        s = rng.uniform(0, self.s_end, INK_SHARE_SAMPLES)
+        z = rng.uniform(0, self.Z - 1, INK_SHARE_SAMPLES)
+        cov = self.ink_cover(s, z)
+        return {"on": True, "painted": c["paint"], "twin": None if c["paint"] else "noink",
+                "params": {k: p[k] for k in p if k.startswith("ink_")},
+                "thickness_vox": round(c["th"], 4), "depth_vox": round(c["dep"], 4),
+                "glyphs": c["source"], "atlas_sha256": c["atlas_sha256"],
+                "lines_per_column": c["nlines"], "places_per_line": c["nslot"],
+                "pattern_share": round(float((cov >= 0.5).mean()), 5),
+                "pattern_cover_mean": round(float(cov.mean()), 5),
+                "source": "Parker et al., PLoS ONE 14(5): e0215775 (2019), "
+                          "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0215775: ink 3 to 5 um "
+                          "thick, absorbed 4 to 12 um deeper, x-ray attenuation almost that of carbonized papyrus",
+                "note": "Model output on synthetic data: a simple layer model, not calibrated against real ink, and "
+                        "no real ink reader has been shown to see it."}
 
 
 def truth_kinds(kinds):
@@ -1922,13 +2238,19 @@ def _work_level0(args):
     out, b = args
     import zarr
     t = time.time()
-    ct, labels, air = _SC.scan_block(*b)
+    if _SC.ink_on:
+        ct, labels, air, ink = _SC.scan_block(*b, with_ink=True)
+    else:
+        ct, labels, air = _SC.scan_block(*b)
     g = zarr.open_group(str(out / "ct.zarr"), mode="r+")
     _write_checked(out / "ct.zarr" / "0", g["0"], b, ct)
     lg = zarr.open_group(str(out / "truth" / "labels.zarr"), mode="r+")
     _write_checked(out / "truth" / "labels.zarr" / "0", lg["0"], b, labels)
     if _TRUTH:
         _write_truth_extras(out, b, air)
+    if _SC.ink_on:                                       # the ink writer's 3D truth
+        ig = zarr.open_group(str(out / "truth" / "ink.zarr"), mode="r+")
+        _write_checked(out / "truth" / "ink.zarr" / "0", ig["0"], b, ink)
     return air, time.time() - t
 
 
@@ -2089,6 +2411,9 @@ def publish(src, dst, levels=None, labels=True):
                  if (src / tr / "labels.zarr" / n).is_dir()]
         dirs += [d for d in (tr / "contact.zarr" / "0", *(tr / "uvw.zarr" / k for k in "uvw")) if (src / d).is_dir()]
         files += [tr / g / f for g in ("labels.zarr", "contact.zarr", "uvw.zarr") for f in (".zgroup", ".zattrs")]
+    if labels and (src / "truth" / "ink.zarr" / "0").is_dir():      # the ink writer's truth
+        dirs.append(Path("truth") / "ink.zarr" / "0")
+        files += [Path("truth") / "ink.zarr" / ".zgroup", Path("truth") / "ink.zarr" / ".zattrs"]
     copied = 0
     for d in dirs:
         (dst / d).mkdir(parents=True, exist_ok=True)
@@ -2368,6 +2693,10 @@ def _make_with(pool, sc, out, fresh, p, key, block, chunk, levels, workers, dead
     lg.create_array("0", shape=shapes[0], chunks=tuple(min(chunk, s) for s in shapes[0]), dtype="uint16", fill_value=0)
     _label_levels(out, chunk)
     _make_truth_arrays(out, key, shapes[0], chunk, p)
+    if sc.ink_on:                                        # the ink writer's 3D truth: 1 inside the ink
+        ig = zarr.open_group(str(out / "truth" / "ink.zarr"), mode="w", zarr_format=2)
+        ig.create_array("0", shape=shapes[0], chunks=tuple(min(chunk, s) for s in shapes[0]), dtype="uint8",
+                        fill_value=0)
     return _map_resume(pool, sc, out, shapes, blocks, done, workers, deadline, spare, max_blocks, progress, t0,
                        t_init, key, preset, surfaces, order)
 
@@ -2454,6 +2783,13 @@ def _map_resume(pool, sc, out, shapes, blocks, done, workers, deadline, spare, m
         write_surface(sd / "spiral-recto", rec, "spiral-recto")
         doc_s = {"surface_residual_vox": max(cen["residual"], rec["residual"]),
                  "seconds_surfaces": round(time.time() - t3, 1)}
+        if sc.ink_on:                                    # ink.tif: which recto surface points are inked
+            from . import vc3d_io
+            im = sc.ink_surface(rec)
+            for name in ("spiral-center", "spiral-recto"):
+                vc3d_io.write_tiff(sd / name / "ink.tif", vc3d_io.Raster(im.shape[0], im.shape[1], "u8",
+                                                                         im.tobytes()))
+            doc_s["ink_surface_share"] = round(float(im[rec["valid"]].mean()), 5) if rec["valid"].any() else None
     air = sum(1 for a, _ in res if a)
     busy = [s for a, s in res if not a]
     pressed = float((sc.press[ANG:sc.n_end] > 0.5).mean()) if sc.n_end > ANG else 0.0
@@ -2471,8 +2807,11 @@ def _map_resume(pool, sc, out, shapes, blocks, done, workers, deadline, spare, m
                       "seconds_per_sheet_block_mean": round(sum(busy) / len(busy), 3) if busy else None,
                       "deadline": deadline, "spare_s": spare, "verified": check,
                       "seconds": round(time.time() - t0, 1), "peak_rss_mb": _peak_rss_mb()},
+           "ink": sc.ink_report(),
            "note": "Synthetic volume (scrollsim2). Model output scored here is about this simulator, never a real "
-                   "scroll. Ink is off in this release."}
+                   "scroll. " + ("Ink is off (the ink_* parameters turn it on)." if not sc.ink_on else
+                                 "Its ink is a simple layer model, not calibrated against real ink." if not
+                                 int(sc.p2["ink_off"]) else "This is the noink twin: ink truth, no ink in the CT.")}
     doc.update(doc_s)
     (out / "truth.json").write_text(json.dumps(doc, indent=1) + "\n")
     return doc
@@ -2569,6 +2908,7 @@ def main(argv=None):
             a.add_argument("--max-blocks", type=int)
             a.add_argument("--order", choices=["zyx", "middle"], default="zyx")
             a.add_argument("--truth", default="", help="extra truth volumes, comma-separated: contact,uvw")
+            a.add_argument("--noink", action="store_true", help="the noink twin: ink truth only, no ink in the CT")
         else:
             a.add_argument("--sample", type=int, default=4)
         a.add_argument("--preset", choices=sorted(PRESETS))
@@ -2624,6 +2964,8 @@ def main(argv=None):
                 over["seed"] = args.seed
             if args.scan:
                 over["scan"] = args.scan
+            if args.cmd == "make" and args.noink:
+                over = noink(over)
             if args.cmd == "make":
                 doc = make(args.out, over, args.preset, args.workers, args.block, args.levels, args.chunk,
                            args.surfaces, progress=lambda m: print(m, file=sys.stderr, flush=True),
