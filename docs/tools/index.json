@@ -2349,6 +2349,150 @@
    ]
   },
   {
+   "id": "cpudiag",
+   "name": "cpudiag",
+   "tagline": "time a CPU flavor against a container, core by core",
+   "summary": "`kit.cpudiag` runs fixed CPU, memory-bandwidth, BLAS-thread, small-file I/O and scrollsim2 render benchmarks at several process counts, so a cloud CPU flavor can be compared with a known machine and CPU job estimates corrected.",
+   "status": "Current",
+   "kind": [
+    "kit entry point",
+    "kit module"
+   ],
+   "area": "Compute and cost",
+   "commands": [
+    "python -m kit.cpudiag run [--procs 1,8,32] [--kernels pyloop,compute,stream,blas] [--mount DIR] [--scrollsim2] [--out FILE]",
+    "python -m kit.cpudiag compare HERE.json THERE.json"
+   ],
+   "imports": [],
+   "code": [
+    {
+     "path": "kit/cpudiag.py",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_cpudiag.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed to run it; a run on rented machines follows hard rule 11"
+   },
+   "checked": {
+    "date": "2026-11-18",
+    "commit": "c2cb575"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`cpudiag`",
+    "Status": "Current",
+    "Kind": "kit entry point, kit module",
+    "Area": "Compute and cost",
+    "Run": "`python -m kit.cpudiag run [--procs 1,8,32] [--kernels pyloop,compute,stream,blas] [--mount DIR] [--scrollsim2] [--out FILE]`; `python -m kit.cpudiag compare HERE.json THERE.json`",
+    "Code": "`kit/cpudiag.py`",
+    "Tests": "`tests/test_cpudiag.py`",
+    "Needs": "Python 3.10 or newer and numpy (measured with 3.12 and 3.13, numpy 2.3.4); scipy and `kit/scrollsim2.py` for `--scrollsim2` only. Linux for the cgroup and lscpu facts (elsewhere they are null)",
+    "Runs on": "CPU anywhere. All kernels at 1 and 4 processes: about 40 s in a 4-core cloud container; `--scrollsim2` adds the pilot geometry (34 s there, 21 s on Hugging Face `cpu-performance`) and one block per process (5 to 21 s) (2026-11-18)",
+    "Network": "None",
+    "Writes": "`--out FILE` (saved after each phase); `--mount DIR`: a temporary folder of 32 files of 2 MB inside DIR, removed at the end",
+    "Go-ahead": "Not needed to run it; a run on rented machines follows hard rule 11",
+    "Released": "Public `main` from the PR that adds this page (2026-11-18), with [runlength](runlength.md)",
+    "Checked": "2026-11-18 against commit `c2cb575`"
+   },
+   "page": "docs/tools/cpudiag.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 22,
+     "end_line": 29,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 30,
+     "end_line": 39,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 40,
+     "end_line": 58,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 59,
+     "end_line": 64,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 65,
+     "end_line": 76,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 77,
+     "end_line": 98,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 99,
+     "end_line": 102,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 103,
+     "end_line": 120,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 121,
+     "end_line": 128,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 129,
+     "end_line": 132,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 133,
+     "end_line": 156,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 157,
+     "end_line": 168,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 169,
+     "end_line": 176,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 177,
+     "end_line": 180,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 181,
+     "end_line": 185,
+     "applicable": true
+    }
+   ]
+  },
+  {
    "id": "crackle-check",
    "name": "crackle-check",
    "tagline": "ask whether a small patch of a segment shows ink crackle, with a reversed-layer control",
@@ -12359,6 +12503,151 @@
      "name": "Related",
      "start_line": 270,
      "end_line": 276,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "runlength",
+   "name": "runlength",
+   "tagline": "how long a CPU job takes on a cloud CPU flavor",
+   "summary": "`python -m kit.runlength cpu` turns one task timed in a 4-core cloud container into the wall time and a timeout for a job on a measured cloud CPU flavor, from slowdown tables that [cpudiag](cpudiag.md) measured, instead of dividing core-seconds by vCPUs.",
+   "status": "Current",
+   "kind": [
+    "kit entry point",
+    "kit module"
+   ],
+   "area": "Compute and cost",
+   "commands": [
+    "python -m kit.runlength cpu"
+   ],
+   "imports": [
+    "from kit import runlength"
+   ],
+   "code": [
+    {
+     "path": "kit/runlength.py",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_runlength.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed"
+   },
+   "checked": {
+    "date": "2026-11-18",
+    "commit": "c2cb575"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`runlength`",
+    "Status": "Current",
+    "Kind": "kit entry point, kit module",
+    "Area": "Compute and cost",
+    "Run": "`python -m kit.runlength cpu`, `from kit import runlength`",
+    "Code": "`kit/runlength.py`",
+    "Tests": "`tests/test_runlength.py`",
+    "Needs": "Python 3.10 or newer; standard library only",
+    "Runs on": "Any machine; instant",
+    "Network": "None",
+    "Writes": "Nothing (prints only)",
+    "Go-ahead": "Not needed",
+    "Released": "Public `main` from the PR that adds this page (2026-11-18), the CPU estimate only, with [cpudiag](cpudiag.md)",
+    "Checked": "2026-11-18 against commit `c2cb575`"
+   },
+   "page": "docs/tools/runlength.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 22,
+     "end_line": 29,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 30,
+     "end_line": 39,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 40,
+     "end_line": 57,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 58,
+     "end_line": 65,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 66,
+     "end_line": 85,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 86,
+     "end_line": 99,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 100,
+     "end_line": 103,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 104,
+     "end_line": 112,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 113,
+     "end_line": 119,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 120,
+     "end_line": 123,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 124,
+     "end_line": 127,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 128,
+     "end_line": 137,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 138,
+     "end_line": 145,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 146,
+     "end_line": 149,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 150,
+     "end_line": 153,
      "applicable": true
     }
    ]

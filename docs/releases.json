@@ -114,7 +114,7 @@
       "line": "Command-line tools, benchmarks and script folders that run from a clone of this repository.",
       "area": "Releases and repository",
       "page": "docs/tools/cli.md",
-      "released": "2026-11-17",
+      "released": "2026-11-18",
       "summary": "Command-line tools, benchmarks and script folders that run from a clone of this repository. Each line gives the tool's release date, its weights where it has them, one command to start with, its tool page and its evidence; each page lists the tool's own needs. Their outputs are model output or geometry measurements for a person to check, not readings.",
       "commands": [
         "git clone --depth 1 https://github.com/ChaseHendrick/Scrolls.git",
@@ -827,6 +827,30 @@
           "summary": "Links thinned sheets in single z slices of the m7 surface prediction into chains; every chain that winds a full turn votes by whether its radius grows going round, and each slice also runs mirrored with its votes added flipped. Run blind on 12 scrolls with a catalog direction under a rule fixed beforehand (Model output): 9 of 9 decided right, none wrong, 3 abstained (one-sided p 0.0020); 7 of the 12 were reused truth, so not held out. CPU only, public data.",
           "command": "python3 scripts/spiralsense/slicechains.py --m7 URL --line LINE --voxel-um V --pitch P --z-edges Z0,Z1 --planes 400 --symmetric --out OUT.json",
           "page": "docs/tools/slicechains.md"
+        },
+        {
+          "id": "cpudiag",
+          "name": "cpudiag: time a CPU flavor against a container, core by core",
+          "released": "2026-11-18",
+          "version": "1.0",
+          "summary": "Fixed pure-Python, numpy, STREAM-like triad, BLAS-thread, small-file I/O and scrollsim2 render benchmarks at several process counts, with P=1 and one-BLAS-thread controls, to tell per-core speed from contention. On Hugging Face cpu-performance (16 cores x 2 threads) memory bandwidth saturated near 68 GB/s from about 8 processes, so 8 to 16 workers rendered more scrollsim2 blocks per second than 32, and forked pools that inherited OMP_NUM_THREADS=32 ran BLAS 116 times slower (Sourced fact, 18 Nov 2026 evidence). Synthetic work only.",
+          "command": "python -m kit.cpudiag run --procs 1,4 --out HERE.json",
+          "page": "docs/tools/cpudiag.md",
+          "evidence": "[evidence](docs/evidence/2026-11-18-hf-cpu-diag/README.md)",
+          "line": "Benchmarks a cloud CPU machine against a known one to show why a CPU job runs slower than expected.",
+          "area": "Compute and cost"
+        },
+        {
+          "id": "runlength",
+          "name": "runlength cpu: wall time and timeout of a CPU job on a measured flavor",
+          "released": "2026-11-18",
+          "version": "1.0",
+          "summary": "Scales one task timed in a 4-core cloud container to a job on Hugging Face cpu-performance from cpudiag's measured slowdown table (memory-bound, scrollsim2 render and cache-resident kinds; max by default), and gives the best worker count and a timeout. Its scrollsim2 row predicted a 32-worker pilot at 26.7 min against 25.2 measured. CPU estimate only.",
+          "command": "python -m kit.runlength cpu --task-s 4.33 --tasks 2458 --kind scrollsim2",
+          "page": "docs/tools/runlength.md",
+          "evidence": "[checks and controls](docs/tools/runlength.md#checks-and-controls)",
+          "line": "Estimates how long a CPU job takes on a cloud CPU machine from one task timed in a small container.",
+          "area": "Compute and cost"
         }
       ],
       "where": "main"

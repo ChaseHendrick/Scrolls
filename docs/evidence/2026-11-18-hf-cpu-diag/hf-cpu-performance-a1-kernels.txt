@@ -1,0 +1,12 @@
+PROGRESS pyloop P=1: {"median_s": 2.8616, "max_s": 2.8616, "n": 1}
+PROGRESS pyloop P=8: {"median_s": 2.8739, "max_s": 2.8969, "n": 8}
+PROGRESS pyloop P=16: {"median_s": 2.9147, "max_s": 3.0525, "n": 16}
+PROGRESS pyloop P=32: {"median_s": 5.3632, "max_s": 5.4557, "n": 32}
+PROGRESS compute P=1: {"median_s": 3.8695, "max_s": 3.8695, "n": 1}
+PROGRESS compute P=8: {"median_s": 3.8272, "max_s": 3.8593, "n": 8}
+PROGRESS compute P=16: {"median_s": 4.0113, "max_s": 4.6947, "n": 16}
+PROGRESS compute P=32: {"median_s": 7.22, "max_s": 7.3738, "n": 32}
+PROGRESS stream P=1: {"median_s": 1.0549, "max_s": 1.0549, "n": 1, "gb_s_per_proc": 31.81, "gb_s_total": 31.8}
+PROGRESS stream P=8: {"median_s": 3.904, "max_s": 3.9586, "n": 8, "gb_s_per_proc": 8.59, "gb_s_total": 67.8}
+PROGRESS stream P=16: {"median_s": 7.5808, "max_s": 7.9434, "n": 16, "gb_s_per_proc": 4.43, "gb_s_total": 67.6}
+PROGRESS stream P=32: {"median_s": 14.8339, "max_s": 15.4344, "n": 32, "gb_s_per_proc": 2.26, "gb_s_total": 69.6}
