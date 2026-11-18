@@ -189,10 +189,11 @@ Command-line tools, benchmarks and script folders that run from a clone of this 
 </details>
 
 <details>
-<summary><b>Compute and cost</b> (4)</summary>
+<summary><b>Compute and cost</b> (5)</summary>
 
 | Tool | What it does |
 | --- | --- |
+| [accelbench: time a faster version only after its output matches](docs/tools/accelbench.md) | Times a faster version of some code only after its output matches the original, with a control. |
 | [Hugging Face Jobs ledger importer](docs/tools/hf-rows.md) | Adds finished Hugging Face Jobs to a cost ledger with the cost from Hugging Face's own bill, once per Job, and restricts public ledgers to generic work. |
 | [Local run time and cost log](docs/tools/run-local.md) | Runs a local command and records its elapsed time and estimated electricity cost, or adds records of past runs. |
 | [Modal ledger row importer](docs/tools/modal-row.md) | Adds a recorded job to a cost ledger once and restricts public ledgers to rows marked generic. |

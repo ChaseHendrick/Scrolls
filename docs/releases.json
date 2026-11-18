@@ -839,6 +839,18 @@
           "command": "python -m kit.scrollsim2 make SIM --preset smoke --workers 4 --block 64 --chunk 64 --levels 2 --surfaces",
           "page": "docs/tools/scrollsim2.md",
           "evidence": "[tests](tests/test_scrollsim2.py)"
+        },
+        {
+          "id": "accelbench",
+          "name": "accelbench: time a faster version only after its output matches",
+          "released": "2026-11-18",
+          "version": "1.0",
+          "summary": "Times a candidate implementation against a reference only after their outputs match under a stated rule (bitwise, exact or a tolerance) and a perturbed control fails that rule, in ABBA order with a device sync before every clock read, and writes a JSON receipt that re-checks its own speedups. With kit.accel (device and precision choice, and a CPU-fp32 check with a control) and a script that times fp32, fp16 and bf16 autocast on a GPU. A receipt holds for its machine and input only.",
+          "command": "python -m kit.accel --check",
+          "page": "docs/tools/accelbench.md",
+          "evidence": "[checks and controls](docs/tools/accelbench.md#checks-and-controls)",
+          "line": "Times a faster version of some code only after its output matches the original, with a control.",
+          "area": "Compute and cost"
         }
       ],
       "where": "main"
