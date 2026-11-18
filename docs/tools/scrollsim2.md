@@ -8,7 +8,7 @@ ScrollSim v2 renders a synthetic rolled, pressed and crushed papyrus scroll at f
 | Status | Experimental |
 | Kind | kit module |
 | Area | Surfaces and tracing |
-| Run | `python -m kit.scrollsim2 make`, `estimate`, `pyramid`, `verify`, `publish`, `vc3d`, `info`; library `from kit import scrollsim2` |
+| Run | `python -m kit.scrollsim2 make`, `estimate`, `pyramid`, `verify`, `publish`, `vc3d`, `nps`, `info`; library `from kit import scrollsim2` |
 | Code | `kit/scrollsim2.py` |
 | Tests | `tests/test_scrollsim2.py` |
 | Needs | Python 3.10 or newer, numpy, scipy (ndimage), zarr 3 for `make` (it writes zarr format 2); all in `pip install -e ".[maps]"`. No scroll data |
@@ -21,13 +21,21 @@ ScrollSim v2 renders a synthetic rolled, pressed and crushed papyrus scroll at f
 
 ## What it does
 
-Tracers and winding tools are hard to score on real scrolls: the true winding of every voxel is unknown. ScrollSim v2 makes a synthetic scroll where it is known exactly. It rolls one sheet into a spiral around the z axis, presses neighboring windings together in smooth contact zones, crushes the roll along one axis and bends it with a smooth displacement field, then renders a CT-like volume: two fiber plies per winding, holes, delamination, blur, a slow brightness drift, optional rings and noise, 8 bits.
+Tracers and winding tools are hard to score on real scrolls: the true winding of every voxel is unknown. ScrollSim v2 makes a synthetic scroll where it is known exactly. It rolls one sheet into a spiral around the z axis, presses neighboring windings together in smooth contact zones, crushes the roll along one axis and bends it with a smooth displacement field, then renders a CT-like volume: two fiber plies per winding, holes, delamination, blur, a slow brightness drift, optional rings and noise, 8 bits. An optional CT scan model adds the effects of a real scan: phase contrast with Paganin retrieval, a noise spectrum shaped like filtered back-projection's (or measured from real CT), beam-hardening cupping, rings about the rotation axis and acquisition slabs.
 
 What works today:
 
 - **Full-scale geometry.** A whole cross-section of about 125 windings (the `pilot` preset, 1,024 x 1,728 x 3,264 voxels). The turn just inside each voxel is found by binary search, so a voxel costs about log2(turns) lookups instead of one per turn; a test holds it equal to the slow all-turns lookup. Fiber textures come from small periodic tiles, so a sheet millions of voxels long fits in memory. A fixed crush axis (`alpha` 0) lets the box be about half as tall as wide.
 - **Block-by-block rendering.** Every block renders with a halo that covers each filter, and noise is a hash of the voxel's position, so any block size gives the same volume bit for bit (test). Blocks that hold no sheet are detected and skipped. Workers write chunk-aligned blocks in parallel, each write is checked on disk, and a stopped run resumes where it left off.
 - **Exact truth.** `truth/labels.zarr` holds every sheet voxel's winding number (plus 1; 0 is air), numbered from the center line with one step across a fixed half-plane. `--surfaces` writes the whole sheet's center and recto surfaces as tifxyz, each with `winding.npy`, the winding number of every vertex. `truth.json` records the parameters, turns, center line and render timings, and the same parameters always rebuild the same scroll.
+
+- **CT scan model** (version 2 of the output, 2026-11-18). All off by default, so a release-1 render is unchanged bit for bit. `--scan synchrotron` and `--scan lab` switch on a starting set; `--set` tunes each part:
+  - *Partial volume*: `supersample` averages sub-samples into each voxel.
+  - *Phase contrast and Paganin retrieval* (`phase_mm`, `energy_kev`, `db_object`, `db_recon`, `voxel_um`): propagation adds edge contrast and the retrieval removes it with an assumed delta over beta. When the sheet's true value is higher than the assumed one, a bright rim stays at sheet edges; lower, and the edges blur. Without retrieval (`db_recon` 0) the raw fringes stay.
+  - *Noise spectrum* (`nps`): noise summed from seven frequency bands, so it can be white, smooth, or ramp-shaped like filtered back-projection noise. `python -m kit.scrollsim2 nps CT.npy` measures a real crop's spectrum without labels and prints the matching `--set nps=[...]`.
+  - *Beam hardening* (`cupping`): sheets lose contrast where the mean path through the roll is longest, so the middle of the roll is darker, as in lab scans.
+  - *Rings and slabs* (`rings`, `axis_yx`, `slab_z`, `slab_gain`): rings centered on the rotation axis, and a scan taken in slabs of `slab_z` slices, each with its own gain step and ring pattern.
+  - *Physical units*: `voxel_um` sets the OME-Zarr scale in micrometers (levels `voxel_um` x 2^level) and the VC3D export's voxel size.
 
 Ink is off in this release: the volume holds no ink and the label volume carries windings only.
 
@@ -45,14 +53,19 @@ Ink is off in this release: the volume holds no ink and the label volume carries
 
 ![Synthetic demo: a pass through z, CT beside its winding labels](../assets/scrollsim2/scrollsim2-zscroll.gif)
 
-*Synthetic demo: a pass through z of the same scroll. No scan data. All four are made by `python scripts/media/scrollsim2_demo.py --work WORK --out-dir docs/assets/scrollsim2`.*
+*Synthetic demo: a pass through z of the same scroll. No scan data.*
+
+![Synthetic demo: one crop three ways, plain, with synchrotron settings and with lab settings, beside a chart of each version's noise power spectrum](../assets/scrollsim2/scrollsim2-scan.png)
+
+*Synthetic demo: one crop of the same scroll with no scan model, `--scan synchrotron` and `--scan lab`, and each one's noise power spectrum measured in air by `measure_nps`. The presets are a starting point, not a calibration. No scan data. All five are made by `python scripts/media/scrollsim2_demo.py --work WORK --out-dir docs/assets/scrollsim2`.*
 
 What it is not: a calibrated stand-in for a real scroll. A score on its volumes is model output on synthetic data and says nothing about a real scroll. Never call an ink map made on it a reading.
 
 ## Realism: in progress
 
-The volumes do not yet look or score like real CT. The next release adds realism, with no date promised:
+The volumes do not yet look or score like real CT. The CT scan model above gives the scan's side of realism the right kinds of effects, but its preset numbers are chosen by eye and from one published setup, not measured. The next steps, with no date promised:
 
+- **Measured scan settings.** Measure the noise spectrum, point spread and edges of real open-data scans with `nps` and the label-free statistics, and set the scan model from them.
 - **S2, real texture.** Copy real CT texture from Vesuvius Challenge open-data scans into the synthetic sheets and the gaps between them.
 - **S3, more physics.** Add more physical detail, such as compression and delamination that behave the way they do in carbonized scrolls.
 - **Goal: calibration.** Tune and check the simulator so that real ink readers and tracers score on it as they do on real scrolls. Until that check passes, a ranking of methods on ScrollSim v2 volumes is not evidence about their ranking on real scrolls.

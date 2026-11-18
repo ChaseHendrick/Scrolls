@@ -15,21 +15,26 @@ What it adds for a whole scroll:
 - a crush axis that may be fixed (alpha 0 puts the major axis along x), so the box can be narrow in y;
 - a block renderer whose every voxel is independent of the block size: noise comes from a hash of the voxel's
   position, and each block is rendered with a halo wide enough for every filter;
-- a scan model: anisotropic point spread, correlated noise, a phase-edge filter, rings, slow drift and
-  supersampling for partial volume;
+- a CT scan model: supersampling for partial volume, anisotropic point spread, propagation phase contrast with
+  Paganin retrieval, noise with a set or measured power spectrum, beam-hardening cupping, rings about the rotation
+  axis, acquisition slabs with gain steps, slow drift, and scan presets (`--scan synchrotron|lab`), all off by
+  default; and a physical voxel size in the OME-Zarr metadata;
 - OME-zarr output with levels 0 to L, written in parallel, chunk-aligned, a winding label volume beside it, and
   optional center and recto surfaces of the whole sheet as tifxyz.
 
 Ink is off in this release. It is a simulator: a score on its volumes is model output on synthetic data and says
 nothing about a real scroll. It is not yet calibrated against real CT (see "Realism: in progress" on the tool page).
 
-  python -m kit.scrollsim2 make OUT [--preset smoke|pilot] [--set KEY=VALUE ...] [--workers N] [--block B]
+  python -m kit.scrollsim2 make OUT [--preset smoke|pilot] [--scan synchrotron|lab] [--set KEY=VALUE ...]
+                                     [--workers N] [--block B]
                                      [--levels L] [--chunk C] [--surfaces] [--resume] [--max-blocks N]
   python -m kit.scrollsim2 estimate [--preset ...] [--set ...] [--workers N] [--block B] [--sample K]
   python -m kit.scrollsim2 pyramid OUT [--workers N]     rebuild CT levels 1 and up from level 0, then verify
   python -m kit.scrollsim2 verify OUT                    every CT chunk on disk, no '.partial' temp file
   python -m kit.scrollsim2 publish SRC DST [--levels L ...] [--no-labels]   plain copy of a local folder, then verify
-  python -m kit.scrollsim2 vc3d SIM OUT [--voxel-um 8] [--copy]   a folder VC3D opens: volumes, surfaces, project
+  python -m kit.scrollsim2 vc3d SIM OUT [--voxel-um V] [--copy]   a folder VC3D opens: volumes, surfaces, project
+  python -m kit.scrollsim2 nps CT.npy [--mask M.npy] [--tile 32] [--share 0.25] [--out F]   a crop's noise spectrum,
+                                     fitted as the `nps` bands (prints the --set value)
   python -m kit.scrollsim2 info OUT
 
 numpy and scipy (the map tools' optional dependencies); zarr for make.
@@ -44,7 +49,7 @@ import sys
 import time
 from pathlib import Path
 
-VERSION = 1
+VERSION = 2                # 2: the CT scan model (phase, noise spectrum, cupping, slabs) and physical voxel size
 ANG = 1024                 # samples of the unwrapped angle per turn
 GZ = 8.0                   # z step of the geometry fields, voxels
 GS = 8.0                   # along-sheet step of the coarse random fields, voxels
@@ -85,6 +90,20 @@ EXTRA = {
     "noise_corr": 0.0,     # sigma of the noise correlation, voxels; 0 is white
     "edge": 0.0,           # phase-edge gain: v + edge * (v - G(v, edge_sigma)); 0 off
     "edge_sigma": 1.5,
+    # CT scan model (scan model version 2, "How it works" on the tool page). All off at the defaults, so the CT of
+    # release 1 is unchanged. The geometry lengths above stay in voxels whatever voxel_um says.
+    "scan": "",            # a scan preset (SCANS), applied after --preset and before --set
+    "voxel_um": 8.0,       # physical voxel size, um: the OME-Zarr scale and the phase model
+    "phase_mm": 0.0,       # propagation distance, mm; 0 is no phase contrast
+    "energy_kev": 78.0,    # mean photon energy, keV
+    "db_object": 1000.0,   # delta over beta of the sheet against air
+    "db_recon": 1000.0,    # delta over beta the Paganin retrieval assumed; 0 is no retrieval (raw phase contrast)
+    "phase_halo": 24,      # widest phase-filter kernel radius, voxels; the filter is fitted within it
+    "nps": [],             # noise sd per band of NPS_SIGMAS, gray levels, added to `noise`; [] off
+    "cupping": 0.0,        # beam hardening: share of sheet contrast lost where the mean path through the roll peaks
+    "axis_yx": [],         # rotation axis (y, x), voxels, the center of the rings; [] is the box center
+    "slab_z": 0,           # height of the scan's acquisition slabs, voxels; 0 is one slab
+    "slab_gain": 0.0,      # sd of each slab's gain step
 }
 DEFAULTS = dict(json.loads(json.dumps(BASE)), **EXTRA)
 PRESETS = {
@@ -94,7 +113,23 @@ PRESETS = {
     # 45 percent contacts), crush axis along x so the box is about half as tall as wide
     "pilot": {"shape": [1024, 1728, 3264], "alpha": 0.0},
 }
-HASH_SALT = {"noise": 13}
+HASH_SALT = {"noise": 13, "nps": 200}
+NPS_SIGMAS = (0.0, 0.5, 1.0, 1.5, 2.0, 3.0, 4.0)   # noise bands: G(s_j) - G(s_j+1) of white noise; the last is G(4)
+CUP_XY, CUP_Z, CUP_ANGLES = 8, 64, 24              # the cupping field's grid (voxels) and its projection angles
+# Scan presets: a starting point for each kind of scan, chosen by eye and from published setups. They are not a
+# calibration: measurements on real CT (`python -m kit.scrollsim2 nps` for the noise) replace these numbers. Their
+# noise is filtered back-projection's ramp: ramp_nps(3.5, 0.5) for the synchrotron, ramp_nps(3.0, 0.3) for the lab.
+SCANS = {
+    # a synchrotron scan with propagation phase contrast and Paganin retrieval (ESRF BM18-like: 78 keV mean,
+    # 22 cm propagation, delta over beta 1000 assumed in the retrieval); the sheet's own delta over beta is set
+    # higher, so the retrieval under-corrects and a bright edge stays, as residual fringes do in real scans
+    "synchrotron": {"supersample": 2, "phase_mm": 220.0, "energy_kev": 78.0, "db_recon": 1000.0,
+                    "db_object": 1500.0, "psf_z": 0.6, "psf_xy": 0.6, "noise": 0.0,
+                    "nps": [0.0, 0.5739, 3.4395, 0.0, 0.0, 0.3012, 0.0118], "rings": 0.6, "slab_z": 512, "slab_gain": 0.02},
+    # a lab micro-CT scan: no phase contrast, beam hardening, stronger rings, smoother noise
+    "lab": {"supersample": 2, "psf_z": 0.9, "psf_xy": 0.9, "noise": 0.0, "nps": [0.0, 0.0, 0.0, 2.4549, 1.7244, 0.0, 0.0049],
+            "cupping": 0.15, "rings": 1.2},
+}
 POINTS_PER_PASS = 1 << 18      # voxels evaluated at once by density_block
 INCOMPLETE = 75                # make's exit code when it stopped early (deadline or --max-blocks): resume it
 
@@ -133,16 +168,23 @@ def _bilerp(np, grid, fi, fj):
 
 
 def params(over=None, preset=None):
-    """All parameters: DEFAULTS, then the preset, then OVER."""
+    """All parameters: DEFAULTS, then the preset, then the scan preset (`scan`, from OVER or the preset), then OVER."""
     p = json.loads(json.dumps(DEFAULTS))
     if preset:
         if preset not in PRESETS:
             raise SimError(f"unknown preset {preset}; known: {', '.join(PRESETS)}")
         p.update(json.loads(json.dumps(PRESETS[preset])))
+    scan = (over or {}).get("scan", p["scan"]) or ""
+    if scan:
+        if scan not in SCANS:
+            raise SimError(f"unknown scan preset {scan}; known: {', '.join(SCANS)}")
+        p.update(json.loads(json.dumps(SCANS[scan])))
+    p["scan"] = scan
     for k, v in (over or {}).items():
         if k not in DEFAULTS:
             raise SimError(f"unknown parameter {k}")
         p[k] = v
+    _check_scan(p)
     if int(p["supersample"]) < 1:
         raise SimError("supersample is 1 or more")
     for k in ("psf_z", "psf_xy", "noise_corr", "edge"):
@@ -160,6 +202,32 @@ def params(over=None, preset=None):
     if float(p["pitch"]) <= float(p["thick"]):
         raise SimError("pitch must exceed thick")
     return p
+
+
+def _check_scan(p):
+    """Refuse scan-model values out of range (in place: lists become lists of floats)."""
+    for k in ("voxel_um", "energy_kev", "db_object"):
+        if not float(p[k]) > 0:
+            raise SimError(f"{k} is above 0")
+    for k in ("phase_mm", "db_recon", "cupping", "slab_gain"):
+        if float(p[k]) < 0:
+            raise SimError(f"{k} is 0 or more")
+    if float(p["cupping"]) >= 1:
+        raise SimError("cupping lies in 0 to below 1")
+    if int(p["phase_halo"]) < 2:
+        raise SimError("phase_halo is 2 or more")
+    if int(p["slab_z"]) < 0:
+        raise SimError("slab_z is 0 or more")
+    nps = p["nps"]
+    if not isinstance(nps, (list, tuple)) or (len(nps) and len(nps) != len(NPS_SIGMAS)):
+        raise SimError(f"nps is [] or {len(NPS_SIGMAS)} band sds, one per band of {list(NPS_SIGMAS)}")
+    p["nps"] = [float(v) for v in nps]
+    if any(v < 0 for v in p["nps"]):
+        raise SimError("every nps band sd is 0 or more")
+    ax = p["axis_yx"]
+    if not isinstance(ax, (list, tuple)) or len(ax) not in (0, 2):
+        raise SimError("axis_yx is [] or [y, x]")
+    p["axis_yx"] = [float(v) for v in ax]
 
 
 def _base_params(p):
@@ -203,6 +271,269 @@ def hashed_normal(seed, z0, z1, y0, y1, x0, x1, salt=HASH_SALT["noise"]):
 def _smooth_noise_gain(sigma):
     """sd of 3D white unit noise after a Gaussian of sigma voxels (continuous approximation, exact for sigma >= 1)."""
     return 1.0 / math.sqrt((2.0 * math.sqrt(math.pi) * sigma) ** 3)
+
+
+# ---------------------------------------------------------------------------------------------------- scan model
+def _taps(sigma):
+    """The 1D kernel scipy's gaussian_filter applies for SIGMA (truncate 4); [1] for 0."""
+    np = _np()
+    if sigma <= 0:
+        return np.ones(1)
+    r = int(4.0 * sigma + 0.5)
+    d = np.zeros(2 * r + 1)
+    d[r] = 1.0
+    return _ndi().gaussian_filter1d(d, sigma, mode="constant")
+
+
+def _transfer1(sigma, f):
+    """The real transfer of _taps(SIGMA) at frequencies F, cycles per voxel (its DTFT, exact)."""
+    np = _np()
+    t = _taps(sigma)
+    r = (len(t) - 1) // 2
+    j = np.arange(-r, r + 1)
+    return np.cos(2 * math.pi * np.asarray(f, np.float64)[..., None] * j) @ t
+
+
+def _band_transfer(j, fz, fy, fx):
+    """Transfer of noise band J on broadcast frequency grids: G(s_j) - G(s_j+1), the last band G(s_last)."""
+    s = NPS_SIGMAS
+    g = _transfer1(s[j], fz) * _transfer1(s[j], fy) * _transfer1(s[j], fx)
+    if j + 1 < len(s):
+        g = g - _transfer1(s[j + 1], fz) * _transfer1(s[j + 1], fy) * _transfer1(s[j + 1], fx)
+    return g
+
+
+_NPS_GAIN = {}
+
+
+def nps_band_gain(j):
+    """sd of band J's output for unit white noise (exact for scipy's kernels: Parseval on a 72-point grid, longer
+    than any kernel)."""
+    if j not in _NPS_GAIN:
+        np = _np()
+        f = np.fft.fftfreq(72)
+        t = _band_transfer(j, f[:, None, None], f[None, :, None], f[None, None, :])
+        _NPS_GAIN[j] = float(math.sqrt(float((t * t).mean())))
+    return _NPS_GAIN[j]
+
+
+def nps_band_psd(j, fz, fy, fx):
+    """Band J's noise power spectrum at unit variance (mean 1 over the frequency cube)."""
+    return (_band_transfer(j, fz, fy, fx) / nps_band_gain(j)) ** 2
+
+
+def _radial(np, vals, rad, nbins, n):
+    """Mean of VALS in shells of |f| one grid step (1/N) wide: centers, means, counts (empty shells dropped)."""
+    k = np.minimum(np.rint(rad * n).astype(np.int64), nbins - 1).ravel()
+    cnt = np.bincount(k, minlength=nbins)
+    tot = np.bincount(k, weights=vals.ravel(), minlength=nbins)
+    keep = cnt > 0
+    return (np.arange(nbins) / n)[keep], tot[keep] / cnt[keep], cnt[keep]
+
+
+def measure_nps(vol, tile=32, share=0.25, mask=None):
+    """The noise power spectrum of a CT crop, label-free: split VOL (z, y, x) into TILE^3 tiles, keep those inside
+    MASK (all of the tile) or every tile, take the SHARE with the least structure (variance after a Gaussian of 2
+    voxels; gaps and air), and average their Hann-windowed periodograms, mean removed. The PSD's mean over the
+    frequency cube is the noise variance. Returns freq (cycles per voxel, shell centers), psd, count per shell,
+    variance, tiles used."""
+    np = _np()
+    nd = _ndi()
+    v = np.asarray(vol, np.float64)
+    if v.ndim != 3 or min(v.shape) < tile:
+        raise SimError(f"the crop is {list(v.shape)}; nps needs a 3D crop of at least {tile} voxels per axis")
+    if mask is not None and np.asarray(mask).shape != v.shape:
+        raise SimError("the mask's shape differs from the crop's")
+    cand = []
+    for z in range(0, v.shape[0] - tile + 1, tile):
+        for y in range(0, v.shape[1] - tile + 1, tile):
+            for x in range(0, v.shape[2] - tile + 1, tile):
+                box = (slice(z, z + tile), slice(y, y + tile), slice(x, x + tile))
+                if mask is not None and not np.asarray(mask)[box].all():
+                    continue
+                cand.append((float(nd.gaussian_filter(v[box], 2.0).var()), box))
+    if not cand:
+        raise SimError("no tile lies wholly inside the mask")
+    cand.sort(key=lambda c: c[0])
+    use = cand[:max(1, int(round(share * len(cand))))]
+    w1 = _hann(tile)
+    w = w1[:, None, None] * w1[None, :, None] * w1[None, None, :]
+    acc = np.zeros((tile,) * 3)
+    for _, box in use:
+        t = v[box] - v[box].mean()
+        acc += np.abs(np.fft.fftn(t * w)) ** 2 / (w * w).sum()
+    acc /= len(use)
+    f = np.fft.fftfreq(tile)
+    rad = np.sqrt(f[:, None, None] ** 2 + f[None, :, None] ** 2 + f[None, None, :] ** 2)
+    nb = int(math.ceil(math.sqrt(3) / 2 * tile)) + 1
+    fr, ps, cnt = _radial(np, acc, rad, nb, tile)
+    return {"freq": [round(float(x), 6) for x in fr], "psd": [float(x) for x in ps], "count": [int(c) for c in cnt],
+            "variance": float(acc.mean()), "tile": int(tile), "tiles": len(use), "tiles_seen": len(cand)}
+
+
+def _hann(tile):
+    return _np().hanning(int(tile) + 2)[1:-1]
+
+
+def _windowed_band(j, tile):
+    """The expected Hann-windowed periodogram of unit-variance band J on a TILE^3 grid, as measure_nps takes it:
+    the band's autocovariance times the window's autocorrelation, transformed (exact; every term is separable)."""
+    np = _np()
+    n = int(tile)
+    w = _hann(n)
+    ww = np.correlate(w, w, "full")                       # lags -(n-1) .. n-1
+    lag = np.arange(-(n - 1), n)
+    f = np.fft.fftfreq(n)
+    cosm = np.cos(2 * math.pi * f[:, None] * lag[None, :])
+
+    def c1(x, y):
+        """sum over lags of (x corr y)(lag) ww(lag) cos(2 pi f lag), for centered symmetric taps X and Y."""
+        full = np.correlate(y, x, "full")                 # lags -(len(x)-1) .. len(y)-1 about the centers
+        rx, ry = (len(x) - 1) // 2, (len(y) - 1) // 2
+        lags = np.arange(-(len(x) - 1), len(y)) - (ry - rx)
+        keep = np.abs(lags) <= n - 1
+        acc = np.zeros(2 * n - 1)
+        acc[lags[keep] + n - 1] = full[keep]
+        return cosm @ (acc * ww)
+    a = _taps(NPS_SIGMAS[j])
+    terms = [(1.0, c1(a, a))]
+    if j + 1 < len(NPS_SIGMAS):
+        b = _taps(NPS_SIGMAS[j + 1])
+        terms += [(-2.0, c1(a, b)), (1.0, c1(b, b))]
+    out = np.zeros((n, n, n))
+    for sgn, c in terms:
+        out += sgn * c[:, None, None] * c[None, :, None] * c[None, None, :]
+    return out / float((w * w).sum()) ** 3 / nps_band_gain(j) ** 2
+
+
+def fit_nps(freq, psd, count=None, tile=32):
+    """Band sds (one per NPS_SIGMAS band) whose summed spectrum fits a radial PSD (measure_nps's freq, psd and
+    count, at the same TILE), by non-negative least squares on shells weighted by their size. Each band enters as
+    its expected windowed periodogram, so the window's smoothing does not bias the fit. Returns nps (the sds), the
+    fitted variance and the weighted relative error of the fit."""
+    np = _np()
+    from scipy.optimize import nnls
+    fr = np.asarray(freq, np.float64)
+    ps = np.asarray(psd, np.float64)
+    cnt = np.ones_like(fr) if count is None else np.asarray(count, np.float64)
+    # each band's radial spectrum on the same tile grid and shells as measure_nps
+    f = np.fft.fftfreq(int(tile))
+    fz, fy, fx = f[:, None, None], f[None, :, None], f[None, None, :]
+    rad = np.sqrt(fz ** 2 + fy ** 2 + fx ** 2)
+    nb = int(math.ceil(math.sqrt(3) / 2 * tile)) + 1
+    cols = []
+    for j in range(len(NPS_SIGMAS)):
+        c, m, _ = _radial(np, _windowed_band(j, tile), rad, nb, int(tile))
+        cols.append(np.interp(fr, c, m))
+    A = np.stack(cols, 1)
+    wt = np.sqrt(cnt) * (fr > 0)                          # the zero shell is mostly the removed mean: left out
+    c, _ = nnls(A * wt[:, None], ps * wt)
+    fit = A @ c
+    err = float(np.sqrt(((fit - ps) ** 2 * cnt).sum() / max((ps ** 2 * cnt).sum(), 1e-30)))
+    return {"nps": [round(float(math.sqrt(max(x, 0.0))), 4) for x in c], "variance_fit": float(c.sum()),
+            "relative_error": round(err, 4)}
+
+
+def ramp_nps(total_sd, cutoff=0.5, n=32):
+    """Band sds for the noise of filtered back-projection: a ramp |f| times a Hann window that reaches 0 at CUTOFF
+    (cycles per voxel), scaled to TOTAL_SD gray levels, fitted to the NPS_SIGMAS bands by non-negative least
+    squares in relative terms on an N^3 frequency grid, then scaled to the total. The coarse band ladder gives the
+    ramp's shape, low at low frequency and peaked toward the cutoff, not its exact curve. Returns the `nps` list."""
+    np = _np()
+    from scipy.optimize import nnls
+    f = np.fft.fftfreq(int(n))
+    fz, fy, fx = f[:, None, None], f[None, :, None], f[None, None, :]
+    rad = np.sqrt(fz ** 2 + fy ** 2 + fx ** 2)
+    tgt = np.where(rad < cutoff, rad * np.cos(math.pi * rad / (2 * cutoff)) ** 2, 0.0)
+    tgt *= float(total_sd) ** 2 / tgt.mean()
+    A = np.stack([nps_band_psd(j, fz, fy, fx).ravel() for j in range(len(NPS_SIGMAS))], 1)
+    w = 1.0 / np.maximum(tgt.ravel(), 0.1 * tgt.mean())   # relative errors, so the few low-frequency bins count
+    c, _ = nnls(A * w[:, None], tgt.ravel() * w)
+    c *= float(total_sd) ** 2 / max(float(c.sum()), 1e-30)   # each band has unit variance: keep the total
+    return [round(float(math.sqrt(max(x, 0.0))), 4) for x in c]
+
+
+WAVE_UM_KEV = 1.239842e-3      # photon wavelength in um times its energy in keV
+PHASE_TOL = 0.01               # the phase filter's largest transfer error, when phase_halo allows it
+
+
+def phase_model(p):
+    """The image-domain phase model for parameters P, or None when phase_mm is 0.
+
+    Propagation over phase_mm turns the sheet's density into (1 + a_o k^2) times it in frequency (the
+    transport-of-intensity form Paganin's method inverts), with a = distance x delta/beta x wavelength / (4 pi), in
+    voxels squared; Paganin retrieval with db_recon divides by (1 + a_r k^2). Linear in the weak-absorption limit,
+    and isotropic in 3D for a parallel beam about the z axis. With db_recon 0 the raw phase contrast is
+    v - a_o * laplacian(v). Otherwise the result is (a_o/a_r) v + (1 - a_o/a_r) Y(v), where Y = 1/(1 + a_r k^2)
+    is fitted as the fewest Gaussians (up to 11) within PHASE_TOL whose kernels fit inside phase_halo; max_error is
+    the fit's largest transfer error up to the axis Nyquist frequency."""
+    if float(p["phase_mm"]) <= 0:
+        return None
+    np = _np()
+    from scipy.optimize import nnls
+    lam = WAVE_UM_KEV / float(p["energy_kev"])
+    vox = float(p["voxel_um"])
+    a_of = lambda db: float(p["phase_mm"]) * 1000.0 * float(db) * lam / (4 * math.pi) / vox ** 2   # noqa: E731
+    a_o = a_of(p["db_object"])
+    out = {"a_object_vox2": a_o, "length_object_um": math.sqrt(a_o) * vox}
+    if float(p["db_recon"]) <= 0:
+        out.update(raw=True, halo=1, max_error=0.0)
+        return out
+    a_r = a_of(p["db_recon"])
+    smax = min(int(p["phase_halo"]) / 4.0, 2.5 * math.sqrt(a_r) + 0.5)
+    k = np.linspace(0, math.pi * math.sqrt(3), 600)
+    target = 1.0 / (1.0 + a_r * k * k)
+
+    def fit(sig):
+        A = np.stack([np.exp(-0.5 * s * s * k * k) for s in sig], 1)
+        A = np.vstack([A, 1e3 * np.ones((1, len(sig)))])  # the k = 0 row, heavily weighted: the gain at DC is 1
+        w, _ = nnls(A, np.append(target, 1e3))
+        return w / w.sum()
+    kk = k[k <= math.pi]
+    best = None
+    for n in range(1, 11):                                # the fewest kernels within PHASE_TOL (each costs a filter)
+        sig = [0.0] + [float(s) for s in np.geomspace(0.35, max(smax, 0.36), n)]
+        wts = fit(sig)
+        sig = [s for s, w in zip(sig, wts) if w >= 2e-3]
+        wts = fit(sig)
+        err = float(np.abs(np.stack([np.exp(-0.5 * s * s * kk * kk) for s in sig], 1) @ wts
+                           - 1.0 / (1.0 + a_r * kk * kk)).max())
+        if best is None or err < best[0] - 1e-6:
+            best = (err, sig, wts)
+        if err <= PHASE_TOL:
+            break
+    err, sig, wts = best
+    used = [(s, float(w)) for s, w in zip(sig, wts) if w > 0]
+    out.update(raw=False, a_recon_vox2=a_r, length_recon_um=math.sqrt(a_r) * vox, ratio=a_o / a_r,
+               gaussians=[[round(s, 4), round(w, 6)] for s, w in used],
+               max_error=round(err, 4),
+               halo=int(math.ceil(4 * max(s for s, _ in used))) + 1)
+    return out
+
+
+def apply_phase(v, ph):
+    """PHASE_MODEL's filter PH applied to a gray volume V (float32 out). Kernels reach ph["halo"] voxels; values
+    nearer the edge of V are approximate (scan_block renders a halo for that)."""
+    np = _np()
+    nd = _ndi()
+    v = np.asarray(v, np.float32)
+    if ph["raw"]:
+        return v - np.float32(ph["a_object_vox2"]) * nd.laplace(v, mode="nearest")
+    y = np.zeros_like(v)
+    for s, w in ph["gaussians"]:
+        y += np.float32(w) * (nd.gaussian_filter(v, s, mode="nearest") if s > 0 else v)
+    r = ph["ratio"]
+    return np.float32(r) * v + np.float32(1 - r) * y
+
+
+def scan_report(p):
+    """The derived scan model for parameters P, as truth.json records it."""
+    ph = phase_model(p)
+    nps = [float(v) for v in p["nps"]]
+    return {"version": 2, "scan": p["scan"] or None, "voxel_um": float(p["voxel_um"]),
+            "phase": ph, "nps_total_sd": round(math.sqrt(sum(v * v for v in nps)), 4) if nps else 0.0,
+            "cupping": float(p["cupping"]), "slab_z": int(p["slab_z"]), "slab_gain": float(p["slab_gain"]),
+            "axis_yx": p["axis_yx"] or None}
 
 
 class Roll:
@@ -609,7 +940,96 @@ class Scroll2(Roll):
         sz = math.hypot(float(p["blur"]), float(p["psf_z"]))
         sxy = math.hypot(float(p["blur"]), float(p["psf_xy"]))
         e = float(p["edge_sigma"]) if float(p["edge"]) > 0 else 0.0
-        return int(math.ceil(4 * (max(sz, sxy) + e + float(p["noise_corr"])))) + 2
+        h = int(math.ceil(4 * (max(sz, sxy) + e + float(p["noise_corr"])))) + 2
+        ph = self.phase()
+        if ph is not None:
+            h += ph["halo"]
+        if any(float(v) > 0 for v in p["nps"]):
+            h = max(h, int(4 * NPS_SIGMAS[-1] + 0.5) + 2)
+        return h
+
+    def phase(self):
+        if not hasattr(self, "_phase"):
+            self._phase = phase_model(self.p2)
+        return self._phase
+
+    def prepare(self):
+        """Build the fields every block reads (bias, rings, slabs, cupping) once, before workers fork."""
+        self._bias_field()
+        self.phase()
+        if float(self.p2["cupping"]) > 0:
+            self._cup_field()
+
+    def _cup_field(self):
+        """Beam hardening's cupping, on a coarse grid (CUP_Z x CUP_XY x CUP_XY voxels): for each grid point the
+        mean, over CUP_ANGLES projection angles in the slice, of the sheet's line integral along the ray through it,
+        divided by the largest such value in the volume (0 to 1). Longer paths through the roll lose more contrast."""
+        np = _np()
+        nd = _ndi()
+        if getattr(self, "_cup", None) is not None:
+            return self._cup
+        Z, Y, X = self.Z, self.Y, self.X
+        nz, ny, nx = max(2, -(-Z // CUP_Z)), max(2, -(-Y // CUP_XY)), max(2, -(-X // CUP_XY))
+        zc = (np.arange(nz) + 0.5) * Z / nz - 0.5
+        yc = (np.arange(ny) + 0.5) * Y / ny - 0.5
+        xc = (np.arange(nx) + 0.5) * X / nx - 0.5
+        occ = np.zeros((nz, ny, nx))
+        q = CUP_XY / 4.0
+        for oy in (-q, q):
+            for ox in (-q, q):
+                Zg, Yg, Xg = np.meshgrid(zc, yc + oy, xc + ox, indexing="ij")
+                pts = np.stack([Xg.ravel(), Yg.ravel(), Zg.ravel()], 1)
+                d = np.zeros(len(pts))
+                for a in range(0, len(pts), POINTS_PER_PASS):
+                    d[a:a + POINTS_PER_PASS] = self.voxels(pts[a:a + POINTS_PER_PASS])[0]
+                occ += np.clip(d, 0, 1.6).reshape(occ.shape) / 4.0
+        D = int(math.ceil(math.hypot(ny, nx))) + 2
+        py, px = (D - ny) // 2, (D - nx) // 2
+        path = np.zeros_like(occ)
+        for i in range(nz):
+            sq = np.zeros((D, D))
+            sq[py:py + ny, px:px + nx] = occ[i]
+            acc = np.zeros((D, D))
+            for a in np.arange(CUP_ANGLES) * 180.0 / CUP_ANGLES:
+                r = nd.rotate(sq, a, reshape=False, order=1)
+                back = np.broadcast_to(r.sum(0, keepdims=True), r.shape)
+                acc += nd.rotate(back, -a, reshape=False, order=1)
+            path[i] = acc[py:py + ny, px:px + nx] / CUP_ANGLES
+        top = float(path.max())
+        self._cup = (path / top) if top > 0 else path
+        return self._cup
+
+    def _coarse_at(self, field, Z0, Z1, Y0, Y1, X0, X1):
+        """FIELD (a coarse grid over the whole box, cell centers) interpolated to the voxels of a block."""
+        np = _np()
+        gz = (np.arange(Z0, Z1) + 0.5) / self.Z * field.shape[0] - 0.5
+        gy = (np.arange(Y0, Y1) + 0.5) / self.Y * field.shape[1] - 0.5
+        gx = (np.arange(X0, X1) + 0.5) / self.X * field.shape[2] - 0.5
+        G = np.meshgrid(gz, gy, gx, indexing="ij")
+        return _ndi().map_coordinates(field, G, order=1, mode="nearest")
+
+    def _slabs(self):
+        """Per-slab gains and ring profiles: slab k holds z in [k slab_z, (k + 1) slab_z)."""
+        np = _np()
+        if getattr(self, "_slab", None) is None:
+            p = self.p2
+            sz = int(p["slab_z"])
+            n = max(1, -(-self.Z // sz)) if sz > 0 else 1
+            gain = np.ones(n)
+            if float(p["slab_gain"]) > 0:
+                gain = 1 + float(p["slab_gain"]) * np.random.default_rng([int(p["seed"]), 15]).standard_normal(n)
+            self._bias_field()
+            ay, ax = self._axis()
+            nr = len(self._rings0)
+            far = int(max(math.hypot(ay - y, ax - x) for y in (0, self.Y - 1) for x in (0, self.X - 1))) + 4
+            nr = max(nr, far)
+            rings = np.random.default_rng([int(self.p["seed"]), 12]).standard_normal(nr * n).reshape(n, nr)
+            self._slab = (sz, gain.astype(np.float32), rings)
+        return self._slab
+
+    def _axis(self):
+        ax = self.p2["axis_yx"]
+        return (float(ax[0]), float(ax[1])) if ax else ((self.Y - 1) / 2, (self.X - 1) / 2)
 
     def _bias_field(self):
         """The slow brightness drift from the [seed, 11] stream, coarse grid."""
@@ -619,7 +1039,7 @@ class Scroll2(Roll):
             rng = np.random.default_rng([int(self.p["seed"]), 11])
             self._bias = _field(rng, (max(2, Z // 32), max(2, Y // 32), max(2, X // 32)), 1.0)
             rr = np.random.default_rng([int(self.p["seed"]), 12])
-            self._rings = rr.standard_normal(int(math.hypot(X, Y) / 2) + 4)
+            self._rings = self._rings0 = rr.standard_normal(int(math.hypot(X, Y) / 2) + 4)
         return self._bias
 
     def density_block(self, z0, z1, y0, y1, x0, x1):
@@ -670,6 +1090,12 @@ class Scroll2(Roll):
         else:
             dens, labels, near = self.density_block(Z0, Z1, Y0, Y1, X0, X1)
         v = float(p["air"]) + (float(p["bright"]) - float(p["air"])) * np.clip(dens, 0, 1.6)
+        if float(p["cupping"]) > 0 and not air:
+            c = self._coarse_at(self._cup_field(), Z0, Z1, Y0, Y1, X0, X1)
+            v = float(p["air"]) + (v - float(p["air"])) * (1 - float(p["cupping"]) * c).astype(np.float32)
+        ph = self.phase()
+        if ph is not None and not air:                  # an air block is constant, which the phase model keeps
+            v = apply_phase(v, ph)
         sz = math.hypot(float(p["blur"]), float(p["psf_z"]))
         sxy = math.hypot(float(p["blur"]), float(p["psf_xy"]))
         if sz > 0 or sxy > 0:
@@ -678,22 +1104,33 @@ class Scroll2(Roll):
             v = v + float(p["edge"]) * (v - nd.gaussian_filter(v, float(p["edge_sigma"]), mode="nearest"))
         b = self._bias_field()
         if float(p["bias"]) > 0:
-            gz = (np.arange(Z0, Z1) + 0.5) / self.Z * b.shape[0] - 0.5
-            gy = (np.arange(Y0, Y1) + 0.5) / self.Y * b.shape[1] - 0.5
-            gx = (np.arange(X0, X1) + 0.5) / self.X * b.shape[2] - 0.5
-            G = np.meshgrid(gz, gy, gx, indexing="ij")
-            v = v * (1 + float(p["bias"]) * nd.map_coordinates(b, G, order=1, mode="nearest")).astype(np.float32)
+            v = v * (1 + float(p["bias"]) * self._coarse_at(b, Z0, Z1, Y0, Y1, X0, X1)).astype(np.float32)
+        slab_z, gain, rings = self._slabs()
+        sidx = np.clip(np.arange(Z0, Z1) // slab_z, 0, len(gain) - 1) if slab_z > 0 else np.zeros(Z1 - Z0, np.int64)
+        if float(p["slab_gain"]) > 0:
+            v = v * gain[sidx][:, None, None]
         if float(p["rings"]) > 0:
+            ay, ax = self._axis()
             yy, xx = np.mgrid[Y0:Y1, X0:X1]
-            r = np.clip(np.rint(np.hypot(yy - (self.Y - 1) / 2, xx - (self.X - 1) / 2)).astype(np.int64), 0,
-                        len(self._rings) - 1)
-            v = v + (self._rings[r] * float(p["rings"]))[None].astype(np.float32)
+            r = np.clip(np.rint(np.hypot(yy - ay, xx - ax)).astype(np.int64), 0, rings.shape[1] - 1)
+            for k in np.unique(sidx):
+                m = sidx == k
+                v[m] = v[m] + (rings[k][r] * float(p["rings"]))[None].astype(np.float32)
         if float(p["noise"]) > 0:
             w = hashed_normal(p["seed"], Z0, Z1, Y0, Y1, X0, X1)
             c = float(p["noise_corr"])
             if c > 0:
                 w = nd.gaussian_filter(w, c, mode="nearest") / _smooth_noise_gain(max(c, 1e-6))
             v = v + float(p["noise"]) * w
+        for j, sd in enumerate(p["nps"]):
+            if sd <= 0:
+                continue
+            w = hashed_normal(p["seed"], Z0, Z1, Y0, Y1, X0, X1, salt=HASH_SALT["nps"] + j)
+            s0, s1 = NPS_SIGMAS[j], (NPS_SIGMAS[j + 1] if j + 1 < len(NPS_SIGMAS) else None)
+            band = nd.gaussian_filter(w, s0, mode="nearest") if s0 > 0 else w
+            if s1 is not None:
+                band = band - nd.gaussian_filter(w, s1, mode="nearest")
+            v = v + np.float32(sd / nps_band_gain(j)) * band
         ct = np.clip(np.rint(v), 0, 255).astype(np.uint8)
         core = (slice(h, h + z1 - z0), slice(h, h + y1 - y0), slice(h, h + x1 - x0))
         return ct[core], labels[core], bool(air)
@@ -912,13 +1349,13 @@ def _vc3d_volume(src, dst, uid, name, voxel_um, copy):
     return {"location": str(dst), "uuid": uid, "levels": len(levels), "shape": [int(z), int(y), int(x)]}
 
 
-def export_vc3d(sim, out, voxel_um=8.0, copy=False):
+def export_vc3d(sim, out, voxel_um=None, copy=False):
     """A folder VC3D opens for a finished make SIM: volumes/<id>-ct and volumes/<id>-labels (the CT and the winding
     labels as two zarr volumes with meta.json), paths/spiral-center and paths/spiral-recto (the truth surfaces as
     tifxyz, meta.json uuid a canonical uuid5) when SIM was made with --surfaces, and scrollsim2.volpkg.json, the
     project file VC3D builds of late October 2026 open, checked by kit.villafmt before it is written. Level arrays
-    are linked, or copied with COPY. VOXEL_UM is a nominal voxel size for VC3D's physical units; the volume is
-    synthetic and has none of its own."""
+    are linked, or copied with COPY. VOXEL_UM (default: the make's voxel_um) is the voxel size VC3D shows in
+    physical units; the volume is synthetic and has no measured size of its own."""
     import shutil
     import uuid
     from . import villafmt
@@ -928,6 +1365,8 @@ def export_vc3d(sim, out, voxel_um=8.0, copy=False):
         raise SimError(f"{sim}: the make is not complete; resume it first")
     if out.exists() and any(out.iterdir()):
         raise SimError(f"{out} exists and is not empty")
+    if voxel_um is None:
+        voxel_um = float(doc["params"].get("voxel_um", 8.0))
     if not float(voxel_um) > 0:
         raise SimError("--voxel-um is above 0")
     short = doc["code_sha256"][:8] + "-" + hashlib.sha256(json.dumps(doc["params"], sort_keys=True).encode()
@@ -1020,6 +1459,7 @@ def make(out, over=None, preset=None, workers=1, block=128, levels=5, chunk=128,
         if old != json.loads(json.dumps(key, sort_keys=True)):
             raise SimError(f"{out} was made with other parameters, block, chunk, levels or code; resume needs the same")
     sc = Scroll2(dict(p))
+    sc.prepare()
     t_init = time.time() - t0
     _SC = sc
     pool = _pool(int(workers))        # fork before any zarr call starts its I/O thread in this process
@@ -1053,7 +1493,8 @@ def _make_with(pool, sc, out, fresh, p, key, block, chunk, levels, workers, dead
     datasets = []
     for lev, shp in enumerate(shapes):
         g.create_array(str(lev), shape=shp, chunks=tuple(min(chunk, s) for s in shp), dtype="uint8", fill_value=0)
-        datasets.append({"path": str(lev), "coordinateTransformations": [{"type": "scale", "scale": [2.0 ** lev] * 3}]})
+        datasets.append({"path": str(lev), "coordinateTransformations": [
+            {"type": "scale", "scale": [float(p["voxel_um"]) * 2.0 ** lev] * 3}]})
     g.attrs["multiscales"] = [{"version": "0.4", "name": "scrollsim2", "axes": [
         {"name": n, "type": "space", "unit": "micrometer"} for n in "zyx"], "datasets": datasets}]
     lg = zarr.open_group(str(out / "truth" / "labels.zarr"), mode="w", zarr_format=2)
@@ -1127,6 +1568,7 @@ def _map_resume(pool, sc, out, shapes, blocks, done, workers, deadline, spare, m
            "params": sc.p2, "preset": preset, "complete": complete,
            "turns": round(sc.theta_end / (2 * math.pi), 2), "alpha": sc.alpha, "sheet_length_vox": round(sc.s_end, 1),
            "pressed_share": round(pressed, 4), "r_outer_rolled": round(sc.r_outer, 1),
+           "scan_model": scan_report(sc.p2),
            "center_line": [[round(float(v), 3) for v in r] for r in sc.cl],
            "render": {"workers": int(workers), "block": int(block), "chunk": int(chunk), "levels": int(levels),
                       "blocks": len(blocks), "blocks_done": len(done), "blocks_this_run": len(res),
@@ -1160,6 +1602,7 @@ def estimate(over=None, preset=None, workers=1, block=128, sample=4, seed=0, pro
     progress = progress or (lambda m: None)
     t0 = time.time()
     sc = Scroll2(dict(params(over, preset)))
+    sc.prepare()
     t_init = time.time() - t0
     blocks = _blocks((sc.Z, sc.Y, sc.X), block)
     h = sc.halo()
@@ -1235,6 +1678,7 @@ def main(argv=None):
         else:
             a.add_argument("--sample", type=int, default=4)
         a.add_argument("--preset", choices=sorted(PRESETS))
+        a.add_argument("--scan", choices=sorted(SCANS))
         a.add_argument("--set", action="append", default=[])
         a.add_argument("--seed", type=int)
         a.add_argument("--workers", type=int, default=default_workers())
@@ -1252,8 +1696,14 @@ def main(argv=None):
     a = sub.add_parser("vc3d")
     a.add_argument("sim")
     a.add_argument("out")
-    a.add_argument("--voxel-um", type=float, default=8.0)
+    a.add_argument("--voxel-um", type=float)
     a.add_argument("--copy", action="store_true")
+    a = sub.add_parser("nps")
+    a.add_argument("ct")
+    a.add_argument("--mask")
+    a.add_argument("--tile", type=int, default=32)
+    a.add_argument("--share", type=float, default=0.25)
+    a.add_argument("--out")
     a = sub.add_parser("info")
     a.add_argument("sim")
     args = ap.parse_args(argv)
@@ -1262,6 +1712,8 @@ def main(argv=None):
             over = _parse_set(args.set)
             if args.seed is not None:
                 over["seed"] = args.seed
+            if args.scan:
+                over["scan"] = args.scan
             if args.cmd == "make":
                 doc = make(args.out, over, args.preset, args.workers, args.block, args.levels, args.chunk,
                            args.surfaces, progress=lambda m: print(m, file=sys.stderr, flush=True),
@@ -1276,6 +1728,16 @@ def main(argv=None):
             print(json.dumps(doc))
         elif args.cmd == "vc3d":
             print(json.dumps(export_vc3d(args.sim, args.out, args.voxel_um, args.copy)))
+        elif args.cmd == "nps":
+            np = _np()
+            vol = np.load(args.ct, mmap_mode="r")
+            mask = np.load(args.mask).astype(bool) if args.mask else None
+            m = measure_nps(vol, args.tile, args.share, mask)
+            m["fit"] = fit_nps(m["freq"], m["psd"], m["count"], args.tile)
+            m["set"] = "nps=" + json.dumps(m["fit"]["nps"], separators=(",", ":"))
+            if args.out:
+                Path(args.out).write_text(json.dumps(m, indent=1) + "\n")
+            print(json.dumps({k: m[k] for k in ("variance", "tiles", "tiles_seen", "fit", "set")}))
         elif args.cmd in ("pyramid", "verify", "publish"):
             if args.cmd == "publish":
                 rep = publish(args.src, args.dst, args.levels, not args.no_labels)

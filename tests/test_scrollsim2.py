@@ -108,6 +108,148 @@ class ScrollSim2GeometryTest(unittest.TestCase):
         self.assertFalse(lb.any())
 
 
+# every scan-model feature on at once, at sizes a unit test renders quickly
+SCAN = dict(TINY, noise=0.0, phase_mm=220.0, db_object=2000.0, nps=[1.0, 2.0, 1.5, 1.0, 0.5, 0.3, 0.2],
+            cupping=0.3, slab_z=16, slab_gain=0.05, axis_yx=[70.0, 90.0])
+
+
+@unittest.skipUnless(HAVE, "needs numpy and scipy")
+class ScrollSim2ScanModelTest(unittest.TestCase):
+    def test_scan_presets_and_refusals(self):
+        from kit import scrollsim2 as s2
+        p = s2.params({"scan": "synchrotron"})
+        self.assertEqual(p["scan"], "synchrotron")
+        self.assertEqual(p["phase_mm"], 220.0)
+        self.assertEqual(s2.params({"scan": "synchrotron", "phase_mm": 100.0})["phase_mm"], 100.0)   # --set wins
+        self.assertEqual(s2.params(p), p)                                                          # idempotent
+        self.assertEqual(s2.params(preset="smoke")["phase_mm"], 0.0)                               # off by default
+        off = s2.params()
+        self.assertTrue(off["nps"] == [] and off["cupping"] == 0 and off["slab_z"] == 0 and off["phase_mm"] == 0)
+        for bad in ({"scan": "medical"}, {"nps": [1.0, 2.0]}, {"nps": [-1.0] * 7}, {"cupping": 1.0},
+                    {"voxel_um": 0}, {"axis_yx": [1.0]}, {"phase_halo": 1}, {"slab_gain": -0.1}):
+            with self.assertRaises(s2.SimError, msg=str(bad)):
+                s2.params(bad)
+
+    def test_scan_model_is_block_independent(self):
+        # phase, noise bands, cupping, slabs (a slab edge at z 16 inside the box) and rings about an off-center
+        # axis: any block split gives the same volume, bit for bit
+        from kit import scrollsim2 as s2
+        sc = s2.Scroll2(dict(SCAN))
+        whole, lw, _ = sc.scan_block(8, 40, 20, 140, 20, 140)
+        parts = np.zeros_like(whole)
+        for z0 in (8, 24):
+            for y0 in (20, 80):
+                for x0 in (20, 80):
+                    c, _, _ = s2.Scroll2(dict(SCAN)).scan_block(z0, z0 + 16, y0, y0 + 60, x0, x0 + 60)
+                    parts[z0 - 8:z0 + 8, y0 - 20:y0 + 40, x0 - 20:x0 + 40] = c
+        self.assertTrue(np.array_equal(whole, parts))
+        plain, _, _ = s2.Scroll2(dict(TINY, noise=0.0)).scan_block(8, 40, 20, 140, 20, 140)
+        self.assertFalse(np.array_equal(whole, plain))
+
+    def test_phase_filter_matches_the_exact_transfer(self):
+        # the Gaussian sum against the exact (1 + a_o k^2) / (1 + a_r k^2) applied by FFT on a periodic field
+        from kit import scrollsim2 as s2
+        rng = np.random.default_rng(1)
+        n = 96
+        v = ndi_smooth(rng.standard_normal((n, n, n)), 1.0) * 40 + 100
+        for over in ({"phase_mm": 220.0, "db_object": 2000.0}, {"phase_mm": 220.0, "db_object": 500.0},
+                     {"phase_mm": 220.0, "db_object": 1500.0, "voxel_um": 6.0, "phase_halo": 32}):
+            ph = s2.phase_model(s2.params(over))
+            self.assertLessEqual(ph["max_error"], s2.PHASE_TOL)
+            k = 2 * np.pi * np.fft.fftfreq(n)
+            k2 = k[:, None, None] ** 2 + k[None, :, None] ** 2 + k[None, None, :] ** 2
+            exact = np.real(np.fft.ifftn(np.fft.fftn(v) * (1 + ph["a_object_vox2"] * k2)
+                                         / (1 + ph["a_recon_vox2"] * k2)))
+            got = s2.apply_phase(v, ph)
+            h = ph["halo"]
+            core = (slice(h, n - h),) * 3
+            self.assertLess(float(np.abs(got[core] - exact[core]).max()), 0.03 * float(v.std()) + 0.05, over)
+        self.assertIsNone(s2.phase_model(s2.params()))
+
+    def test_phase_edges_follow_the_retrieval_mismatch(self):
+        # a bright slab: an under-corrected retrieval (db_object above db_recon) and raw phase contrast overshoot
+        # at the edge, an over-corrected one smooths it; every version keeps the slab's mean
+        from kit import scrollsim2 as s2
+        v = np.full((24, 24, 64), 60.0, np.float32)
+        v[:, :, 26:38] = 150.0
+        peaks = {}
+        for name, over in (("under", {"db_object": 2000.0}), ("over", {"db_object": 500.0}),
+                           ("raw", {"db_recon": 0.0})):
+            out = s2.apply_phase(v, s2.phase_model(s2.params(dict(over, phase_mm=220.0))))
+            line = out[12, 12]
+            peaks[name] = float(line.max())
+            self.assertAlmostEqual(float(line.mean()), float(v[12, 12].mean()), delta=0.5)
+        self.assertGreater(peaks["under"], 152.0)
+        self.assertGreater(peaks["raw"], 152.0)
+        self.assertLess(peaks["over"], 150.0)
+
+    def test_noise_spectrum_measured_and_fitted_back(self):
+        # pure noise from known bands (an air box), measured label-free and fitted: the fit recovers the variance
+        # and the spectrum's shape; a ramp-like set has more power at high frequency than at low
+        from kit import scrollsim2 as s2
+        sds = s2.SCANS["synchrotron"]["nps"]
+        self.assertEqual(sds, s2.ramp_nps(3.5, 0.5))
+        sc = s2.Scroll2(dict(TINY, noise=0.0, rings=0.0, bias=0.0, nps=sds))   # no slow drift: noise only
+        box = (0, 96, -500, -404, -500, -404)
+        self.assertTrue(sc.block_is_air(*box))
+        ct = sc.scan_block(*box)[0].astype(float)
+        m = s2.measure_nps(ct, tile=32, share=1.0)
+        fit = s2.fit_nps(m["freq"], m["psd"], m["count"], 32)
+        want = sum(x * x for x in sds) + 1 / 12.0                     # plus rounding to 8 bits
+        self.assertAlmostEqual(m["variance"], want, delta=0.12 * want)
+        self.assertAlmostEqual(fit["variance_fit"], m["variance"], delta=0.08 * want)
+        self.assertLess(fit["relative_error"], 0.15)
+        psd = np.array(m["psd"])
+        fr = np.array(m["freq"])
+        self.assertGreater(psd[(fr > 0.2) & (fr < 0.35)].mean(), psd[(fr > 0) & (fr < 0.06)].mean())
+        white = s2.Scroll2(dict(TINY, noise=4.0, noise_corr=0.0, rings=0.0, bias=0.0)).scan_block(*box)[0].astype(float)
+        fw = s2.fit_nps(**{k: v for k, v in s2.measure_nps(white, 32, 1.0).items() if k in ("freq", "psd", "count")})
+        self.assertAlmostEqual(fw["variance_fit"], 16.0 + 1 / 12.0, delta=1.6)   # white noise, sd 4, fits too
+        self.assertLess(fw["relative_error"], 0.15)
+        with self.assertRaises(s2.SimError):
+            s2.measure_nps(ct[:16])
+        cut = s2.phase_model(s2.params({"phase_mm": 220.0, "voxel_um": 2.4}))     # a halo too small says so
+        self.assertGreater(cut["max_error"], s2.PHASE_TOL)
+
+    def test_cupping_darkens_the_middle_of_the_roll(self):
+        from kit import scrollsim2 as s2
+        sc = s2.Scroll2(dict(TINY, noise=0.0, rings=0.0, bias=0.0, cupping=0.4))
+        cup = sc._cup_field()
+        self.assertAlmostEqual(float(cup.max()), 1.0, places=6)
+        ny, nx = cup.shape[1:]
+        self.assertGreater(float(cup[:, ny // 2, nx // 2].mean()), float(cup[:, ny // 2, 1].mean()) + 0.3)
+        a, lab, _ = sc.scan_block(16, 32, 0, 160, 0, 160)
+        b, _, _ = s2.Scroll2(dict(TINY, noise=0.0, rings=0.0, bias=0.0)).scan_block(16, 32, 0, 160, 0, 160)
+        sheet = lab > 0
+        yy, xx = np.mgrid[0:160, 0:160]
+        mid = np.broadcast_to(np.hypot(yy - 80, xx - 80) < 30, a.shape) & sheet
+        rim = np.broadcast_to(np.hypot(yy - 80, xx - 80) > 50, a.shape) & sheet
+        lost = lambda m: float(b[m].astype(float).mean() - a[m].astype(float).mean())   # noqa: E731
+        self.assertGreater(lost(mid), lost(rim) + 1.0)
+        self.assertTrue(np.array_equal(a[~sheet & (b == 60)], b[~sheet & (b == 60)]))     # air keeps its value
+
+    def test_slabs_step_the_gain_and_change_the_rings(self):
+        from kit import scrollsim2 as s2
+        base = dict(TINY, noise=0.0, rings=0.0, bias=0.0)
+        flat = s2.Scroll2(dict(base)).scan_block(0, 48, 0, 160, 0, 160)[0].astype(float)
+        st = s2.Scroll2(dict(base, slab_z=16, slab_gain=0.1)).scan_block(0, 48, 0, 160, 0, 160)[0].astype(float)
+        g = [st[z0:z0 + 16].mean() / flat[z0:z0 + 16].mean() for z0 in (0, 16, 32)]
+        self.assertGreater(max(g) - min(g), 0.02)
+        sc = s2.Scroll2(dict(base, rings=2.0, slab_z=16))
+        _, _, rings = sc._slabs()
+        self.assertEqual(rings.shape[0], 3)
+        one = s2.Scroll2(dict(base, rings=2.0))
+        _, _, r1 = one._slabs()
+        self.assertTrue(np.array_equal(r1[0], one._rings0))           # one slab: the release-1 rings
+        self.assertTrue(np.array_equal(rings[0][:len(one._rings0)], one._rings0))
+        self.assertFalse(np.array_equal(rings[0], rings[1][:len(rings[0])]))
+
+
+def ndi_smooth(a, s):
+    from scipy import ndimage
+    return ndimage.gaussian_filter(a, s, mode="wrap")
+
+
 @unittest.skipUnless(HAVE and HAVE_ZARR, "needs numpy, scipy and zarr")
 class ScrollSim2MakeTest(unittest.TestCase):
     def test_make_writes_pyramid_and_is_deterministic(self):
@@ -126,6 +268,9 @@ class ScrollSim2MakeTest(unittest.TestCase):
             la = zarr.open_group(str(a / "truth" / "labels.zarr"), mode="r")["0"][:]
             self.assertGreater(len(np.unique(la)), 3)
             self.assertEqual(len(ga.attrs["multiscales"][0]["datasets"]), 4)
+            scales = [d["coordinateTransformations"][0]["scale"] for d in ga.attrs["multiscales"][0]["datasets"]]
+            self.assertEqual(scales[0], [8.0] * 3)                     # micrometers: voxel_um at level 0
+            self.assertEqual(scales[3], [64.0] * 3)
             l1 = ga["1"][:].astype(float)
             self.assertLess(abs(l1.mean() - ga["0"][:].astype(float).mean()), 1.0)
             sd = a / "truth" / "surfaces" / "spiral-center"
@@ -136,10 +281,37 @@ class ScrollSim2MakeTest(unittest.TestCase):
             info = json.loads((a / "truth.json").read_text())
             self.assertEqual(info["tool"], "kit.scrollsim2")
             self.assertEqual(info["render"]["blocks"], 2 * 5 * 5)
+            self.assertEqual(info["scan_model"]["version"], 2)
+            self.assertIsNone(info["scan_model"]["phase"])
             with self.assertRaises(s2.SimError):
                 s2.make(a, dict(TINY), progress=None)                  # never overwrites
             with self.assertRaises(s2.SimError):
                 s2.make(Path(t) / "c", dict(TINY), block=48, chunk=32, progress=None)
+
+    def test_make_with_the_scan_model_and_the_nps_command(self):
+        import contextlib
+        import io
+        import zarr
+        from kit import scrollsim2 as s2
+        with tempfile.TemporaryDirectory() as t:
+            a = Path(t) / "a"
+            doc = s2.make(a, dict(SCAN, voxel_um=4.0), workers=2, block=32, levels=1, chunk=32, progress=None)
+            g = zarr.open_group(str(a / "ct.zarr"), mode="r")
+            ds = g.attrs["multiscales"][0]["datasets"]
+            self.assertEqual([d["coordinateTransformations"][0]["scale"][0] for d in ds], [4.0, 8.0])
+            sm = json.loads((a / "truth.json").read_text())["scan_model"]
+            self.assertEqual(sm, json.loads(json.dumps(doc["scan_model"])))
+            self.assertAlmostEqual(sm["phase"]["ratio"], 2.0)
+            self.assertEqual(sm["voxel_um"], 4.0)
+            ct = Path(t) / "ct.npy"
+            np.save(ct, g["0"][:])
+            buf = io.StringIO()
+            with contextlib.redirect_stdout(buf):
+                self.assertEqual(s2.main(["nps", str(ct), "--tile", "16", "--out", str(Path(t) / "nps.json")]), 0)
+            got = json.loads(buf.getvalue())
+            self.assertTrue(got["set"].startswith("nps=["))
+            self.assertEqual(len(got["fit"]["nps"]), len(s2.NPS_SIGMAS))
+            s2.params({"nps": got["fit"]["nps"]})                     # the printed value is a valid --set
 
     def test_stop_and_resume_give_the_same_volume(self):
         import zarr
