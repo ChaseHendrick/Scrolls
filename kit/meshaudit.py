@@ -241,8 +241,9 @@ def transforms_audit(cat):
         vols = s.get("volumes") or {}
         px = {vid: (v.get("properties") or {}).get("pixel_size_um") for vid, v in vols.items()}
         stored = {}
-        for vid, v in vols.items():
-            for t in (v.get("properties") or {}).get("transforms") or []:
+        from . import voltransform  # the sample's table; volume.properties.transforms goes after 2026-12-31
+        for vid in vols:
+            for t in voltransform.volume_affines(s, vid):
                 stored[(vid, t["to_volume_id"])] = t
         for (a, b), t in sorted(stored.items()):
             rev = stored.get((b, a))
@@ -271,9 +272,11 @@ def _volume_id_in(name):
 
 
 def segment_entries(seg):
-    """Surface-volume and mesh paths from a catalog segment record."""
+    """Surface-volume and mesh paths from a catalog segment record. Superseded entries (the t1 sets replaced by
+    -t2 on 16 Nov 2026) are left out."""
+    from . import voltransform
     sv, meshes = [], []
-    for x in seg.get("data", []):
+    for x in voltransform.current(seg.get("data", [])):
         for o in x.get("origins", []):
             p = o.get("path", "")
             if x["type"] == "layers-zarr":
