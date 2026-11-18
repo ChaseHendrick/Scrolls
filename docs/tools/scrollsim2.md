@@ -68,13 +68,47 @@ What works today:
 
 *Synthetic demo: the center surface `make --surfaces` writes as tifxyz, colored by its exact winding number. No scan data.*
 
+![Synthetic demo: the same center surface swinging from side to side, one quarter cut away to show the windings inside](../assets/scrollsim2/scrollsim2-orbit.gif)
+
+*Synthetic demo: the same surface swung 50 degrees each way about the view above. No scan data.*
+
 ![Synthetic demo: a pass through z, CT beside its winding labels](../assets/scrollsim2/scrollsim2-zscroll.gif)
 
 *Synthetic demo: a pass through z of the same scroll. No scan data.*
 
+![Synthetic demo: a slice with a box drawn on it, then the box zoomed as CT, winding labels and contact truth, where pressed windings show no gap in the CT](../assets/scrollsim2/scrollsim2-pressed.png)
+
+*Synthetic demo: pressed sheets, the hardest places to trace. In the box with the most pressed sheet on the middle slice, neighboring windings touch and the dark gap between them closes in the CT, while the exact labels still tell every winding apart and the contact truth (`--truth contact`) marks each pressed voxel. These zones come from `contact_share` (0.45 by default), `zone` and `touch`. No scan data.*
+
+![Synthetic demo: a pass through z of the pressed box, CT beside its winding labels and contact truth](../assets/scrollsim2/scrollsim2-pressed-z.gif)
+
+*Synthetic demo: a pass through z of the same box; pressed zones open and close as the slices pass. No scan data.*
+
+![Synthetic demo: a crop of one slice four ways, CT, contact truth, the arc length u and the offset w across the sheet](../assets/scrollsim2/scrollsim2-truth.png)
+
+*Synthetic demo: the extra truth layers of `make --truth contact,uvw` on a crop of the middle slice: contact (apart or pressed), u (arc length from the sheet's inner end) and w (signed offset from the winding's center surface, recto side positive). The third, v, is the rolled height. No scan data.*
+
 ![Synthetic demo: one crop three ways, plain, with synchrotron settings and with lab settings, beside a chart of each version's noise power spectrum](../assets/scrollsim2/scrollsim2-scan.png)
 
-*Synthetic demo: one crop of the same scroll with no scan model, `--scan synchrotron` and `--scan lab`, and each one's noise power spectrum measured in air by `measure_nps`. The presets are a starting point, not a calibration. No scan data. All five are made by `python scripts/media/scrollsim2_demo.py --work WORK --out-dir docs/assets/scrollsim2`.*
+*Synthetic demo: one crop of the same scroll with no scan model, `--scan synchrotron` and `--scan lab`, and each one's noise power spectrum measured in air by `measure_nps`. The presets are a starting point, not a calibration. No scan data.*
+
+![Synthetic demo: one crop eight ways, the plain sheet, then waviness, glued joins, gap debris, cracks, bubbles and ply density variation each alone, and all of them together](../assets/scrollsim2/scrollsim2-physics.png)
+
+*Synthetic demo: the sheet physics on one 96 x 96 voxel crop, each effect alone and all together. The settings are exaggerated so each effect shows at this zoom; they are demo values, not measurements of real papyrus (the exact values are in the picture's sidecar). No scan data.*
+
+![Synthetic demo: the same crop as sheet physics effects are switched on one at a time](../assets/scrollsim2/scrollsim2-physics-steps.gif)
+
+*Synthetic demo: the same crop as the effects are added one at a time. No scan data.*
+
+![Synthetic demo: a flattened stretch of the sheet's inked face four ways, the ink truth of random Greek capitals, the CT with ink, the CT of the noink twin, and their difference](../assets/scrollsim2/scrollsim2-ink.png)
+
+*Synthetic demo: the ink writer on a flattened stretch of the recto face of a 128 x 512 x 512 scroll at 8 um voxels, with a 5 um deposit and 8 um absorbed (`ink_rho` 0.3, `ink_tex` 0.5). The letters are random Greek capitals chosen by a hash, not text. In the CT they are faint; the paired difference from the noink twin (`make --noink`) shows the whole ink effect, because the two renders share their seed and noise and differ only near the ink (59 of about 33.5 million voxels differ farther than 6 voxels from the ink truth, by 2 gray levels at most). Letters fall out where the sheet has holes, and the faint letters where the page is blank are the ink of the next winding in, a few voxels away. This is synthetic truth, not a reading, and no real ink reader is claimed to see it. No scan data.*
+
+![Synthetic demo: layers stepping through the sheet at its inked face, the CT with ink above its difference from the noink twin](../assets/scrollsim2/scrollsim2-ink-layers.gif)
+
+*Synthetic demo: layers from 3 voxels into the gap beside the inked face to 4 voxels into the sheet, CT with ink above the difference from the noink twin. The ink effect lives within a voxel or two of the face. No scan data.*
+
+All the pictures above are made by `python scripts/media/scrollsim2_demo.py --work WORK --out-dir docs/assets/scrollsim2` (add `--only NAME ...` for some of them).
 
 What it is not: a calibrated stand-in for a real scroll. A score on its volumes is model output on synthetic data and says nothing about a real scroll. Never call an ink map made on it a reading.
 
@@ -774,6 +808,7 @@ Stage registry: no stage option. The registry's stages read a real scroll; Scrol
 
 ## History
 
+- 2026-11-18: eight more pictures and GIFs: pressed sheets, truth layers, sheet physics, the ink writer with its noink twin, and the surface swinging in 3D, all synthetic.
 - 2026-11-18: ink writer, off by default: Greek capitals on the recto face as a thin deposit with a density and texture change, exact 3D ink truth (`truth/ink.zarr`) and per-surface `ink.tif`, the noink twin (`--noink`), the inked share in `truth.json` (`cf59063`).
 - 2026-11-18: sheet physics (stage S3), all off by default: short-scale waviness, kolleseis, gap debris (inclusions, strands, dust), cracks, carbonization bubbles and density variation between plies (`64c6ba4`).
 - 2026-11-18: richer truth: a label pyramid beside the CT pyramid (most common nonzero label per cell), and `make --truth contact,uvw` for a contact map and material coordinates (u, v, w) written block by block with the CT; the CT and label level 0 at the defaults are unchanged (`28a0f1a`).

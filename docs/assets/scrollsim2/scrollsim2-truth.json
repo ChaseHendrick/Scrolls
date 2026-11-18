@@ -1,0 +1,42 @@
+{
+  "schema": "scrolls-media/1",
+  "name": "scrollsim2-truth",
+  "label": "Synthetic demo",
+  "alt": "Four panels of one synthetic slice: gray CT; the sheet tinted blue where windings lie apart and orange where they press together; the sheet colored by arc length from the inner end, dark at the center and yellow outside; and the sheet colored by signed offset across its thickness, purple on one face and orange on the other.",
+  "caption": "Synthetic demo: ScrollSim v2 truth layers contact, u and w on one slice. No scan data.",
+  "license": "Apache-2.0",
+  "release_id": null,
+  "data": null,
+  "sources": [],
+  "outputs": [
+    {
+      "file": "scrollsim2-truth.png",
+      "bytes": 285340,
+      "sha256": "a17d3e37631feccf5b0158ee94081b12ad2f7552a7100e5639bd46510ad4b876",
+      "width": 1920,
+      "height": 560,
+      "kind": "still",
+      "format": "png"
+    }
+  ],
+  "inputs": [],
+  "made": "2026-11-18",
+  "tool": {
+    "scripts": [
+      "common.py",
+      "scrollsim2_demo.py"
+    ],
+    "scripts_sha256": "db18eba53aa44c6589cfe4f0df3f745fd037a41ea9a3e9dd9f3b466e9355e273",
+    "base_commit": "41846a72c51615e46ea903ea3ed9d7c63afae4ac"
+  },
+  "command": "python scripts/media/scrollsim2_demo.py --work WORK --out-dir docs/assets/scrollsim2",
+  "scrollsim2": {
+    "z": 48,
+    "crop_y0_x0_edge": [
+      240,
+      200,
+      176
+    ],
+    "pressed_share_of_sheet_on_slice": 0.25
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "schema": "scrolls-media/1",
+  "name": "scrollsim2-physics-steps",
+  "label": "Synthetic demo",
+  "alt": "Animation of one gray synthetic CT crop as sheet physics effects are switched on one at a time: waviness, glued joins, gap debris, cracks, bubbles and ply density variation.",
+  "caption": "Synthetic demo: ScrollSim v2 sheet physics switched on one at a time on one crop. No scan data.",
+  "license": "Apache-2.0",
+  "release_id": null,
+  "data": null,
+  "sources": [],
+  "outputs": [
+    {
+      "file": "scrollsim2-physics-steps.gif",
+      "bytes": 221269,
+      "sha256": "579e0c9271e3e6a628490ecaaeaccea7e65f87fde3cd9af3d87c5db25106949a",
+      "width": 308,
+      "height": 332,
+      "kind": "clip",
+      "format": "gif"
+    }
+  ],
+  "inputs": [],
+  "made": "2026-11-18",
+  "tool": {
+    "scripts": [
+      "common.py",
+      "scrollsim2_demo.py"
+    ],
+    "scripts_sha256": "19c58198d4ee2bc4e9248824281ede9a2dfa69c5de6b994f0422ccb8963143e4",
+    "base_commit": "41846a72c51615e46ea903ea3ed9d7c63afae4ac"
+  },
+  "command": "python scripts/media/scrollsim2_demo.py --work WORK --out-dir docs/assets/scrollsim2",
+  "scrollsim2": {
+    "frames": 7,
+    "frame_ms": 1100,
+    "steps": [
+      "Plain sheet (defaults)",
+      "+ waviness",
+      "+ glued joins (kolleseis)",
+      "+ gap debris, strands, dust",
+      "+ cracks",
+      "+ carbonization bubbles",
+      "+ ply density variation"
+    ],
+    "crop_z_y0_x0_edge": [
+      48,
+      400,
+      200,
+      96
+    ]
+  }
+}
