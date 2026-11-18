@@ -19,8 +19,9 @@ What it adds for a whole scroll:
   Paganin retrieval, noise with a set or measured power spectrum, beam-hardening cupping, rings about the rotation
   axis, acquisition slabs with gain steps, slow drift, and scan presets (`--scan synchrotron|lab`), all off by
   default; and a physical voxel size in the OME-Zarr metadata;
-- OME-zarr output with levels 0 to L, written in parallel, chunk-aligned, a winding label volume beside it, and
-  optional center and recto surfaces of the whole sheet as tifxyz;
+- OME-zarr output with levels 0 to L, written in parallel, chunk-aligned, a winding label volume and its pyramid
+  beside it, optional center and recto surfaces of the whole sheet as tifxyz, and with --truth a contact map and
+  material coordinates (u, v, w) of every sheet voxel;
 - an optional texture library cut label-free from a real CT crop (`library`), whose residual texture is added on a
   global grid of Hann-blended tiles, and label-free realism statistics (`g1`, `g1-compare`) that compare a crop of
   simulated CT with crops of real CT.
@@ -31,8 +32,9 @@ nothing about a real scroll. It is not yet calibrated against real CT (see "Real
   python -m kit.scrollsim2 make OUT [--preset smoke|pilot] [--scan synchrotron|lab] [--set KEY=VALUE ...]
                                      [--workers N] [--block B]
                                      [--levels L] [--chunk C] [--surfaces] [--resume] [--max-blocks N]
+                                     [--truth contact,uvw]
   python -m kit.scrollsim2 estimate [--preset ...] [--set ...] [--workers N] [--block B] [--sample K]
-  python -m kit.scrollsim2 pyramid OUT [--workers N]     rebuild CT levels 1 and up from level 0, then verify
+  python -m kit.scrollsim2 pyramid OUT [--workers N]     rebuild CT and label levels 1 and up, then verify
   python -m kit.scrollsim2 verify OUT                    every CT chunk on disk, no '.partial' temp file
   python -m kit.scrollsim2 publish SRC DST [--levels L ...] [--no-labels]   plain copy of a local folder, then verify
   python -m kit.scrollsim2 vc3d SIM OUT [--voxel-um V] [--copy]   a folder VC3D opens: volumes, surfaces, project
@@ -141,6 +143,9 @@ SCANS = {
 }
 POINTS_PER_PASS = 1 << 18      # voxels evaluated at once by density_block
 INCOMPLETE = 75                # make's exit code when it stopped early (deadline or --max-blocks): resume it
+# Truth extras: optional exact volumes beside the CT (make --truth), and the label pyramid.
+TRUTH_KINDS = ("contact", "uvw")   # truth/contact.zarr (uint8) and truth/uvw.zarr (u, v, w float32)
+PRESS_CONTACT = 0.5                # press above which a sheet voxel lies in a contact zone (as truth.json pressed_share)
 
 
 class SimError(ValueError):
@@ -1199,6 +1204,94 @@ class Scroll2(Roll):
         return np.where(sheet, acc["sheet"], np.where(inside, acc["gap"], np.float32(0))) * g
 
 
+    # ------------------------------------------------------------------ truth extras (contact map, material coords)
+    def truth_points(self, out, kinds=TRUTH_KINDS):
+        """Exact truth at output points OUT (N, 3) as x, y, z: a dict with `labels` (winding id + 1, 0 air, as
+        density_block), and per KINDS `contact` (0 air, 1 sheet apart, 2 sheet in a pressed contact zone) and `u`,
+        `v`, `w` (arc length from the inner end, rolled height, signed offset from the winding's center surface along
+        the rolled radius, recto (inner) side positive; voxels, NaN in air). A voxel's contact is the press of the
+        interface on its own side of the center surface: the inner one at its angle on the recto side, the outer one
+        (a turn on) on the verso side; the outermost winding has no outer neighbor."""
+        np = _np()
+        kinds = truth_kinds(kinds)
+        _, lab, th, _, _ = self.voxels(out)
+        wid = self.winding_id(th, out[:, :2], self.cl, out[:, 2])
+        sheet = lab >= 0
+        res = {"labels": np.where(sheet, wid + 1, 0).astype(np.uint16)}
+        if not kinds:
+            return res
+        rolled = self.rolled(out)
+        rho = np.hypot(rolled[:, 0] - self.center[0], rolled[:, 1] - self.center[1])
+        z = rolled[:, 2]
+        th = np.where(sheet, th, 0.0)
+        w = np.where(sheet, self.R_at(th, z) - rho, np.nan)
+        if "contact" in kinds:
+            outer = th + 2 * math.pi
+            p_in = self.at(self.press, th, z)
+            p_out = np.where(outer <= self.theta_end, self.at(self.press, np.minimum(outer, self.theta_end), z), 0.0)
+            pr = np.where(w >= 0, p_in, p_out)
+            res["contact"] = np.where(sheet, np.where(pr > PRESS_CONTACT, 2, 1), 0).astype(np.uint8)
+        if "uvw" in kinds:
+            res["u"] = np.where(sheet, self.s_at(th), np.nan).astype(np.float32)
+            res["v"] = np.where(sheet, z, np.nan).astype(np.float32)
+            res["w"] = w.astype(np.float32)
+        return res
+
+    def truth_block(self, z0, z1, y0, y1, x0, x1, kinds=TRUTH_KINDS, air=None):
+        """truth_points on every voxel center of the box, as arrays (z, y, x). Each value is a function of the voxel's
+        position only (no filter, no halo), so any block split gives the same arrays. AIR (from scan_block) skips a
+        box no sheet reaches."""
+        np = _np()
+        kinds = truth_kinds(kinds)
+        shape = (z1 - z0, y1 - y0, x1 - x0)
+        res = {"labels": np.zeros(shape, np.uint16)}
+        if "contact" in kinds:
+            res["contact"] = np.zeros(shape, np.uint8)
+        if "uvw" in kinds:
+            res.update({k: np.full(shape, np.nan, np.float32) for k in "uvw"})
+        if air is None:
+            air = self.block_is_air(z0, z1, y0, y1, x0, x1)
+        if air:
+            return res
+        zz, yy, xx = np.meshgrid(np.arange(z0, z1, dtype=np.float64), np.arange(y0, y1, dtype=np.float64),
+                                 np.arange(x0, x1, dtype=np.float64), indexing="ij")
+        cen = np.stack([xx.ravel(), yy.ravel(), zz.ravel()], 1)
+        del zz, yy, xx
+        flat = {k: v.reshape(-1) for k, v in res.items()}
+        for a in range(0, len(cen), POINTS_PER_PASS):
+            got = self.truth_points(cen[a:a + POINTS_PER_PASS], kinds)
+            for k, v in got.items():
+                flat[k][a:a + len(v)] = v
+        return res
+
+
+def truth_kinds(kinds):
+    """The extra truth volumes asked for, in TRUTH_KINDS order: a list, tuple or comma-separated string."""
+    if kinds is None:
+        return ()
+    if isinstance(kinds, str):
+        kinds = [k for k in kinds.split(",") if k.strip()]
+    kinds = [str(k).strip() for k in kinds]
+    bad = [k for k in kinds if k not in TRUTH_KINDS]
+    if bad:
+        raise SimError(f"unknown --truth {', '.join(bad)}; known: {', '.join(TRUTH_KINDS)}")
+    return tuple(k for k in TRUTH_KINDS if k in kinds)
+
+
+def label_down(a):
+    """One 2 x 2 x 2 step of the label pyramid: each cell takes its most common nonzero label (ties to the smaller
+    label), 0 only when all 8 are 0. A has even sizes; returns half of each."""
+    np = _np()
+    Z, Y, X = (s // 2 for s in a.shape)
+    cells = a.reshape(Z, 2, Y, 2, X, 2).transpose(0, 2, 4, 1, 3, 5).reshape(Z, Y, X, 8).astype(np.int64)
+    count = np.zeros(cells.shape, np.int64)
+    for j in range(8):
+        count += cells == cells[..., j:j + 1]
+    score = np.where(cells > 0, count * (1 << 17) - cells, -1)
+    idx = score.argmax(-1)[..., None]
+    return np.take_along_axis(cells, idx, -1)[..., 0].astype(a.dtype)
+
+
 # ---------------------------------------------------------------------------------------------------- texture library
 # A label-free texture library cut from a CT crop the user chooses (for example a crop of public open-data CT), and
 # label-free realism statistics that compare crops of simulated and real CT. Both read CT only.
@@ -1490,6 +1583,7 @@ def _emit(doc, out=None):
 
 # ---------------------------------------------------------------------------------------------------- make
 _SC = None          # the scroll a forked worker renders (copy on write)
+_TRUTH = ()         # the extra truth volumes a forked worker writes (make's `truth`)
 
 
 def _blocks(shape, block):
@@ -1518,11 +1612,12 @@ def _write_checked(arr_dir, arr, box, data):
     the fill value landed (zarr 3 does not write an all-fill chunk); retry up to WRITE_TRIES times."""
     c = arr.chunks
     fill = arr.fill_value if arr.fill_value is not None else 0
+    nan_fill = data.dtype.kind == "f" and bool(_np().isnan(fill))   # truth/uvw.zarr: NaN in air, never written
     keys = []
     for k in _chunk_keys(box, c):
         i = [int(x) for x in k.split(".")]
         sl = tuple(slice(i[a] * c[a] - box[2 * a], (i[a] + 1) * c[a] - box[2 * a]) for a in range(3))
-        if (data[sl] != fill).any():
+        if (~_np().isnan(data[sl])).any() if nan_fill else (data[sl] != fill).any():
             keys.append(k)
     for _ in range(WRITE_TRIES):
         arr[box[0]:box[1], box[2]:box[3], box[4]:box[5]] = data
@@ -1541,7 +1636,109 @@ def _work_level0(args):
     _write_checked(out / "ct.zarr" / "0", g["0"], b, ct)
     lg = zarr.open_group(str(out / "truth" / "labels.zarr"), mode="r+")
     _write_checked(out / "truth" / "labels.zarr" / "0", lg["0"], b, labels)
+    if _TRUTH:
+        _write_truth_extras(out, b, air)
     return air, time.time() - t
+
+
+# ---------------------------------------------------------------------------------------------------- truth extras
+def _write_truth_extras(out, b, air):
+    """The extra truth volumes (make's `truth`) of block B, in the worker that rendered its CT."""
+    import zarr
+    got = _SC.truth_block(*b, kinds=_TRUTH, air=air)
+    if "contact" in got:
+        g = zarr.open_group(str(out / "truth" / "contact.zarr"), mode="r+")
+        _write_checked(out / "truth" / "contact.zarr" / "0", g["0"], b, got["contact"])
+    if "u" in got:
+        g = zarr.open_group(str(out / "truth" / "uvw.zarr"), mode="r+")
+        for k in "uvw":
+            _write_checked(out / "truth" / "uvw.zarr" / k, g[k], b, got[k])
+
+
+def _ome(name, voxel_um, levels):
+    """OME-Zarr 0.4 multiscales attributes for LEVELS levels at VOXEL_UM, doubling per level (as ct.zarr)."""
+    return [{"version": "0.4", "name": name, "axes": [{"name": n, "type": "space", "unit": "micrometer"} for n in "zyx"],
+             "datasets": [{"path": str(lev), "coordinateTransformations": [
+                 {"type": "scale", "scale": [float(voxel_um) * 2.0 ** lev] * 3}]} for lev in range(levels)]}]
+
+
+def _label_levels(out, chunk):
+    """Give truth/labels.zarr the levels ct.zarr has (creating any missing, uint16, fill 0) and the same OME-Zarr
+    scales; returns the label level shapes."""
+    import zarr
+    ct = zarr.open_group(str(out / "ct.zarr"), mode="r")
+    levels = sorted(int(k) for k in ct.array_keys())
+    lg = zarr.open_group(str(out / "truth" / "labels.zarr"), mode="r+")
+    have = set(lg.array_keys())
+    for lev in levels:
+        shp = ct[str(lev)].shape
+        if str(lev) not in have:
+            lg.create_array(str(lev), shape=shp, chunks=tuple(min(chunk, s) for s in shp), dtype="uint16",
+                            fill_value=0)
+    ms = json.loads(json.dumps(dict(ct.attrs).get("multiscales", [])))
+    if ms:
+        ms[0]["name"] = "scrollsim2-labels"
+    lg.attrs["multiscales"] = ms
+    return {lev: ct[str(lev)].shape for lev in levels}
+
+
+def _work_down_labels(args):
+    """One block of label level LEV from level LEV - 1 by label_down (zero padding at odd edges: zeros never vote)."""
+    out, lev, b = args
+    import zarr
+    np = _np()
+    g = zarr.open_group(str(out / "truth" / "labels.zarr"), mode="r+")
+    src = g[str(lev - 1)]
+    z0, z1, y0, y1, x0, x1 = b
+    a = src[2 * z0:min(2 * z1, src.shape[0]), 2 * y0:min(2 * y1, src.shape[1]), 2 * x0:min(2 * x1, src.shape[2])]
+    pad = [(0, 2 * (e - s) - n) for (s, e), n in zip(((z0, z1), (y0, y1), (x0, x1)), a.shape)]
+    if any(p[1] for p in pad):
+        a = np.pad(a, pad, mode="constant")
+    _write_checked(out / "truth" / "labels.zarr" / str(lev), g[str(lev)], b, label_down(a))
+    return 0
+
+
+def _verify_truth(out, report):
+    """Label pyramid and truth extras, by chunk files alone (zarr writes no all-fill chunk, and the labels have
+    all-air chunks): a label chunk of level L is on disk exactly when one of the level L - 1 chunks under it is (a cell
+    is 0 only when all 8 below are), every CT level has its label level, and contact, u, v and w have a chunk exactly
+    where label level 0 has one (all are nonzero or not NaN exactly on sheet voxels)."""
+    import zarr
+    lp = out / "truth" / "labels.zarr"
+    if not lp.is_dir():
+        return
+    lg = zarr.open_group(str(lp), mode="r")
+    names = sorted(lg.array_keys(), key=int)
+    ct_names = sorted(zarr.open_group(str(out / "ct.zarr"), mode="r").array_keys(), key=int)
+    rep = {"levels": names, "missing_levels": [n for n in ct_names if n not in names], "bad": {}}
+
+    def on_disk(d):
+        return {f.name for f in Path(d).iterdir() if f.is_file() and not f.name.startswith(".")
+                and not f.name.endswith(".partial")} if Path(d).is_dir() else set()
+
+    for lev in names[1:]:
+        a, src = lg[lev], lg[str(int(lev) - 1)]
+        got = on_disk(lp / lev)
+        below = on_disk(lp / str(int(lev) - 1))
+        bad = []
+        for k in _chunk_keys((0, a.shape[0], 0, a.shape[1], 0, a.shape[2]), a.chunks):
+            i = [int(x) for x in k.split(".")]
+            box = []
+            for ax in range(3):
+                lo = i[ax] * a.chunks[ax]
+                box += [2 * lo, min(2 * min(lo + a.chunks[ax], a.shape[ax]), src.shape[ax])]
+            want = any(c in below for c in _chunk_keys(tuple(box), src.chunks))
+            if want != (k in got):
+                bad.append(k)
+        if bad:
+            rep["bad"][lev] = bad[:4]
+    lab0 = on_disk(lp / "0") if "0" in names else set()
+    for d in (out / "truth" / "contact.zarr" / "0", *(out / "truth" / "uvw.zarr" / k for k in "uvw")):
+        if (d / ".zarray").is_file() and on_disk(d) != lab0:
+            rep["bad"][str(d.relative_to(out))] = sorted(on_disk(d) ^ lab0)[:4]
+    rep["ok"] = not rep["missing_levels"] and not rep["bad"]
+    report["labels"] = rep
+    report["ok"] &= rep["ok"]
 
 
 def _work_down(args):
@@ -1563,7 +1760,8 @@ def _work_down(args):
 
 def verify(out):
     """Every CT chunk of every level on disk (the CT is never all fill: air renders gray and noisy), and no '.partial'
-    temp file anywhere. Returns a dict; 'ok' false names what is missing."""
+    temp file anywhere; with a label volume, its pyramid and the truth extras checked by _verify_truth (under
+    'labels'). Returns a dict; 'ok' false names what is missing."""
     out = Path(out)
     import zarr
     g = zarr.open_group(str(out / "ct.zarr"), mode="r")
@@ -1577,6 +1775,7 @@ def verify(out):
         report["ok"] &= not miss
     report["partial"] = sorted(str(p.relative_to(out)) for p in out.rglob("*.partial"))[:20]
     report["ok"] &= not report["partial"]
+    _verify_truth(out, report)
     return report
 
 
@@ -1591,10 +1790,14 @@ def publish(src, dst, levels=None, labels=True):
     names = sorted((p.name for p in (src / "ct.zarr").iterdir() if p.is_dir()), key=int)
     if levels is not None:
         names = [n for n in names if int(n) in set(int(x) for x in levels)]
-    dirs = [Path("ct.zarr") / n for n in names] + ([Path("truth") / "labels.zarr" / "0"] if labels else [])
+    dirs = [Path("ct.zarr") / n for n in names]
     files = [Path("ct.zarr") / ".zgroup", Path("ct.zarr") / ".zattrs", Path("truth.json")]
-    if labels:
-        files += [Path("truth") / "labels.zarr" / ".zgroup", Path("truth") / "labels.zarr" / ".zattrs"]
+    if labels:                                          # label level 0, its levels among NAMES, and the truth extras
+        tr = Path("truth")
+        dirs += [tr / "labels.zarr" / n for n in ["0"] + [n for n in names if n != "0"]
+                 if (src / tr / "labels.zarr" / n).is_dir()]
+        dirs += [d for d in (tr / "contact.zarr" / "0", *(tr / "uvw.zarr" / k for k in "uvw")) if (src / d).is_dir()]
+        files += [tr / g / f for g in ("labels.zarr", "contact.zarr", "uvw.zarr") for f in (".zgroup", ".zattrs")]
     copied = 0
     for d in dirs:
         (dst / d).mkdir(parents=True, exist_ok=True)
@@ -1615,7 +1818,8 @@ def publish(src, dst, levels=None, labels=True):
 
 
 def pyramid(out, workers=1):
-    """Rebuild CT levels 1 and up from level 0 of a complete make (truth.json complete), then verify."""
+    """Rebuild CT levels 1 and up from level 0 of a complete make (truth.json complete), and label levels 1 and up
+    (created when missing) from label level 0, then verify."""
     out = Path(out)
     doc = json.loads((out / "truth.json").read_text())
     if not doc.get("complete", True):
@@ -1625,11 +1829,14 @@ def pyramid(out, workers=1):
     levels = sorted(int(k) for k in g.array_keys())
     chunk = g["0"].chunks[0]
     shapes = {lev: g[str(lev)].shape for lev in levels}
+    lshapes = _label_levels(out, chunk) if (out / "truth" / "labels.zarr").is_dir() else {}
     pool = _pool(int(workers))
     try:
         t = time.time()
         for lev in levels[1:]:
             _map(pool, _work_down, [(out, lev, b) for b in _blocks(shapes[lev], chunk)])
+        for lev in sorted(lshapes)[1:]:
+            _map(pool, _work_down_labels, [(out, lev, b) for b in _blocks(lshapes[lev], chunk)])
     finally:
         if pool:
             pool.close()
@@ -1785,7 +1992,7 @@ def _deadline(environ=None):
 
 
 def make(out, over=None, preset=None, workers=1, block=128, levels=5, chunk=128, surfaces=False, progress=print,
-         resume=False, max_blocks=None, environ=None, order="zyx"):
+         resume=False, max_blocks=None, environ=None, order="zyx", truth=()):
     """Render one scroll into OUT: ct.zarr (OME-zarr, levels 0 to LEVELS), truth/labels.zarr, truth.json, and with
     SURFACES the center and recto tifxyz of the whole sheet.
 
@@ -1793,8 +2000,10 @@ def make(out, over=None, preset=None, workers=1, block=128, levels=5, chunk=128,
     OUT made with the same parameters and renders only the blocks not in done.txt. A job deadline (KIT_JOB_DEADLINE)
     stops new blocks once less than the spare is left; MAX_BLOCKS stops after that many new blocks (a timing
     probe). Either stop writes truth.json with "complete": false and skips the pyramid and surfaces. ORDER zyx renders
-    blocks in index order; middle renders those nearest the volume's center first (sheet blocks, for a probe)."""
-    global _SC
+    blocks in index order; middle renders those nearest the volume's center first (sheet blocks, for a probe).
+    TRUTH names extra truth volumes from TRUTH_KINDS (truth/contact.zarr, truth/uvw.zarr), written block by block
+    beside the CT; resume needs the same."""
+    global _SC, _TRUTH
     import zarr  # noqa: F401  (fail before any work when zarr is missing)
     progress = progress or (lambda m: None)
     out = Path(out)
@@ -1813,17 +2022,21 @@ def make(out, over=None, preset=None, workers=1, block=128, levels=5, chunk=128,
     key = {"params": p, "block": int(block), "chunk": int(chunk), "levels": int(levels), "code_sha256": code_sha256()}
     if p["library"]:
         key["library_sha256"] = _file_sha256(p["library"])
+    truth = truth_kinds(truth)
+    key["truth"] = list(truth)
     if not fresh:
         try:
             old = json.loads((out / "truth" / "make-key.json").read_text())
         except (OSError, ValueError):
             raise SimError(f"{out} is not a scrollsim2 folder to resume (no truth/make-key.json)")
         if old != json.loads(json.dumps(key, sort_keys=True)):
-            raise SimError(f"{out} was made with other parameters, block, chunk, levels or code; resume needs the same")
+            raise SimError(f"{out} was made with other parameters, block, chunk, levels, code or truth volumes; "
+                           "resume needs the same")
     sc = Scroll2(dict(p))
     sc.prepare()
     t_init = time.time() - t0
     _SC = sc
+    _TRUTH = truth
     pool = _pool(int(workers))        # fork before any zarr call starts its I/O thread in this process
     try:
         return _make_with(pool, sc, out, fresh, p, key, block, chunk, levels, workers, deadline, spare,
@@ -1833,6 +2046,7 @@ def make(out, over=None, preset=None, workers=1, block=128, levels=5, chunk=128,
             pool.close()
             pool.join()
         _SC = None
+        _TRUTH = ()
 
 
 def _make_with(pool, sc, out, fresh, p, key, block, chunk, levels, workers, deadline, spare, max_blocks, progress,
@@ -1861,13 +2075,37 @@ def _make_with(pool, sc, out, fresh, p, key, block, chunk, levels, workers, dead
         {"name": n, "type": "space", "unit": "micrometer"} for n in "zyx"], "datasets": datasets}]
     lg = zarr.open_group(str(out / "truth" / "labels.zarr"), mode="w", zarr_format=2)
     lg.create_array("0", shape=shapes[0], chunks=tuple(min(chunk, s) for s in shapes[0]), dtype="uint16", fill_value=0)
+    _label_levels(out, chunk)
+    _make_truth_arrays(out, key, shapes[0], chunk, p)
     return _map_resume(pool, sc, out, shapes, blocks, done, workers, deadline, spare, max_blocks, progress, t0,
                        t_init, key, preset, surfaces, order)
+
+
+def _make_truth_arrays(out, key, shape, chunk, p):
+    """The empty extra truth volumes of a fresh make: truth/contact.zarr/0 (uint8, fill 0) and truth/uvw.zarr u, v, w
+    (float32, fill NaN), level 0 only, chunked as the CT."""
+    import zarr
+    ch = tuple(min(chunk, s) for s in shape)
+    if "contact" in key["truth"]:
+        g = zarr.open_group(str(out / "truth" / "contact.zarr"), mode="w", zarr_format=2)
+        g.create_array("0", shape=shape, chunks=ch, dtype="uint8", fill_value=0)
+        g.attrs["multiscales"] = _ome("scrollsim2-contact", p["voxel_um"], 1)
+        g.attrs["values"] = {"0": "air", "1": "sheet, apart from its neighbor on that side",
+                             "2": "sheet, in a pressed contact zone on that side"}
+    if "uvw" in key["truth"]:
+        g = zarr.open_group(str(out / "truth" / "uvw.zarr"), mode="w", zarr_format=2)
+        for k in "uvw":
+            g.create_array(k, shape=shape, chunks=ch, dtype="float32", fill_value=float("nan"))
+        g.attrs["units"] = "voxels"
+        g.attrs["axes"] = {"u": "arc length along the sheet from its inner end", "v": "height in the rolled frame",
+                           "w": "signed offset from the winding's center surface along the rolled radius, recto "
+                                "(inner) side positive"}
 
 
 def _map_resume(pool, sc, out, shapes, blocks, done, workers, deadline, spare, max_blocks, progress, t0, t_init,
                 key, preset, surfaces, order="zyx"):
     block, chunk, levels = key["block"], key["chunk"], key["levels"]
+    lshapes = _label_levels(out, chunk)
     donef = out / "truth" / "done.txt"
     todo = [i for i in range(len(blocks)) if i not in done]
     if order == "middle":
@@ -1907,6 +2145,8 @@ def _map_resume(pool, sc, out, shapes, blocks, done, workers, deadline, spare, m
         t2 = time.time()
         for lev in range(1, len(shapes)):
             _map(pool, _work_down, [(out, lev, b) for b in _blocks(shapes[lev], chunk)])
+        for lev in sorted(lshapes)[1:]:
+            _map(pool, _work_down_labels, [(out, lev, b) for b in _blocks(lshapes[lev], chunk)])
         t_down = time.time() - t2
         check = verify(out)
         if not check["ok"]:
@@ -1930,7 +2170,7 @@ def _map_resume(pool, sc, out, shapes, blocks, done, workers, deadline, spare, m
            "params": sc.p2, "preset": preset, "complete": complete,
            "turns": round(sc.theta_end / (2 * math.pi), 2), "alpha": sc.alpha, "sheet_length_vox": round(sc.s_end, 1),
            "pressed_share": round(pressed, 4), "r_outer_rolled": round(sc.r_outer, 1),
-           "scan_model": scan_report(sc.p2),
+           "scan_model": scan_report(sc.p2), "truth_volumes": list(key.get("truth", [])),
            "center_line": [[round(float(v), 3) for v in r] for r in sc.cl],
            "render": {"workers": int(workers), "block": int(block), "chunk": int(chunk), "levels": int(levels),
                       "blocks": len(blocks), "blocks_done": len(done), "blocks_this_run": len(res),
@@ -2037,6 +2277,7 @@ def main(argv=None):
             a.add_argument("--resume", action="store_true")
             a.add_argument("--max-blocks", type=int)
             a.add_argument("--order", choices=["zyx", "middle"], default="zyx")
+            a.add_argument("--truth", default="", help="extra truth volumes, comma-separated: contact,uvw")
         else:
             a.add_argument("--sample", type=int, default=4)
         a.add_argument("--preset", choices=sorted(PRESETS))
@@ -2095,7 +2336,7 @@ def main(argv=None):
             if args.cmd == "make":
                 doc = make(args.out, over, args.preset, args.workers, args.block, args.levels, args.chunk,
                            args.surfaces, progress=lambda m: print(m, file=sys.stderr, flush=True),
-                           resume=args.resume, max_blocks=args.max_blocks, order=args.order)
+                           resume=args.resume, max_blocks=args.max_blocks, order=args.order, truth=args.truth)
                 doc = {k: v for k, v in doc.items() if k != "center_line"}
                 if not doc["complete"]:
                     print(json.dumps(doc))

@@ -14,7 +14,7 @@ ScrollSim v2 renders a synthetic rolled, pressed and crushed papyrus scroll at f
 | Needs | Python 3.10 or newer, numpy, scipy (ndimage), zarr 3 for `make` (it writes zarr format 2); all in `pip install -e ".[maps]"`. No scroll data |
 | Runs on | CPU, any core count (forked workers, at most 16 by default). Smoke scroll (64 x 208 x 208, 4.8 turns): 7.2 s wall on 4 workers, 98 MB peak per process (measured 2026-11-18, 4-core cloud container) |
 | Network | None |
-| Writes | `make OUT`: `OUT/ct.zarr`, `OUT/truth/labels.zarr`, `OUT/truth.json`, `OUT/truth/make-key.json`, `OUT/truth/done.txt`, and with `--surfaces` `OUT/truth/surfaces/spiral-center/` and `spiral-recto/`. `publish SRC DST`: a copy in `DST`. `pyramid OUT`: rewrites CT levels 1 and up. `vc3d SIM OUT`: `OUT/scrollsim2.volpkg.json`, `OUT/volumes/` (links, or copies with `--copy`), `OUT/paths/` |
+| Writes | `make OUT`: `OUT/ct.zarr`, `OUT/truth/labels.zarr` (levels as the CT), `OUT/truth.json`, `OUT/truth/make-key.json`, `OUT/truth/done.txt`, with `--truth contact,uvw` `OUT/truth/contact.zarr` and `OUT/truth/uvw.zarr`, and with `--surfaces` `OUT/truth/surfaces/spiral-center/` and `spiral-recto/`. `publish SRC DST`: a copy in `DST`. `pyramid OUT`: rewrites CT and label levels 1 and up. `vc3d SIM OUT`: `OUT/scrollsim2.volpkg.json`, `OUT/volumes/` (links, or copies with `--copy`), `OUT/paths/` |
 | Go-ahead | Not needed on a local CPU. A rented run follows hard rule 11 |
 | Released | Public `main` since 2026-11-18 |
 | Checked | 2026-11-18 against commit `424fb42` |
@@ -27,7 +27,7 @@ What works today:
 
 - **Full-scale geometry.** A whole cross-section of about 125 windings (the `pilot` preset, 1,024 x 1,728 x 3,264 voxels). The turn just inside each voxel is found by binary search, so a voxel costs about log2(turns) lookups instead of one per turn; a test holds it equal to the slow all-turns lookup. Fiber textures come from small periodic tiles, so a sheet millions of voxels long fits in memory. A fixed crush axis (`alpha` 0) lets the box be about half as tall as wide.
 - **Block-by-block rendering.** Every block renders with a halo that covers each filter, and noise is a hash of the voxel's position, so any block size gives the same volume bit for bit (test). Blocks that hold no sheet are detected and skipped. Workers write chunk-aligned blocks in parallel, each write is checked on disk, and a stopped run resumes where it left off.
-- **Exact truth.** `truth/labels.zarr` holds every sheet voxel's winding number (plus 1; 0 is air), numbered from the center line with one step across a fixed half-plane. `--surfaces` writes the whole sheet's center and recto surfaces as tifxyz, each with `winding.npy`, the winding number of every vertex. `truth.json` records the parameters, turns, center line and render timings, and the same parameters always rebuild the same scroll.
+- **Exact truth.** `truth/labels.zarr` holds every sheet voxel's winding number (plus 1; 0 is air), numbered from the center line with one step across a fixed half-plane, with a pyramid of the same levels as the CT (each cell takes its most common nonzero label). `--truth contact,uvw` adds a contact map (each sheet voxel apart from its neighbor or pressed against it) and material coordinates (u along the sheet, v up the roll, w across the sheet). `--surfaces` writes the whole sheet's center and recto surfaces as tifxyz, each with `winding.npy`, the winding number of every vertex. `truth.json` records the parameters, turns, center line and render timings, and the same parameters always rebuild the same scroll.
 
 - **CT scan model** (version 2 of the output, 2026-11-18). All off by default, so a release-1 render is unchanged bit for bit. `--scan synchrotron` and `--scan lab` switch on a starting set; `--set` tunes each part:
   - *Partial volume*: `supersample` averages sub-samples into each voxel.
@@ -303,6 +303,12 @@ The tests are the controls; each can fail:
 - Noise rendered from known bands is measured by `measure_nps` and fitted back: variance within 12 percent, fit error under 15 percent, and ramp noise has more power at high frequency than at low; white noise fits too.
 - Cupping darkens sheets near the middle of the roll more than at the rim and leaves air unchanged; slabs step the gain and change the rings, and one slab gives the release-1 rings.
 - A render with the scan model off equals the previous release's render bit for bit (checked by hand against commit `6abf7ff` on 2026-11-18; not a unit test).
+- The label pyramid's rule gives the expected label on seven hand-made cells (ties, zeros, the largest label) and matches a slow per-cell loop on a random volume; a made pyramid equals the rule applied level by level.
+- The contact map's share of pressed sheet voxels lies within 40 percent of `pressed_share`, and is 0 exactly in air.
+- Material coordinates: u grows winding by winding along a ray from the center line, w runs from positive to negative across most windings on that ray, |w| stays within half the thickness plus half the delamination, and at exact points w is 0 on the center surface, positive half way to the recto face and negative half way out on the verso side, with u equal to the surface's arc length and v to its height.
+- The extra truth volumes rendered whole equal the same box rendered in eight blocks, and a `make` with 64-voxel blocks writes what `truth_block` gives on the whole box; resume refuses other `--truth` volumes.
+- `verify` catches a lost label pyramid chunk and a lost contact chunk, and `pyramid` repairs the label level.
+- With the defaults, CT levels 0 to 2 and label level 0 equal those of the code before the label pyramid and truth volumes, bit for bit (checked once on 2026-11-18 against the previous code on three scrolls, not a standing test).
 
 - Texture library: a library cut from a ScrollSim v2 render holds both sheet and gap cubes, and blank or flat crops and odd patch sizes are refused. A textured render differs from the plain one by exactly the added residual, rounded (within 1 gray level), with labels unchanged, open air untouched, and `lib_gain` 0 equal to the plain render; whole versus eight blocks, and a block with odd edges, give identical CT with the library on.
 - Realism statistics: `g1stats` is deterministic and ignores a gray offset and gain; `g1distance` of a crop with itself is 0 and grows with added noise; `g1compare` judges one of the real crops inside the spread and a crop with three times the noise outside it on gap noise, and judges nothing when every crop comes from one scan; `resample` keeps the mean when it shrinks or grows a crop.
@@ -320,7 +326,7 @@ Claim label: None (a simulator; its output is synthetic data, and scores on it a
 usage: python -m kit.scrollsim2 make [-h] [--levels LEVELS] [--chunk CHUNK]
                                      [--surfaces] [--resume]
                                      [--max-blocks MAX_BLOCKS]
-                                     [--order {zyx,middle}]
+                                     [--order {zyx,middle}] [--truth TRUTH]
                                      [--preset {pilot,smoke}]
                                      [--scan {lab,synchrotron}] [--set SET]
                                      [--seed SEED] [--workers WORKERS]
@@ -337,6 +343,7 @@ usage: python -m kit.scrollsim2 make [-h] [--levels LEVELS] [--chunk CHUNK]
 | `--resume` | finish a stopped run with the same settings |
 | `--max-blocks N` | stop after N new blocks (a timing probe; exit 75) |
 | `--order zyx|middle` | block order: index order, or blocks nearest the center first |
+| `--truth contact,uvw` | extra truth volumes beside the CT, comma-separated (default none): `contact` writes `truth/contact.zarr`, `uvw` writes `truth/uvw.zarr`; `--resume` needs the same list |
 | `--preset NAME` | `smoke` or `pilot` |
 | `--scan NAME` | a scan preset, `synchrotron` or `lab` (same as `--set scan=NAME`); applied after `--preset`, before `--set` |
 | `--set KEY=VALUE` | override one parameter (repeatable; VALUE is JSON) |
@@ -372,7 +379,7 @@ usage: python -m kit.scrollsim2 pyramid [-h] [--workers WORKERS] sim
 
 | Option | Meaning |
 | --- | --- |
-| `sim` | a complete make folder |
+| `sim` | a complete make folder; rebuilds CT and label levels 1 and up (adding label levels a folder made before 2026-11-18 lacks) |
 | `--workers N` | forked workers |
 
 ### `python -m kit.scrollsim2 verify`
@@ -398,7 +405,7 @@ usage: python -m kit.scrollsim2 publish [-h] [--levels LEVELS [LEVELS ...]]
 | `src` | a finished local make folder |
 | `dst` | where to copy it, for example a mounted bucket |
 | `--levels L ...` | copy only these CT levels (a pyramid repair) |
-| `--no-labels` | skip the label volume |
+| `--no-labels` | skip the label volume, its pyramid and the `--truth` volumes |
 
 ### `python -m kit.scrollsim2 vc3d`
 
@@ -502,11 +509,13 @@ usage: python -m kit.scrollsim2 info [-h] sim
 | `params(over=None, preset=None)` | dict of every parameter | `SimError` on an unknown key, preset or scan preset, or a value out of range | DEFAULTS, then the preset, then the scan preset named by `scan`, then OVER |
 | `hashed_normal(seed, z0, z1, y0, y1, x0, x1, salt=HASH_SALT['noise'])` | float32 array (z, y, x) | | Standard normal noise on the box, a function of each voxel's position and the seed only |
 | `Roll(p)` | object | `SimError` when the box holds less than two windings | The sheet geometry: radius, thickness, contacts, delamination, holes and displacement fields; `voxels_all_turns(out)` is the slow reference lookup |
-| `Scroll2(p)` | object | `SimError` as `params`, or when the box is too short in y for a fixed crush | Full-scale lookups and rendering: `voxels(out)`, `scan_block(z0, z1, y0, y1, x0, x1)` returns (CT uint8, labels uint16, air flag), `surface(step, which)` |
-| `make(out, over=None, preset=None, workers=1, block=128, levels=5, chunk=128, surfaces=False, progress=print, resume=False, max_blocks=None, environ=None, order='zyx')` | dict (as `truth.json`) | `SimError` on a non-empty OUT without `resume`, a block that is not a multiple of the chunk, other parameters on resume, or missing chunks | Renders one scroll; see Outputs |
+| `Scroll2(p)` | object | `SimError` as `params`, or when the box is too short in y for a fixed crush | Full-scale lookups and rendering: `voxels(out)`, `scan_block(z0, z1, y0, y1, x0, x1)` returns (CT uint8, labels uint16, air flag), `truth_block(z0, z1, y0, y1, x0, x1, kinds=TRUTH_KINDS, air=None)` returns a dict of `labels` and the extra truth arrays of the box (`contact` uint8; `u`, `v`, `w` float32, NaN in air), `truth_points(out, kinds)` the same at any points (N, 3) as x, y, z, `surface(step, which)` |
+| `make(out, over=None, preset=None, workers=1, block=128, levels=5, chunk=128, surfaces=False, progress=print, resume=False, max_blocks=None, environ=None, order='zyx', truth=())` | dict (as `truth.json`) | `SimError` on a non-empty OUT without `resume`, a block that is not a multiple of the chunk, other parameters or truth volumes on resume, an unknown truth volume, or missing chunks | Renders one scroll; see Outputs |
 | `estimate(over=None, preset=None, workers=1, block=128, sample=4, seed=0, progress=print)` | dict | `SimError` as `params` | Times SAMPLE sheet blocks on one core and scales by the sheet block count over WORKERS |
-| `verify(out)` | dict with `ok` | | Every CT chunk of every level on disk, no `.partial` file |
-| `pyramid(out, workers=1)` | dict as `verify`, plus `seconds` | `SimError` when level 0 is incomplete | Rebuilds CT levels 1 and up from level 0 |
+| `verify(out)` | dict with `ok` | | Every CT chunk of every level on disk, no `.partial` file; under `labels`, every CT level has a label level, a label chunk of level L is on disk exactly when a level L - 1 chunk under it is, and the `contact`, `u`, `v`, `w` chunks lie exactly where label level 0 has chunks |
+| `truth_kinds(kinds)` | tuple in `TRUTH_KINDS` order | `SimError` on an unknown name | The extra truth volumes asked for, from a list or a comma-separated string |
+| `label_down(a)` | array of half the size, same dtype | | One label pyramid step: each 2 x 2 x 2 cell takes its most common nonzero label (a tie goes to the smaller label), 0 only when all 8 are 0 |
+| `pyramid(out, workers=1)` | dict as `verify`, plus `seconds` | `SimError` when level 0 is incomplete | Rebuilds CT and label levels 1 and up from level 0 |
 | `publish(src, dst, levels=None, labels=True)` | dict as `verify`, plus `copied_files` | `SimError` when SRC has no `ct.zarr` | Plain file copy (no write-then-rename), clears `.partial` files, then verifies DST |
 | `write_surface(folder, surf, name)` | the folder | | One tifxyz surface and its `winding.npy` |
 | `phase_model(p)` | dict or None | | The phase filter for parameters P: `a_object_vox2`, `a_recon_vox2`, `ratio`, the fitted `gaussians`, `max_error`, `halo`; None when `phase_mm` is 0 |
@@ -577,7 +586,9 @@ Scan presets (a starting point, not a calibration):
 `make` prints one line of JSON (the `truth.json` document without its center line) and writes:
 
 - `OUT/ct.zarr`: OME-Zarr 0.4 multiscales, zarr format 2, uint8, levels 0 to `--levels`, each half the last; the scale is in micrometers (`voxel_um` x 2^level).
-- `OUT/truth/labels.zarr/0`: uint16, winding number plus 1 per voxel, 0 for air.
+- `OUT/truth/labels.zarr`: uint16, winding number plus 1 per voxel, 0 for air; levels 0 to `--levels` with the CT's OME-Zarr scales, each level's cell the most common nonzero label of the 8 below it (0 only when all 8 are 0; a tie goes to the smaller label).
+- `OUT/truth/contact.zarr/0` (with `--truth contact`): uint8, 0 air, 1 a sheet voxel apart from its neighbor, 2 a sheet voxel in a pressed contact zone (press above 0.5, the rule of `pressed_share`). A voxel on the recto (inner) side of its winding's center surface takes the press of the inner interface at its angle, one on the verso side the press of the outer interface (a turn on); the outermost winding has no outer neighbor.
+- `OUT/truth/uvw.zarr` (with `--truth uvw`): float32 arrays `u`, `v`, `w`, level 0 only, NaN in air, voxels: `u` the arc length along the sheet from its inner end (as the surfaces' s), `v` the height in the rolled frame, `w` the signed offset from the winding's center surface along the rolled radius, positive on the recto (inner) side, where `surface(which="recto")` lies.
 - `OUT/truth/surfaces/spiral-center/` and `spiral-recto/` (with `--surfaces`): tifxyz (`x.tif`, `y.tif`, `z.tif`, `meta.json`) and `winding.npy`.
 - `OUT/truth/make-key.json` and `OUT/truth/done.txt`: what `--resume` checks and the blocks already written.
 
@@ -586,6 +597,7 @@ Scan presets (a starting point, not a calibration):
 | `complete` | bool | every block written, pyramid built and verified |
 | `turns` | float | turns of the sheet |
 | `pressed_share` | float | share of the sheet past its first turn that is pressed to a neighbor |
+| `truth_volumes` | list | the `--truth` volumes written (empty by default) |
 | `sheet_length_vox` | float | length of the sheet, voxels |
 | `params` | object | every parameter used |
 | `scan_model` | object | `version` 2, `scan`, `voxel_um`, `phase` (as `phase_model`, or null), `nps_total_sd`, `cupping`, `slab_z`, `slab_gain`, `axis_yx` |
@@ -631,9 +643,10 @@ Scan presets (a starting point, not a calibration):
 | `the mask's shape differs from the crop's` | `nps --mask` of another shape | save the mask for the same crop |
 | `no tile lies wholly inside the mask` | `nps --mask` too sparse | lower `--tile` or widen the mask |
 | `the box holds less than two windings; raise shape or lower pitch` | box too small for the spiral | raise `shape` or lower `pitch` |
-| `...was made with other parameters, block, chunk, levels or code; resume needs the same` | `--resume` with other settings or code | resume with the same settings, or start a new folder |
+| `...was made with other parameters, block, chunk, levels, code or truth volumes; resume needs the same` | `--resume` with other settings, code or `--truth` | resume with the same settings, or start a new folder |
 | `...: chunks missing after the pyramid:...` | a pyramid write was lost | run `pyramid OUT` |
 | `--set is KEY=VALUE` | malformed `--set` | write `KEY=VALUE` |
+| `unknown --truth...; known:...` | a `--truth` name other than `contact` and `uvw` | use `contact`, `uvw` or both, comma-separated |
 | `scrollsim2:...` | any refusal above, from the command line | read the message |
 | `which is center or recto` | bad `surface()` argument | use `center` or `recto` |
 | `the box is...voxels in y; this crush needs...` | fixed crush axis and a box too short in y | raise y to the size named |
@@ -685,10 +698,11 @@ Stage registry: no stage option. The registry's stages read a real scroll; Scrol
 
 ## Tests
 
-`python -m unittest tests.test_scrollsim2 -v` (about 3 minutes on 4 cores; skips without numpy and scipy, and the make tests skip without zarr). Covered: lookup equality, determinism, parameter refusals, the narrow fixed-axis box, position-hashed noise, block independence, air skipping, make and its pyramid, stop and resume, deadline stop, lost-chunk detection and repair, publish, estimate, the worker cap and BLAS threads; the scan model (presets and refusals, block independence with every part on, phase against an exact FFT filter, phase edges by retrieval mismatch, noise measured and fitted back, cupping, slabs and rings, make with the scan model and the `nps` command), the texture library (build, refusals, the residual it adds, block independence) and the realism statistics (determinism, distances, the spread judgment, resampling, the three commands), all on synthetic inputs. Not covered: the `pilot` preset at full size, a `make` run with a library, and any realism of the volumes against real CT.
+`python -m unittest tests.test_scrollsim2 -v` (about 6 minutes on 4 cores; skips without numpy and scipy, and the make tests skip without zarr). Covered: lookup equality, determinism, parameter refusals, the narrow fixed-axis box, position-hashed noise, block independence, air skipping, make and its pyramid, stop and resume, deadline stop, lost-chunk detection and repair, publish, estimate, the worker cap and BLAS threads; the truth extras (label pyramid rule, contact share, u, v and w signs and bounds, their block independence, `--truth` on the command line and its resume check); the scan model (presets and refusals, block independence with every part on, phase against an exact FFT filter, phase edges by retrieval mismatch, noise measured and fitted back, cupping, slabs and rings, make with the scan model and the `nps` command), the texture library (build, refusals, the residual it adds, block independence) and the realism statistics (determinism, distances, the spread judgment, resampling, the three commands), all on synthetic inputs. Not covered: the `pilot` preset at full size, a `make` run with a library, and any realism of the volumes against real CT.
 
 ## History
 
+- 2026-11-18: richer truth: a label pyramid beside the CT pyramid (most common nonzero label per cell), and `make --truth contact,uvw` for a contact map and material coordinates (u, v, w) written block by block with the CT; the CT and label level 0 at the defaults are unchanged (`3f7dc8c`).
 - 2026-11-18: texture library (`library`, the `library` and `lib_gain` parameters) and label-free realism statistics (`g1`, `g1-compare`); off by default, so earlier renders are unchanged (`d2a7727`).
 - 2026-11-18: CT scan model (output version 2): phase contrast with Paganin retrieval, noise bands with `nps` to measure and fit a crop's spectrum, beam-hardening cupping, acquisition slabs, rings about the rotation axis, `--scan synchrotron|lab`, and the voxel size in micrometers in the OME-Zarr scale; all off by default (`db454ca`).
 - 2026-11-18: `vc3d`, a folder VC3D opens, tested with VC3D build 7154682 (`9195926`).

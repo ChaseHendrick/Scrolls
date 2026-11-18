@@ -656,5 +656,230 @@ class ScrollSim2WorkersTest(unittest.TestCase):
         self.assertEqual(env, {"OMP_NUM_THREADS": "8", "OPENBLAS_NUM_THREADS": "1", "MKL_NUM_THREADS": "1"})
 
 
+def _same(a, b):
+    return a.shape == b.shape and a.dtype == b.dtype and bool(np.array_equal(a, b, equal_nan=a.dtype.kind == "f"))
+
+
+@unittest.skipUnless(HAVE, "needs numpy and scipy")
+class ScrollSim2TruthExtrasTest(unittest.TestCase):
+    """The label pyramid, the contact map and the material coordinates (u, v, w) beside the CT."""
+
+    def test_label_pyramid_takes_the_most_common_nonzero_label(self):
+        from kit import scrollsim2 as s2
+        cells = [([0] * 8, 0), ([0] * 7 + [5], 5), ([3, 3, 0, 0, 0, 0, 0, 5], 3),
+                 ([3, 5, 5, 3, 0, 0, 0, 0], 3),                 # a tie goes to the smaller label
+                 ([0, 0, 0, 0, 0, 9, 9, 7], 9),                 # zeros never win while a label is there
+                 ([7, 7, 7, 9, 9, 9, 9, 0], 9), ([65535, 65535, 1, 0, 0, 0, 0, 0], 65535)]
+        a = np.zeros((2, 2, 2 * len(cells)), np.uint16)
+        for k, (vals, _) in enumerate(cells):
+            for i, v in enumerate(vals):
+                a[i // 4, (i // 2) % 2, 2 * k + i % 2] = v
+        got = s2.label_down(a)
+        self.assertEqual(got.shape, (1, 1, len(cells)))
+        self.assertEqual(got.dtype, np.uint16)
+        self.assertEqual(got[0, 0].tolist(), [want for _, want in cells])
+        # a stacked case: the same rule on a larger random volume against a slow per-cell loop
+        rng = np.random.default_rng(1)
+        b = rng.choice(np.array([0, 0, 0, 2, 4, 7], np.uint16), size=(4, 6, 8))
+        fast = s2.label_down(b)
+        for z in range(2):
+            for y in range(3):
+                for x in range(4):
+                    v = b[2 * z:2 * z + 2, 2 * y:2 * y + 2, 2 * x:2 * x + 2].ravel()
+                    v = v[v > 0]
+                    if len(v) == 0:
+                        want = 0
+                    else:
+                        u, c = np.unique(v, return_counts=True)
+                        want = int(u[c == c.max()].min())
+                    self.assertEqual(int(fast[z, y, x]), want)
+
+    def test_contact_share_matches_pressed_share(self):
+        from kit import scrollsim2 as s2
+        sc = s2.Scroll2(dict(TINY, contact_share=0.45))
+        r = sc.truth_block(0, 48, 0, 160, 0, 160, kinds=("contact",))
+        self.assertEqual(sorted(r), ["contact", "labels"])
+        sheet = r["labels"] > 0
+        self.assertTrue(np.array_equal(sheet, r["contact"] > 0))          # contact 0 exactly in air
+        share = float((r["contact"][sheet] == 2).mean())
+        pressed = float((sc.press[s2.ANG:sc.n_end] > 0.5).mean())      # as truth.json pressed_share
+        self.assertGreater(pressed, 0.1)
+        self.assertGreater(share, 0.6 * pressed)
+        self.assertLess(share, 1.4 * pressed)
+        with self.assertRaises(s2.SimError):
+            s2.truth_kinds("contact,depth")
+        self.assertEqual(s2.truth_kinds("uvw,contact"), ("contact", "uvw"))
+
+    def test_uvw_follows_the_sheet(self):
+        from kit import scrollsim2 as s2
+        sc = s2.Scroll2(dict(TINY))
+        # along a ray from the center line, u grows winding by winding, and w runs from recto (+) to verso (-)
+        z = 24
+        cx, cy = sc._center_at(sc.cl, float(z))
+        cx, cy = int(round(float(cx))), int(round(float(cy)))
+        r = sc.truth_block(z, z + 1, cy, cy + 1, cx, 160)
+        lab, u, w = r["labels"][0, 0], r["u"][0, 0], r["w"][0, 0]
+        self.assertTrue(np.array_equal(np.isnan(u), lab == 0))
+        runs = []
+        for i in np.flatnonzero(lab):
+            if runs and runs[-1][-1] == i - 1 and lab[runs[-1][-1]] == lab[i]:
+                runs[-1].append(i)
+            else:
+                runs.append([i])
+        self.assertGreaterEqual(len(runs), 3)
+        means = [float(u[k].mean()) for k in runs]
+        self.assertTrue(all(b > a for a, b in zip(means, means[1:])), means)
+        long_runs = [k for k in runs if len(k) >= 3]
+        self.assertTrue(long_runs)
+        flips = sum(1 for k in long_runs if w[k[0]] > 0 > w[k[-1]])
+        self.assertGreaterEqual(flips, 0.8 * len(long_runs))
+        # on sheet voxels |w| is at most half the thickness (plus half the delamination)
+        b = sc.truth_block(16, 32, 20, 140, 20, 140)
+        ws = b["w"][b["labels"] > 0]
+        self.assertTrue(np.isfinite(ws).all())
+        self.assertLessEqual(float(np.abs(ws).max()), 0.5 * float(sc.thick.max()) + 0.5 * float(sc.delam.max()) + 1e-4)
+        # exact points: on the center surface w is 0, u the surface's s and v its rolled z; half way to the recto face
+        # (surface(which="recto") lies on the inner side) w is positive, half way out on the verso side negative
+        surf = sc.surface(8.0, "center")
+        TH, ZZ = surf["theta"], surf["z_rolled"]
+        S = np.broadcast_to(surf["s"][None], TH.shape)
+        fo = sc.face_offset(TH, ZZ)
+        R = sc.R_at(TH, ZZ)
+        for frac, sign in ((0.0, 0), (0.5, 1), (-0.5, -1)):
+            rr = R + frac * fo
+            rolled = np.stack([sc.center[0] + rr * np.cos(TH), sc.center[1] + rr * np.sin(TH), ZZ], -1).reshape(-1, 3)
+            out = sc.forward(rolled)[0]
+            lim = np.array([sc.X - 1, sc.Y - 1, sc.Z - 1])
+            ok = np.isfinite(out).all(1) & (out >= 0).all(1) & (out <= lim).all(1)
+            ok &= TH.ravel() > 0.01                     # the inner end itself (theta 0) wraps to a turn before it
+            t = sc.truth_points(out[ok], ("uvw",))
+            self.assertTrue((t["labels"] > 0).all())
+            self.assertGreater(ok.sum(), 200)
+            self.assertTrue(np.allclose(t["w"], -frac * fo.ravel()[ok], atol=1e-3))
+            if sign:
+                self.assertTrue((np.sign(t["w"]) == sign).all())
+            self.assertTrue(np.allclose(t["u"], S.ravel()[ok], atol=0.05))
+            self.assertTrue(np.allclose(t["v"], ZZ.ravel()[ok], atol=1e-3))
+        rec = sc.surface(8.0, "recto")
+        self.assertTrue(np.allclose(np.hypot(*(sc.rolled(rec["P"].reshape(-1, 3))[:, :2] - sc.center).T),
+                                    (R + fo).ravel(), atol=1e-3))      # the recto surface is R + fo: fo < 0, inner
+
+    def test_truth_extras_are_block_independent(self):
+        from kit import scrollsim2 as s2
+        sc = s2.Scroll2(dict(TINY))
+        whole = sc.truth_block(8, 40, 20, 140, 20, 140)
+        self.assertEqual(sorted(whole), ["contact", "labels", "u", "v", "w"])
+        _, lw, _ = sc.scan_block(8, 40, 20, 140, 20, 140)
+        self.assertTrue(np.array_equal(whole["labels"], lw))            # the same labels as the CT's
+        parts = {k: np.full_like(v, np.nan) if v.dtype.kind == "f" else np.zeros_like(v) for k, v in whole.items()}
+        for z0 in (8, 24):
+            for y0 in (20, 80):
+                for x0 in (20, 80):
+                    got = sc.truth_block(z0, z0 + 16, y0, y0 + 60, x0, x0 + 60)
+                    for k, v in got.items():
+                        parts[k][z0 - 8:z0 + 8, y0 - 20:y0 + 40, x0 - 20:x0 + 40] = v
+        for k in whole:
+            self.assertTrue(_same(whole[k], parts[k]), k)
+        self.assertTrue((whole["contact"] == 2).any() and (whole["contact"] == 1).any())
+        far = sc.truth_block(0, 16, -400, -376, -400, -376)            # an air box, skipped
+        self.assertFalse(far["labels"].any())
+        self.assertTrue(np.isnan(far["u"]).all())
+        self.assertTrue(_same(far["w"], sc.truth_block(0, 16, -400, -376, -400, -376, air=False)["w"]))
+
+    @unittest.skipUnless(HAVE_ZARR, "needs zarr")
+    def test_make_writes_truth_extras_and_label_pyramid(self):
+        import os
+        import zarr
+        from kit import scrollsim2 as s2
+        with tempfile.TemporaryDirectory() as t:
+            a = Path(t) / "a"
+            doc = s2.make(a, dict(TINY), workers=4, block=32, levels=2, chunk=32, progress=None,
+                          truth=("uvw", "contact"))
+            self.assertTrue(doc["render"]["verified"]["ok"])
+            self.assertTrue(doc["render"]["verified"]["labels"]["ok"])
+            self.assertEqual(doc["truth_volumes"], ["contact", "uvw"])
+            self.assertEqual(json.loads((a / "truth" / "make-key.json").read_text())["truth"], ["contact", "uvw"])
+            ct = zarr.open_group(str(a / "ct.zarr"), mode="r")
+            lg = zarr.open_group(str(a / "truth" / "labels.zarr"), mode="r")
+            self.assertEqual(sorted(lg.array_keys()), ["0", "1", "2"])
+            self.assertEqual(lg.attrs["multiscales"][0]["datasets"], ct.attrs["multiscales"][0]["datasets"])
+            l0 = lg["0"][:]
+            self.assertTrue(np.array_equal(lg["1"][:], s2.label_down(l0)))
+            l1 = lg["1"][:]
+            self.assertTrue(np.array_equal(lg["2"][:], s2.label_down(l1)))
+            self.assertGreater(len(np.unique(lg["2"][:])), 3)
+            contact = zarr.open_group(str(a / "truth" / "contact.zarr"), mode="r")["0"][:]
+            uvw = zarr.open_group(str(a / "truth" / "uvw.zarr"), mode="r")
+            self.assertEqual(contact.dtype, np.uint8)
+            self.assertTrue(np.array_equal(contact > 0, l0 > 0))
+            for k in "uvw":
+                self.assertEqual(uvw[k].dtype, np.float32)
+                self.assertTrue(np.array_equal(np.isnan(uvw[k][:]), l0 == 0), k)
+            sc = s2.Scroll2(dict(TINY))
+            ref = sc.truth_block(16, 48, 32, 96, 64, 128)
+            self.assertTrue(_same(contact[16:48, 32:96, 64:128], ref["contact"]))
+            self.assertTrue(_same(uvw["w"][16:48, 32:96, 64:128], ref["w"]))
+            # resume checks the truth volumes
+            with self.assertRaises(s2.SimError):
+                s2.make(a, dict(TINY), block=32, levels=2, chunk=32, progress=None, resume=True)
+            with self.assertRaises(s2.SimError):
+                s2.make(a, dict(TINY), block=32, levels=2, chunk=32, progress=None, resume=True, truth="contact")
+            with self.assertRaises(s2.SimError):
+                s2.make(Path(t) / "e", dict(TINY), progress=None, truth=("ink",))
+            # verify catches a lost label pyramid chunk and a lost contact chunk; pyramid repairs the labels
+            key = sorted(f.name for f in (a / "truth" / "labels.zarr" / "1").iterdir() if f.name[0] != ".")[0]
+            os.remove(a / "truth" / "labels.zarr" / "1" / key)
+            v = s2.verify(a)
+            self.assertFalse(v["ok"])
+            self.assertEqual(v["labels"]["bad"], {"1": [key]})
+            r = s2.pyramid(a, workers=1)
+            self.assertTrue(r["ok"], r)
+            self.assertTrue(np.array_equal(zarr.open_group(str(a / "truth" / "labels.zarr"), mode="r")["1"][:], l1))
+            ck = sorted(f.name for f in (a / "truth" / "contact.zarr" / "0").iterdir() if f.name[0] != ".")[0]
+            os.rename(a / "truth" / "contact.zarr" / "0" / ck, Path(t) / "lost")
+            self.assertIn("truth/contact.zarr/0", s2.verify(a)["labels"]["bad"])
+            os.rename(Path(t) / "lost", a / "truth" / "contact.zarr" / "0" / ck)
+            # publish copies the label pyramid and the extras
+            d = Path(t) / "dst"
+            r = s2.publish(a, d)
+            self.assertTrue(r["ok"] and r["labels"]["ok"], r)
+            self.assertTrue(np.array_equal(zarr.open_group(str(d / "truth" / "contact.zarr"), mode="r")["0"][:], contact))
+            self.assertEqual(sorted(zarr.open_group(str(d / "truth" / "labels.zarr"), mode="r").array_keys()),
+                             ["0", "1", "2"])
+
+    @unittest.skipUnless(HAVE_ZARR, "needs zarr")
+    def test_make_command_line_truth_resume_and_block_split(self):
+        # --truth on the command line; a run stopped early refuses to resume with other truth volumes, then resumes
+        # with the same ones; 64-voxel blocks write what truth_block gives on the whole box
+        import contextlib
+        import io
+        import zarr
+        from kit import scrollsim2 as s2
+        small = dict(TINY, shape=[16, 160, 160])
+        sets = []
+        for k, v in small.items():
+            sets += ["--set", f"{k}={json.dumps(v)}"]
+        with tempfile.TemporaryDirectory() as t:
+            b = Path(t) / "b"
+            args = ["make", str(b)] + sets + ["--workers", "4", "--block", "64", "--chunk", "32", "--levels", "1"]
+            with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+                self.assertEqual(s2.main(args + ["--truth", "contact,uvw", "--max-blocks", "3"]), s2.INCOMPLETE)
+                with self.assertRaises(SystemExit):
+                    s2.main(args + ["--truth", "uvw", "--resume"])
+                with self.assertRaises(SystemExit):
+                    s2.main(args + ["--truth", "bogus"])
+                self.assertEqual(s2.main(args + ["--truth", "uvw,contact", "--resume"]), 0)
+            ref = s2.Scroll2(small).truth_block(0, 16, 0, 160, 0, 160)
+            self.assertTrue(np.array_equal(zarr.open_group(str(b / "truth" / "contact.zarr"), mode="r")["0"][:],
+                                           ref["contact"]))
+            ub = zarr.open_group(str(b / "truth" / "uvw.zarr"), mode="r")
+            for k in "uvw":
+                self.assertTrue(_same(ub[k][:], ref[k]), k)
+            lb = zarr.open_group(str(b / "truth" / "labels.zarr"), mode="r")
+            self.assertTrue(np.array_equal(lb["0"][:], ref["labels"]))
+            self.assertTrue(np.array_equal(lb["1"][:], s2.label_down(ref["labels"])))
+            self.assertTrue(s2.verify(b)["labels"]["ok"])
+
+
 if __name__ == "__main__":
     unittest.main()
