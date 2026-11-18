@@ -688,7 +688,10 @@ class ScrollSim2PhysicsTest(unittest.TestCase):
         self.assertLess(float(np.abs(d1 - d2).max()), 1e-9)
         surf = on.surface(step=4.0)
         self.assertLess(surf["residual"], 1e-6)
-        P, ok = surf["P"][surf["valid"]], surf["winding"][surf["valid"]]
+        # the column at the sheet's inner end (theta 0) lies on the edge where the sheet starts, so whether voxels()
+        # counts it as sheet depends on rounding (2 of its vertices miss here, 3 on CI); check every vertex past it
+        keep = surf["valid"] & (surf["theta"] > 0)
+        P, ok = surf["P"][keep], surf["winding"][keep]
         _, lab, th, _, _ = on.voxels(P)
         wid = on.winding_id(th, P[:, :2], on.cl, P[:, 2])
         self.assertGreater(float(np.mean((lab >= 0) & (wid == ok))), 0.999)

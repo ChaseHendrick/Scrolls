@@ -1,0 +1,43 @@
+{
+  "schema": "scrolls-media/1",
+  "name": "scrollsim2-pressed-z",
+  "label": "Synthetic demo",
+  "alt": "Animation through z of a zoomed synthetic box where windings press together: gray CT, the same box tinted by winding number, and tinted by contact, side by side; pressed zones open and close as the slices pass.",
+  "caption": "Synthetic demo: a pass through z of a ScrollSim v2 contact zone, CT beside labels and contact truth. No scan data.",
+  "license": "Apache-2.0",
+  "release_id": null,
+  "data": null,
+  "sources": [],
+  "outputs": [
+    {
+      "file": "scrollsim2-pressed-z.gif",
+      "bytes": 1654454,
+      "sha256": "4b2a8f30f4d951fb60db7df653502649cf723907ccbb22c4089d920b3cb7f098",
+      "width": 712,
+      "height": 268,
+      "kind": "clip",
+      "format": "gif"
+    }
+  ],
+  "inputs": [],
+  "made": "2026-11-18",
+  "tool": {
+    "scripts": [
+      "common.py",
+      "scrollsim2_demo.py"
+    ],
+    "scripts_sha256": "19c58198d4ee2bc4e9248824281ede9a2dfa69c5de6b994f0422ccb8963143e4",
+    "base_commit": "41846a72c51615e46ea903ea3ed9d7c63afae4ac"
+  },
+  "command": "python scripts/media/scrollsim2_demo.py --work WORK --out-dir docs/assets/scrollsim2",
+  "scrollsim2": {
+    "frames": 24,
+    "z_step": 4,
+    "frame_ms": 200,
+    "box_y0_x0_edge": [
+      299,
+      190,
+      112
+    ]
+  }
+}

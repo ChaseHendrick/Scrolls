@@ -1,0 +1,59 @@
+{
+  "schema": "scrolls-media/1",
+  "name": "scrollsim2-ink",
+  "label": "Synthetic demo",
+  "alt": "Four long strips of the same stretch of a synthetic sheet, flattened: black random Greek capitals on white as the ink truth; gray CT on the sheet's face with ink, where the letters are faint; the same place in the twin rendered without ink; and the difference of the two, where the letters stand out in orange.",
+  "caption": "Synthetic demo: the ScrollSim v2 ink writer on a flattened stretch of the recto face, with its noink twin and their difference. Random letters, not text; not a reading. No scan data.",
+  "license": "Apache-2.0",
+  "release_id": null,
+  "data": null,
+  "sources": [],
+  "outputs": [
+    {
+      "file": "scrollsim2-ink.png",
+      "bytes": 487693,
+      "sha256": "397899089ee42020ab6eb4cc70a8564b121d4335fd0912115a770b104af1ccc7",
+      "width": 1920,
+      "height": 1060,
+      "kind": "still",
+      "format": "png"
+    }
+  ],
+  "inputs": [],
+  "made": "2026-11-18",
+  "tool": {
+    "scripts": [
+      "common.py",
+      "scrollsim2_demo.py"
+    ],
+    "scripts_sha256": "db18eba53aa44c6589cfe4f0df3f745fd037a41ea9a3e9dd9f3b466e9355e273",
+    "base_commit": "41846a72c51615e46ea903ea3ed9d7c63afae4ac"
+  },
+  "command": "python scripts/media/scrollsim2_demo.py --work WORK --out-dir docs/assets/scrollsim2",
+  "scrollsim2": {
+    "ink_scroll": {
+      "shape": [
+        128,
+        512,
+        512
+      ],
+      "seed": 5,
+      "ink_um": 5.0,
+      "ink_depth_um": 8.0,
+      "ink_rho": 0.3,
+      "ink_tex": 0.5,
+      "ink_letter": 26.0,
+      "ink_line": 38.0,
+      "ink_margin": 8.0,
+      "ink_col": 420.0,
+      "ink_gap": 60.0
+    },
+    "s_range": [
+      5571.316926760094,
+      6670.316926760094
+    ],
+    "face_shift": 0.0,
+    "mean_abs_diff": 1.27,
+    "diff_lim": 17.33
+  }
+}
