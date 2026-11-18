@@ -48,6 +48,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **benchmark**: A fixed test with a fixed scoring rule, used to compare readers or tools. The numbers live in [`docs/results.json`](docs/results.json).
 
+**bf16 bar**: In [`kit.mpsparity`](docs/tools/mpsparity.md), a device passes when its fp32 result sits nearer the reference fp32 result than bf16 autocast does on the reference device; the bar for networks whose fixed tolerances are stricter than fp32 rounding noise.
+
 **BM18**: A beamline at the ESRF built for phase-contrast tomography of large objects; used for scroll scans from 2025.
 
 **bootstrap**: Resampling the data many times to estimate how much a score would vary. `kit auc --bootstrap` gives AUC intervals this way.
@@ -529,6 +531,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 **villaports**: `kit villaports`, which scans a folder of scripts for references to villa's `vesuvius` and `vc_reader` packages and says which break at a villa commit and what replaces each ([`docs/tools/villaports.md`](docs/tools/villaports.md)).
 
 **virtual unwrapping**: Recovering the content of a rolled surface from a 3D scan without opening it.
+
+**VOID (check)**: A check whose control did not differ enough for the check to be able to fail; it counts as neither a pass nor a fail, and a run with one is not a pass.
 
 **volume**: A reconstructed 3D CT image of a scroll or fragment.
 

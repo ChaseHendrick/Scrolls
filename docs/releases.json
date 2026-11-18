@@ -851,6 +851,18 @@
           "evidence": "[checks and controls](docs/tools/accelbench.md#checks-and-controls)",
           "line": "Times a faster version of some code only after its output matches the original, with a control.",
           "area": "Compute and cost"
+        },
+        {
+          "id": "mpsparity",
+          "name": "mpsparity: same training result on Apple MPS as on the CPU",
+          "released": "2026-11-18",
+          "version": "1.0",
+          "summary": "Builds one seeded copy of a torch network on each device and compares the forward output, one gradient and a short AdamW run on identical synthetic inputs, each with a control that must differ by ten times the tolerance or the check is VOID. Three built-in 3D and 2D networks, or your own with --script, --build and --shape; ops probes 3D data-path operators; --bench times training steps. A device check on synthetic inputs, not a model's quality.",
+          "command": "python -m kit.mpsparity run --device mps --steps 10 --out OUT.json",
+          "page": "docs/tools/mpsparity.md",
+          "evidence": "[checks and controls](docs/tools/mpsparity.md#checks-and-controls)",
+          "line": "Checks that a small torch training gives the same result on Apple's GPU as on the CPU, with controls.",
+          "area": "Compute and cost"
         }
       ],
       "where": "main"
