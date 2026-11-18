@@ -514,7 +514,7 @@ class ScrollSim2TextureTest(unittest.TestCase):
         self.assertTrue(np.array_equal(la, lb))                      # labels never change
         h = tex.halo()
         Z0, Y0, X0 = box[0] - h, box[2] - h, box[4] - h
-        dens, _, near = tex.density_block(Z0, box[1] + h, Y0, box[3] + h, X0, box[5] + h)
+        dens, _, near, _ = tex.density_block(Z0, box[1] + h, Y0, box[3] + h, X0, box[5] + h)
         r = tex._library_block(Z0, Y0, X0, dens.shape, dens, near)
         r = r[h:h + 32, h:h + 120, h:h + 120]
         d = b.astype(float) - a
@@ -730,8 +730,8 @@ class ScrollSim2PhysicsTest(unittest.TestCase):
         ca, la, _ = on.scan_block(*box)
         cb, lb, _ = off.scan_block(*box)
         self.assertTrue(np.array_equal(la, lb))
-        da, _, _ = on.density_block(*box)
-        db, _, near = off.density_block(*box)
+        da, _, _, _ = on.density_block(*box)
+        db, _, near, _ = off.density_block(*box)
         self.assertTrue(np.array_equal(da[lb > 0], db[lb > 0]))           # the sheet itself is untouched
         gap = (lb == 0) & (near <= 0.75 * 12.0)
         self.assertGreater(float((da - db)[gap].max()), 0.5)               # inclusions and strands are bright
@@ -762,9 +762,9 @@ class ScrollSim2PhysicsTest(unittest.TestCase):
         p = dict(TINY, contact_share=0.0)
         off = s2.Scroll2(p)
         box = (16, 32, 20, 140, 20, 140)
-        db, lb, _ = off.density_block(*box)
+        db, lb, _, _ = off.density_block(*box)
         bub = s2.Scroll2(dict(p, bubbles=0.3))
-        da, la, _ = bub.density_block(*box)
+        da, la, _, _ = bub.density_block(*box)
         self.assertTrue(np.array_equal(la, lb))
         self.assertTrue(np.array_equal(da[lb == 0], db[lb == 0]))          # voids only inside the sheet
         lost = 1 - da[lb > 0] / np.maximum(db[lb > 0], 1e-6)
@@ -774,7 +774,7 @@ class ScrollSim2PhysicsTest(unittest.TestCase):
         gr, gv = ply.ply_gain(0, S.ravel(), Z.ravel()), ply.ply_gain(1, S.ravel(), Z.ravel())
         self.assertTrue(0.2 < float(gr.std()) < 0.3 and 0.2 < float(gv.std()) < 0.3)
         self.assertLess(abs(float(np.corrcoef(gr, gv)[0, 1])), 0.3)       # the two plies vary independently
-        dp, lp, _ = ply.density_block(*box)
+        dp, lp, _, _ = ply.density_block(*box)
         self.assertTrue(np.array_equal(lp, lb))
         self.assertGreater(float(np.abs(dp - db)[lb > 0].mean()), 0.03)
 
