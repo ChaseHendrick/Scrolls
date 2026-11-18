@@ -8,7 +8,7 @@ ScrollSim v2 renders a synthetic rolled, pressed and crushed papyrus scroll at f
 | Status | Experimental |
 | Kind | kit module |
 | Area | Surfaces and tracing |
-| Run | `python -m kit.scrollsim2 make`, `estimate`, `pyramid`, `verify`, `publish`, `vc3d`, `nps`, `info`; library `from kit import scrollsim2` |
+| Run | `python -m kit.scrollsim2 make`, `estimate`, `pyramid`, `verify`, `publish`, `vc3d`, `nps`, `library`, `g1`, `g1-compare`, `info`; library `from kit import scrollsim2` |
 | Code | `kit/scrollsim2.py` |
 | Tests | `tests/test_scrollsim2.py` |
 | Needs | Python 3.10 or newer, numpy, scipy (ndimage), zarr 3 for `make` (it writes zarr format 2); all in `pip install -e ".[maps]"`. No scroll data |
@@ -36,6 +36,10 @@ What works today:
   - *Beam hardening* (`cupping`): sheets lose contrast where the mean path through the roll is longest, so the middle of the roll is darker, as in lab scans.
   - *Rings and slabs* (`rings`, `axis_yx`, `slab_z`, `slab_gain`): rings centered on the rotation axis, and a scan taken in slabs of `slab_z` slices, each with its own gain step and ring pattern.
   - *Physical units*: `voxel_um` sets the OME-Zarr scale in micrometers (levels `voxel_um` x 2^level) and the VC3D export's voxel size.
+
+- **Texture library and realism statistics** (2026-11-18). Off by default, so a render without `library` is unchanged bit for bit (checked against the previous code on twelve blocks).
+  - *Texture library*: `python -m kit.scrollsim2 library CT.npy LIB.npz` cuts small cubes from a CT crop you choose, for example a crop of public open-data CT, with no labels: sheet cubes keep the fiber texture (the crop minus its smoothed self) and gap cubes keep the debris and loose fibers between sheets (the gap voxels minus the gap median). Both are divided by the crop's sheet-to-gap contrast. `--set library=LIB.npz` adds that residual texture to a render on a global grid of half-overlapping, Hann-weighted tiles; a hash of each tile's position and the seed picks its cube, so the texture is the same whatever the block size. Sheet voxels get sheet cubes, voxels inside the roll get gap cubes, open air gets none. `lib_gain` scales it.
+  - *Realism statistics*: `python -m kit.scrollsim2 g1 CT.npy --voxel-um V` measures label-free statistics of any CT crop, real or simulated, after resampling to 8.64 um: sheet and gap run lengths along the sheet normal, touching gaps, normalized gray in sheet and gap, gap noise and its correlation, slice drift, structure-tensor coherence, waviness, split plies and bright inclusions. `g1-compare` takes the largest distance between crops of different real scans as the real-to-real spread and reports, statistic by statistic, whether a simulated crop lies inside it.
 
 Ink is off in this release: the volume holds no ink and the label volume carries windings only.
 
@@ -66,7 +70,7 @@ What it is not: a calibrated stand-in for a real scroll. A score on its volumes 
 The volumes do not yet look or score like real CT. The CT scan model above gives the scan's side of realism the right kinds of effects, but its preset numbers are chosen by eye and from one published setup, not measured. The next steps, with no date promised:
 
 - **Measured scan settings.** Measure the noise spectrum, point spread and edges of real open-data scans with `nps` and the label-free statistics, and set the scan model from them.
-- **S2, real texture.** Copy real CT texture from Vesuvius Challenge open-data scans into the synthetic sheets and the gaps between them.
+- **S2, real texture.** Copy real CT texture from Vesuvius Challenge open-data scans into the synthetic sheets and the gaps between them. The tools are in place (`library`, `g1`, `g1-compare`); which crops to build libraries from, and whether a textured render falls inside the real-to-real spread, are not yet measured.
 - **S3, more physics.** Add more physical detail, such as compression and delamination that behave the way they do in carbonized scrolls.
 - **Goal: calibration.** Tune and check the simulator so that real ink readers and tracers score on it as they do on real scrolls. Until that check passes, a ranking of methods on ScrollSim v2 volumes is not evidence about their ranking on real scrolls.
 
@@ -293,8 +297,10 @@ The tests are the controls; each can fail:
 - Two `make` runs with different block sizes and worker counts give identical pyramids; a run stopped after 7 blocks, then stopped by a deadline, then resumed, equals one uninterrupted run.
 - A chunk file that never lands on disk is caught by `verify` and by the write check, and `pyramid` repairs a lost pyramid chunk.
 - Surface vertices map back onto the rolled sheet with a residual under 1e-6 voxels.
+- Texture library: a library cut from a ScrollSim v2 render holds both sheet and gap cubes, and blank or flat crops and odd patch sizes are refused. A textured render differs from the plain one by exactly the added residual, rounded (within 1 gray level), with labels unchanged, open air untouched, and `lib_gain` 0 equal to the plain render; whole versus eight blocks, and a block with odd edges, give identical CT with the library on.
+- Realism statistics: `g1stats` is deterministic and ignores a gray offset and gain; `g1distance` of a crop with itself is 0 and grows with added noise; `g1compare` judges one of the real crops inside the spread and a crop with three times the noise outside it on gap noise, and judges nothing when every crop comes from one scan; `resample` keeps the mean when it shrinks or grows a crop.
 
-Scope: these are correctness checks on the simulator's own truth, geometry and storage. No realism or calibration check has run, so nothing here says how close a volume is to real CT.
+Scope: these are correctness checks on the simulator's own truth, geometry and storage, and on the realism tools with synthetic inputs. No realism or calibration check against real CT has run, so nothing here says how close a volume is to real CT.
 
 Claim label: None (a simulator; its output is synthetic data, and scores on it are Model output about the simulator only).
 
@@ -396,6 +402,58 @@ usage: python -m kit.scrollsim2 vc3d [-h] [--voxel-um VOXEL_UM] [--copy]
 | `--voxel-um V` | voxel size written to each volume's `meta.json` (default 8; synthetic, nominal) |
 | `--copy` | copy the level arrays instead of linking them |
 
+### `python -m kit.scrollsim2 library`
+
+```text
+usage: python -m kit.scrollsim2 library [-h] [--patch PATCH] [--count COUNT]
+                                        [--seed SEED]
+                                        ct out
+```
+
+| Option | Meaning |
+| --- | --- |
+| `ct` | a CT crop as a 3D `.npy` (z, y, x), at least twice `--patch` on every side; sheets brighter than gaps |
+| `out` | the library `.npz` to write (float16 `sheet` and `gap` cubes, `patch`, `contrast`, `sheet_share`, `gap_share`) |
+| `--patch P` | cube edge, voxels, even and 4 or more (default 16) |
+| `--count N` | at most N sheet cubes and N gap cubes (default 2000) |
+| `--seed S` | seed of the random cube positions (default 0) |
+
+It prints one line of JSON: the number of sheet and gap cubes, the patch size, the contrast and the sheet and gap shares of the crop. Cut the crop at the voxel size you will render at; the library is not resampled.
+
+### `python -m kit.scrollsim2 g1`
+
+```text
+usage: python -m kit.scrollsim2 g1 [-h] --voxel-um VOXEL_UM
+                                   [--target-um TARGET_UM] [--scan SCAN]
+                                   [--out OUT]
+                                   ct
+```
+
+| Option | Meaning |
+| --- | --- |
+| `ct` | a CT crop as a 3D `.npy` (z, y, x), real or simulated |
+| `--voxel-um V` | the crop's voxel size, um (required) |
+| `--target-um T` | the voxel size every crop is resampled to before measuring (default 8.64) |
+| `--scan NAME` | the scan name written into the result, which `g1-compare` uses to tell scans apart (default: the file name) |
+| `--out F` | write the JSON there instead of printing it |
+
+After resampling the crop needs at least 64 voxels in y and x and 8 slices.
+
+### `python -m kit.scrollsim2 g1-compare`
+
+```text
+usage: python -m kit.scrollsim2 g1-compare [-h] --real REAL [REAL ...]
+                                           [--sim SIM] [--out OUT]
+```
+
+| Option | Meaning |
+| --- | --- |
+| `--real A.json ...` | `g1` results of real crops; crops with the same `scan` never form a pair |
+| `--sim S.json` | a `g1` result of a simulated crop to judge against the real spread |
+| `--out F` | write the JSON there instead of printing it |
+
+It prints `spread` (per statistic, the largest distance between crops of different scans), `scan_pairs`, and with `--sim` a `sim` row per statistic (`distance`, `spread`, `inside`) and the counts `inside` and `judged`.
+
 ### `python -m kit.scrollsim2 info`
 
 ```text
@@ -423,6 +481,13 @@ usage: python -m kit.scrollsim2 info [-h] sim
 | `write_surface(folder, surf, name)` | the folder | | One tifxyz surface and its `winding.npy` |
 | `export_vc3d(sim, out, voxel_um=8.0, copy=False)` | dict: project, volumes, surfaces, project_check | `SimError` on an incomplete make, a non-empty OUT, a voxel size of 0 or less, or a failed project check | A folder VC3D opens; see the tutorial |
 | `code_sha256()` | hex string | | sha256 of `kit/scrollsim2.py`; `make` refuses to resume a folder made by other code |
+| `build_library(vol, patch=16, count=2000, seed=0, share=0.7)` | dict: `sheet`, `gap` (float16, N x P x P x P), `patch`, `contrast`, `sheet_share`, `gap_share` | `SimError` on an odd or small patch, a crop too small, no sheet or no gap, or sheets not brighter than gaps | Label-free: sheet and gap from an Otsu threshold of the smoothed crop; a cube is kept when SHARE of it is sheet (or gap) |
+| `save_library(lib, path)` | None | | Writes a `build_library` result as a compressed `.npz` |
+| `load_library(path)` | dict: `sheet`, `gap` (float32, Hann-weighted), `patch` | `SimError` on an unreadable file, an empty bank or a bad patch shape | What the renderer reads |
+| `resample(vol, voxel_um, target_um)` | float32 array | | Gaussian anti-alias when shrinking, then linear interpolation with voxels as cells, so the mean is kept; unchanged within 2 percent |
+| `g1stats(vol, voxel_um, target_um=8.64, tile=32, step=3, seed=0)` | dict of statistics (`G1_VERSION`; distributions as `QN` = 101 quantiles) | `SimError` on a crop too small after resampling, or no sheet or gap | Label-free realism statistics of one crop; see the `g1` command |
+| `g1distance(a, b)` | dict: statistic to distance | | Distributions: 1D Wasserstein distance over the pooled interquartile range; scalars: absolute difference; `noise_corr`: mean absolute difference over lags |
+| `g1compare(real, sim=None)` | dict: `spread`, `scan_pairs`, and with SIM `sim`, `inside`, `judged` | | The real-to-real spread over pairs of different scans, and whether SIM lies inside it per statistic |
 | `default_workers()` | int | | The CPU count, at most `MAX_WORKERS` (16) |
 | `single_thread_blas(environ=None)` | None | | Sets `OMP_NUM_THREADS`, `OPENBLAS_NUM_THREADS` and `MKL_NUM_THREADS` to 1 where unset; `main` calls it first |
 | `main(argv=None)` | exit code | `SystemExit` with `scrollsim2: MESSAGE` on a `SimError` | The command line |
@@ -445,6 +510,7 @@ None from disk. Parameters come from `--preset` (`smoke`, 64 x 208 x 208; `pilot
 | `air`, `bright` | 60, 150 | gray level of air and of a ply's peak |
 | `supersample` | 1 | sub-samples per axis averaged into each voxel |
 | `seed` | 0 | every random field comes from it |
+| `library`, `lib_gain` | `""`, 1 | path to a texture library `.npz` from `library` (empty: none), and the scale of its residuals in units of the `bright` minus `air` contrast; `make` records the library's sha256 so `--resume` refuses a changed file |
 
 The defaults are set for about 8 um per voxel; they are not a calibration.
 
@@ -505,13 +571,22 @@ The defaults are set for about 8 um per voxel; they are not a calibration.
 | `...: the make is not complete; resume it first` | `vc3d` on a stopped make | `make --resume`, then `vc3d` |
 | `--voxel-um is above 0` | a voxel size of 0 or less | give a positive size |
 | `...: the project check failed:...` | kit.villafmt found the project would not load in VC3D | read the errors; report it, since `vc3d` should never write such a folder |
+| `--patch is an even size of 4 voxels or more` | odd or tiny `--patch` (Hann tiles need an even edge) | use an even size such as 16 |
+| `the crop needs three sides of at least...voxels` | `library` crop smaller than twice the patch | cut a larger crop or lower `--patch` |
+| `no sheet or no gap found in the crop` | a blank or flat crop | pick a crop that holds sheets and the gaps between them |
+| `sheet is not brighter than gap in this crop` | inverted or odd gray values | give CT where papyrus is brighter than the gaps |
+| `...: not a texture library (...)` or `...: the library holds no sheet or no gap patches` | `library` points at a wrong or empty file | rebuild it with `library` from a crop that holds both |
+| `...: the patches are not even cubes of the stored patch size` | a library `.npz` written by other code | rebuild it with `library` |
+| `library is a path to a .npz, or empty` / `lib_gain is 0 or more` | bad `--set` value | give a path string, and a gain of 0 or more |
+| `the crop is...voxels at...um; g1 needs...in y and x and 8 slices` | `g1` crop too small after resampling | give a larger crop, or check `--voxel-um` |
+| `g1-compare` shows `scan_pairs` 0 and `judged` 0 | every real crop has the same `scan` name | measure crops of at least two scans, with `--scan` set |
 
 ## How it works
 
 1. **Sheet.** `Roll` lays the sheet on an unwrapped angle (`ANG` = 1,024 samples per turn) and a z grid (`GZ` = 8 voxels). Each turn's radius is the last turn's plus a gap: the free spacing `pitch` (with smooth variation) where windings lie apart, `touch` times the thickness inside contact zones (a thresholded smooth field covering `contact_share` of interfaces). Thickness, delamination and holes are smooth random fields along the sheet.
 2. **Frames.** Output points map back to the rolled frame through a smooth displacement field (grid `WG` = 16 voxels) and the inverse crush. The center line and surfaces map forward by fixed-point iteration.
 3. **Lookup.** For each voxel `Scroll2.voxels` finds the turn just inside it by binary search over turns, then sums two Gaussian plies (sigma `ply_sigma` times a quarter thickness) for that turn and its neighbors, with periodic fiber tiles (recto along the sheet, verso along z). The label is the nearest winding whose ply band holds the voxel.
-4. **Scan model.** Density maps to gray between `air` and `bright`, then blur and point spread, the phase-edge filter, slow drift, rings and noise (hashed by position, optionally correlated), then rounding to uint8.
+4. **Scan model.** Density maps to gray between `air` and `bright`, then blur and point spread, the phase-edge filter, the texture library's residual (when `library` is set), slow drift, rings and noise (hashed by position, optionally correlated), then rounding to uint8. The library's tiles lie on a global grid with half overlap; each cube is weighted by a periodic Hann window, whose half-overlapping shifts sum to 1, and a hash of the tile's grid position and the seed picks it.
 5. **Blocks.** `make` splits the volume into blocks (`--block`, a multiple of `--chunk`), renders each with a halo of about four filter widths, skips blocks no sheet can reach, writes level 0 in parallel and checks each chunk file landed, appends the block to `done.txt`, then builds the pyramid by 2 x 2 x 2 means and verifies it. A deadline in `KIT_JOB_DEADLINE` (epoch seconds) stops new blocks once less than `KIT_JOB_SPARE_S` (default 180 s) is left.
 
 ## Cost and time
@@ -535,10 +610,11 @@ Stage registry: no stage option. The registry's stages read a real scroll; Scrol
 
 ## Tests
 
-`python -m unittest tests.test_scrollsim2 -v` (about 2 minutes on 4 cores; skips without numpy and scipy, and the make tests skip without zarr). Covered: lookup equality, determinism, parameter refusals, the narrow fixed-axis box, position-hashed noise, block independence, air skipping, make and its pyramid, stop and resume, deadline stop, lost-chunk detection and repair, publish, estimate, the worker cap and BLAS threads. Not covered: the `pilot` preset at full size, and any realism of the volumes.
+`python -m unittest tests.test_scrollsim2 -v` (about 3 minutes on 4 cores; skips without numpy and scipy, and the make tests skip without zarr). Covered: lookup equality, determinism, parameter refusals, the narrow fixed-axis box, position-hashed noise, block independence, air skipping, make and its pyramid, stop and resume, deadline stop, lost-chunk detection and repair, publish, estimate, the worker cap and BLAS threads, the texture library (build, refusals, the residual it adds, block independence) and the realism statistics (determinism, distances, the spread judgment, resampling, the three commands), all on synthetic inputs. Not covered: the `pilot` preset at full size, a `make` run with a library, and any realism of the volumes against real CT.
 
 ## History
 
+- 2026-11-18: texture library (`library`, the `library` and `lib_gain` parameters) and label-free realism statistics (`g1`, `g1-compare`); off by default, so earlier renders are unchanged.
 - 2026-11-18: `vc3d`, a folder VC3D opens, tested with VC3D build 7154682 (`9195926`).
 - 2026-11-18: pictures and four tutorials, every command run on a fresh clone (`49eb2a5`).
 - 2026-11-18: first public release (version 1): full-scale geometry, block rendering and exact winding and surface truth; ink off (`49d26fe`).

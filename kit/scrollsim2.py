@@ -20,7 +20,10 @@ What it adds for a whole scroll:
   axis, acquisition slabs with gain steps, slow drift, and scan presets (`--scan synchrotron|lab`), all off by
   default; and a physical voxel size in the OME-Zarr metadata;
 - OME-zarr output with levels 0 to L, written in parallel, chunk-aligned, a winding label volume beside it, and
-  optional center and recto surfaces of the whole sheet as tifxyz.
+  optional center and recto surfaces of the whole sheet as tifxyz;
+- an optional texture library cut label-free from a real CT crop (`library`), whose residual texture is added on a
+  global grid of Hann-blended tiles, and label-free realism statistics (`g1`, `g1-compare`) that compare a crop of
+  simulated CT with crops of real CT.
 
 Ink is off in this release. It is a simulator: a score on its volumes is model output on synthetic data and says
 nothing about a real scroll. It is not yet calibrated against real CT (see "Realism: in progress" on the tool page).
@@ -35,6 +38,9 @@ nothing about a real scroll. It is not yet calibrated against real CT (see "Real
   python -m kit.scrollsim2 vc3d SIM OUT [--voxel-um V] [--copy]   a folder VC3D opens: volumes, surfaces, project
   python -m kit.scrollsim2 nps CT.npy [--mask M.npy] [--tile 32] [--share 0.25] [--out F]   a crop's noise spectrum,
                                      fitted as the `nps` bands (prints the --set value)
+  python -m kit.scrollsim2 library CT.npy OUT.npz [--patch P] [--count N] [--seed S]   a texture library
+  python -m kit.scrollsim2 g1 CT.npy --voxel-um V [--target-um 8.64] [--scan NAME] [--out F]   realism statistics
+  python -m kit.scrollsim2 g1-compare --real A.json ... [--sim S.json] [--out F]   real-to-real spread, sim inside?
   python -m kit.scrollsim2 info OUT
 
 numpy and scipy (the map tools' optional dependencies); zarr for make.
@@ -104,6 +110,9 @@ EXTRA = {
     "axis_yx": [],         # rotation axis (y, x), voxels, the center of the rings; [] is the box center
     "slab_z": 0,           # height of the scan's acquisition slabs, voxels; 0 is one slab
     "slab_gain": 0.0,      # sd of each slab's gain step
+    # Texture library ("What it does" on the tool page). Off at the defaults, so the CT is unchanged.
+    "library": "",         # path to a texture library .npz made by `library`; "" is none
+    "lib_gain": 1.0,       # scale of the library residuals
 }
 DEFAULTS = dict(json.loads(json.dumps(BASE)), **EXTRA)
 PRESETS = {
@@ -185,6 +194,7 @@ def params(over=None, preset=None):
             raise SimError(f"unknown parameter {k}")
         p[k] = v
     _check_scan(p)
+    _check_library(p)
     if int(p["supersample"]) < 1:
         raise SimError("supersample is 1 or more")
     for k in ("psf_z", "psf_xy", "noise_corr", "edge"):
@@ -228,6 +238,14 @@ def _check_scan(p):
     if not isinstance(ax, (list, tuple)) or len(ax) not in (0, 2):
         raise SimError("axis_yx is [] or [y, x]")
     p["axis_yx"] = [float(v) for v in ax]
+
+
+def _check_library(p):
+    """Refuse texture-library values out of range."""
+    if not isinstance(p["library"], str):
+        raise SimError("library is a path to a .npz, or empty")
+    if float(p["lib_gain"]) < 0:
+        raise SimError("lib_gain is 0 or more")
 
 
 def _base_params(p):
@@ -959,6 +977,8 @@ class Scroll2(Roll):
         self.phase()
         if float(self.p2["cupping"]) > 0:
             self._cup_field()
+        if self.p2["library"]:
+            self._library()
 
     def _cup_field(self):
         """Beam hardening's cupping, on a coarse grid (CUP_Z x CUP_XY x CUP_XY voxels): for each grid point the
@@ -1102,6 +1122,8 @@ class Scroll2(Roll):
             v = nd.gaussian_filter(v, (sz, sxy, sxy), mode="nearest")
         if float(p["edge"]) > 0:
             v = v + float(p["edge"]) * (v - nd.gaussian_filter(v, float(p["edge_sigma"]), mode="nearest"))
+        if p["library"]:
+            v = v + self._library_block(Z0, Y0, X0, shape, dens, near)
         b = self._bias_field()
         if float(p["bias"]) > 0:
             v = v * (1 + float(p["bias"]) * self._coarse_at(b, Z0, Z1, Y0, Y1, X0, X1)).astype(np.float32)
@@ -1134,6 +1156,336 @@ class Scroll2(Roll):
         ct = np.clip(np.rint(v), 0, 255).astype(np.uint8)
         core = (slice(h, h + z1 - z0), slice(h, h + y1 - y0), slice(h, h + x1 - x0))
         return ct[core], labels[core], bool(air)
+
+    # ------------------------------------------------------------------ texture library
+    def _library(self):
+        """The library's patches, each already multiplied by the periodic Hann window, loaded once per process."""
+        if getattr(self, "_lib", None) is None:
+            self._lib = load_library(self.p2["library"])
+        return self._lib
+
+    def _library_block(self, Z0, Y0, X0, shape, dens, near):
+        """Real residual texture on a global grid of Hann-blended tiles (half overlap), each tile's patch chosen by a
+        hash of the tile position and the seed, so the field is the same whatever the block. Sheet tiles where the
+        density says sheet, gap tiles inside the roll elsewhere, nothing in open air."""
+        np = _np()
+        lib = self._library()
+        P = lib["patch"]
+        H = P // 2
+        acc = {"sheet": np.zeros(shape, np.float32), "gap": np.zeros(shape, np.float32)}
+        t0 = [int(math.floor(o / H)) - 1 for o in (Z0, Y0, X0)]
+        t1 = [int(math.floor((o + s) / H)) + 1 for o, s in zip((Z0, Y0, X0), shape)]
+        for name, salt in (("sheet", LIB_SALT), ("gap", LIB_SALT + 1)):
+            bank = lib[name]
+            for tz in range(t0[0], t1[0]):
+                for ty in range(t0[1], t1[1]):
+                    hy = _hash3(np, self.p2["seed"], salt, tz, np.int64(ty), np.arange(t0[2], t1[2]))
+                    idx = (hy % np.uint64(len(bank))).astype(np.int64)
+                    for i, tx in enumerate(range(t0[2], t1[2])):
+                        a = (tz * H - Z0, ty * H - Y0, tx * H - X0)
+                        dst, src = [], []
+                        for ax in range(3):
+                            lo, hi = max(a[ax], 0), min(a[ax] + P, shape[ax])
+                            if lo >= hi:
+                                break
+                            dst.append(slice(lo, hi))
+                            src.append(slice(lo - a[ax], hi - a[ax]))
+                        else:
+                            acc[name][tuple(dst)] += bank[idx[i]][tuple(src)]
+        contrast = float(self.p2["bright"]) - float(self.p2["air"])
+        inside = near <= float(self.p2["pitch"])
+        sheet = dens > 0.3
+        g = np.float32(float(self.p2["lib_gain"]) * contrast)
+        return np.where(sheet, acc["sheet"], np.where(inside, acc["gap"], np.float32(0))) * g
+
+
+# ---------------------------------------------------------------------------------------------------- texture library
+# A label-free texture library cut from a CT crop the user chooses (for example a crop of public open-data CT), and
+# label-free realism statistics that compare crops of simulated and real CT. Both read CT only.
+LIB_SALT = 17       # hash salts of the library's tile choice: 17 sheet, 18 gap
+
+
+def _otsu(np, v):
+    """Otsu's threshold of V over a 256-bin histogram."""
+    hist, edges = np.histogram(v, bins=256)
+    c = (edges[:-1] + edges[1:]) / 2
+    w0 = np.cumsum(hist)
+    w1 = w0[-1] - w0
+    m0 = np.cumsum(hist * c) / np.maximum(w0, 1)
+    m1 = ((hist * c).sum() - np.cumsum(hist * c)) / np.maximum(w1, 1)
+    return float(c[int(np.argmax(w0 * w1 * (m0 - m1) ** 2))])
+
+
+def build_library(vol, patch=16, count=2000, seed=0, share=0.7):
+    """Label-free texture library from a CT crop: sheet patches (fiber texture, the high-pass residual) and gap
+    patches (debris, loose fibers, inclusions: the gap voxels minus the gap median), both divided by the crop's
+    sheet-to-gap contrast so they carry over to another gray range. Sheet and gap come from an Otsu threshold of the
+    smoothed crop; no label, trace or mesh is read. A patch is kept when at least SHARE of its voxels are sheet (or
+    gap); at most COUNT of each, from up to 50 times COUNT random positions drawn from SEED."""
+    np = _np()
+    nd = _ndi()
+    patch = int(patch)
+    if patch < 4 or patch % 2:
+        raise SimError("--patch is an even size of 4 voxels or more")
+    v = np.asarray(vol, np.float32)
+    if v.ndim != 3 or min(v.shape) < 2 * patch:
+        raise SimError(f"the crop needs three sides of at least {2 * patch} voxels")
+    m = nd.gaussian_filter(v, 2.0)
+    sheet = m > _otsu(np, m)
+    dist = nd.distance_transform_edt(~sheet)
+    gap = ~sheet & (dist <= 6)
+    if sheet.sum() == 0 or gap.sum() == 0:
+        raise SimError("no sheet or no gap found in the crop")
+    contrast = float(np.median(v[sheet]) - np.median(v[gap]))
+    if contrast <= 0:
+        raise SimError("sheet is not brighter than gap in this crop")
+    hp = v - nd.gaussian_filter(v, 3.0)
+    gres = v - float(np.median(v[gap]))
+    rng = np.random.default_rng(int(seed))
+    out = {"sheet": [], "gap": []}
+    tries = 0
+    while (len(out["sheet"]) < count or len(out["gap"]) < count) and tries < 50 * count:
+        tries += 1
+        z, y, x = (int(rng.integers(0, s - patch + 1)) for s in v.shape)
+        sl = (slice(z, z + patch), slice(y, y + patch), slice(x, x + patch))
+        if sheet[sl].mean() >= share and len(out["sheet"]) < count:
+            out["sheet"].append(hp[sl] / contrast)
+        elif gap[sl].mean() >= share and len(out["gap"]) < count:
+            out["gap"].append(gres[sl] / contrast)
+    empty = np.zeros((0, patch, patch, patch), np.float16)
+    return {"sheet": np.array(out["sheet"], np.float16) if out["sheet"] else empty,
+            "gap": np.array(out["gap"], np.float16) if out["gap"] else empty,
+            "patch": patch, "contrast": contrast, "sheet_share": float(sheet.mean()), "gap_share": float(gap.mean())}
+
+
+def save_library(lib, path):
+    """Write a build_library result as a compressed .npz."""
+    np = _np()
+    np.savez_compressed(path, **{k: np.asarray(v) for k, v in lib.items()})
+
+
+def load_library(path):
+    """A library .npz as the renderer uses it: float32 sheet and gap banks, each patch times the periodic Hann
+    window (its half-overlap shifts sum to 1 along every axis), and the patch size."""
+    np = _np()
+    try:
+        with np.load(path) as f:
+            sheet, gap, P = f["sheet"].astype(np.float32), f["gap"].astype(np.float32), int(f["patch"])
+    except (OSError, KeyError, ValueError) as e:
+        raise SimError(f"{path}: not a texture library ({e})")
+    if len(sheet) == 0 or len(gap) == 0:
+        raise SimError(f"{path}: the library holds no sheet or no gap patches")
+    if P < 4 or P % 2 or sheet.shape[1:] != (P, P, P) or gap.shape[1:] != (P, P, P):
+        raise SimError(f"{path}: the patches are not even cubes of the stored patch size")
+    n = np.arange(P)
+    w1 = 0.5 - 0.5 * np.cos(2 * math.pi * n / P)
+    W = (w1[:, None, None] * w1[None, :, None] * w1[None, None, :]).astype(np.float32)
+    return {"sheet": sheet * W, "gap": gap * W, "patch": P}
+
+
+# ---------------------------------------------------------------------------------------------------- G1 statistics
+# Label-free realism statistics of a CT crop, real or simulated: sheet and gap run lengths, normalized gray levels,
+# noise and its correlation, drift, structure-tensor coherence, waviness, ply splits and bright inclusions.
+G1_VERSION = 1
+QN = 101            # quantiles kept per distribution (0, 1, ..., 100 percent)
+G1_DIST = ("sheet_runs", "gap_runs", "sheet_gray", "gap_gray", "coherence", "normal_turn")
+G1_SCALAR = ("touching_share", "closed_share", "gap_q05", "gap_noise", "slice_drift", "ply_split_share",
+             "bright_share")
+
+
+def resample(vol, voxel_um, target_um):
+    """VOL (z y x) from VOXEL_UM to TARGET_UM: a Gaussian anti-alias of sigma 0.4 over the shrink factor when it
+    shrinks, then linear interpolation with voxels taken as cells (grid mode, edges held), so the mean is kept and
+    no face samples outside the crop. Unchanged when the two sizes are within 2 percent."""
+    np = _np()
+    nd = _ndi()
+    v = np.asarray(vol, np.float32)
+    f = float(voxel_um) / float(target_um)
+    if abs(f - 1) < 0.02:
+        return v
+    if f < 1:
+        v = nd.gaussian_filter(v, 0.4 / f)
+    return nd.zoom(v, f, order=1, grid_mode=True, mode="nearest")
+
+
+def _q(np, x):
+    x = np.asarray(x, np.float64).ravel()
+    return [round(float(t), 4) for t in np.percentile(x, np.linspace(0, 100, QN))] if x.size else None
+
+
+def g1stats(vol, voxel_um, target_um=8.64, tile=32, step=3, seed=0):
+    """Label-free realism statistics of one CT crop (real or simulated), after resampling to TARGET_UM. Gray values
+    are normalized so the gap median is 0 and the sheet median 1 (sheet and gap from an Otsu threshold), so scans with
+    other gray ranges compare. Lengths are in target voxels. Distributions are kept as QN quantiles. CT only.
+
+    sheet_runs, gap_runs: run lengths along each tile's sheet normal (2D structure tensor per slice);
+    touching_share: gaps of at most one voxel; closed_share: sheet runs over 1.6 times the median (two sheets with
+    no gap between); sheet_gray, gap_gray: normalized gray inside sheet and gap voxels; gap_q05: their 5th percentile;
+    gap_noise: sd of neighbor differences deep in gaps over sqrt 2; noise_corr: correlation of those differences at
+    lag 1 to 3 (the noise spectrum's shape); slice_drift: sd over slices of the papyrus mean; coherence: structure
+    tensor coherence of papyrus tiles; normal_turn: angle change of the sheet normal between neighboring tiles
+    (waviness); ply_split_share: sheet runs of 4 voxels or more whose profile has two maxima with a dip of at least
+    0.1; bright_share: voxels above 1.6 (inclusions). Ring energy needs the scan center, which a crop does not hold,
+    so it is not measured here."""
+    np = _np()
+    nd = _ndi()
+    v = resample(vol, voxel_um, target_um)
+    if min(v.shape[1:]) < 2 * tile or v.shape[0] < 8:
+        raise SimError(f"the crop is {list(v.shape)} voxels at {target_um} um; g1 needs {2 * tile} in y and x and 8 "
+                       "slices")
+    m = nd.gaussian_filter(v, 1.0)
+    thr = _otsu(np, m)
+    sheet = m > thr
+    if sheet.all() or not sheet.any():
+        raise SimError("no sheet or no gap found in the crop")
+    gap_med = float(np.median(v[~sheet]))
+    sh_med = float(np.median(v[sheet]))
+    c = sh_med - gap_med
+    if c <= 0:
+        raise SimError("sheet is not brighter than gap in this crop")
+    g = (v - gap_med) / c
+    Z, H, W = g.shape
+    zs = np.unique(np.linspace(tile // 2, Z - 1 - tile // 2, max(2, min(8, Z // tile))).round().astype(int))
+    zs = zs[(zs >= 0) & (zs < Z)]
+    runs_s, runs_g, coh, turn, splits, nsplit = [], [], [], [], 0, 0
+    thr_n = (thr - gap_med) / c
+    for z in zs:
+        img = nd.gaussian_filter(g[z], 1.0)
+        gy, gx = np.gradient(img)
+        Jxx, Jyy, Jxy = (nd.gaussian_filter(a, 4) for a in (gx * gx, gy * gy, gx * gy))
+        angs = {}
+        for y0 in range(0, H - tile + 1, tile):
+            for x0 in range(0, W - tile + 1, tile):
+                sl = (slice(y0, y0 + tile), slice(x0, x0 + tile))
+                f = float(sheet[z][sl].mean())
+                if not 0.1 <= f <= 0.9:
+                    continue
+                a, b, cc = Jxx[sl].mean(), Jyy[sl].mean(), Jxy[sl].mean()
+                lam = math.sqrt(max((a - b) ** 2 + 4 * cc * cc, 0.0))
+                coh.append(lam / (a + b + 1e-12))
+                ang = 0.5 * math.atan2(2 * cc, a - b)
+                angs[(y0 // tile, x0 // tile)] = ang
+                ny, nx = math.sin(ang), math.cos(ang)
+                cy, cx = y0 + tile / 2, x0 + tile / 2
+                t = np.arange(-1.5 * tile, 1.5 * tile, 1.0)
+                for off in np.linspace(-tile / 3, tile / 3, step):
+                    py, px = cy + off * nx + t * ny, cx - off * ny + t * nx
+                    ok = (py >= 0) & (py <= H - 1) & (px >= 0) & (px <= W - 1)
+                    if ok.sum() < tile:
+                        continue
+                    prof = nd.map_coordinates(g[z], [py[ok], px[ok]], order=1)
+                    on = prof > thr_n
+                    edges = np.flatnonzero(np.diff(on.astype(np.int8))) + 1
+                    pieces = np.split(np.arange(len(on)), edges)
+                    for idx in pieces[1:-1]:                     # whole runs only
+                        if on[idx[0]]:
+                            runs_s.append(len(idx))
+                            if len(idx) >= 4:
+                                nsplit += 1
+                                pr = prof[idx]
+                                mx = [i for i in range(1, len(pr) - 1) if pr[i] >= pr[i - 1] and pr[i] > pr[i + 1]]
+                                if len(mx) >= 2 and min(pr[mx[0]], pr[mx[-1]]) - pr[mx[0]:mx[-1] + 1].min() >= 0.1:
+                                    splits += 1
+                        else:
+                            runs_g.append(len(idx))
+        for (i, j), a0 in angs.items():
+            for nb in ((i + 1, j), (i, j + 1)):
+                if nb in angs:
+                    d = abs(angs[nb] - a0) % math.pi
+                    turn.append(min(d, math.pi - d))
+    deep = nd.minimum_filter(~sheet, size=(1, 5, 5))
+    dx = g[:, :, 1:] - g[:, :, :-1]
+    mk = deep[:, :, 1:] & deep[:, :, :-1]
+    dd = dx[mk]
+    corr = []
+    for lag in (1, 2, 3):
+        both = mk[:, :, :-lag] & mk[:, :, lag:]
+        a = dx[:, :, :-lag][both]
+        b = dx[:, :, lag:][both]
+        corr.append(round(float(np.corrcoef(a, b)[0, 1]), 4) if a.size > 100 else None)
+    pap_mean = [float(g[z][sheet[z]].mean()) for z in range(Z) if sheet[z].any()]
+    s_ = np.asarray(runs_s, float)
+    g_ = np.asarray(runs_g, float)
+    return {"g1_version": G1_VERSION, "voxel_um": float(voxel_um), "target_um": float(target_um),
+            "shape": [int(x) for x in g.shape], "slices": [int(x) for x in zs],
+            "sheet_share_voxels": round(float(sheet.mean()), 4), "contrast_raw": round(c, 3),
+            "sheet_runs": _q(np, s_), "gap_runs": _q(np, g_), "runs": [int(s_.size), int(g_.size)],
+            "touching_share": round(float((g_ <= 1).mean()), 4) if g_.size else None,
+            "closed_share": round(float((s_ > 1.6 * np.median(s_)).mean()), 4) if s_.size else None,
+            "sheet_gray": _q(np, g[sheet]), "gap_gray": _q(np, g[~sheet]),
+            "gap_q05": round(float(np.percentile(g[~sheet], 5)), 4),
+            "gap_noise": round(float(np.std(dd) / math.sqrt(2)), 4) if dd.size > 100 else None,
+            "noise_corr": corr,
+            "slice_drift": round(float(np.std(pap_mean)), 4) if len(pap_mean) > 2 else None,
+            "coherence": _q(np, coh), "normal_turn": _q(np, turn),
+            "ply_split_share": round(splits / nsplit, 4) if nsplit else None,
+            "bright_share": round(float((g > 1.6).mean()), 5),
+            "not_measured": ["ring_energy (needs the scan center)"]}
+
+
+def g1distance(a, b):
+    """Per-statistic distance between two g1stats results: for a distribution, the 1D Wasserstein distance (mean
+    absolute difference of the quantile functions) over the pooled interquartile range; for a scalar, the absolute
+    difference; for noise_corr, the mean absolute difference over the lags."""
+    np = _np()
+    out = {}
+    for k in G1_DIST:
+        if a.get(k) and b.get(k):
+            qa, qb = np.asarray(a[k]), np.asarray(b[k])
+            iqr = max(0.5 * ((qa[75] - qa[25]) + (qb[75] - qb[25])), 1e-9)
+            out[k] = round(float(np.abs(qa - qb).mean() / iqr), 4)
+    for k in G1_SCALAR:
+        if a.get(k) is not None and b.get(k) is not None:
+            out[k] = round(abs(float(a[k]) - float(b[k])), 5)
+    ca, cb = a.get("noise_corr") or [], b.get("noise_corr") or []
+    pairs = [(x, y) for x, y in zip(ca, cb) if x is not None and y is not None]
+    if pairs:
+        out["noise_corr"] = round(float(np.mean([abs(x - y) for x, y in pairs])), 4)
+    return out
+
+
+def g1compare(real, sim=None):
+    """The real-to-real spread (largest pairwise distance per statistic over REAL crops of different scans, told
+    apart by their 'scan' field) and, with SIM, each statistic's mean distance from SIM to the real crops and whether
+    it lies inside that spread. REAL and SIM are g1stats dicts; each real one carries a 'scan' name. Crops of one
+    scan give no spread, so a statistic with no pair of scans is not judged."""
+    keys = sorted(set(G1_DIST) | set(G1_SCALAR) | {"noise_corr"})
+    spread = {k: None for k in keys}
+    pairs = 0
+    for i in range(len(real)):
+        for j in range(i + 1, len(real)):
+            if real[i].get("scan") == real[j].get("scan"):
+                continue
+            pairs += 1
+            for k, d in g1distance(real[i], real[j]).items():
+                spread[k] = d if spread[k] is None else max(spread[k], d)
+    out = {"g1_version": G1_VERSION, "real_crops": len(real), "scans": sorted({str(r.get("scan")) for r in real}),
+           "scan_pairs": pairs, "spread": spread}
+    if sim is not None:
+        np = _np()
+        rows = {}
+        for k in keys:
+            ds = [g1distance(sim, r).get(k) for r in real]
+            ds = [d for d in ds if d is not None]
+            if not ds or spread[k] is None:
+                rows[k] = {"distance": None, "spread": spread[k], "inside": None}
+                continue
+            m = float(np.mean(ds))
+            rows[k] = {"distance": round(m, 5), "spread": spread[k], "inside": m <= spread[k]}
+        out["sim"] = rows
+        judged = [r["inside"] for r in rows.values() if r["inside"] is not None]
+        out["inside"] = sum(judged)
+        out["judged"] = len(judged)
+    return out
+
+
+def _emit(doc, out=None):
+    """Print DOC as one JSON line, or write it to OUT."""
+    text = json.dumps(doc)
+    if out:
+        Path(out).write_text(text + "\n")
+    else:
+        print(text)
 
 
 # ---------------------------------------------------------------------------------------------------- make
@@ -1408,6 +1760,14 @@ SPARE_ENV = "KIT_JOB_SPARE_S"
 SPARE_S = 180.0
 
 
+def _file_sha256(path):
+    """SHA-256 of a file's bytes (the texture library, so a resume never mixes two libraries)."""
+    try:
+        return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+    except OSError as e:
+        raise SimError(f"{path}: {e}")
+
+
 def _float(v):
     try:
         return None if v in (None, "") else float(v)
@@ -1451,6 +1811,8 @@ def make(out, over=None, preset=None, workers=1, block=128, levels=5, chunk=128,
     t0 = time.time()
     p = params(over, preset)
     key = {"params": p, "block": int(block), "chunk": int(chunk), "levels": int(levels), "code_sha256": code_sha256()}
+    if p["library"]:
+        key["library_sha256"] = _file_sha256(p["library"])
     if not fresh:
         try:
             old = json.loads((out / "truth" / "make-key.json").read_text())
@@ -1704,6 +2066,22 @@ def main(argv=None):
     a.add_argument("--tile", type=int, default=32)
     a.add_argument("--share", type=float, default=0.25)
     a.add_argument("--out")
+    a = sub.add_parser("library")
+    a.add_argument("ct")
+    a.add_argument("out")
+    a.add_argument("--patch", type=int, default=16)
+    a.add_argument("--count", type=int, default=2000)
+    a.add_argument("--seed", type=int, default=0)
+    a = sub.add_parser("g1")
+    a.add_argument("ct")
+    a.add_argument("--voxel-um", type=float, required=True)
+    a.add_argument("--target-um", type=float, default=8.64)
+    a.add_argument("--scan", default="")
+    a.add_argument("--out")
+    a = sub.add_parser("g1-compare")
+    a.add_argument("--real", nargs="+", required=True)
+    a.add_argument("--sim")
+    a.add_argument("--out")
     a = sub.add_parser("info")
     a.add_argument("sim")
     args = ap.parse_args(argv)
@@ -1738,6 +2116,20 @@ def main(argv=None):
             if args.out:
                 Path(args.out).write_text(json.dumps(m, indent=1) + "\n")
             print(json.dumps({k: m[k] for k in ("variance", "tiles", "tiles_seen", "fit", "set")}))
+        elif args.cmd == "library":
+            np = _np()
+            lib = build_library(np.load(args.ct, mmap_mode="r"), args.patch, args.count, args.seed)
+            save_library(lib, args.out)
+            print(json.dumps({k: (len(v) if hasattr(v, "shape") else v) for k, v in lib.items()}))
+        elif args.cmd == "g1":
+            np = _np()
+            doc = g1stats(np.load(args.ct, mmap_mode="r"), args.voxel_um, args.target_um)
+            doc["scan"] = args.scan or Path(args.ct).stem
+            _emit(doc, args.out)
+        elif args.cmd == "g1-compare":
+            real = [json.loads(Path(f).read_text()) for f in args.real]
+            sim = json.loads(Path(args.sim).read_text()) if args.sim else None
+            _emit(g1compare(real, sim), args.out)
         elif args.cmd in ("pyramid", "verify", "publish"):
             if args.cmd == "publish":
                 rep = publish(args.src, args.dst, args.levels, not args.no_labels)
