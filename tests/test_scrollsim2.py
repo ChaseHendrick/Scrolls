@@ -452,6 +452,197 @@ class ScrollSim2MakeTest(unittest.TestCase):
         self.assertGreater(e["seconds_per_sheet_block"], 0)
 
 
+# ---------------------------------------------------------------------------------------------- texture and realism
+def _donor_library(s2, path, **kw):
+    """A texture library cut from a scrollsim2 render itself (synthetic: no real CT is read)."""
+    donor = s2.Scroll2(dict(TINY, noise=4.0, seed=9))
+    ct, _, _ = donor.scan_block(0, 48, 0, 160, 0, 160)
+    lib = s2.build_library(ct, **dict(dict(patch=8, count=200, seed=1), **kw))
+    s2.save_library(lib, path)
+    return lib
+
+
+@unittest.skipUnless(HAVE, "needs numpy and scipy")
+class ScrollSim2TextureTest(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        from kit import scrollsim2 as s2
+        cls.s2 = s2
+        cls.tmp = tempfile.TemporaryDirectory()
+        cls.lib_path = str(Path(cls.tmp.name) / "lib.npz")
+        cls.lib = _donor_library(s2, cls.lib_path)
+        cls.crops = []
+        for seed, noise in ((11, 4.0), (12, 4.0), (13, 12.0)):
+            ct, _, _ = s2.Scroll2(dict(TINY, seed=seed, noise=noise)).scan_block(0, 48, 20, 140, 20, 140)
+            cls.crops.append(ct)
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.tmp.cleanup()
+
+    def test_build_library_finds_sheet_and_gap_and_refuses_a_blank_crop(self):
+        s2, lib = self.s2, self.lib
+        self.assertGreater(len(lib["sheet"]), 20)
+        self.assertGreater(len(lib["gap"]), 20)
+        self.assertEqual(lib["sheet"].shape[1:], (8, 8, 8))
+        self.assertGreater(lib["contrast"], 0)
+        self.assertTrue(0 < lib["sheet_share"] < 1 and 0 < lib["gap_share"] < 1)
+        # sheet patches are a high-pass residual, small against the unit sheet-to-gap contrast; gap patches sit
+        # well below the sheet (the gap median is 0 and the sheet median 1)
+        sheet, gap = lib["sheet"].astype(float), lib["gap"].astype(float)
+        self.assertLess(abs(float(sheet.mean())), 0.3)
+        self.assertGreater(float(sheet.std()), 0.01)
+        self.assertLess(float(gap.mean()), 0.5)
+        # the same seed gives the same library
+        again = s2.build_library(s2.Scroll2(dict(TINY, noise=4.0, seed=9)).scan_block(0, 48, 0, 160, 0, 160)[0],
+                                 patch=8, count=200, seed=1)
+        self.assertTrue(np.array_equal(lib["sheet"], again["sheet"]))
+        for bad in (np.zeros((32, 32, 32)), np.full((32, 32, 32), 90.0), np.zeros((8, 8, 8))):
+            with self.assertRaises(s2.SimError):
+                s2.build_library(bad, patch=8)
+        with self.assertRaises(s2.SimError):
+            s2.build_library(self.crops[0], patch=7)                 # odd: Hann half-overlaps would not sum to 1
+
+    def test_library_render_adds_only_the_residual(self):
+        s2 = self.s2
+        flat = dict(TINY, noise=0.0, rings=0.0, bias=0.0)            # nothing after the library but rounding
+        plain = s2.Scroll2(dict(flat))
+        tex = s2.Scroll2(dict(flat, library=self.lib_path))
+        box = (8, 40, 20, 140, 20, 140)
+        a, la, _ = plain.scan_block(*box)
+        b, lb, _ = tex.scan_block(*box)
+        self.assertTrue(np.array_equal(la, lb))                      # labels never change
+        h = tex.halo()
+        Z0, Y0, X0 = box[0] - h, box[2] - h, box[4] - h
+        dens, _, near = tex.density_block(Z0, box[1] + h, Y0, box[3] + h, X0, box[5] + h)
+        r = tex._library_block(Z0, Y0, X0, dens.shape, dens, near)
+        r = r[h:h + 32, h:h + 120, h:h + 120]
+        d = b.astype(float) - a
+        ok = (a > 0) & (a < 255) & (b > 0) & (b < 255)
+        self.assertLessEqual(float(np.abs(d - r)[ok].max()), 1.0)    # the difference is the residual, rounded
+        self.assertGreater(float(np.abs(d).mean()), 0.1)
+        air = r == 0
+        self.assertGreater(int(air.sum()), 1000)                     # open air gets no texture
+        self.assertTrue((d[air] == 0).all())
+        zero = s2.Scroll2(dict(flat, library=self.lib_path, lib_gain=0.0)).scan_block(*box)[0]
+        self.assertTrue(np.array_equal(zero, a))                     # gain 0 is the plain render
+
+    def test_library_render_is_block_independent(self):
+        sc = self.s2.Scroll2(dict(TINY, library=self.lib_path))
+        whole, lw, _ = sc.scan_block(8, 40, 20, 140, 20, 140)
+        parts = np.zeros_like(whole)
+        for z0 in (8, 24):
+            for y0 in (20, 80):
+                for x0 in (20, 80):
+                    c, _, _ = sc.scan_block(z0, z0 + 16, y0, y0 + 60, x0, x0 + 60)
+                    parts[z0 - 8:z0 + 8, y0 - 20:y0 + 40, x0 - 20:x0 + 40] = c
+        self.assertTrue(np.array_equal(whole, parts))
+        # odd block edges that cut the 4-voxel tile grid in other places
+        c, _, _ = sc.scan_block(13, 30, 37, 101, 51, 99)
+        self.assertTrue(np.array_equal(whole[5:22, 17:81, 31:79], c))
+
+    def test_library_refusals(self):
+        s2 = self.s2
+        with self.assertRaises(s2.SimError):
+            s2.params({"lib_gain": -1.0})
+        with self.assertRaises(s2.SimError):
+            s2.params({"library": 3})
+        with self.assertRaises(s2.SimError):
+            s2.Scroll2(dict(TINY, library=str(Path(self.tmp.name) / "missing.npz"))).prepare()
+        empty = str(Path(self.tmp.name) / "empty.npz")
+        s2.save_library(dict(self.lib, gap=np.zeros((0, 8, 8, 8), np.float16)), empty)
+        with self.assertRaises(s2.SimError):
+            s2.Scroll2(dict(TINY, library=empty)).scan_block(8, 24, 20, 60, 20, 60)
+        with self.assertRaises(s2.SimError):
+            s2._file_sha256(str(Path(self.tmp.name) / "missing.npz"))
+
+    def test_g1stats_is_deterministic_and_label_free(self):
+        s2 = self.s2
+        d = s2.g1stats(self.crops[0], 8.64)
+        self.assertEqual(d, s2.g1stats(self.crops[0].copy(), 8.64))
+        self.assertEqual(len(d["sheet_runs"]), s2.QN)
+        self.assertGreater(d["runs"][0], 20)
+        for k in s2.G1_SCALAR:
+            self.assertIsNotNone(d[k], k)
+        self.assertTrue(0 <= d["touching_share"] <= 1)
+        self.assertAlmostEqual(float(np.percentile(np.asarray(d["sheet_gray"]), 50)), 1.0, delta=0.05)
+        self.assertAlmostEqual(float(np.percentile(np.asarray(d["gap_gray"]), 50)), 0.0, delta=0.05)
+        # a gray offset and gain leave the normalized statistics where they were
+        shifted = s2.g1stats(self.crops[0].astype(np.float32) * 0.5 + 20.0, 8.64)
+        self.assertLess(s2.g1distance(d, shifted)["sheet_gray"], 0.05)
+
+    def test_g1distance_is_zero_to_itself_and_grows_with_noise(self):
+        s2 = self.s2
+        a, b, c = (s2.g1stats(x, 8.64) for x in self.crops)
+        same = s2.g1distance(a, a)
+        self.assertIn("gap_noise", same)
+        self.assertTrue(all(v == 0 for v in same.values()))
+        self.assertGreater(s2.g1distance(a, c)["gap_noise"], s2.g1distance(a, b)["gap_noise"])
+        rng = np.random.default_rng(0)
+        noisy = [s2.g1stats(np.clip(self.crops[0] + rng.normal(0, sd, self.crops[0].shape), 0, 255), 8.64)
+                 for sd in (3.0, 9.0)]
+        d1, d2 = (s2.g1distance(a, n)["gap_noise"] for n in noisy)
+        self.assertGreater(d1, 0)
+        self.assertGreater(d2, d1)
+
+    def test_g1compare_inside_and_outside_the_real_spread(self):
+        s2 = self.s2
+        st = [dict(s2.g1stats(x, 8.64), scan=f"s{i}") for i, x in enumerate(self.crops)]
+        inside = s2.g1compare(st[:2], st[0])          # one of the reals: mean distance is half the spread
+        self.assertEqual(inside["scan_pairs"], 1)
+        self.assertGreater(inside["judged"], 5)
+        self.assertEqual(inside["inside"], inside["judged"])
+        outside = s2.g1compare(st[:2], st[2])         # three times the noise lies outside a 4-to-4 spread
+        self.assertFalse(outside["sim"]["gap_noise"]["inside"])
+        self.assertLess(outside["inside"], outside["judged"])
+        one = s2.g1compare([st[0], dict(st[1], scan="s0")], st[2])
+        self.assertEqual(one["scan_pairs"], 0)        # crops of one scan give no spread and judge nothing
+        self.assertEqual(one["judged"], 0)
+
+    def test_resample_keeps_the_mean_and_g1_refuses_small_crops(self):
+        s2 = self.s2
+        v = self.crops[0].astype(np.float32)
+        down = s2.resample(v, 4.32, 8.64)
+        self.assertEqual(down.shape, (24, 60, 60))
+        self.assertAlmostEqual(float(down.mean()), float(v.mean()), delta=0.01 * float(v.mean()))
+        up = s2.resample(v[:16, :40, :40], 8.64, 4.32)
+        self.assertEqual(up.shape, (32, 80, 80))
+        self.assertAlmostEqual(float(up.mean()), float(v[:16, :40, :40].mean()), delta=0.01 * float(v.mean()))
+        self.assertTrue(np.array_equal(s2.resample(v, 8.7, 8.64), v))   # within 2 percent: unchanged
+        with self.assertRaises(s2.SimError):
+            s2.g1stats(down[:4], 8.64)
+        with self.assertRaises(s2.SimError):
+            s2.g1stats(self.crops[0], 2.0)                            # shrinks below twice the tile
+        with self.assertRaises(s2.SimError):
+            s2.g1stats(np.full((16, 80, 80), 90.0), 8.64)             # blank: no sheet
+
+    def test_library_g1_and_g1_compare_commands(self):
+        import contextlib
+        import io
+        s2 = self.s2
+        t = Path(self.tmp.name)
+        np.save(t / "crop.npy", self.crops[0])
+        np.save(t / "crop2.npy", self.crops[1])
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            self.assertEqual(s2.main(["library", str(t / "crop.npy"), str(t / "cli.npz"), "--patch", "8",
+                                      "--count", "50"]), 0)
+        rep = json.loads(buf.getvalue())
+        self.assertGreater(rep["sheet"], 0)
+        self.assertEqual(len(s2.load_library(t / "cli.npz")["sheet"]), rep["sheet"])
+        for name in ("crop", "crop2"):
+            self.assertEqual(s2.main(["g1", str(t / f"{name}.npy"), "--voxel-um", "8.64", "--out",
+                                      str(t / f"{name}.json")]), 0)
+        self.assertEqual(json.loads((t / "crop.json").read_text())["scan"], "crop")
+        self.assertEqual(s2.main(["g1-compare", "--real", str(t / "crop.json"), str(t / "crop2.json"),
+                                  "--sim", str(t / "crop.json"), "--out", str(t / "cmp.json")]), 0)
+        cmp = json.loads((t / "cmp.json").read_text())
+        self.assertEqual(cmp["scan_pairs"], 1)
+        self.assertEqual(cmp["inside"], cmp["judged"])
+        with self.assertRaises(SystemExit):
+            s2.main(["library", str(t / "crop.npy"), str(t / "bad.npz"), "--patch", "5"])
+
+
 class ScrollSim2WorkersTest(unittest.TestCase):
     def test_worker_cap_and_blas_threads(self):
         from unittest import mock
