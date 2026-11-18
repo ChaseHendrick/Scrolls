@@ -774,11 +774,11 @@ Stage registry: no stage option. The registry's stages read a real scroll; Scrol
 
 ## History
 
-- 2026-11-18: ink writer, off by default: Greek capitals on the recto face as a thin deposit with a density and texture change, exact 3D ink truth (`truth/ink.zarr`) and per-surface `ink.tif`, the noink twin (`--noink`), the inked share in `truth.json` (`dfa397b`).
-- 2026-11-18: sheet physics (stage S3), all off by default: short-scale waviness, kolleseis, gap debris (inclusions, strands, dust), cracks, carbonization bubbles and density variation between plies (`ec921ac`).
-- 2026-11-18: richer truth: a label pyramid beside the CT pyramid (most common nonzero label per cell), and `make --truth contact,uvw` for a contact map and material coordinates (u, v, w) written block by block with the CT; the CT and label level 0 at the defaults are unchanged (`3f7dc8c`).
-- 2026-11-18: texture library (`library`, the `library` and `lib_gain` parameters) and label-free realism statistics (`g1`, `g1-compare`); off by default, so earlier renders are unchanged (`d2a7727`).
-- 2026-11-18: CT scan model (output version 2): phase contrast with Paganin retrieval, noise bands with `nps` to measure and fit a crop's spectrum, beam-hardening cupping, acquisition slabs, rings about the rotation axis, `--scan synchrotron|lab`, and the voxel size in micrometers in the OME-Zarr scale; all off by default (`db454ca`).
+- 2026-11-18: ink writer, off by default: Greek capitals on the recto face as a thin deposit with a density and texture change, exact 3D ink truth (`truth/ink.zarr`) and per-surface `ink.tif`, the noink twin (`--noink`), the inked share in `truth.json` (`cf59063`).
+- 2026-11-18: sheet physics (stage S3), all off by default: short-scale waviness, kolleseis, gap debris (inclusions, strands, dust), cracks, carbonization bubbles and density variation between plies (`64c6ba4`).
+- 2026-11-18: richer truth: a label pyramid beside the CT pyramid (most common nonzero label per cell), and `make --truth contact,uvw` for a contact map and material coordinates (u, v, w) written block by block with the CT; the CT and label level 0 at the defaults are unchanged (`28a0f1a`).
+- 2026-11-18: texture library (`library`, the `library` and `lib_gain` parameters) and label-free realism statistics (`g1`, `g1-compare`); off by default, so earlier renders are unchanged (`e1aecc3`).
+- 2026-11-18: CT scan model (output version 2): phase contrast with Paganin retrieval, noise bands with `nps` to measure and fit a crop's spectrum, beam-hardening cupping, acquisition slabs, rings about the rotation axis, `--scan synchrotron|lab`, and the voxel size in micrometers in the OME-Zarr scale; all off by default (`49a74ac`).
 - 2026-11-18: `vc3d`, a folder VC3D opens, tested with VC3D build 7154682 (`9195926`).
 - 2026-11-18: pictures and four tutorials, every command run on a fresh clone (`49eb2a5`).
 - 2026-11-18: first public release (version 1): full-scale geometry, block rendering and exact winding and surface truth; ink off (`49d26fe`).

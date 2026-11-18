@@ -27,7 +27,7 @@
       "scrollsim2_demo.py"
     ],
     "scripts_sha256": "2c07b385beae8e504345d5c315e2ff3d4f0fd00420db6d2231c7be63c8118253",
-    "base_commit": "db454ca9e83d23544bc747e54a9420532020141b"
+    "base_commit": "49a74ac9b1977d9b30cae39751d3a13471511d7e"
   },
   "command": "python scripts/media/scrollsim2_demo.py --work WORK --out-dir docs/assets/scrollsim2",
   "scrollsim2": {

@@ -1194,5 +1194,36 @@ class ScrollSim2TruthExtrasTest(unittest.TestCase):
             self.assertTrue(s2.verify(b)["labels"]["ok"])
 
 
+@unittest.skipUnless(HAVE, "needs numpy and scipy")
+class ScrollSim2AllFeaturesTest(unittest.TestCase):
+    def test_every_feature_together_is_block_independent(self):
+        # the texture library, sheet physics, the ink writer and the CT scan model all on at once: they share the
+        # halo and the block pipeline, so any block split must still give the same CT, labels and ink, bit for bit
+        from kit import scrollsim2 as s2
+        with tempfile.TemporaryDirectory() as tmp:
+            lib = str(Path(tmp) / "lib.npz")
+            _donor_library(s2, lib)
+            p = dict(SCAN, library=lib, **INK)
+            p.update({k: v for k, v in PHYS.items() if k not in TINY})
+            whole, lw, _, iw = s2.Scroll2(dict(p)).scan_block(8, 40, 20, 140, 20, 140, with_ink=True)
+            self.assertGreater(int(iw.sum()), 100)
+            parts, lp, ip = np.zeros_like(whole), np.zeros_like(lw), np.zeros_like(iw)
+            sc = s2.Scroll2(dict(p))
+            for z0 in (8, 24):
+                for y0 in (20, 80):
+                    for x0 in (20, 80):
+                        c, lab, _, ik = sc.scan_block(z0, z0 + 16, y0, y0 + 60, x0, x0 + 60, with_ink=True)
+                        sl = (slice(z0 - 8, z0 + 8), slice(y0 - 20, y0 + 40), slice(x0 - 20, x0 + 40))
+                        parts[sl], lp[sl], ip[sl] = c, lab, ik
+            self.assertTrue(np.array_equal(whole, parts))
+            self.assertTrue(np.array_equal(lw, lp))
+            self.assertTrue(np.array_equal(iw, ip))
+            # each group changes the volume: dropping any one of them gives a different CT
+            for drop in (("library",), tuple(k for k in PHYS if k not in TINY), tuple(INK), ("phase_mm", "nps")):
+                q = {k: v for k, v in p.items() if k not in drop}
+                other = s2.Scroll2(q).scan_block(8, 24, 20, 80, 20, 80)[0]
+                self.assertFalse(np.array_equal(whole[:16, :60, :60], other), drop)
+
+
 if __name__ == "__main__":
     unittest.main()
