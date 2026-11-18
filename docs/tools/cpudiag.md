@@ -176,7 +176,7 @@ The cgroup quota parser (v1, v2, unlimited, missing), lscpu parsing, `compare` a
 
 ## History
 
-- 2026-11-18: released to public Scrolls with [runlength](runlength.md)'s CPU estimate and the evidence folder (`RELEASE_COMMIT`). Written the same day, outside this repository, to find why the scrollsim2 render ran slower on Hugging Face `cpu-performance`.
+- 2026-11-18: released to public Scrolls with [runlength](runlength.md)'s CPU estimate and the evidence folder (`f1e9aa8`). Written the same day, outside this repository, to find why the scrollsim2 render ran slower on Hugging Face `cpu-performance`.
 
 ## Related
 

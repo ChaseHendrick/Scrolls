@@ -145,7 +145,7 @@ python -m unittest tests.test_runlength -v
 
 ## History
 
-- 2026-11-18: released to public Scrolls with [cpudiag](cpudiag.md) and the evidence folder (`RELEASE_COMMIT`), the CPU estimate only.
+- 2026-11-18: released to public Scrolls with [cpudiag](cpudiag.md) and the evidence folder (`f1e9aa8`), the CPU estimate only.
 
 ## Related
 
