@@ -839,6 +839,30 @@
           "command": "python -m kit.scrollsim2 make SIM --preset smoke --workers 4 --block 64 --chunk 64 --levels 2 --surfaces",
           "page": "docs/tools/scrollsim2.md",
           "evidence": "[tests](tests/test_scrollsim2.py)"
+        },
+        {
+          "id": "accelbench",
+          "name": "accelbench: time a faster version only after its output matches",
+          "released": "2026-11-18",
+          "version": "1.0",
+          "summary": "Times a candidate implementation against a reference only after their outputs match under a stated rule (bitwise, exact or a tolerance) and a perturbed control fails that rule, in ABBA order with a device sync before every clock read, and writes a JSON receipt that re-checks its own speedups. With kit.accel (device and precision choice, and a CPU-fp32 check with a control) and a script that times fp32, fp16 and bf16 autocast on a GPU. A receipt holds for its machine and input only.",
+          "command": "python -m kit.accel --check",
+          "page": "docs/tools/accelbench.md",
+          "evidence": "[checks and controls](docs/tools/accelbench.md#checks-and-controls)",
+          "line": "Times a faster version of some code only after its output matches the original, with a control.",
+          "area": "Compute and cost"
+        },
+        {
+          "id": "mpsparity",
+          "name": "mpsparity: same training result on Apple MPS as on the CPU",
+          "released": "2026-11-18",
+          "version": "1.0",
+          "summary": "Builds one seeded copy of a torch network on each device and compares the forward output, one gradient and a short AdamW run on identical synthetic inputs, each with a control that must differ by ten times the tolerance or the check is VOID. Three built-in 3D and 2D networks, or your own with --script, --build and --shape; ops probes 3D data-path operators; --bench times training steps. A device check on synthetic inputs, not a model's quality.",
+          "command": "python -m kit.mpsparity run --device mps --steps 10 --out OUT.json",
+          "page": "docs/tools/mpsparity.md",
+          "evidence": "[checks and controls](docs/tools/mpsparity.md#checks-and-controls)",
+          "line": "Checks that a small torch training gives the same result on Apple's GPU as on the CPU, with controls.",
+          "area": "Compute and cost"
         }
       ],
       "where": "main"

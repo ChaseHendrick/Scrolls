@@ -6,6 +6,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 ## A
 
+**ABBA order**: Timing two code paths A and B as A, B, then B, A, alternating each sample, so neither always runs first; how [`kit.accelbench`](docs/tools/accelbench.md) times its two arms.
+
 **absorption contrast**: Image contrast that comes from how strongly different materials absorb X-rays.
 
 **acquisition recipe**: The settings a CT scan was taken with: voxel size, beam energy, propagation distance and the like. Two scans of one scroll with different recipes can show its sheets differently; `sqrecipe` compares them region by region ([page](docs/tools/sqrecipe.md)).
@@ -32,6 +34,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **Auto3DSeg**: NVIDIA's automatic 3D segmentation pipeline in MONAI (AutoRunner). It analyzes a dataset, trains SegResNet, DiNTS and Swin UNETR and ensembles them. `kit segzoo datalist` writes the datalist it reads from an nnU-Net dataset ([page](docs/tools/segzoo.md)).
 
+**autocast**: PyTorch's mixed precision: inside it, matmuls and convolutions run in a 16-bit type (bf16 or fp16) while the rest stays fp32. [`kit.accel`](docs/tools/accel.md) picks it per device.
+
 **AutoPipeline (AP)**: The released package that drives villa's VC3D tools and ink detection from a scan through surface checks, rendering and controlled scoring. It records the choices for a run and keeps a control beside each check. See [AutoPipeline](docs/autopipeline/README.md) and the README's released tools list for the current version.
 
 **autocrop (rule main)**: Picking the regions of a villa spiral fit most likely on the right winding. Rule main ranks each cell of 4 by 8 export grid vertices by four signals that need no truth (agreement with a second fit of another seed, the lasagna normal, sheet spacing, grid regularity), averages the ranks, smooths them over the 3 by 3 neighbors and keeps the top half ([page](docs/tools/autocrop.md)). Model output.
@@ -43,6 +47,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 **B300**: An NVIDIA data-center GPU. It was the default GPU for Modal jobs in this repository until 23 Oct 2026, falling back to B200, H200 and H100 when none was free. Hugging Face Jobs, where paid work runs now, do not offer it.
 
 **benchmark**: A fixed test with a fixed scoring rule, used to compare readers or tools. The numbers live in [`docs/results.json`](docs/results.json).
+
+**bf16 bar**: In [`kit.mpsparity`](docs/tools/mpsparity.md), a device passes when its fp32 result sits nearer the reference fp32 result than bf16 autocast does on the reference device; the bar for networks whose fixed tolerances are stricter than fp32 rounding noise.
 
 **BM18**: A beamline at the ESRF built for phase-contrast tomography of large objects; used for scroll scans from 2025.
 
@@ -338,6 +344,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **Pearson correlation (Pearson r)**: A measure of how closely two sets of values vary together in a straight-line relationship. Ink Bench applies it to aligned image pixels. Correlation with a model-generated reference is agreement with that reference, not proof of ink.
 
+**perturbed control**: In [`kit.accelbench`](docs/tools/accelbench.md), the reference output with one element moved just past the comparison rule; it must fail the rule, or the rule cannot tell outputs apart and no speed is reported.
+
 **phase contrast**: Image contrast from the shift in phase of X-rays passing through a sample, made visible by letting the beam travel to the detector.
 
 **PHerc.**: Short for Papyrus Herculanensis, followed by an inventory number, for example PHerc. 0139 or PHerc0139. PHerc. Paris 4 is also called Scroll 1.
@@ -476,6 +484,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **tile**: One fixed-size square piece of a map or surface volume, processed on its own and then put back together. Inference wrappers log how many tiles they ran; StrokeNet's tile grid pilot scores a map tile by tile.
 
+**timing receipt**: The JSON record [`kit.accelbench`](docs/tools/accelbench.md) writes for a benchmark: the comparison, the control, every timing sample, the machine and the git state. Only a `pass` receipt carries a speedup.
+
 **tool page**: The reference page of one tool in [`docs/tools/`](docs/tools/README.md): what it does, a quick start, its checks and controls, every option with its default, inputs, outputs, failure modes, cost, rules for agents, tests and history, written to [`docs/TOOL-DOCS.md`](docs/TOOL-DOCS.md) and checked against the code by `python -m kit.tooldocs check`. Pages still to be written are listed in `docs/tools/pending.json`.
 
 **touched chunks**: The chunks of a zarr volume that lie within a margin of a segment's surface: the only part of the volume a render or check of that segment reads. `kit tifxyz chunks` lists them with their bytes and can copy only those ([`docs/tools/tifxyz.md`](docs/tools/tifxyz.md)).
@@ -521,6 +531,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 **villaports**: `kit villaports`, which scans a folder of scripts for references to villa's `vesuvius` and `vc_reader` packages and says which break at a villa commit and what replaces each ([`docs/tools/villaports.md`](docs/tools/villaports.md)).
 
 **virtual unwrapping**: Recovering the content of a rolled surface from a 3D scan without opening it.
+
+**VOID (check)**: A check whose control did not differ enough for the check to be able to fail; it counts as neither a pass nor a fail, and a run with one is not a pass.
 
 **volume**: A reconstructed 3D CT image of a scroll or fragment.
 
