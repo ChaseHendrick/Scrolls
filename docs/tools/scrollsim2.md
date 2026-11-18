@@ -158,6 +158,7 @@ ok = truth[ys, xs] >= 0
 p, w = pred[ok], truth[ys, xs][ok]
 rng = np.random.default_rng(0)
 i, j = rng.integers(0, len(p), (2, 200000))
+i, j = i[i != j], j[i != j]                     # a voxel paired with itself would always agree
 agree = float(np.mean((p[i] - p[j]) == (w[i] - w[j])))
 q = rng.permutation(p)
 control = float(np.mean((q[i] - q[j]) == (w[i] - w[j])))

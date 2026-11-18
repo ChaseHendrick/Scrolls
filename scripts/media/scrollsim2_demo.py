@@ -145,7 +145,8 @@ def fig_stages(plt, np, out):
     fig.tight_layout(rect=(0, 0.06, 1, 1))
     size = save(fig, out, 120)
     plt.close(fig)
-    return size, {"cases": [c[1] for c in cases]}
+    keys = ("shape", "seed", "contact_share", "squash", "warp", "alpha")
+    return size, {"cases": [{"title": t, **{k: s2.params(p)[k] for k in keys}} for t, p in cases]}
 
 
 def fig_surface(plt, np, d, out):
