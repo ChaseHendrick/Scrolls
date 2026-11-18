@@ -1,3 +1,4 @@
+import importlib.util
 import json
 import tempfile
 import unittest
@@ -53,6 +54,7 @@ class ParseTest(unittest.TestCase):
         self.assertTrue(any("10.00 x" in x for x in r))
 
 
+@unittest.skipIf(importlib.util.find_spec("numpy") is None, "numpy not installed")
 class RunTest(unittest.TestCase):
     def test_tiny_run_shape(self):
         res = c.run(procs=(1, 2), scale=0.002, mount=tempfile.mkdtemp(), progress=lambda m: None)
