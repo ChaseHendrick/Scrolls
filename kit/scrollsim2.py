@@ -104,6 +104,29 @@ EXTRA = {
     "axis_yx": [],         # rotation axis (y, x), voxels, the center of the rings; [] is the box center
     "slab_z": 0,           # height of the scan's acquisition slabs, voxels; 0 is one slab
     "slab_gain": 0.0,      # sd of each slab's gain step
+    # Sheet physics (stage S3, "Sheet physics" on the tool page). All off at the defaults, so the CT and labels are
+    # unchanged bit for bit. Lengths in voxels.
+    "wave_amp": 0.0,       # rms radial ripple of each winding, voxels; 0 off
+    "wave_len": 40.0,      # the ripple's peak wavelength along z and along the sheet, voxels (32 or more)
+    "kolle_every": 0.0,    # mean spacing of the glued sheet joins (kolleseis) along the sheet, voxels; 0 off
+    "kolle_len": 1875.0,   # overlap length of each join, voxels (1.5 cm at 8 um)
+    "kolle_jitter": 0.38,  # relative jitter (uniform) of each spacing and overlap
+    "kolle_thick": 2.0,    # thickness factor inside an overlap
+    "debris": 0.0,         # share of 8^3 cells holding a bright inclusion, shown in the gaps only; 0 off
+    "debris_r": 1.0,       # inclusion radius (Gaussian sigma), voxels
+    "debris_amp": 1.2,     # inclusion peak density (a ply's peak is about 1)
+    "strands": 0.0,        # share of 16^3 cells holding a loose fiber strand, shown in the gaps only; 0 off
+    "strand_len": 24.0,    # strand length, voxels
+    "strand_amp": 0.5,     # strand peak density
+    "dust": 0.0,           # mean density of fine dust filling the gaps; 0 off
+    "cracks": 0.0,         # cracks per 10,000 square voxels of sheet; 0 off
+    "crack_len": 24.0,     # crack length along the sheet's face, voxels
+    "crack_w": 0.6,        # crack half width (Gaussian sigma), voxels
+    "crack_depth": 0.95,   # share of the sheet's density a crack removes on its line
+    "bubbles": 0.0,        # share of 6^3 cells holding a carbonization bubble (a void), shown in the sheet only; 0 off
+    "bubble_r": 1.2,       # bubble radius (Gaussian sigma), voxels
+    "ply_var": 0.0,        # sd of each ply's smooth density variation (recto and verso independent); 0 off
+    "ply_var_len": 120.0,  # its correlation length along the sheet and z, voxels
 }
 DEFAULTS = dict(json.loads(json.dumps(BASE)), **EXTRA)
 PRESETS = {
@@ -185,6 +208,7 @@ def params(over=None, preset=None):
             raise SimError(f"unknown parameter {k}")
         p[k] = v
     _check_scan(p)
+    _check_physics(p)
     if int(p["supersample"]) < 1:
         raise SimError("supersample is 1 or more")
     for k in ("psf_z", "psf_xy", "noise_corr", "edge"):
@@ -228,6 +252,59 @@ def _check_scan(p):
     if not isinstance(ax, (list, tuple)) or len(ax) not in (0, 2):
         raise SimError("axis_yx is [] or [y, x]")
     p["axis_yx"] = [float(v) for v in ax]
+
+
+# ---------------------------------------------------------------------------------------------------- sheet physics
+# Stage S3: short-scale waviness, glued sheet joins (kolleseis), gap debris, cracks, carbonization bubbles and
+# density variation between plies. Fields come from the seed's own streams [seed, 41] to [seed, 43], built once per
+# scroll; small objects come from position hashes (PHYS_SALT) on fixed cells, so any block split gives the same
+# volume. Scroll2._physics_build and the methods after Scroll2.scan_block use them.
+PHYS_SALT = {"debris": 401, "strands": 402, "dust": 403, "cracks": 404, "bubbles": 405}
+PHYS_CELL = {"debris": 8, "strands": 16, "bubbles": 6, "dust": 2}     # cell edges, voxels
+STRAND_R = 0.6                 # a loose strand's radius (Gaussian sigma), voxels
+DOG = 0.153                    # a difference of Gaussians G(s) - G(2 s) peaks at wavelength s / DOG
+
+
+def _check_physics(p):
+    """Refuse sheet-physics values out of range."""
+    def need(ok, text):
+        if not ok:
+            raise SimError(text)
+    v = {k: float(p[k]) for k in ("wave_amp", "wave_len", "kolle_every", "kolle_len", "kolle_jitter", "kolle_thick",
+                                  "debris", "debris_r", "debris_amp", "strands", "strand_len", "strand_amp", "dust",
+                                  "cracks", "crack_len", "crack_w", "crack_depth", "bubbles", "bubble_r", "ply_var",
+                                  "ply_var_len")}
+    for k in ("wave_amp", "kolle_every", "debris_amp", "strand_amp", "dust", "cracks"):
+        need(v[k] >= 0, f"{k} is 0 or more")
+    need(v["wave_amp"] <= float(p["thick"]), "wave_amp lies in 0 to thick")
+    need(v["wave_len"] >= 4 * GZ, f"wave_len is {4 * GZ:g} voxels or more (four steps of the z grid)")
+    need(0 <= v["kolle_jitter"] < 1, "kolle_jitter lies in 0 to below 1")
+    need(1 <= v["kolle_thick"] <= 3, "kolle_thick lies in 1 to 3")
+    need(v["kolle_len"] >= 8, "kolle_len is 8 voxels or more")
+    if v["kolle_every"] > 0:
+        j = v["kolle_jitter"]
+        need(v["kolle_len"] * (1 + j) < v["kolle_every"] * (1 - j), "kolle_len must stay below the join spacing: "
+             "kolle_len (1 + kolle_jitter) < kolle_every (1 - kolle_jitter)")
+    for k in ("debris", "strands", "bubbles"):
+        need(0 <= v[k] <= 1, f"{k} lies in 0 to 1")
+    need(0.3 <= v["debris_r"] <= 4, "debris_r lies in 0.3 to 4")
+    need(0.3 <= v["bubble_r"] <= 4, "bubble_r lies in 0.3 to 4")
+    need(2 <= v["strand_len"] <= 64, "strand_len lies in 2 to 64")
+    need(4 <= v["crack_len"] <= 256, "crack_len lies in 4 to 256")
+    need(0 < v["crack_w"] <= v["crack_len"] / 8, "crack_w lies above 0 and at most crack_len / 8")
+    need(0 <= v["crack_depth"] <= 1, "crack_depth lies in 0 to 1")
+    need(v["cracks"] * (2 * v["crack_len"]) ** 2 / 1e4 <= 1, "cracks is at most 10000 / (2 crack_len)^2 "
+         "(one crack per cell of twice its length)")
+    need(0 <= v["ply_var"] <= 0.9, "ply_var lies in 0 to 0.9")
+    need(v["ply_var_len"] >= 16, "ply_var_len is 16 voxels or more")
+
+
+def _u01(np, h, k):
+    """The k-th uniform in [0, 1) drawn from uint64 hashes h."""
+    with np.errstate(over="ignore"):
+        x = _mix64(np, h + np.uint64(k) * np.uint64(0xD1B54A32D192ED03))
+    return (x >> np.uint64(11)).astype(np.float64) / 9007199254740992.0
+# ------------------------------------------------------------------------------------------------ end sheet physics
 
 
 def _base_params(p):
@@ -797,6 +874,7 @@ class Scroll2(Roll):
                 raise SimError(f"the box is {Y} voxels in y; this crush needs {math.ceil(need)}")
         self.p = dict(self.p, shape=[Z, Y, X])
         self._tile = None
+        self._physics_build()                       # sheet physics (stage S3): ripple, joins, cracks, plies, debris
         self.cl = self.center_line()
         self.r_outer = float(np.nanmax(np.where(np.isfinite(self.R[:self.n_end]), self.R[:self.n_end], np.nan)))
         self.r_inner = float(np.nanmin(self.R[:self.n_end]))
@@ -912,6 +990,9 @@ class Scroll2(Roll):
             fib = float(p["fiber"])
             recto = np.exp(-0.5 * ((d + half) / sig) ** 2) * (1 + fib * tr)
             verso = np.exp(-0.5 * ((d - half) / sig) ** 2) * (1 + fib * tv)
+            if self._crack_p > 0 or self._ply is not None:   # sheet physics: cracks and ply variation, labels kept
+                gr, gv = self._sheet_gains(s, z, ok & (np.abs(d) < half + 4 * sig))
+                recto, verso = recto * gr, verso * gv
             dens += np.where(ok, amp * (recto + verso), 0)
             band = np.abs(d) <= half + HALFMAX * sig
             near = ok & band & (np.abs(d) < best)
@@ -1071,7 +1152,10 @@ class Scroll2(Roll):
                         for ox in offs:
                             acc += self.voxels(c + np.array([ox, oy, oz]))[0]
                 dens[a:a + len(c)] = acc / n ** 3
-        return dens.reshape(shape), labels.reshape(shape), near.reshape(shape)
+        dens, labels, near = dens.reshape(shape), labels.reshape(shape), near.reshape(shape)
+        if self._phys_vox:                               # sheet physics: gap debris and bubbles, hashed by position
+            dens = self._physics_voxels(dens, labels, near, z0, z1, y0, y1, x0, x1)
+        return dens, labels, near
 
     def scan_block(self, z0, z1, y0, y1, x0, x1, air=None):
         """The CT (uint8) and labels of the box, rendered with a halo so no filter sees the block edge."""
@@ -1134,6 +1218,214 @@ class Scroll2(Roll):
         ct = np.clip(np.rint(v), 0, 255).astype(np.uint8)
         core = (slice(h, h + z1 - z0), slice(h, h + y1 - y0), slice(h, h + x1 - x0))
         return ct[core], labels[core], bool(air)
+
+    # ------------------------------------------------------------------ sheet physics (stage S3)
+    def _physics_build(self):
+        """Build the sheet-physics fields once per scroll, before any lookup: the ripple is added to the radius grid
+        and the kolleseis thicken the thickness grid, so voxels, labels and surfaces all read the same geometry."""
+        np = _np()
+        p = self.p2
+        self.kolleseis = np.zeros((0, 2))
+        self._ply = None
+        self._crack_p = float(p["cracks"]) * (2 * float(p["crack_len"])) ** 2 / 1e4
+        self._phys_vox = any(float(p[k]) > 0 for k in ("debris", "strands", "dust", "bubbles"))
+        wave, every = float(p["wave_amp"]), float(p["kolle_every"])
+        if every > 0:
+            self.kolleseis = self._kolleseis()
+            self.thick = self.thick * np.where(self.in_kollesis(self.s), float(p["kolle_thick"]), 1.0)[:, None]
+        if wave > 0:
+            self.R = self.R + wave * self._ripple()
+        if wave > 0 or every > 0:
+            # keep each turn outside the last by the base model's floor (0.75 of the contact spacing), so the turn
+            # search stays exact; with the thickness of both windings, a thickened join pushes its neighbor out
+            R = self.R.copy() if wave == 0 else self.R
+            tf = 0.75 * float(p["touch"])
+            for t in range(1, R.shape[0] // ANG):
+                a, b = slice(t * ANG, (t + 1) * ANG), slice((t - 1) * ANG, t * ANG)
+                R[a] = np.maximum(R[a], R[b] + tf * 0.5 * (self.thick[a] + self.thick[b]))
+            self.R = R
+        if float(p["ply_var"]) > 0:
+            rng = np.random.default_rng([int(p["seed"]), 43])
+            L = float(p["ply_var_len"])
+            ns = int(float(self.s[-1]) / GS) + 3
+            self._ply = [_field(rng, (ns, self.nz), (L / GS, L / GZ)).astype(np.float32) for _ in range(2)]
+
+    def _kolleseis(self):
+        """(start, end) along-sheet positions of every overlap, from the [seed, 42] stream: a random first join,
+        then spacings and overlap lengths jittered uniformly by kolle_jitter."""
+        np = _np()
+        p = self.p2
+        rng = np.random.default_rng([int(p["seed"]), 42])
+        every, L, j = float(p["kolle_every"]), float(p["kolle_len"]), float(p["kolle_jitter"])
+        out = []
+        pos = float(rng.uniform(0, every))
+        while pos < float(self.s[-1]):
+            out.append((pos, pos + L * (1 + j * float(rng.uniform(-1, 1)))))
+            pos += every * (1 + j * float(rng.uniform(-1, 1)))
+        return np.array(out, np.float64).reshape(-1, 2)
+
+    def in_kollesis(self, s):
+        """True where along-sheet positions s lie inside a join's overlap."""
+        np = _np()
+        k = self.kolleseis
+        if not len(k):
+            return np.zeros(np.shape(s), bool)
+        i = np.searchsorted(k[:, 0], s, side="right") - 1
+        return (i >= 0) & (s < k[np.clip(i, 0, None), 1])
+
+    def _ripple(self):
+        """Unit-sd ripple on the radius grid (n, nz): a band-pass random field on (along sheet, z) from the
+        [seed, 41] stream, a difference of Gaussians whose spectrum peaks at wave_len, read at each node's s."""
+        np = _np()
+        nd = _ndi()
+        p = self.p2
+        sg = DOG * float(p["wave_len"])
+        hs = sg / 1.5                                          # along-sheet step of the field, voxels
+        ns = int(float(self.s[-1]) / hs) + 3
+        w = np.random.default_rng([int(p["seed"]), 41]).standard_normal((ns, self.nz)).astype(np.float32)
+        f = nd.gaussian_filter(w, (sg / hs, sg / GZ), mode="reflect")
+        f -= nd.gaussian_filter(w, (2 * sg / hs, 2 * sg / GZ), mode="reflect")
+        del w
+        f = (f - f.mean()) / (f.std() + 1e-9)
+        out = np.empty_like(self.R)
+        fj = np.arange(self.nz, dtype=np.float64)[None]
+        step = 1 << 16
+        for a in range(0, len(self.s), step):
+            si = (self.s[a:a + step] / hs)[:, None]
+            out[a:a + step] = _bilerp(np, f, np.repeat(si, self.nz, 1), np.repeat(fj, len(si), 0))
+        return out
+
+    def _sheet_gains(self, s, z, m):
+        """Recto and verso density gains (cracks times ply variation) at along-sheet s and rolled z, computed where
+        M holds (within four ply sigmas of the winding center) and 1 elsewhere."""
+        np = _np()
+        gr, gv = np.ones(len(s)), np.ones(len(s))
+        if m.any():
+            sm, zm = s[m], z[m]
+            c = self.crack_gain(sm, zm) if self._crack_p > 0 else 1.0
+            gr[m] = c * (self.ply_gain(0, sm, zm) if self._ply is not None else 1.0)
+            gv[m] = c * (self.ply_gain(1, sm, zm) if self._ply is not None else 1.0)
+        return gr, gv
+
+    def ply_gain(self, i, s, z):
+        """Density gain of ply I (0 recto, 1 verso) at along-sheet s and rolled z."""
+        np = _np()
+        g = _bilerp(np, self._ply[i], np.asarray(s) / GS, self._fz(z))
+        return np.clip(1 + float(self.p2["ply_var"]) * g, 0.2, None)
+
+    def crack_gain(self, s, z):
+        """The density left by cracks at along-sheet s and rolled z: 1 off a crack, 1 - crack_depth on its line.
+        Each cell of twice crack_len (in s and z) holds one crack with probability set by `cracks`, at a hashed
+        position and angle, wholly inside the cell, so a point reads only its own cell."""
+        np = _np()
+        p = self.p2
+        L, w = float(p["crack_len"]), float(p["crack_w"])
+        C = 2 * L
+        m = L / 2 + 4 * w
+        cs, cz = np.floor(np.asarray(s) / C), np.floor(np.asarray(z) / C)
+        h = _hash3(np, p["seed"], PHYS_SALT["cracks"], cs, cz, 0)
+        hit = _u01(np, h, 0) < self._crack_p
+        ps = cs * C + m + _u01(np, h, 1) * (C - 2 * m)
+        pz = cz * C + m + _u01(np, h, 2) * (C - 2 * m)
+        ang = math.pi * _u01(np, h, 3)
+        ca, sa = np.cos(ang), np.sin(ang)
+        ds, dz = s - ps, z - pz
+        t = np.clip(ds * ca + dz * sa, -L / 2, L / 2)
+        perp2 = (ds - t * ca) ** 2 + (dz - t * sa) ** 2
+        return np.where(hit, 1 - float(p["crack_depth"]) * np.exp(-0.5 * perp2 / w ** 2), 1.0)
+
+    def _objects(self, kind, z0, z1, y0, y1, x0, x1):
+        """The summed profile (float32, z y x) on a box of the hashed objects of KIND (debris, strands or bubbles).
+        Each cell of PHYS_CELL[kind] voxels holds one object with probability p[kind], at a hashed position; an
+        object adds to the voxels of its own fixed box only, in the global order of its cell, so a voxel's value
+        never depends on the block."""
+        np = _np()
+        p = self.p2
+        C = PHYS_CELL[kind]
+        if kind == "strands":
+            ext = float(p["strand_len"]) / 2 + 4 * STRAND_R
+        else:
+            ext = 4 * 1.3 * float(p["debris_r" if kind == "debris" else "bubble_r"])
+        out = np.zeros((z1 - z0, y1 - y0, x1 - x0), np.float32)
+        rng = [np.arange(math.floor((a - ext) / C), math.floor((b - 1 + ext) / C) + 1) for a, b in
+               ((z0, z1), (y0, y1), (x0, x1))]
+        h = _hash3(np, p["seed"], PHYS_SALT[kind], rng[0][:, None, None], rng[1][None, :, None], rng[2][None, None, :])
+        occ = _u01(np, h, 0) < float(p[kind])
+        if not occ.any():
+            return out
+        iz, iy, ix = np.nonzero(occ)                           # C order: the global order of the cells
+        h = h[occ]
+        cen = np.stack([(rng[0][iz] + _u01(np, h, 1)) * C, (rng[1][iy] + _u01(np, h, 2)) * C,
+                        (rng[2][ix] + _u01(np, h, 3)) * C], 1)
+        u4, u5, u6, u7 = (_u01(np, h, k) for k in (4, 5, 6, 7))
+        lo_box, hi_box = np.array([z0, y0, x0]), np.array([z1, y1, x1])
+        for i in range(len(h)):
+            lo = np.maximum(np.floor(cen[i] - ext).astype(np.int64), lo_box)
+            hi = np.minimum(np.floor(cen[i] + ext).astype(np.int64) + 1, hi_box)
+            if (hi <= lo).any():
+                continue
+            dz = np.arange(lo[0], hi[0])[:, None, None] - cen[i, 0]
+            dy = np.arange(lo[1], hi[1])[None, :, None] - cen[i, 1]
+            dx = np.arange(lo[2], hi[2])[None, None, :] - cen[i, 2]
+            if kind == "strands":
+                cz = 2 * u4[i] - 1
+                sz = math.sqrt(max(0.0, 1 - cz * cz))
+                ph = 2 * math.pi * u5[i]
+                v = (cz, sz * math.sin(ph), sz * math.cos(ph))
+                half = float(p["strand_len"]) / 2 * (0.6 + 0.4 * u6[i])
+                t = np.clip(dz * v[0] + dy * v[1] + dx * v[2], -half, half)
+                r2 = (dz - t * v[0]) ** 2 + (dy - t * v[1]) ** 2 + (dx - t * v[2]) ** 2
+                val = float(p["strand_amp"]) * (0.6 + 0.4 * u7[i]) * np.exp(-0.5 * r2 / STRAND_R ** 2)
+            else:
+                r = float(p["debris_r" if kind == "debris" else "bubble_r"]) * (0.7 + 0.6 * u5[i])
+                a = float(p["debris_amp"]) * (0.5 + u4[i]) if kind == "debris" else 0.6 + 0.4 * u4[i]
+                val = a * np.exp(-0.5 * (dz ** 2 + dy ** 2 + dx ** 2) / r ** 2)
+            out[lo[0] - z0:hi[0] - z0, lo[1] - y0:hi[1] - y0, lo[2] - x0:hi[2] - x0] += val.astype(np.float32)
+        return out
+
+    def _dust(self, z0, z1, y0, y1, x0, x1):
+        """Fine dust: hashed uniforms on a lattice of PHYS_CELL['dust'] voxels, trilinear between nodes, scaled so
+        the mean is `dust`."""
+        np = _np()
+        p = self.p2
+        D = PHYS_CELL["dust"]
+        ax = [np.arange(a, b) for a, b in ((z0, z1), (y0, y1), (x0, x1))]
+        i0 = [a // D for a in ax]
+        fr = [(a % D) / D for a in ax]
+        base = [int(i.min()) for i in i0]
+        n = [int(i.max()) - b + 2 for i, b in zip(i0, base)]
+        lat = _u01(np, _hash3(np, p["seed"], PHYS_SALT["dust"], np.arange(base[0], base[0] + n[0])[:, None, None],
+                              np.arange(base[1], base[1] + n[1])[None, :, None],
+                              np.arange(base[2], base[2] + n[2])[None, None, :]), 0)
+        out = np.zeros((z1 - z0, y1 - y0, x1 - x0))
+        for a in (0, 1):
+            for b in (0, 1):
+                for c in (0, 1):
+                    w = ((fr[0] if a else 1 - fr[0])[:, None, None] * (fr[1] if b else 1 - fr[1])[None, :, None]
+                         * (fr[2] if c else 1 - fr[2])[None, None, :])
+                    out += w * lat[np.ix_(i0[0] - base[0] + a, i0[1] - base[1] + b, i0[2] - base[2] + c)]
+        return (2 * float(p["dust"]) * out).astype(np.float32)
+
+    def _physics_voxels(self, dens, labels, near, z0, z1, y0, y1, x0, x1):
+        """Debris, strands and dust where no ply band holds the voxel and a winding center lies within 0.75 pitch
+        (the gaps, and a thin shell inside the innermost and outside the outermost winding); bubbles where a ply
+        band holds it. Labels are untouched."""
+        np = _np()
+        p = self.p2
+        box = (z0, z1, y0, y1, x0, x1)
+        add = np.zeros(dens.shape, np.float32)
+        for kind in ("debris", "strands"):
+            if float(p[kind]) > 0:
+                add += self._objects(kind, *box)
+        if float(p["dust"]) > 0:
+            add += self._dust(*box)
+        gap = (labels == 0) & (near <= 0.75 * float(p["pitch"]))
+        dens = dens + np.where(gap, add, np.float32(0))
+        if float(p["bubbles"]) > 0:
+            void = np.clip(self._objects("bubbles", *box), 0, 1)
+            dens = dens * np.where(labels > 0, 1 - void, np.float32(1))
+        return dens.astype(np.float32)
+    # ------------------------------------------------------------------ end sheet physics
 
 
 # ---------------------------------------------------------------------------------------------------- make

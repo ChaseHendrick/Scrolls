@@ -452,6 +452,160 @@ class ScrollSim2MakeTest(unittest.TestCase):
         self.assertGreater(e["seconds_per_sheet_block"], 0)
 
 
+# every sheet-physics feature on at once (stage S3), at sizes a unit test renders quickly
+PHYS = dict(TINY, wave_amp=1.0, kolle_every=500.0, kolle_len=120.0, debris=0.08, strands=0.15, dust=0.08,
+            cracks=2.0, bubbles=0.1, ply_var=0.25)
+
+
+@unittest.skipUnless(HAVE, "needs numpy and scipy")
+class ScrollSim2PhysicsTest(unittest.TestCase):
+    def test_off_by_default_and_refusals(self):
+        from kit import scrollsim2 as s2
+        p = s2.params()
+        for k in ("wave_amp", "kolle_every", "debris", "strands", "dust", "cracks", "bubbles", "ply_var"):
+            self.assertEqual(p[k], 0.0, k)
+        sc = s2.Scroll2(dict(TINY))
+        self.assertEqual(len(sc.kolleseis), 0)
+        self.assertFalse(sc._phys_vox or sc._crack_p > 0 or sc._ply is not None)
+        for bad in ({"wave_amp": -1.0}, {"wave_amp": 9.0}, {"wave_len": 16.0}, {"kolle_every": 100.0, "kolle_len": 80.0},
+                    {"kolle_jitter": 1.0}, {"kolle_thick": 0.5}, {"debris": 1.5}, {"strand_len": 100.0},
+                    {"crack_w": 5.0}, {"cracks": 10.0}, {"crack_depth": 2.0}, {"bubble_r": 0.1}, {"ply_var": 1.0},
+                    {"dust": -0.1}):
+            with self.assertRaises(s2.SimError, msg=str(bad)):
+                s2.params(bad)
+
+    def test_waviness_adds_short_scale_ripple_and_keeps_truth_exact(self):
+        # the ripple raises the radius's short-scale power along z and along the sheet many times over; the turn
+        # search still equals the all-turns lookup, and the center surface still round-trips and carries its labels
+        from kit import scrollsim2 as s2
+        on = s2.Scroll2(dict(TINY, wave_amp=1.0, kolle_every=500.0, kolle_len=120.0))
+        off = s2.Scroll2(dict(TINY))
+        ra, rb = on.R[:on.n_end], off.R[:off.n_end]
+        self.assertGreater(np.diff(ra, 2, axis=1).std(), 20 * np.diff(rb, 2, axis=1).std())     # along z
+        t = 2 * s2.ANG                                    # one turn, rows about 10 voxels apart along the sheet
+        k = max(1, int(round(10 / (on.R[t:t + s2.ANG].mean() * on.dth))))
+        da = np.diff(on.R[t:t + s2.ANG:k], 2, axis=0).std()
+        db = np.diff(off.R[t:t + s2.ANG:k], 2, axis=0).std()
+        self.assertGreater(da, 5 * db)
+        self.assertGreater(float((ra - rb).std()), 0.5)
+        self.assertTrue((np.diff(on.R.reshape(-1, s2.ANG, on.nz), axis=0) > 0).all())          # turns stay ordered
+        zz, yy, xx = np.mgrid[20:22, 0:160, 0:160]
+        out = np.stack([xx.ravel(), yy.ravel(), zz.ravel()], 1).astype(float)
+        d1, l1, _ = on.voxels_all_turns(out)
+        d2, l2, _, _, _ = on.voxels(out)
+        self.assertTrue((l1 == l2).all())
+        self.assertLess(float(np.abs(d1 - d2).max()), 1e-9)
+        surf = on.surface(step=4.0)
+        self.assertLess(surf["residual"], 1e-6)
+        P, ok = surf["P"][surf["valid"]], surf["winding"][surf["valid"]]
+        _, lab, th, _, _ = on.voxels(P)
+        wid = on.winding_id(th, P[:, :2], on.cl, P[:, 2])
+        self.assertGreater(float(np.mean((lab >= 0) & (wid == ok))), 0.999)
+
+    def test_kolleseis_double_the_sheet_over_their_overlap(self):
+        from kit import scrollsim2 as s2
+        p = dict(TINY, contact_share=0.0, noise=0.0, kolle_every=500.0, kolle_len=120.0)
+        on, off = s2.Scroll2(p), s2.Scroll2(dict(p, kolle_every=0.0))
+        k = on.kolleseis
+        self.assertGreater(len(k), 3)
+        self.assertTrue(((k[:, 1] - k[:, 0] >= 120 * 0.62 - 1e-9) & (k[:, 1] - k[:, 0] <= 120 * 1.38 + 1e-9)).all())
+        sp = np.diff(k[:, 0])
+        self.assertTrue(((sp >= 500 * 0.62 - 1e-9) & (sp <= 500 * 1.38 + 1e-9)).all())
+        inside = on.in_kollesis(on.s)
+        self.assertTrue(0.1 < inside[:on.n_end].mean() < 0.5)
+        ratio = on.thick / off.thick
+        self.assertTrue(np.allclose(ratio[inside], 2.0) and np.allclose(ratio[~inside], 1.0))
+        # rendered: inside an overlap a radial line crosses about twice as many labeled voxels per winding
+        th = np.linspace(2 * np.pi * 1.2, on.theta_end - 0.2, 4000)
+        s, z = on.s_at(th), np.full(th.shape, 24.0)
+        w = {}
+        for name, sc in (("on", on), ("off", off)):
+            band = []
+            for dr in np.arange(-6, 6.01, 0.25):
+                r = sc.R_at(th, z) + dr
+                rolled = np.stack([sc.center[0] + r * np.cos(th), sc.center[1] + r * np.sin(th), z], 1)
+                band.append(sc.voxels(sc.forward(rolled)[0])[1] >= 0)
+            w[name] = np.sum(band, 0) * 0.25
+        m = on.in_kollesis(s)
+        self.assertGreater(float(w["on"][m].mean()), 1.6 * float(w["off"][m].mean()))
+        self.assertLess(abs(float(w["on"][~m].mean()) - float(w["off"][~m].mean())), 0.3)
+
+    def test_gap_debris_lifts_the_gaps_and_never_labels(self):
+        from kit import scrollsim2 as s2
+        p = dict(TINY, contact_share=0.0, noise=1.0, rings=0.0)
+        on = s2.Scroll2(dict(p, debris=0.08, strands=0.15, dust=0.08))
+        off = s2.Scroll2(p)
+        box = (16, 32, 20, 140, 20, 140)
+        ca, la, _ = on.scan_block(*box)
+        cb, lb, _ = off.scan_block(*box)
+        self.assertTrue(np.array_equal(la, lb))
+        da, _, _ = on.density_block(*box)
+        db, _, near = off.density_block(*box)
+        self.assertTrue(np.array_equal(da[lb > 0], db[lb > 0]))           # the sheet itself is untouched
+        gap = (lb == 0) & (near <= 0.75 * 12.0)
+        self.assertGreater(float((da - db)[gap].max()), 0.5)               # inclusions and strands are bright
+        self.assertTrue(np.array_equal(da[~gap], db[~gap]))                 # nothing outside the gaps
+        self.assertGreaterEqual(np.percentile(ca[gap], 95) - np.percentile(cb[gap], 95), 5)
+        self.assertGreater(float(ca[gap].mean()) - float(cb[gap].mean()), 3)
+
+    def test_cracks_cut_the_sheet_along_their_lines(self):
+        from kit import scrollsim2 as s2
+        p = dict(TINY, contact_share=0.0, holes=0.0)
+        on, off = s2.Scroll2(dict(p, cracks=4.0, crack_len=20.0)), s2.Scroll2(p)
+        surf = on.surface(step=1.0)
+        S, Zr = np.meshgrid(surf["s"], surf["z"])
+        g = on.crack_gain(S, Zr)
+        self.assertTrue(0.002 < float((g < 0.5).mean()) < 0.1)             # thin lines over a few percent of the face
+        P = surf["P"][surf["valid"]]
+        g = g[surf["valid"]]
+        da, la, _, _, _ = on.voxels(P)
+        db, lb, _, _, _ = off.voxels(P)
+        self.assertTrue(np.array_equal(la, lb))                             # a crack keeps its label
+        line, clear = g < 0.1, g == 1.0
+        self.assertGreater(int(line.sum()), 50)
+        self.assertLess(float(np.median(da[line] / db[line])), 0.2)
+        self.assertTrue(np.allclose(da[clear], db[clear], rtol=1e-12, atol=1e-12))
+
+    def test_bubbles_and_ply_density_variation(self):
+        from kit import scrollsim2 as s2
+        p = dict(TINY, contact_share=0.0)
+        off = s2.Scroll2(p)
+        box = (16, 32, 20, 140, 20, 140)
+        db, lb, _ = off.density_block(*box)
+        bub = s2.Scroll2(dict(p, bubbles=0.3))
+        da, la, _ = bub.density_block(*box)
+        self.assertTrue(np.array_equal(la, lb))
+        self.assertTrue(np.array_equal(da[lb == 0], db[lb == 0]))          # voids only inside the sheet
+        lost = 1 - da[lb > 0] / np.maximum(db[lb > 0], 1e-6)
+        self.assertGreater(float((lost > 0.5).mean()), 0.01)
+        ply = s2.Scroll2(dict(p, ply_var=0.25, ply_var_len=16.0))
+        S, Z = np.meshgrid(np.arange(0, ply.s[-1], 4.0), np.arange(-8, 56, 4.0))   # the whole field, many lengths
+        gr, gv = ply.ply_gain(0, S.ravel(), Z.ravel()), ply.ply_gain(1, S.ravel(), Z.ravel())
+        self.assertTrue(0.2 < float(gr.std()) < 0.3 and 0.2 < float(gv.std()) < 0.3)
+        self.assertLess(abs(float(np.corrcoef(gr, gv)[0, 1])), 0.3)       # the two plies vary independently
+        dp, lp, _ = ply.density_block(*box)
+        self.assertTrue(np.array_equal(lp, lb))
+        self.assertGreater(float(np.abs(dp - db)[lb > 0].mean()), 0.03)
+
+    def test_physics_is_block_independent(self):
+        # every sheet-physics feature on: any block split gives the same CT and labels, bit for bit, and a scroll
+        # rebuilt from the same parameters (as a worker would) renders the parts
+        from kit import scrollsim2 as s2
+        whole, lw, _ = s2.Scroll2(dict(PHYS)).scan_block(8, 40, 20, 140, 20, 140)
+        sc = s2.Scroll2(dict(PHYS))
+        parts = np.zeros_like(whole)
+        lp = np.zeros_like(lw)
+        for z0 in (8, 24):
+            for y0 in (20, 80):
+                for x0 in (20, 80):
+                    c, lab, _ = sc.scan_block(z0, z0 + 16, y0, y0 + 60, x0, x0 + 60)
+                    parts[z0 - 8:z0 + 8, y0 - 20:y0 + 40, x0 - 20:x0 + 40] = c
+                    lp[z0 - 8:z0 + 8, y0 - 20:y0 + 40, x0 - 20:x0 + 40] = lab
+        self.assertTrue(np.array_equal(whole, parts))
+        self.assertTrue(np.array_equal(lw, lp))
+        self.assertFalse(np.array_equal(whole[:16, :60, :60], s2.Scroll2(dict(TINY)).scan_block(8, 24, 20, 80, 20, 80)[0]))
+
+
 class ScrollSim2WorkersTest(unittest.TestCase):
     def test_worker_cap_and_blas_threads(self):
         from unittest import mock
