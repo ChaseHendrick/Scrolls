@@ -13858,6 +13858,7 @@
     "pyramid",
     "verify",
     "publish",
+    "vc3d",
     "info"
    ],
    "imports": [
@@ -13878,7 +13879,7 @@
    },
    "checked": {
     "date": "2026-11-18",
-    "commit": "c2cb575"
+    "commit": "424fb42"
    },
    "license": null,
    "fields": {
@@ -13886,113 +13887,119 @@
     "Status": "Experimental",
     "Kind": "kit module",
     "Area": "Surfaces and tracing",
-    "Run": "`python -m kit.scrollsim2 make`, `estimate`, `pyramid`, `verify`, `publish`, `info`; library `from kit import scrollsim2`",
+    "Run": "`python -m kit.scrollsim2 make`, `estimate`, `pyramid`, `verify`, `publish`, `vc3d`, `info`; library `from kit import scrollsim2`",
     "Code": "`kit/scrollsim2.py`",
     "Tests": "`tests/test_scrollsim2.py`",
     "Needs": "Python 3.10 or newer, numpy, scipy (ndimage), zarr 3 for `make` (it writes zarr format 2); all in `pip install -e \".[maps]\"`. No scroll data",
     "Runs on": "CPU, any core count (forked workers, at most 16 by default). Smoke scroll (64 x 208 x 208, 4.8 turns): 7.2 s wall on 4 workers, 98 MB peak per process (measured 2026-11-18, 4-core cloud container)",
     "Network": "None",
-    "Writes": "`make OUT`: `OUT/ct.zarr`, `OUT/truth/labels.zarr`, `OUT/truth.json`, `OUT/truth/make-key.json`, `OUT/truth/done.txt`, and with `--surfaces` `OUT/truth/surfaces/spiral-center/` and `spiral-recto/`. `publish SRC DST`: a copy in `DST`. `pyramid OUT`: rewrites CT levels 1 and up",
+    "Writes": "`make OUT`: `OUT/ct.zarr`, `OUT/truth/labels.zarr`, `OUT/truth.json`, `OUT/truth/make-key.json`, `OUT/truth/done.txt`, and with `--surfaces` `OUT/truth/surfaces/spiral-center/` and `spiral-recto/`. `publish SRC DST`: a copy in `DST`. `pyramid OUT`: rewrites CT levels 1 and up. `vc3d SIM OUT`: `OUT/scrollsim2.volpkg.json`, `OUT/volumes/` (links, or copies with `--copy`), `OUT/paths/`",
     "Go-ahead": "Not needed on a local CPU. A rented run follows hard rule 11",
     "Released": "Public `main` since 2026-11-18",
-    "Checked": "2026-11-18 against commit `c2cb575`"
+    "Checked": "2026-11-18 against commit `424fb42`"
    },
    "page": "docs/tools/scrollsim2.md",
    "sections": [
     {
      "name": "What it does",
      "start_line": 22,
-     "end_line": 35,
+     "end_line": 51,
      "applicable": true
     },
     {
      "name": "Realism: in progress",
-     "start_line": 36,
-     "end_line": 43,
+     "start_line": 52,
+     "end_line": 59,
      "applicable": true
     },
     {
      "name": "When to use it",
-     "start_line": 44,
-     "end_line": 55,
+     "start_line": 60,
+     "end_line": 71,
      "applicable": true
     },
     {
      "name": "Quick start",
-     "start_line": 56,
-     "end_line": 66,
+     "start_line": 72,
+     "end_line": 82,
+     "applicable": true
+    },
+    {
+     "name": "Tutorials",
+     "start_line": 83,
+     "end_line": 272,
      "applicable": true
     },
     {
      "name": "Checks and controls",
-     "start_line": 67,
-     "end_line": 81,
+     "start_line": 273,
+     "end_line": 287,
      "applicable": true
     },
     {
      "name": "Commands and options",
-     "start_line": 82,
-     "end_line": 175,
+     "start_line": 288,
+     "end_line": 395,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 176,
-     "end_line": 195,
+     "start_line": 396,
+     "end_line": 416,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 196,
-     "end_line": 216,
+     "start_line": 417,
+     "end_line": 437,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 217,
-     "end_line": 242,
+     "start_line": 438,
+     "end_line": 463,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 243,
-     "end_line": 271,
+     "start_line": 464,
+     "end_line": 495,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 272,
-     "end_line": 279,
+     "start_line": 496,
+     "end_line": 503,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 280,
-     "end_line": 286,
+     "start_line": 504,
+     "end_line": 510,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 287,
-     "end_line": 298,
+     "start_line": 511,
+     "end_line": 522,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 299,
-     "end_line": 302,
+     "start_line": 523,
+     "end_line": 526,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 303,
-     "end_line": 306,
+     "start_line": 527,
+     "end_line": 532,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 307,
-     "end_line": 310,
+     "start_line": 533,
+     "end_line": 536,
      "applicable": true
     }
    ]

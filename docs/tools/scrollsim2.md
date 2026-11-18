@@ -8,16 +8,16 @@ ScrollSim v2 renders a synthetic rolled, pressed and crushed papyrus scroll at f
 | Status | Experimental |
 | Kind | kit module |
 | Area | Surfaces and tracing |
-| Run | `python -m kit.scrollsim2 make`, `estimate`, `pyramid`, `verify`, `publish`, `info`; library `from kit import scrollsim2` |
+| Run | `python -m kit.scrollsim2 make`, `estimate`, `pyramid`, `verify`, `publish`, `vc3d`, `info`; library `from kit import scrollsim2` |
 | Code | `kit/scrollsim2.py` |
 | Tests | `tests/test_scrollsim2.py` |
 | Needs | Python 3.10 or newer, numpy, scipy (ndimage), zarr 3 for `make` (it writes zarr format 2); all in `pip install -e ".[maps]"`. No scroll data |
 | Runs on | CPU, any core count (forked workers, at most 16 by default). Smoke scroll (64 x 208 x 208, 4.8 turns): 7.2 s wall on 4 workers, 98 MB peak per process (measured 2026-11-18, 4-core cloud container) |
 | Network | None |
-| Writes | `make OUT`: `OUT/ct.zarr`, `OUT/truth/labels.zarr`, `OUT/truth.json`, `OUT/truth/make-key.json`, `OUT/truth/done.txt`, and with `--surfaces` `OUT/truth/surfaces/spiral-center/` and `spiral-recto/`. `publish SRC DST`: a copy in `DST`. `pyramid OUT`: rewrites CT levels 1 and up |
+| Writes | `make OUT`: `OUT/ct.zarr`, `OUT/truth/labels.zarr`, `OUT/truth.json`, `OUT/truth/make-key.json`, `OUT/truth/done.txt`, and with `--surfaces` `OUT/truth/surfaces/spiral-center/` and `spiral-recto/`. `publish SRC DST`: a copy in `DST`. `pyramid OUT`: rewrites CT levels 1 and up. `vc3d SIM OUT`: `OUT/scrollsim2.volpkg.json`, `OUT/volumes/` (links, or copies with `--copy`), `OUT/paths/` |
 | Go-ahead | Not needed on a local CPU. A rented run follows hard rule 11 |
 | Released | Public `main` since 2026-11-18 |
-| Checked | 2026-11-18 against commit `c2cb575` |
+| Checked | 2026-11-18 against commit `424fb42` |
 
 ## What it does
 
@@ -30,6 +30,22 @@ What works today:
 - **Exact truth.** `truth/labels.zarr` holds every sheet voxel's winding number (plus 1; 0 is air), numbered from the center line with one step across a fixed half-plane. `--surfaces` writes the whole sheet's center and recto surfaces as tifxyz, each with `winding.npy`, the winding number of every vertex. `truth.json` records the parameters, turns, center line and render timings, and the same parameters always rebuild the same scroll.
 
 Ink is off in this release: the volume holds no ink and the label volume carries windings only.
+
+![Synthetic demo: a ScrollSim v2 slice of about 21 windings, gray CT on the left and the same slice tinted by exact winding number on the right](../assets/scrollsim2/scrollsim2-slice.png)
+
+*Synthetic demo: one slice of a 96 x 640 x 640 ScrollSim v2 scroll and its exact winding labels. No scan data.*
+
+![Synthetic demo: one seed three ways, a round spiral, the same spiral with contact zones, and the roll crushed and bent](../assets/scrollsim2/scrollsim2-stages.png)
+
+*Synthetic demo: the same seed without contacts, with contact zones (`contact_share` 0.45), and crushed and bent (`squash` 0.5, `warp` 5). The color step on the right of each spiral is where winding numbers go up by one, across the half-plane on the +x side of the center line. No scan data.*
+
+![Synthetic demo: the whole sheet's center surface in 3D with one quarter cut away, colored by winding number](../assets/scrollsim2/scrollsim2-surface.png)
+
+*Synthetic demo: the center surface `make --surfaces` writes as tifxyz, colored by its exact winding number. No scan data.*
+
+![Synthetic demo: a pass through z, CT beside its winding labels](../assets/scrollsim2/scrollsim2-zscroll.gif)
+
+*Synthetic demo: a pass through z of the same scroll. No scan data. All four are made by `python scripts/media/scrollsim2_demo.py --work WORK --out-dir docs/assets/scrollsim2`.*
 
 What it is not: a calibrated stand-in for a real scroll. A score on its volumes is model output on synthetic data and says nothing about a real scroll. Never call an ink map made on it a reading.
 
@@ -63,6 +79,196 @@ python -m kit.scrollsim2 info SIM
 - `SIM`: a new empty folder.
 
 On 2026-11-18 in a 4-core container `make` printed one line of JSON with `"complete": true`, `turns` 4.77, `pressed_share` 0.2898, `surface_residual_vox` 2.8e-14 and `render` blocks 16, air blocks 2, seconds 6.8. It worked when it exits 0, `SIM/ct.zarr/0` has shape 64 x 208 x 208 and `SIM/truth/labels.zarr/0` holds several winding ids.
+
+## Tutorials
+
+Every command below was run on 2026-11-18 in a 4-core Linux container with Python 3.13, from a fresh clone of `main`; the printed numbers are from that run.
+
+### Make your first synthetic scroll in 2 minutes
+
+```bash
+git clone --depth 1 https://github.com/ChaseHendrick/Scrolls.git
+cd Scrolls
+python3 -m venv .venv
+. .venv/bin/activate
+python -m pip install -e ".[maps]"
+python -m kit.scrollsim2 make sim --preset smoke --workers 4 --block 64 --chunk 64 --levels 2 --surfaces
+python -m kit.scrollsim2 info sim
+```
+
+`make` took about 6 s and printed `PROGRESS 16/16 blocks` on stderr; `info` prints `truth.json` without the center line. Then look inside with numpy, zarr and tifffile (all in `.[maps]`):
+
+```bash
+python - <<'EOF'
+import numpy as np, tifffile, zarr
+ct = zarr.open_group("sim/ct.zarr", mode="r")
+labels = zarr.open_group("sim/truth/labels.zarr", mode="r")["0"]
+print([ct[k].shape for k in sorted(ct.array_keys())])
+print("windings in slice 32:", np.unique(labels[32])[1:].tolist())
+tifffile.imwrite("slice-32.tif", ct["0"][32])
+tifffile.imwrite("labels-32.tif", labels[32])
+EOF
+```
+
+It printed `[(64, 208, 208), (32, 104, 104), (16, 52, 52)]` and `windings in slice 32: [1, 2, 3, 4, 5, 6]`. Labels are winding number plus 1 (0 is air). Open the two TIFFs in any image viewer, or `sim/ct.zarr` in an OME-Zarr viewer such as napari or Neuroglancer (viewers not tested here).
+
+### Test a tracer against exact truth
+
+The truth is the label volume, `sim/truth/labels.zarr/0`, and with `--surfaces` the whole sheet as tifxyz in `sim/truth/surfaces/spiral-center/` and `spiral-recto/`, each with `winding.npy` (the winding number of every vertex). Check a surface with the [tifxyz](tifxyz.md) tool:
+
+```bash
+python -m kit tifxyz check sim/truth/surfaces/spiral-center
+```
+
+It reports 0 holes and 0 folds, and flags about 36 percent of nodes as stretched: the grid is regular on the rolled sheet, and the crush stretches it in the volume. That is expected here, not an error.
+
+To score a tracer, compare its winding numbers with the labels. Winding agreement below is the share of random voxel pairs, both on a sheet in the tracer's output and in the truth, whose predicted winding difference equals the true difference, so a tracer's own numbering offset does not matter. The shuffled control must score far lower. Save this toy tracer as `toy_tracer.py`; it sees only the CT and numbers each sheet voxel by how many sheets a straight ray from the center line crosses to reach it:
+
+```python
+"""A toy tracer and its winding agreement against ScrollSim v2's exact labels, on one z slice."""
+import json
+import sys
+
+import numpy as np
+import zarr
+from scipy import ndimage
+
+sim, z = sys.argv[1], int(sys.argv[2])
+ct = np.asarray(zarr.open_group(f"{sim}/ct.zarr", mode="r")["0"][z]).astype(float)
+truth = np.asarray(zarr.open_group(f"{sim}/truth/labels.zarr", mode="r")["0"][z]).astype(int) - 1   # -1 is air
+cl = np.array(json.load(open(f"{sim}/truth.json"))["center_line"])
+cx, cy = np.interp(z, cl[:, 2], cl[:, 0]), np.interp(z, cl[:, 2], cl[:, 1])
+
+# The toy tracer sees only the CT: smooth, threshold halfway between the median and the bright sheets, then number each sheet voxel
+# by how many sheets a straight ray from the center line crosses to reach it.
+img = ndimage.gaussian_filter(ct, 1.0)
+lo, hi = np.percentile(img, [50, 98])
+sheet = img > (lo + hi) / 2
+ys, xs = np.nonzero(sheet)
+t = np.linspace(0, 1, 400)[:, None]
+py = np.clip(np.rint(cy + t * (ys - cy)).astype(int), 0, sheet.shape[0] - 1)
+px = np.clip(np.rint(cx + t * (xs - cx)).astype(int), 0, sheet.shape[1] - 1)
+on = sheet[py, px]
+pred = (on[1:] & ~on[:-1]).sum(0)                 # rising edges along the ray: sheets entered on the way out
+
+# Winding agreement: for random pairs of voxels that both tools call sheet, how often the predicted winding
+# difference equals the true one. Offsets do not matter, only relative windings. The control shuffles the
+# predictions and must score far lower.
+ok = truth[ys, xs] >= 0
+p, w = pred[ok], truth[ys, xs][ok]
+rng = np.random.default_rng(0)
+i, j = rng.integers(0, len(p), (2, 200000))
+i, j = i[i != j], j[i != j]                     # a voxel paired with itself would always agree
+agree = float(np.mean((p[i] - p[j]) == (w[i] - w[j])))
+q = rng.permutation(p)
+control = float(np.mean((q[i] - q[j]) == (w[i] - w[j])))
+print(json.dumps({"z": z, "sheet_voxels": int(len(p)), "winding_agreement": round(agree, 3),
+                  "shuffled_control": round(control, 3)}))
+```
+
+```bash
+python toy_tracer.py sim 32
+python -m kit.scrollsim2 make sim-apart --preset smoke --set contact_share=0 --workers 4 --block 64 --chunk 64 --levels 1
+python toy_tracer.py sim-apart 32
+```
+
+| Scroll | Winding agreement | Shuffled control |
+| --- | --- | --- |
+| `sim` (contact zones on, the default) | 0.466 | 0.160 |
+| `sim-apart` (`contact_share` 0) | 0.792 | 0.169 |
+
+Where windings touch, the toy tracer sees one sheet instead of two and loses count, so it scores much lower with contacts on. Put your own tracer's winding numbers in place of `pred` to score it the same way. These are scores on synthetic data (Model output about the simulator), not evidence about any real scroll.
+
+### Render at full scale on many CPUs
+
+Estimate first, then render with as many workers as you have cores (at most 16 by default; more rarely helps, since rendering is bound by memory bandwidth). `--block` must be a multiple of `--chunk`.
+
+```bash
+python -m kit.scrollsim2 estimate --set 'shape=[128,768,768]' --workers 4 --sample 2
+python -m kit.scrollsim2 make big --set 'shape=[128,768,768]' --workers 4 --block 128 --chunk 64 --levels 3 --max-blocks 8
+echo $?
+KIT_JOB_DEADLINE=$(( $(date +%s) + 15 )) KIT_JOB_SPARE_S=5 \
+  python -m kit.scrollsim2 make big --resume --set 'shape=[128,768,768]' --workers 4 --block 128 --chunk 64 --levels 3
+python -m kit.scrollsim2 make big --resume --set 'shape=[128,768,768]' --workers 4 --block 128 --chunk 64 --levels 3
+python -m kit.scrollsim2 verify big
+```
+
+- `estimate` printed 27.76 turns, 36 blocks, 28 with sheet, 5.8 s per sheet block and `wall_seconds_at_workers` 42.
+- `--max-blocks 8` stopped after 8 of 36 blocks with `"stopped": "max_blocks"` and exit code 75: stopped early, resume it.
+- With a deadline 15 s away and 5 s kept spare, the resumed run stopped by itself at 16 blocks with `"stopped": "deadline"` and exit 75. In a batch job, set `KIT_JOB_DEADLINE` to the epoch second the job's timeout ends, so the run stops cleanly and the next job resumes.
+- The last resume rendered the rest, built the pyramid and printed `"complete": true` with `verified.ok` true; `verify` printed `"ok": true`. `--resume` needs the same parameters, block, chunk and levels: anything else is refused.
+
+The `pilot` preset (1,024 x 1,728 x 3,264, about 125 windings) is a full cross-section; estimate it before you start it (see Cost and time).
+
+### Publish a scroll to a bucket or Hugging Face dataset
+
+Render to a local disk, then copy with `publish`. It copies with plain file writes, removes any `.partial` file a network mount left behind, and verifies every chunk at the destination:
+
+```bash
+python -m kit.scrollsim2 publish sim mounted-bucket/scrollsim2/sim
+cp -r sim/truth/surfaces mounted-bucket/scrollsim2/sim/truth/
+```
+
+`publish` printed `"ok": true` and copied `ct.zarr`, `truth/labels.zarr` and `truth.json`; it does not copy the surfaces, hence the `cp`. `mounted-bucket/` stands for any mounted bucket path; here it was a local folder. If a copy through a mount loses chunks, `publish SRC DST --levels 1 2` copies just those levels again.
+
+To put it in a Hugging Face dataset, upload the published folder with the `hf` command line (`pip install huggingface_hub`, then `hf auth login`):
+
+```bash
+hf upload USER/DATASET mounted-bucket/scrollsim2/sim sim --repo-type dataset
+```
+
+- `USER/DATASET`: your dataset repository.
+
+The upload itself was not run here (it publishes, and needs your account); `hf upload --help` confirms the arguments. Say in the dataset card that the volumes are synthetic, made by ScrollSim v2, and are not real CT.
+
+### Open a synthetic scroll in VC3D
+
+`vc3d` turns a finished `make` into a folder that VC3D (villa's volume-cartographer) opens: the CT and the winding labels as two zarr volumes, each with the `meta.json` VC3D's volume loader reads (`type`, `uuid`, `width`, `height`, `slices`, and `voxelsize`), the truth surfaces as tifxyz segments, and a project file. Make the scroll with `--surfaces` to get the segments.
+
+```bash
+python -m kit.scrollsim2 vc3d sim sim-vc3d
+cat sim-vc3d/scrollsim2.volpkg.json
+```
+
+It printed `"project_check": {"ok": true, "warnings": []}` and wrote:
+
+```text
+sim-vc3d/
+  scrollsim2.volpkg.json                         the VC3D project (volumes and the segments folder)
+  volumes/scrollsim2-dc047ccd-aaead708-ct/       CT levels (links into sim/ct.zarr), .zattrs, meta.json
+  volumes/scrollsim2-dc047ccd-aaead708-labels/   winding labels (uint16, winding + 1, 0 air), meta.json
+  paths/spiral-center/, paths/spiral-recto/      tifxyz segments with winding.npy
+```
+
+The level arrays are links into `sim`, so keep `sim` beside it or pass `--copy` for a standalone folder. `--voxel-um` (default 8) sets the voxel size VC3D uses for its scale bar and areas: the volume is synthetic and has no voxel size of its own.
+
+In VC3D, open `sim-vc3d/scrollsim2.volpkg.json` (File, open a project). The CT and the label volume appear as two volumes, and the two surfaces as segments. Here VC3D was driven through its agent bridge rather than by hand, with the same calls the File menu and the segment list make (`volume.open`, `segments.attach`, `segments.activate`). It loaded both volumes, attached both segments and drew the center surface on every winding:
+
+![Synthetic demo: VC3D with a ScrollSim v2 scroll open, the center surface traced in orange on every winding](../assets/scrollsim2/scrollsim2-vc3d.png)
+
+*Synthetic demo: a ScrollSim v2 scroll (96 x 640 x 640) exported with `kit.scrollsim2 vc3d` and opened in VC3D. No scan data.*
+
+VC3D's command-line tools read the same folder. Rendering the label volume along the center surface with VC3D's own renderer, then comparing with the surface's `winding.npy`, checks that VC3D reads the volumes, the surface and their axis order the way they were written:
+
+```bash
+mkdir -p render-labels
+./VC3D-7154682-2026-10-28-linux-x86_64.AppImage vc_render_tifxyz -v sim-vc3d/volumes/*-labels \
+  -s sim-vc3d/paths/spiral-center --scale 1 -g 0 --cache-gb 2 --tif-output render-labels
+python - <<'EOF'
+import numpy as np, tifffile
+r = tifffile.imread("render-labels/00.tif")
+w = np.load("sim-vc3d/paths/spiral-center/winding.npy")
+H, W = w.shape
+s = r[np.ix_(np.rint(np.arange(H) * r.shape[0] / H).astype(int), np.rint(np.arange(W) * r.shape[1] / W).astype(int))]
+ok = np.isfinite(w) & (s > 0)
+print("vertices on a labeled voxel:", int(ok.sum()), "of", int(np.isfinite(w).sum()))
+print("label read by VC3D == the vertex's winding + 1:", round(float(np.mean(s[ok] == w[ok] + 1)), 4))
+EOF
+```
+
+It printed 5,540 of 6,392 vertices on a labeled voxel and 0.9973 agreement. Reading the TIFF needs `imagecodecs` (VC3D writes LZW). The renderer was run from the extracted AppImage (`squashfs-root/AppRun vc_render_tifxyz ...`), which dispatches to the same tool.
+
+Which VC3D: this was tested with villa's VC3D build `7154682` of 28 October 2026, which opens `*.volpkg.json` projects. Villa's main branch since moved to `.vcproj` projects whose segments live in a `.vcobj` object store (villa `volume-cartographer/core/src/ProjectDocument.cpp`, read on 18 November 2026 at commit `8e21d01`). With such a build, create a project in VC3D, attach the two volume folders, and import `sim-vc3d/paths` with its Import from Folder dialog, or with villa's `vc_object_ingest --db STORE.vcobj --author NAME --surface sim-vc3d/paths`. The segments' `meta.json` `uuid` is already a canonical UUID, so no `--derive-uuids` namespace is needed. That newer route was not tested here.
 
 ## Checks and controls
 
@@ -163,6 +369,20 @@ usage: python -m kit.scrollsim2 publish [-h] [--levels LEVELS [LEVELS ...]]
 | `--levels L ...` | copy only these CT levels (a pyramid repair) |
 | `--no-labels` | skip the label volume |
 
+### `python -m kit.scrollsim2 vc3d`
+
+```text
+usage: python -m kit.scrollsim2 vc3d [-h] [--voxel-um VOXEL_UM] [--copy]
+                                     sim out
+```
+
+| Option | Meaning |
+| --- | --- |
+| `sim` | a complete make folder (with `--surfaces` for the segments) |
+| `out` | a new or empty folder for the VC3D project |
+| `--voxel-um V` | voxel size written to each volume's `meta.json` (default 8; synthetic, nominal) |
+| `--copy` | copy the level arrays instead of linking them |
+
 ### `python -m kit.scrollsim2 info`
 
 ```text
@@ -188,6 +408,7 @@ usage: python -m kit.scrollsim2 info [-h] sim
 | `pyramid(out, workers=1)` | dict as `verify`, plus `seconds` | `SimError` when level 0 is incomplete | Rebuilds CT levels 1 and up from level 0 |
 | `publish(src, dst, levels=None, labels=True)` | dict as `verify`, plus `copied_files` | `SimError` when SRC has no `ct.zarr` | Plain file copy (no write-then-rename), clears `.partial` files, then verifies DST |
 | `write_surface(folder, surf, name)` | the folder | | One tifxyz surface and its `winding.npy` |
+| `export_vc3d(sim, out, voxel_um=8.0, copy=False)` | dict: project, volumes, surfaces, project_check | `SimError` on an incomplete make, a non-empty OUT, a voxel size of 0 or less, or a failed project check | A folder VC3D opens; see the tutorial |
 | `code_sha256()` | hex string | | sha256 of `kit/scrollsim2.py`; `make` refuses to resume a folder made by other code |
 | `default_workers()` | int | | The CPU count, at most `MAX_WORKERS` (16) |
 | `single_thread_blas(environ=None)` | None | | Sets `OMP_NUM_THREADS`, `OPENBLAS_NUM_THREADS` and `MKL_NUM_THREADS` to 1 where unset; `main` calls it first |
@@ -268,6 +489,9 @@ The defaults are set for about 8 um per voxel; they are not a calibration.
 | `which is center or recto` | bad `surface()` argument | use `center` or `recto` |
 | `the box is...voxels in y; this crush needs...` | fixed crush axis and a box too short in y | raise y to the size named |
 | `...is not a scrollsim2 folder to resume (no truth/make-key.json)` | `--resume` on another folder | use a folder `make` started |
+| `...: the make is not complete; resume it first` | `vc3d` on a stopped make | `make --resume`, then `vc3d` |
+| `--voxel-um is above 0` | a voxel size of 0 or less | give a positive size |
+| `...: the project check failed:...` | kit.villafmt found the project would not load in VC3D | read the errors; report it, since `vc3d` should never write such a folder |
 
 ## How it works
 
@@ -302,6 +526,8 @@ Stage registry: no stage option. The registry's stages read a real scroll; Scrol
 
 ## History
 
+- 2026-11-18: `vc3d`, a folder VC3D opens, tested with VC3D build 7154682 (`9195926`).
+- 2026-11-18: pictures and four tutorials, every command run on a fresh clone (`49eb2a5`).
 - 2026-11-18: first public release (version 1): full-scale geometry, block rendering and exact winding and surface truth; ink off (`49d26fe`).
 
 ## Related

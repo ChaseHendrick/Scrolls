@@ -1,0 +1,76 @@
+{
+  "schema": "scrolls-media/1",
+  "name": "scrollsim2-stages",
+  "label": "Synthetic demo",
+  "alt": "Three synthetic slices of one seed, tinted by winding: a round evenly spaced spiral, the same spiral with windings pressed together in places, and the same roll crushed to an oval and gently bent.",
+  "caption": "Synthetic demo: one ScrollSim v2 seed without contacts, with contact zones, and crushed and bent. No scan data.",
+  "license": "Apache-2.0",
+  "release_id": null,
+  "data": null,
+  "sources": [],
+  "outputs": [
+    {
+      "file": "scrollsim2-stages.png",
+      "bytes": 998644,
+      "sha256": "d1350dfc9479dde39ecd5a87367ab6c54e3cc41be25e072b296717a633a6d02e",
+      "width": 1872,
+      "height": 708,
+      "kind": "still",
+      "format": "png"
+    }
+  ],
+  "inputs": [],
+  "made": "2026-11-18",
+  "tool": {
+    "scripts": [
+      "common.py",
+      "scrollsim2_demo.py"
+    ],
+    "scripts_sha256": "6e1ef78a32db34fc80738b6169c3165bba1a43cbd3a2abfd6fb0ee1e14d54d3a",
+    "base_commit": "fabbd1e377769e609e934f187a2d426b132fb906"
+  },
+  "command": "python scripts/media/scrollsim2_demo.py --work WORK --out-dir docs/assets/scrollsim2",
+  "scrollsim2": {
+    "cases": [
+      {
+        "title": "Round roll, no contacts",
+        "shape": [
+          16,
+          512,
+          512
+        ],
+        "seed": 3,
+        "contact_share": 0.0,
+        "squash": 1.0,
+        "warp": 0.0,
+        "alpha": -1.0
+      },
+      {
+        "title": "Contact zones added",
+        "shape": [
+          16,
+          512,
+          512
+        ],
+        "seed": 3,
+        "contact_share": 0.45,
+        "squash": 1.0,
+        "warp": 0.0,
+        "alpha": -1.0
+      },
+      {
+        "title": "Crushed and bent (defaults)",
+        "shape": [
+          16,
+          512,
+          512
+        ],
+        "seed": 3,
+        "contact_share": 0.45,
+        "squash": 0.5,
+        "warp": 5.0,
+        "alpha": -1.0
+      }
+    ]
+  }
+}
