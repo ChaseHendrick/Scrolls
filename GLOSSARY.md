@@ -170,6 +170,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 ## H
 
+**halo (block halo)**: The margin rendered around a block and then cut away, wide enough for every filter, so a voxel's value does not depend on which block rendered it. ScrollSim v2 uses one ([page](docs/tools/scrollsim2.md)).
+
 **Harness2 (Harness squared)**: An optional framework for testing changes to the software around an agent while keeping model weights fixed. Scrolls uses a bounded local adapter to compare provenance workflows on generated files; it does not train an ink reader. See [the adapter guide](docs/tools/harness2.md).
 
 **Headless VC3D**: The released `vc3d-agent` package, which exposes villa tools through shell commands and an MCP server so scripts and agents can trace, check, flatten and render surfaces without a graphical display. See [the tool page](docs/tools/vc3d-agent.md).
@@ -405,6 +407,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 **scroll2ink**: `python -m kit scroll2ink`, one command from a public scan and a seed point to a grown, checked, flattened and rendered surface and its ink map with the reverse-depth control, each step a Headless VC3D tool ([`docs/tools/scroll2ink.md`](docs/tools/scroll2ink.md)).
 
 **Scrolls kit**: The grouped release entry for command-line tools maintained in this repository. It links each listed tool to its command, documentation and evidence; standalone products keep their own entries. The public [release registry](docs/releases.json) identifies the group as `scrolls-kit`.
+
+**ScrollSim v2 (scrollsim2)**: `python -m kit.scrollsim2`, a simulator that renders a synthetic rolled, pressed and crushed papyrus scroll at full scale (100 plus windings) block by block, with the exact winding of every voxel and the sheet's center and recto surfaces as truth. Its output is synthetic data, not real CT; it is not yet calibrated against real scrolls ([page](docs/tools/scrollsim2.md)).
 
 **Scroll Text Reader**: Formerly Greek Letter Reader. The `scrolls-letterread` tool proposes Greek letters with LineNet or words with explicitly installed local Tesseract language packs. Both routes record model provenance and controls; neither verifies a reading ([guide](docs/letter-reader.md)).
 

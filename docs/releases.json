@@ -829,6 +829,18 @@
           "page": "docs/tools/slicechains.md"
         },
         {
+          "id": "scrollsim2",
+          "name": "ScrollSim v2: a full-scale synthetic scroll",
+          "line": "Renders a synthetic scroll of 100 plus windings block by block, with every voxel's exact winding and the sheet's surfaces as truth.",
+          "area": "Surfaces and tracing",
+          "released": "2026-11-18",
+          "version": "1.0",
+          "summary": "Rolls one sheet into a spiral of 100 plus windings, presses neighbors together in contact zones, crushes and bends the roll, and renders a CT-like OME-Zarr pyramid block by block on any number of CPU workers, with a winding label volume and the sheet's center and recto surfaces as tifxyz. Every voxel's value is independent of the block that rendered it, and stopped runs resume. Ink is off in this release. Realism is in progress: real CT texture from open-data scans (S2), more physical detail such as compression and delamination (S3), and calibration so readers and tracers score on it as on real scrolls come in the next release. Synthetic data: scores on it say nothing about a real scroll.",
+          "command": "python -m kit.scrollsim2 make SIM --preset smoke --workers 4 --block 64 --chunk 64 --levels 2 --surfaces",
+          "page": "docs/tools/scrollsim2.md",
+          "evidence": "[tests](tests/test_scrollsim2.py)"
+        },
+        {
           "id": "accelbench",
           "name": "accelbench: time a faster version only after its output matches",
           "released": "2026-11-18",
