@@ -40,6 +40,13 @@ What works today:
 - **Texture library and realism statistics** (2026-11-18). Off by default, so a render without `library` is unchanged bit for bit (checked against the previous code on twelve blocks).
   - *Texture library*: `python -m kit.scrollsim2 library CT.npy LIB.npz` cuts small cubes from a CT crop you choose, for example a crop of public open-data CT, with no labels: sheet cubes keep the fiber texture (the crop minus its smoothed self) and gap cubes keep the debris and loose fibers between sheets (the gap voxels minus the gap median). Both are divided by the crop's sheet-to-gap contrast. `--set library=LIB.npz` adds that residual texture to a render on a global grid of half-overlapping, Hann-weighted tiles; a hash of each tile's position and the seed picks its cube, so the texture is the same whatever the block size. Sheet voxels get sheet cubes, voxels inside the roll get gap cubes, open air gets none. `lib_gain` scales it.
   - *Realism statistics*: `python -m kit.scrollsim2 g1 CT.npy --voxel-um V` measures label-free statistics of any CT crop, real or simulated, after resampling to 8.64 um: sheet and gap run lengths along the sheet normal, touching gaps, normalized gray in sheet and gap, gap noise and its correlation, slice drift, structure-tensor coherence, waviness, split plies and bright inclusions. `g1-compare` takes the largest distance between crops of different real scans as the real-to-real spread and reports, statistic by statistic, whether a simulated crop lies inside it.
+- **Sheet physics** (stage S3, 2026-11-18). All off by default, so the CT and labels are unchanged bit for bit; each part has its own `--set` keys (Inputs). Labels stay the exact winding truth: a voxel is labeled when a winding's ply band holds it, as before.
+  - *Short-scale waviness* (`wave_amp`, `wave_len`): each winding ripples radially with a peak wavelength of a few thicknesses, along z and along the sheet. The ripple is added to the radius grid when the scroll is built, so voxels, labels, surfaces and the center line read one geometry and stay exact.
+  - *Kolleseis* (`kolle_every`, `kolle_len`, `kolle_jitter`, `kolle_thick`): glued joins between sheets, at jittered spacings along the sheet, where the sheet is about twice as thick over the overlap and its label band widens with it.
+  - *Gap debris* (`debris`, `strands`, `dust`): small bright inclusions, loose fiber strands and fine dust in the gaps between windings, hashed by position. They are not sheet: their voxels keep label 0.
+  - *Cracks* (`cracks`, `crack_len`, `crack_w`, `crack_depth`): thin breaks through the sheet that remove density along short lines on its face. A cracked voxel keeps its label, as a hole does, because the winding still passes there.
+  - *Carbonization bubbles* (`bubbles`, `bubble_r`): small voids inside the sheet. Labels kept.
+  - *Density variation between plies* (`ply_var`, `ply_var_len`): the recto and verso plies each get their own smooth density gain.
 
 Ink is off in this release: the volume holds no ink and the label volume carries windings only.
 
@@ -71,7 +78,7 @@ The volumes do not yet look or score like real CT. The CT scan model above gives
 
 - **Measured scan settings.** Measure the noise spectrum, point spread and edges of real open-data scans with `nps` and the label-free statistics, and set the scan model from them.
 - **S2, real texture.** Copy real CT texture from Vesuvius Challenge open-data scans into the synthetic sheets and the gaps between them. The tools are in place (`library`, `g1`, `g1-compare`); which crops to build libraries from, and whether a textured render falls inside the real-to-real spread, are not yet measured.
-- **S3, more physics.** Add more physical detail, such as compression and delamination that behave the way they do in carbonized scrolls.
+- **S3, more physics.** Add more physical detail, such as compression and delamination that behave the way they do in carbonized scrolls. A first group is in ("Sheet physics" above: waviness, joins, gap debris, cracks, bubbles, ply variation); its amplitudes and rates are guesses, not yet measured on real CT.
 - **Goal: calibration.** Tune and check the simulator so that real ink readers and tracers score on it as they do on real scrolls. Until that check passes, a ranking of methods on ScrollSim v2 volumes is not evidence about their ranking on real scrolls.
 
 ## When to use it
@@ -309,6 +316,8 @@ The tests are the controls; each can fail:
 - The extra truth volumes rendered whole equal the same box rendered in eight blocks, and a `make` with 64-voxel blocks writes what `truth_block` gives on the whole box; resume refuses other `--truth` volumes.
 - `verify` catches a lost label pyramid chunk and a lost contact chunk, and `pyramid` repairs the label level.
 - With the defaults, CT levels 0 to 2 and label level 0 equal those of the code before the label pyramid and truth volumes, bit for bit (checked once on 2026-11-18 against the previous code on three scrolls, not a standing test).
+- Sheet physics, each against the same scroll with the feature off: the ripple raises the radius's short-scale power (second differences) over 20 times along z and over 5 times along the sheet, the turn search still equals the all-turns lookup, and the center surface round-trips under 1e-6 voxels with 99.9 percent of its vertices labeled with their own winding; inside a join's overlap a radial line crosses over 1.6 times as many labeled voxels, and outside it the same number; debris raises the gaps' 95th percentile gray level by 5 or more and their mean by over 3, leaves labels and sheet voxels unchanged, and adds nothing outside the gaps; on a crack line the sheet's density drops below a fifth with its label kept, and away from cracks it is unchanged; bubbles remove density only inside the sheet; the two plies' gains have the set sd and are uncorrelated; with every feature on, any block split gives the same CT and labels bit for bit.
+- Defaults unchanged: before this commit, the CT and labels of several blocks (the test scroll, `smoke`, `--scan synchrotron`, `--scan lab` with `alpha` 0) and the center surface were compared with the previous code and matched bit for bit (a manual check, not a unit test).
 
 - Texture library: a library cut from a ScrollSim v2 render holds both sheet and gap cubes, and blank or flat crops and odd patch sizes are refused. A textured render differs from the plain one by exactly the added residual, rounded (within 1 gray level), with labels unchanged, open air untouched, and `lib_gain` 0 equal to the plain render; whole versus eight blocks, and a block with odd edges, give identical CT with the library on.
 - Realism statistics: `g1stats` is deterministic and ignores a gray offset and gain; `g1distance` of a crop with itself is 0 and grows with added noise; `g1compare` judges one of the real crops inside the spread and a crop with three times the noise outside it on gap noise, and judges nothing when every crop comes from one scan; `resample` keeps the mean when it shrinks or grows a crop.
@@ -557,6 +566,14 @@ None from disk. Parameters come from `--preset` (`smoke`, 64 x 208 x 208; `pilot
 | `supersample` | 1 | sub-samples per axis averaged into each voxel |
 | `seed` | 0 | every random field comes from it |
 | `library`, `lib_gain` | `""`, 1 | path to a texture library `.npz` from `library` (empty: none), and the scale of its residuals in units of the `bright` minus `air` contrast; `make` records the library's sha256 so `--resume` refuses a changed file |
+| `wave_amp`, `wave_len` | 0, 40 | rms radial ripple of each winding (voxels, 0 off, at most `thick`) and its peak wavelength along z and along the sheet (32 voxels or more) |
+| `kolle_every`, `kolle_len`, `kolle_jitter`, `kolle_thick` | 0, 1875, 0.38, 2 | mean spacing of the sheet joins along the sheet (voxels, 0 off), overlap length (1.5 cm at 8 um), uniform relative jitter of both, thickness factor in the overlap (1 to 3) |
+| `debris`, `debris_r`, `debris_amp` | 0, 1, 1.2 | share of 8^3 cells holding a bright inclusion (0 off), its radius (sigma, voxels) and peak density (a ply's peak is about 1) |
+| `strands`, `strand_len`, `strand_amp` | 0, 24, 0.5 | share of 16^3 cells holding a loose fiber strand (0 off), its length and peak density |
+| `dust` | 0 | mean density of fine dust in the gaps (0 off) |
+| `cracks`, `crack_len`, `crack_w`, `crack_depth` | 0, 24, 0.6, 0.95 | cracks per 10,000 square voxels of sheet face (0 off), length, half width (sigma) and the share of density removed on the line |
+| `bubbles`, `bubble_r` | 0, 1.2 | share of 6^3 cells holding a void in the sheet (0 off) and its radius (sigma) |
+| `ply_var`, `ply_var_len` | 0, 120 | sd of each ply's smooth density gain (0 off, at most 0.9) and its correlation length |
 
 The defaults are set for about 8 um per voxel; they are not a calibration.
 
@@ -630,7 +647,7 @@ Scan presets (a starting point, not a calibration):
 | `--order is zyx or middle` | unknown order | use one of the two |
 | `unknown preset...; known:...` | unknown `--preset` | use `smoke` or `pilot` |
 | `unknown parameter...` | unknown `--set` key | see Inputs |
-| `...is 0 or more` | a negative scan-model value | set 0 or more |
+| `...is 0 or more` | a negative scan-model or sheet-physics value | set 0 or more |
 | `...is above 0` | `voxel_um`, `energy_kev` or `db_object` at 0 or below | give a positive value |
 | `unknown scan preset...; known:...` | unknown `--scan` | use `synchrotron` or `lab` |
 | `cupping lies in 0 to below 1` | cupping of 1 or more | set below 1 |
@@ -642,6 +659,15 @@ Scan presets (a starting point, not a calibration):
 | `the crop is...; nps needs a 3D crop of at least...voxels per axis` | `nps` on a small or 2D crop | give a 3D crop at least one tile wide, or lower `--tile` |
 | `the mask's shape differs from the crop's` | `nps --mask` of another shape | save the mask for the same crop |
 | `no tile lies wholly inside the mask` | `nps --mask` too sparse | lower `--tile` or widen the mask |
+| `wave_amp lies in 0 to thick` | a ripple larger than the sheet | lower `wave_amp` |
+| `wave_len is 32 voxels or more (four steps of the z grid)` | a ripple shorter than the radius grid can hold | set 32 or more |
+| `kolle_len must stay below the join spacing:...` | overlaps that could touch the next join | lower `kolle_len` or `kolle_jitter`, or raise `kolle_every` |
+| `kolle_jitter lies in 0 to below 1`, `kolle_thick lies in 1 to 3`, `kolle_len is 8 voxels or more` | a join value out of range | set it in range |
+| `debris lies in 0 to 1`, `strands lies in 0 to 1`, `bubbles lies in 0 to 1` | a share out of range | set 0 to 1 |
+| `debris_r lies in 0.3 to 4`, `bubble_r lies in 0.3 to 4`, `strand_len lies in 2 to 64` | an object size out of range | set it in range |
+| `crack_len lies in 4 to 256`, `crack_w lies above 0 and at most crack_len / 8`, `crack_depth lies in 0 to 1` | a crack value out of range | set it in range |
+| `cracks is at most 10000 / (2 crack_len)^2 ...` | more cracks than cells of twice their length | lower `cracks` or `crack_len` |
+| `ply_var lies in 0 to 0.9`, `ply_var_len is 16 voxels or more` | a ply variation out of range | set it in range |
 | `the box holds less than two windings; raise shape or lower pitch` | box too small for the spiral | raise `shape` or lower `pitch` |
 | `...was made with other parameters, block, chunk, levels, code or truth volumes; resume needs the same` | `--resume` with other settings, code or `--truth` | resume with the same settings, or start a new folder |
 | `...: chunks missing after the pyramid:...` | a pyramid write was lost | run `pyramid OUT` |
@@ -676,6 +702,19 @@ Scan presets (a starting point, not a calibration):
    - *Slabs and rings.* Slab k holds z from k x `slab_z`; it has its own gain and ring profile (radius from `axis_yx`), and slab 0's rings are the release-1 rings.
    - *Texture library.* The library's tiles lie on a global grid with half overlap; each cube is weighted by a periodic Hann window, whose half-overlapping shifts sum to 1, and a hash of the tile's grid position and the seed picks it.
 5. **Blocks.** `make` splits the volume into blocks (`--block`, a multiple of `--chunk`), renders each with a halo of about four filter widths, skips blocks no sheet can reach, writes level 0 in parallel and checks each chunk file landed, appends the block to `done.txt`, then builds the pyramid by 2 x 2 x 2 means and verifies it. A deadline in `KIT_JOB_DEADLINE` (epoch seconds) stops new blocks once less than `KIT_JOB_SPARE_S` (default 180 s) is left.
+6. **Sheet physics (stage S3).** Built once per scroll in `Scroll2._physics_build`, before any lookup, from the seed's own streams (`[seed, 41]` ripple, `[seed, 42]` joins, `[seed, 43]` ply gains) or from position hashes with their own salts (`PHYS_SALT`), so no earlier field moves.
+   - *Ripple.* A random field on (along sheet, z) filtered by a difference of Gaussians, G(s) minus G(2 s) with s = 0.153 `wave_len`, so its spectrum peaks at `wave_len`; scaled to rms `wave_amp` and added to the radius grid. The z grid's step is 8 voxels, which is why `wave_len` is at least 32. Each turn is then kept outside the turn before by 0.75 of the contact spacing for the two windings' thicknesses (the base model's floor), so the binary turn search stays exact. Arc length `s` stays that of the unrippled sheet, so textures do not move.
+   - *Kolleseis.* Join positions along the sheet start at a random offset and step by `kolle_every` times 1 plus a uniform jitter; each overlap is `kolle_len` long, jittered the same way. The thickness grid is multiplied by `kolle_thick` inside overlaps, for the whole height of the roll, so plies spread apart and widen, the label band widens with them, and the recto surface follows. The joins run parallel to the roll's axis.
+   - *Gap debris.* Space is cut into fixed cells (8 voxels for inclusions, 16 for strands). Each cell holds one object with probability `debris` or `strands`, at a hashed position, size and brightness (inclusions: Gaussian blobs; strands: straight segments of radius 0.6 voxels in a hashed direction). Each object adds only to its own fixed box, in the global order of its cell, so a voxel's sum never depends on the block. Dust is hashed uniforms on a 2-voxel lattice, interpolated. All three add density only where no ply band holds the voxel and a winding center lies within 0.75 `pitch`: the gaps, plus a thin shell inside the innermost and outside the outermost winding. They are not supersampled.
+   - *Cracks.* The sheet's face, in (along sheet, rolled z), is cut into cells of twice `crack_len`. Each cell holds one crack with probability `cracks` times the cell area over 10,000, at a hashed position and angle and wholly inside its cell, so a point reads only its own cell. Both plies' density is multiplied by 1 minus `crack_depth` times a Gaussian of the distance to the crack line (sigma `crack_w`). The label rule is unchanged, so a cracked voxel keeps its winding.
+   - *Bubbles.* Hashed voids on 6-voxel cells multiply density by 1 minus their summed profile (clipped to 0 to 1), only where a ply band holds the voxel.
+   - *Ply variation.* Two smooth unit fields on (along sheet, z), correlation length `ply_var_len`, multiply the recto and the verso ply by 1 plus `ply_var` times the field (at least 0.2).
+
+   Where these come from (claim labels as in [NOVELTY.md](../NOVELTY.md)):
+   - Kolleseis: Sourced fact as reported in the repository's [Vesuvius bible](../vesuvius-bible/bible.md) (chapter on papyrus), which gives overlaps of 1 to 2 cm, citing UCL's [Papyrus rolls](https://www.ucl.ac.uk/museums-static/digitalegypt/writing/papyrusrolls.html), and sheet widths of 11.7 to 27.5 cm in Egyptian rolls, citing Johnson's [Bookrolls: physical features](https://ancientbooks.papyrology.org/bookrolls-physical-features/). Those pages were not reread for this page. The plan's figure of a join every 8 to 18 cm is not sourced here, so `kolle_every` has no realistic default: set it from the sheet width in voxels (16,250 for 13 cm at 8 um).
+   - Bubbles: Interpretation, resting on a report in the same bible that carbonization makes sheets bubble and delaminate, citing Parsons and colleagues 2023 ([arXiv 2304.02084](https://arxiv.org/abs/2304.02084)), not reread for this page. Their size and number here are guesses.
+   - Density variation between plies: Interpretation. The two plies are separate layers of strips laid at right angles (the bible, chapter on papyrus), so their density need not match; no measurement of it in CT was read.
+   - Waviness, gap debris and cracks: Interpretation, following the S3 plan's realism notes (real sheets wave on a shorter scale than the smooth fields, debris and loose fibers lift the gray level in gaps, sheets crack). Every amplitude, size and rate here is a guess until measured on real CT.
 
 ## Cost and time
 
@@ -698,10 +737,11 @@ Stage registry: no stage option. The registry's stages read a real scroll; Scrol
 
 ## Tests
 
-`python -m unittest tests.test_scrollsim2 -v` (about 6 minutes on 4 cores; skips without numpy and scipy, and the make tests skip without zarr). Covered: lookup equality, determinism, parameter refusals, the narrow fixed-axis box, position-hashed noise, block independence, air skipping, make and its pyramid, stop and resume, deadline stop, lost-chunk detection and repair, publish, estimate, the worker cap and BLAS threads; the truth extras (label pyramid rule, contact share, u, v and w signs and bounds, their block independence, `--truth` on the command line and its resume check); the scan model (presets and refusals, block independence with every part on, phase against an exact FFT filter, phase edges by retrieval mismatch, noise measured and fitted back, cupping, slabs and rings, make with the scan model and the `nps` command), the texture library (build, refusals, the residual it adds, block independence) and the realism statistics (determinism, distances, the spread judgment, resampling, the three commands), all on synthetic inputs. Not covered: the `pilot` preset at full size, a `make` run with a library, and any realism of the volumes against real CT.
+`python -m unittest tests.test_scrollsim2 -v` (about 7 minutes on 4 cores; skips without numpy and scipy, and the make tests skip without zarr). Covered: lookup equality, determinism, parameter refusals, the narrow fixed-axis box, position-hashed noise, block independence, air skipping, make and its pyramid, stop and resume, deadline stop, lost-chunk detection and repair, publish, estimate, the worker cap and BLAS threads; the truth extras (label pyramid rule, contact share, u, v and w signs and bounds, their block independence, `--truth` on the command line and its resume check); the sheet physics (defaults off and refusals, the ripple's short-scale power with exact lookup and surfaces, thicker joins, gap debris without labels, cracks, bubbles and ply variation, block independence with every feature on); the scan model (presets and refusals, block independence with every part on, phase against an exact FFT filter, phase edges by retrieval mismatch, noise measured and fitted back, cupping, slabs and rings, make with the scan model and the `nps` command), the texture library (build, refusals, the residual it adds, block independence) and the realism statistics (determinism, distances, the spread judgment, resampling, the three commands), all on synthetic inputs. Not covered: the `pilot` preset at full size, a `make` run with a library, and any realism of the volumes against real CT.
 
 ## History
 
+- 2026-11-18: sheet physics (stage S3), all off by default: short-scale waviness, kolleseis, gap debris (inclusions, strands, dust), cracks, carbonization bubbles and density variation between plies (`ec921ac`).
 - 2026-11-18: richer truth: a label pyramid beside the CT pyramid (most common nonzero label per cell), and `make --truth contact,uvw` for a contact map and material coordinates (u, v, w) written block by block with the CT; the CT and label level 0 at the defaults are unchanged (`3f7dc8c`).
 - 2026-11-18: texture library (`library`, the `library` and `lib_gain` parameters) and label-free realism statistics (`g1`, `g1-compare`); off by default, so earlier renders are unchanged (`d2a7727`).
 - 2026-11-18: CT scan model (output version 2): phase contrast with Paganin retrieval, noise bands with `nps` to measure and fit a crop's spectrum, beam-hardening cupping, acquisition slabs, rings about the rotation axis, `--scan synchrotron|lab`, and the voxel size in micrometers in the OME-Zarr scale; all off by default (`db454ca`).
