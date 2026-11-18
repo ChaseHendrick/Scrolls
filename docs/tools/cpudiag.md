@@ -11,7 +11,7 @@
 | Run | `python -m kit.cpudiag run [--procs 1,8,32] [--kernels pyloop,compute,stream,blas] [--mount DIR] [--scrollsim2] [--out FILE]`; `python -m kit.cpudiag compare HERE.json THERE.json` |
 | Code | `kit/cpudiag.py` |
 | Tests | `tests/test_cpudiag.py` |
-| Needs | Python 3.10 or newer and numpy (measured with 3.12 and 3.13, numpy 2.3.4); scipy and `kit/scrollsim2.py` for `--scrollsim2` only. Linux for the cgroup and lscpu facts (elsewhere they are null) |
+| Needs | Python 3.10 or newer and numpy (measured with 3.12 and 3.13, numpy 2.3.4); scipy and `kit.scrollsim2` for `--scrollsim2` only. Linux for the cgroup and lscpu facts (elsewhere they are null) |
 | Runs on | CPU anywhere. All kernels at 1 and 4 processes: about 40 s in a 4-core cloud container; `--scrollsim2` adds the pilot geometry (34 s there, 21 s on Hugging Face `cpu-performance`) and one block per process (5 to 21 s) (2026-11-18) |
 | Network | None |
 | Writes | `--out FILE` (saved after each phase); `--mount DIR`: a temporary folder of 32 files of 2 MB inside DIR, removed at the end |
@@ -70,7 +70,7 @@ Claim label: Sourced fact for the measured timings in `docs/evidence/2026-11-18-
 | `run --scale` | `1.0` | work per kernel (1 is about 1 to 4 s a kernel on a 2026 Xeon core) |
 | `run --kernels` | `pyloop,compute,stream,blas` | which kernels to time; an empty or unknown list skips them (scrollsim2 and I/O only) |
 | `run --mount` | none | a directory (bucket mount) to time small-file writes in, beside local disk |
-| `run --scrollsim2` | off | also time scrollsim2 pilot sheet blocks at each P (needs `kit/scrollsim2.py`, released in [#362](https://github.com/ChaseHendrick/Scrolls/pull/362)) |
+| `run --scrollsim2` | off | also time scrollsim2 pilot sheet blocks at each P (needs `kit.scrollsim2`, released in [#362](https://github.com/ChaseHendrick/Scrolls/pull/362)) |
 | `run --out` | none | write the JSON here, saved after each phase |
 | `compare HERE THERE` | | two `run` JSON files; prints THERE's seconds over HERE's at matching P |
 
@@ -98,7 +98,7 @@ Claim label: Sourced fact for the measured timings in `docs/evidence/2026-11-18-
 
 ## Inputs
 
-None but the options. `--mount DIR` must be writable. `--scrollsim2` needs `kit/scrollsim2.py` importable and about 6 GB of memory for the pilot geometry.
+None but the options. `--mount DIR` must be writable. `--scrollsim2` needs `kit.scrollsim2` importable and about 6 GB of memory for the pilot geometry.
 
 ## Outputs
 
@@ -181,5 +181,5 @@ The cgroup quota parser (v1, v2, unlimited, missing), lscpu parsing, `compare` a
 ## Related
 
 - [runlength](runlength.md): `python -m kit.runlength cpu`, the CPU flavor table this tool measured.
-- scrollsim2 (`kit/scrollsim2.py`, [#362](https://github.com/ChaseHendrick/Scrolls/pull/362)): the render whose slowdown this explained.
+- scrollsim2 (`kit.scrollsim2`, [#362](https://github.com/ChaseHendrick/Scrolls/pull/362)): the render whose slowdown this explained.
 - Evidence: [`docs/evidence/2026-11-18-hf-cpu-diag/`](../evidence/2026-11-18-hf-cpu-diag/README.md).

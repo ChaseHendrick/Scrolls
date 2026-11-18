@@ -2390,7 +2390,7 @@
     "Run": "`python -m kit.cpudiag run [--procs 1,8,32] [--kernels pyloop,compute,stream,blas] [--mount DIR] [--scrollsim2] [--out FILE]`; `python -m kit.cpudiag compare HERE.json THERE.json`",
     "Code": "`kit/cpudiag.py`",
     "Tests": "`tests/test_cpudiag.py`",
-    "Needs": "Python 3.10 or newer and numpy (measured with 3.12 and 3.13, numpy 2.3.4); scipy and `kit/scrollsim2.py` for `--scrollsim2` only. Linux for the cgroup and lscpu facts (elsewhere they are null)",
+    "Needs": "Python 3.10 or newer and numpy (measured with 3.12 and 3.13, numpy 2.3.4); scipy and `kit.scrollsim2` for `--scrollsim2` only. Linux for the cgroup and lscpu facts (elsewhere they are null)",
     "Runs on": "CPU anywhere. All kernels at 1 and 4 processes: about 40 s in a 4-core cloud container; `--scrollsim2` adds the pilot geometry (34 s there, 21 s on Hugging Face `cpu-performance`) and one block per process (5 to 21 s) (2026-11-18)",
     "Network": "None",
     "Writes": "`--out FILE` (saved after each phase); `--mount DIR`: a temporary folder of 32 files of 2 MB inside DIR, removed at the end",
