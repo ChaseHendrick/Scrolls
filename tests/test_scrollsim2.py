@@ -231,6 +231,47 @@ class ScrollSim2MakeTest(unittest.TestCase):
             with self.assertRaises(s2.SimError):
                 s2.publish(Path(t) / "nope", d)
 
+    def test_vc3d_export_round_trips(self):
+        # the exported folder is a VC3D project: villafmt's checks of VC3D's loaders pass, each volume's meta.json has
+        # the fields VC3D's Volume requires and reads back the same voxels, and each surface keeps its winding numbers
+        import uuid
+        import zarr
+        from kit import scrollsim2 as s2, villafmt
+        with tempfile.TemporaryDirectory() as t:
+            sim, out = Path(t) / "sim", Path(t) / "vc3d"
+            s2.make(sim, dict(TINY), workers=1, block=32, levels=1, chunk=32, surfaces=True, progress=None)
+            rep = s2.export_vc3d(sim, out)
+            proj = Path(rep["project"])
+            self.assertEqual(proj.name, "scrollsim2.volpkg.json")
+            check = villafmt.check_project(json.loads(proj.read_text()), proj.parent, pixels=True)
+            self.assertTrue(check["ok"], check["errors"])
+            self.assertEqual([r["found"] for r in check["segments"]], [2])
+            for v, src in zip(rep["volumes"], (sim / "ct.zarr", sim / "truth" / "labels.zarr")):
+                d = Path(v["location"])
+                meta = json.loads((d / "meta.json").read_text())
+                self.assertEqual(meta["type"], "vol")
+                self.assertEqual((meta["slices"], meta["height"], meta["width"]), (48, 160, 160))
+                self.assertEqual(meta["uuid"], d.name)
+                self.assertGreater(meta["voxelsize"], 0)
+                g, ref = zarr.open_group(str(d), mode="r"), zarr.open_group(str(src), mode="r")
+                self.assertEqual(sorted(g.array_keys()), sorted(ref.array_keys()))
+                self.assertTrue(np.array_equal(g["0"][:], ref["0"][:]))
+                self.assertEqual(len(g.attrs["multiscales"][0]["datasets"]), len(list(ref.array_keys())))
+            for srf in rep["surfaces"]:
+                d = Path(srf["location"])
+                self.assertEqual(str(uuid.UUID(srf["uuid"])), srf["uuid"])
+                self.assertEqual(json.loads((d / "meta.json").read_text())["uuid"], srf["uuid"])
+                w0 = np.load(sim / "truth" / "surfaces" / d.name / "winding.npy")
+                self.assertTrue(np.array_equal(np.load(d / "winding.npy"), w0, equal_nan=True))
+            # copies instead of links give the same project
+            rep2 = s2.export_vc3d(sim, Path(t) / "copy", copy=True)
+            self.assertFalse(rep2["linked"])
+            self.assertFalse(any(p.is_symlink() for p in (Path(t) / "copy").rglob("*")))
+            with self.assertRaises(s2.SimError):
+                s2.export_vc3d(sim, out)                       # never into a non-empty folder
+            with self.assertRaises(s2.SimError):
+                s2.export_vc3d(sim, Path(t) / "bad", voxel_um=0)
+
     def test_estimate_reports(self):
         from kit import scrollsim2 as s2
         e = s2.estimate(dict(TINY), workers=2, block=32, sample=1, progress=None)

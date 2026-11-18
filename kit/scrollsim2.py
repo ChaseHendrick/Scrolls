@@ -29,6 +29,7 @@ nothing about a real scroll. It is not yet calibrated against real CT (see "Real
   python -m kit.scrollsim2 pyramid OUT [--workers N]     rebuild CT levels 1 and up from level 0, then verify
   python -m kit.scrollsim2 verify OUT                    every CT chunk on disk, no '.partial' temp file
   python -m kit.scrollsim2 publish SRC DST [--levels L ...] [--no-labels]   plain copy of a local folder, then verify
+  python -m kit.scrollsim2 vc3d SIM OUT [--voxel-um 8] [--copy]   a folder VC3D opens: volumes, surfaces, project
   python -m kit.scrollsim2 info OUT
 
 numpy and scipy (the map tools' optional dependencies); zarr for make.
@@ -879,6 +880,84 @@ def write_surface(folder, surf, name):
     return folder
 
 
+VC3D_PROJECT = "scrollsim2.volpkg.json"
+VC3D_UUID_NS = "6d1f0c62-3b0e-5a8e-9a3e-5c7f2b1d9e41"     # uuid5 namespace for this tool's surface ids
+
+
+def _vc3d_volume(src, dst, uid, name, voxel_um, copy):
+    """One VC3D volume folder: SRC's level arrays (linked, or copied with COPY), an OME-Zarr 0.4 multiscales group
+    and the meta.json VC3D's Volume reads (type vol, uuid, width, height, slices; voxelsize)."""
+    import shutil
+    import zarr
+    g = zarr.open_group(str(src), mode="r")
+    levels = sorted(g.array_keys(), key=int)
+    z, y, x = g[levels[0]].shape
+    dst.mkdir(parents=True)
+    for lev in levels:
+        if copy:
+            shutil.copytree(src / lev, dst / lev)
+        else:
+            os.symlink(os.path.relpath((src / lev).resolve(), dst.resolve()), dst / lev, target_is_directory=True)
+    (dst / ".zgroup").write_text(json.dumps({"zarr_format": 2}) + "\n")
+    ds = [{"path": lev, "coordinateTransformations": [{"type": "scale", "scale": [2.0 ** int(lev)] * 3}]}
+          for lev in levels]
+    (dst / ".zattrs").write_text(json.dumps({"multiscales": [{"version": "0.4", "name": name, "axes": [
+        {"name": n, "type": "space", "unit": "micrometer"} for n in "zyx"], "datasets": ds}]}, indent=1) + "\n")
+    meta = {"uuid": uid, "name": name, "type": "vol", "format": "zarr", "width": int(x), "height": int(y),
+            "slices": int(z), "voxelsize": float(voxel_um), "min": 0.0,
+            "max": 255.0 if g[levels[0]].dtype.itemsize == 1 else 65535.0}
+    (dst / "meta.json").write_text(json.dumps(meta, indent=1) + "\n")
+    return {"location": str(dst), "uuid": uid, "levels": len(levels), "shape": [int(z), int(y), int(x)]}
+
+
+def export_vc3d(sim, out, voxel_um=8.0, copy=False):
+    """A folder VC3D opens for a finished make SIM: volumes/<id>-ct and volumes/<id>-labels (the CT and the winding
+    labels as two zarr volumes with meta.json), paths/spiral-center and paths/spiral-recto (the truth surfaces as
+    tifxyz, meta.json uuid a canonical uuid5) when SIM was made with --surfaces, and scrollsim2.volpkg.json, the
+    project file VC3D builds of late October 2026 open, checked by kit.villafmt before it is written. Level arrays
+    are linked, or copied with COPY. VOXEL_UM is a nominal voxel size for VC3D's physical units; the volume is
+    synthetic and has none of its own."""
+    import shutil
+    import uuid
+    from . import villafmt
+    sim, out = Path(sim), Path(out)
+    doc = json.loads((sim / "truth.json").read_text())
+    if not doc.get("complete"):
+        raise SimError(f"{sim}: the make is not complete; resume it first")
+    if out.exists() and any(out.iterdir()):
+        raise SimError(f"{out} exists and is not empty")
+    if not float(voxel_um) > 0:
+        raise SimError("--voxel-um is above 0")
+    short = doc["code_sha256"][:8] + "-" + hashlib.sha256(json.dumps(doc["params"], sort_keys=True).encode()
+                                                          ).hexdigest()[:8]
+    out.mkdir(parents=True, exist_ok=True)
+    vols = [_vc3d_volume(sim / "ct.zarr", out / "volumes" / f"scrollsim2-{short}-ct", f"scrollsim2-{short}-ct",
+                         "scrollsim2 CT (synthetic)", voxel_um, copy),
+            _vc3d_volume(sim / "truth" / "labels.zarr", out / "volumes" / f"scrollsim2-{short}-labels",
+                         f"scrollsim2-{short}-labels", "scrollsim2 winding labels (id + 1)", voxel_um, copy)]
+    segs = []
+    for name in ("spiral-center", "spiral-recto"):
+        src = sim / "truth" / "surfaces" / name
+        if not src.is_dir():
+            continue
+        dst = out / "paths" / name
+        shutil.copytree(src, dst)
+        meta = json.loads((dst / "meta.json").read_text())
+        meta["uuid"] = str(uuid.uuid5(uuid.UUID(VC3D_UUID_NS), f"{short}:{name}"))
+        meta["name"] = name
+        (dst / "meta.json").write_text(json.dumps(meta, indent=2) + "\n")
+        segs.append({"location": str(dst), "uuid": meta["uuid"]})
+    proj = out / VC3D_PROJECT
+    pdoc = villafmt.build_project(proj, [v["location"] for v in vols], [out / "paths"] if segs else [],
+                                  name=f"scrollsim2-{short}")
+    rep = villafmt.write_project(proj, pdoc)
+    if not rep["ok"]:
+        raise SimError(f"{proj}: the project check failed: {json.dumps(rep['errors'])[:400]}")
+    return {"tool": "kit.scrollsim2 vc3d", "project": str(proj), "volumes": vols, "surfaces": segs,
+            "voxel_um": float(voxel_um), "linked": not copy, "project_check": {"ok": rep["ok"],
+            "warnings": [w["message"] for w in rep["warnings"]]}}
+
+
 def code_sha256():
     return hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
 
@@ -1168,6 +1247,11 @@ def main(argv=None):
     a.add_argument("dst")
     a.add_argument("--levels", type=int, nargs="+")
     a.add_argument("--no-labels", action="store_true")
+    a = sub.add_parser("vc3d")
+    a.add_argument("sim")
+    a.add_argument("out")
+    a.add_argument("--voxel-um", type=float, default=8.0)
+    a.add_argument("--copy", action="store_true")
     a = sub.add_parser("info")
     a.add_argument("sim")
     args = ap.parse_args(argv)
@@ -1188,6 +1272,8 @@ def main(argv=None):
                 doc = estimate(over, args.preset, args.workers, args.block, args.sample,
                                progress=lambda m: print(m, file=sys.stderr, flush=True))
             print(json.dumps(doc))
+        elif args.cmd == "vc3d":
+            print(json.dumps(export_vc3d(args.sim, args.out, args.voxel_um, args.copy)))
         elif args.cmd in ("pyramid", "verify", "publish"):
             if args.cmd == "publish":
                 rep = publish(args.src, args.dst, args.levels, not args.no_labels)

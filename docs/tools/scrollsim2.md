@@ -8,13 +8,13 @@ ScrollSim v2 renders a synthetic rolled, pressed and crushed papyrus scroll at f
 | Status | Experimental |
 | Kind | kit module |
 | Area | Surfaces and tracing |
-| Run | `python -m kit.scrollsim2 make`, `estimate`, `pyramid`, `verify`, `publish`, `info`; library `from kit import scrollsim2` |
+| Run | `python -m kit.scrollsim2 make`, `estimate`, `pyramid`, `verify`, `publish`, `vc3d`, `info`; library `from kit import scrollsim2` |
 | Code | `kit/scrollsim2.py` |
 | Tests | `tests/test_scrollsim2.py` |
 | Needs | Python 3.10 or newer, numpy, scipy (ndimage), zarr 3 for `make` (it writes zarr format 2); all in `pip install -e ".[maps]"`. No scroll data |
 | Runs on | CPU, any core count (forked workers, at most 16 by default). Smoke scroll (64 x 208 x 208, 4.8 turns): 7.2 s wall on 4 workers, 98 MB peak per process (measured 2026-11-18, 4-core cloud container) |
 | Network | None |
-| Writes | `make OUT`: `OUT/ct.zarr`, `OUT/truth/labels.zarr`, `OUT/truth.json`, `OUT/truth/make-key.json`, `OUT/truth/done.txt`, and with `--surfaces` `OUT/truth/surfaces/spiral-center/` and `spiral-recto/`. `publish SRC DST`: a copy in `DST`. `pyramid OUT`: rewrites CT levels 1 and up |
+| Writes | `make OUT`: `OUT/ct.zarr`, `OUT/truth/labels.zarr`, `OUT/truth.json`, `OUT/truth/make-key.json`, `OUT/truth/done.txt`, and with `--surfaces` `OUT/truth/surfaces/spiral-center/` and `spiral-recto/`. `publish SRC DST`: a copy in `DST`. `pyramid OUT`: rewrites CT levels 1 and up. `vc3d SIM OUT`: `OUT/scrollsim2.volpkg.json`, `OUT/volumes/` (links, or copies with `--copy`), `OUT/paths/` |
 | Go-ahead | Not needed on a local CPU. A rented run follows hard rule 11 |
 | Released | Public `main` since 2026-11-18 |
 | Checked | 2026-11-18 against commit `424fb42` |
@@ -221,6 +221,55 @@ hf upload USER/DATASET mounted-bucket/scrollsim2/sim sim --repo-type dataset
 
 The upload itself was not run here (it publishes, and needs your account); `hf upload --help` confirms the arguments. Say in the dataset card that the volumes are synthetic, made by ScrollSim v2, and are not real CT.
 
+### Open a synthetic scroll in VC3D
+
+`vc3d` turns a finished `make` into a folder that VC3D (villa's volume-cartographer) opens: the CT and the winding labels as two zarr volumes, each with the `meta.json` VC3D's volume loader requires, the truth surfaces as tifxyz segments, and a project file. Make the scroll with `--surfaces` to get the segments.
+
+```bash
+python -m kit.scrollsim2 vc3d sim sim-vc3d
+cat sim-vc3d/scrollsim2.volpkg.json
+```
+
+It printed `"project_check": {"ok": true, "warnings": []}` and wrote:
+
+```text
+sim-vc3d/
+  scrollsim2.volpkg.json                         the VC3D project (volumes and the segments folder)
+  volumes/scrollsim2-dc047ccd-aaead708-ct/       CT levels (links into sim/ct.zarr), .zattrs, meta.json
+  volumes/scrollsim2-dc047ccd-aaead708-labels/   winding labels (uint16, winding + 1, 0 air), meta.json
+  paths/spiral-center/, paths/spiral-recto/      tifxyz segments with winding.npy
+```
+
+The level arrays are links into `sim`, so keep `sim` beside it or pass `--copy` for a standalone folder. `--voxel-um` (default 8) sets the voxel size VC3D uses for its scale bar and areas: the volume is synthetic and has no voxel size of its own.
+
+In VC3D, open `sim-vc3d/scrollsim2.volpkg.json` (File, open a project). The CT and the label volume appear as two volumes, and the two surfaces as segments. Here VC3D was driven through its agent bridge rather than by hand, with the same calls the File menu and the segment list make (`volume.open`, `segments.attach`, `segments.activate`). It loaded both volumes, attached both segments and drew the center surface on every winding:
+
+![Synthetic demo: VC3D with a ScrollSim v2 scroll open, the center surface traced in orange on every winding](../assets/scrollsim2/scrollsim2-vc3d.png)
+
+*Synthetic demo: a ScrollSim v2 scroll (96 x 640 x 640) exported with `kit.scrollsim2 vc3d` and opened in VC3D. No scan data.*
+
+VC3D's command-line tools read the same folder. Rendering the label volume along the center surface with VC3D's own renderer, then comparing with the surface's `winding.npy`, checks that VC3D reads the volumes, the surface and their axis order the way they were written:
+
+```bash
+mkdir -p render-labels
+./VC3D-7154682-2026-10-28-linux-x86_64.AppImage vc_render_tifxyz -v sim-vc3d/volumes/*-labels \
+  -s sim-vc3d/paths/spiral-center --scale 1 -g 0 --cache-gb 2 --tif-output render-labels
+python - <<'EOF'
+import numpy as np, tifffile
+r = tifffile.imread("render-labels/00.tif")
+w = np.load("sim-vc3d/paths/spiral-center/winding.npy")
+H, W = w.shape
+s = r[np.ix_(np.rint(np.arange(H) * r.shape[0] / H).astype(int), np.rint(np.arange(W) * r.shape[1] / W).astype(int))]
+ok = np.isfinite(w) & (s > 0)
+print("vertices on a labeled voxel:", int(ok.sum()), "of", int(np.isfinite(w).sum()))
+print("label read by VC3D == the vertex's winding + 1:", round(float(np.mean(s[ok] == w[ok] + 1)), 4))
+EOF
+```
+
+It printed 5,540 of 6,392 vertices on a labeled voxel and 0.9973 agreement. Reading the TIFF needs `imagecodecs` (VC3D writes LZW). The renderer was run from the extracted AppImage (`squashfs-root/AppRun vc_render_tifxyz ...`), which dispatches to the same tool.
+
+Which VC3D: this was tested with villa's VC3D build `7154682` of 28 October 2026, which opens `*.volpkg.json` projects. Villa's main branch since moved to `.vcproj` projects whose segments live in a `.vcobj` object store (villa `volume-cartographer/core/src/ProjectDocument.cpp`, read on 18 November 2026 at commit `8e21d01`). With such a build, create a project in VC3D, attach the two volume folders, and import `sim-vc3d/paths` with its Import from Folder dialog, or with `vc_object_ingest --surface sim-vc3d/paths`. The segments' `meta.json` `uuid` is already a canonical UUID, as that import requires. That newer route was not tested here.
+
 ## Checks and controls
 
 The tests are the controls; each can fail:
@@ -320,6 +369,20 @@ usage: python -m kit.scrollsim2 publish [-h] [--levels LEVELS [LEVELS ...]]
 | `--levels L ...` | copy only these CT levels (a pyramid repair) |
 | `--no-labels` | skip the label volume |
 
+### `python -m kit.scrollsim2 vc3d`
+
+```text
+usage: python -m kit.scrollsim2 vc3d [-h] [--voxel-um VOXEL_UM] [--copy]
+                                     sim out
+```
+
+| Option | Meaning |
+| --- | --- |
+| `sim` | a complete make folder (with `--surfaces` for the segments) |
+| `out` | a new or empty folder for the VC3D project |
+| `--voxel-um V` | voxel size written to each volume's `meta.json` (default 8; synthetic, nominal) |
+| `--copy` | copy the level arrays instead of linking them |
+
 ### `python -m kit.scrollsim2 info`
 
 ```text
@@ -345,6 +408,7 @@ usage: python -m kit.scrollsim2 info [-h] sim
 | `pyramid(out, workers=1)` | dict as `verify`, plus `seconds` | `SimError` when level 0 is incomplete | Rebuilds CT levels 1 and up from level 0 |
 | `publish(src, dst, levels=None, labels=True)` | dict as `verify`, plus `copied_files` | `SimError` when SRC has no `ct.zarr` | Plain file copy (no write-then-rename), clears `.partial` files, then verifies DST |
 | `write_surface(folder, surf, name)` | the folder | | One tifxyz surface and its `winding.npy` |
+| `export_vc3d(sim, out, voxel_um=8.0, copy=False)` | dict: project, volumes, surfaces, project_check | `SimError` on an incomplete make, a non-empty OUT, a voxel size of 0 or less, or a failed project check | A folder VC3D opens; see the tutorial |
 | `code_sha256()` | hex string | | sha256 of `kit/scrollsim2.py`; `make` refuses to resume a folder made by other code |
 | `default_workers()` | int | | The CPU count, at most `MAX_WORKERS` (16) |
 | `single_thread_blas(environ=None)` | None | | Sets `OMP_NUM_THREADS`, `OPENBLAS_NUM_THREADS` and `MKL_NUM_THREADS` to 1 where unset; `main` calls it first |
@@ -425,6 +489,9 @@ The defaults are set for about 8 um per voxel; they are not a calibration.
 | `which is center or recto` | bad `surface()` argument | use `center` or `recto` |
 | `the box is...voxels in y; this crush needs...` | fixed crush axis and a box too short in y | raise y to the size named |
 | `...is not a scrollsim2 folder to resume (no truth/make-key.json)` | `--resume` on another folder | use a folder `make` started |
+| `...: the make is not complete; resume it first` | `vc3d` on a stopped make | `make --resume`, then `vc3d` |
+| `--voxel-um is above 0` | a voxel size of 0 or less | give a positive size |
+| `...: the project check failed:...` | kit.villafmt found the project would not load in VC3D | read the errors; report it, since `vc3d` should never write such a folder |
 
 ## How it works
 
@@ -459,6 +526,7 @@ Stage registry: no stage option. The registry's stages read a real scroll; Scrol
 
 ## History
 
+- 2026-11-18: `vc3d`, a folder VC3D opens, tested with VC3D build 7154682 (VC3DCOMMIT).
 - 2026-11-18: pictures and four tutorials, every command run on a fresh clone (`49eb2a5`).
 - 2026-11-18: first public release (version 1): full-scale geometry, block rendering and exact winding and surface truth; ink off (`49d26fe`).
 
