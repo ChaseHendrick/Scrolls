@@ -114,7 +114,7 @@
       "line": "Command-line tools, benchmarks and script folders that run from a clone of this repository.",
       "area": "Releases and repository",
       "page": "docs/tools/cli.md",
-      "released": "2026-11-17",
+      "released": "2026-11-18",
       "summary": "Command-line tools, benchmarks and script folders that run from a clone of this repository. Each line gives the tool's release date, its weights where it has them, one command to start with, its tool page and its evidence; each page lists the tool's own needs. Their outputs are model output or geometry measurements for a person to check, not readings.",
       "commands": [
         "git clone --depth 1 https://github.com/ChaseHendrick/Scrolls.git",
@@ -827,6 +827,18 @@
           "summary": "Links thinned sheets in single z slices of the m7 surface prediction into chains; every chain that winds a full turn votes by whether its radius grows going round, and each slice also runs mirrored with its votes added flipped. Run blind on 12 scrolls with a catalog direction under a rule fixed beforehand (Model output): 9 of 9 decided right, none wrong, 3 abstained (one-sided p 0.0020); 7 of the 12 were reused truth, so not held out. CPU only, public data.",
           "command": "python3 scripts/spiralsense/slicechains.py --m7 URL --line LINE --voxel-um V --pitch P --z-edges Z0,Z1 --planes 400 --symmetric --out OUT.json",
           "page": "docs/tools/slicechains.md"
+        },
+        {
+          "id": "accelbench",
+          "name": "accelbench: time a faster version only after its output matches",
+          "released": "2026-11-18",
+          "version": "1.0",
+          "summary": "Times a candidate implementation against a reference only after their outputs match under a stated rule (bitwise, exact or a tolerance) and a perturbed control fails that rule, in ABBA order with a device sync before every clock read, and writes a JSON receipt that re-checks its own speedups. With kit.accel (device and precision choice, and a CPU-fp32 check with a control) and a script that times fp32, fp16 and bf16 autocast on a GPU. A receipt holds for its machine and input only.",
+          "command": "python -m kit.accel --check",
+          "page": "docs/tools/accelbench.md",
+          "evidence": "[checks and controls](docs/tools/accelbench.md#checks-and-controls)",
+          "line": "Times a faster version of some code only after its output matches the original, with a control.",
+          "area": "Compute and cost"
         }
       ],
       "where": "main"
