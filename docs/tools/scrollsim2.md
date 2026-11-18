@@ -808,7 +808,7 @@ Stage registry: no stage option. The registry's stages read a real scroll; Scrol
 
 ## History
 
-- 2026-11-18: eight more pictures and GIFs: pressed sheets, truth layers, sheet physics, the ink writer with its noink twin, and the surface swinging in 3D, all synthetic.
+- 2026-11-18: eight more pictures and GIFs: pressed sheets, truth layers, sheet physics, the ink writer with its noink twin, and the surface swinging in 3D, all synthetic ([PR #367](https://github.com/ChaseHendrick/Scrolls/pull/367)).
 - 2026-11-18: ink writer, off by default: Greek capitals on the recto face as a thin deposit with a density and texture change, exact 3D ink truth (`truth/ink.zarr`) and per-surface `ink.tif`, the noink twin (`--noink`), the inked share in `truth.json` (`cf59063`).
 - 2026-11-18: sheet physics (stage S3), all off by default: short-scale waviness, kolleseis, gap debris (inclusions, strands, dust), cracks, carbonization bubbles and density variation between plies (`64c6ba4`).
 - 2026-11-18: richer truth: a label pyramid beside the CT pyramid (most common nonzero label per cell), and `make --truth contact,uvw` for a contact map and material coordinates (u, v, w) written block by block with the CT; the CT and label level 0 at the defaults are unchanged (`28a0f1a`).
