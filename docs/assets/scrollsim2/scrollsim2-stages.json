@@ -1,0 +1,66 @@
+{
+  "schema": "scrolls-media/1",
+  "name": "scrollsim2-stages",
+  "label": "Synthetic demo",
+  "alt": "Three synthetic slices of one seed, tinted by winding: a round evenly spaced spiral, the same spiral with windings pressed together in places, and the same roll crushed to an oval and gently bent.",
+  "caption": "Synthetic demo: one ScrollSim v2 seed without contacts, with contact zones, and crushed and bent. No scan data.",
+  "license": "Apache-2.0",
+  "release_id": null,
+  "data": null,
+  "sources": [],
+  "outputs": [
+    {
+      "file": "scrollsim2-stages.png",
+      "bytes": 998644,
+      "sha256": "d1350dfc9479dde39ecd5a87367ab6c54e3cc41be25e072b296717a633a6d02e",
+      "width": 1872,
+      "height": 708,
+      "kind": "still",
+      "format": "png"
+    }
+  ],
+  "inputs": [],
+  "made": "2026-11-18",
+  "tool": {
+    "scripts": [
+      "common.py",
+      "scrollsim2_demo.py"
+    ],
+    "scripts_sha256": "1a6c09b2bb2c1c0d96435cfb342a9c370f1d37d0a50d84b4e65a47d13cb7a79e",
+    "base_commit": "424fb42d591bb65022b6552347ec6fb5b7201f36"
+  },
+  "command": "python scripts/media/scrollsim2_demo.py --work WORK --out-dir docs/assets/scrollsim2",
+  "scrollsim2": {
+    "cases": [
+      {
+        "shape": [
+          16,
+          512,
+          512
+        ],
+        "seed": 3,
+        "squash": 1.0,
+        "contact_share": 0.0,
+        "warp": 0.0
+      },
+      {
+        "shape": [
+          16,
+          512,
+          512
+        ],
+        "seed": 3,
+        "squash": 1.0,
+        "warp": 0.0
+      },
+      {
+        "shape": [
+          16,
+          512,
+          512
+        ],
+        "seed": 3
+      }
+    ]
+  }
+}

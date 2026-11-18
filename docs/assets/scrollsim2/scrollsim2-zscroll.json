@@ -1,0 +1,38 @@
+{
+  "schema": "scrolls-media/1",
+  "name": "scrollsim2-zscroll",
+  "label": "Synthetic demo",
+  "alt": "Animation through z of a synthetic scroll: gray CT on the left and the same slice tinted by winding number on the right; the spiral shifts slowly as the slices pass.",
+  "caption": "Synthetic demo: a pass through z of a ScrollSim v2 scroll, CT beside its winding labels. No scan data.",
+  "license": "Apache-2.0",
+  "release_id": null,
+  "data": null,
+  "sources": [],
+  "outputs": [
+    {
+      "file": "scrollsim2-zscroll.gif",
+      "bytes": 3012152,
+      "sha256": "435ec1823d0433d831710118c5fade16962077930a5b1d52b31b783dd7fff6fc",
+      "width": 670,
+      "height": 364,
+      "kind": "clip",
+      "format": "gif"
+    }
+  ],
+  "inputs": [],
+  "made": "2026-11-18",
+  "tool": {
+    "scripts": [
+      "common.py",
+      "scrollsim2_demo.py"
+    ],
+    "scripts_sha256": "1a6c09b2bb2c1c0d96435cfb342a9c370f1d37d0a50d84b4e65a47d13cb7a79e",
+    "base_commit": "424fb42d591bb65022b6552347ec6fb5b7201f36"
+  },
+  "command": "python scripts/media/scrollsim2_demo.py --work WORK --out-dir docs/assets/scrollsim2",
+  "scrollsim2": {
+    "frames": 24,
+    "z_step": 4,
+    "frame_ms": 200
+  }
+}

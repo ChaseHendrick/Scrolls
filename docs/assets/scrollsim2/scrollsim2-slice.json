@@ -1,0 +1,41 @@
+{
+  "schema": "scrolls-media/1",
+  "name": "scrollsim2-slice",
+  "label": "Synthetic demo",
+  "alt": "Two panels of one synthetic slice, 640 by 640 voxels: on the left gray CT of a crushed spiral of papyrus windings with noise, on the right the same slice with every sheet voxel tinted by its exact winding number in six repeating colors, and every fifth winding numbered along a line from the center.",
+  "caption": "Synthetic demo: ScrollSim v2 slice and its exact winding labels. No scan data.",
+  "license": "Apache-2.0",
+  "release_id": null,
+  "data": null,
+  "sources": [],
+  "outputs": [
+    {
+      "file": "scrollsim2-slice.png",
+      "bytes": 1180334,
+      "sha256": "375564ea96f554358dcf0f608310e70d2fa153716edddd93d3880e5e6d12b18b",
+      "width": 1920,
+      "height": 1035,
+      "kind": "still",
+      "format": "png"
+    }
+  ],
+  "inputs": [],
+  "made": "2026-11-18",
+  "tool": {
+    "scripts": [
+      "common.py",
+      "scrollsim2_demo.py"
+    ],
+    "scripts_sha256": "1a6c09b2bb2c1c0d96435cfb342a9c370f1d37d0a50d84b4e65a47d13cb7a79e",
+    "base_commit": "424fb42d591bb65022b6552347ec6fb5b7201f36"
+  },
+  "command": "python scripts/media/scrollsim2_demo.py --work WORK --out-dir docs/assets/scrollsim2",
+  "scrollsim2": {
+    "z": 48,
+    "turns": 21.14,
+    "shape": [
+      640,
+      640
+    ]
+  }
+}
