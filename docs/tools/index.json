@@ -19968,6 +19968,153 @@
    ]
   },
   {
+   "id": "voltransform",
+   "name": "voltransform",
+   "tagline": "move points between scan volumes with the revision 2 transforms",
+   "summary": "Reads the open-data catalog after its 16 Nov 2026 change: revisioned volume transforms with their thin-plate splines, superseded t1 segment data, and the lossless vc-delta3d volume copies.",
+   "status": "Current",
+   "kind": [
+    "kit module"
+   ],
+   "area": "Data and downloads",
+   "commands": [
+    "python -m kit.voltransform",
+    "table",
+    "map",
+    "superseded"
+   ],
+   "imports": [
+    "from kit import voltransform"
+   ],
+   "code": [
+    {
+     "path": "kit/voltransform.py",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_voltransform.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed"
+   },
+   "checked": {
+    "date": "2026-11-18",
+    "commit": "c371a7f"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`voltransform`",
+    "Status": "Current",
+    "Kind": "kit module",
+    "Area": "Data and downloads",
+    "Run": "`python -m kit.voltransform` (actions `table`, `map`, `superseded`); library: `from kit import voltransform`",
+    "Code": "`kit/voltransform.py`",
+    "Tests": "`tests/test_voltransform.py`",
+    "Needs": "Python 3.10+; numpy only to move points; `vc-delta3d[zarr]>=0.3.2` and zarr >= 3.1.1 only for `open_volume` on a vcd3d copy",
+    "Runs on": "CPU; `table` and `superseded` under 1 s on a cached catalog, `map` about 1 s per transform file fetched (measured 2026-11-18, 4-core cloud container)",
+    "Network": "vesuvius-challenge-open-data.s3.amazonaws.com: `metadata.json` (cached a day) and `<sample>/transforms/<from>-to-<to>-r<N>/fit/transform.json`",
+    "Writes": "`$KIT_VC3D_HOME/cache/open-data-metadata.json` and `$KIT_VC3D_HOME/cache/transforms/` (cached transform files); nothing else",
+    "Go-ahead": "Not needed",
+    "Released": "Public `main` since its PR (2026-11-18); the same file in Scrolls-private",
+    "Checked": "2026-11-18 against commit `c371a7f`"
+   },
+   "page": "docs/tools/voltransform.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 22,
+     "end_line": 40,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 41,
+     "end_line": 51,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 52,
+     "end_line": 72,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 73,
+     "end_line": 82,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 83,
+     "end_line": 94,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 95,
+     "end_line": 121,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 122,
+     "end_line": 125,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 126,
+     "end_line": 130,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 131,
+     "end_line": 141,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 142,
+     "end_line": 147,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 148,
+     "end_line": 152,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 153,
+     "end_line": 162,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 163,
+     "end_line": 168,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 169,
+     "end_line": 172,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 173,
+     "end_line": 178,
+     "applicable": true
+    }
+   ]
+  },
+  {
    "id": "volumeview",
    "name": "volumeview",
    "tagline": "create a volume overlay viewer link locally",

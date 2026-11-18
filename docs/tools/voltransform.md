@@ -77,7 +77,7 @@ inverse on the fixed landmarks, the largest difference from `volreg.cores.deform
 (2026-11-18). The unit tests fit a spline with zero smoothing and require it to reproduce its points within 1e-6
 voxels and its fitted inverse to round-trip; a bent transform with no inverse must refuse to invert.
 
-Claim label: Sourced fact for the catalog structure (the organizers' Discord post of 18 Nov 2026 and `metadata.json`);
+Claim label: Sourced fact for the catalog structure (`metadata.json`, Last-Modified 18 Nov 2026 13:26 UTC);
 Model output for nothing; the r1 against r2 distances in the log are measurements on public data.
 
 ## Commands and options
@@ -168,7 +168,7 @@ fetches (the tests inject a fetch function) and `open_volume` on a real vcd3d co
 
 ## History
 
-- 2026-11-18: first version (branch `claude/project-thread-tglyvh`), with the landmark, mesh audit, sentinel and sheet reference readers moved to it.
+- 2026-11-18: first version (`8e1c645`), with the landmark, mesh audit, sentinel and sheet reference readers moved to it.
 
 ## Related
 
