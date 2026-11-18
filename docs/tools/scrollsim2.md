@@ -293,8 +293,14 @@ The tests are the controls; each can fail:
 - Two `make` runs with different block sizes and worker counts give identical pyramids; a run stopped after 7 blocks, then stopped by a deadline, then resumed, equals one uninterrupted run.
 - A chunk file that never lands on disk is caught by `verify` and by the write check, and `pyramid` repairs a lost pyramid chunk.
 - Surface vertices map back onto the rolled sheet with a residual under 1e-6 voxels.
+- With every scan-model part on (phase, noise bands, cupping, slabs with a slab edge inside the box, rings about an off-center axis), rendering whole versus in eight blocks gives identical CT.
+- The phase filter's Gaussian sum matches the exact transfer (1 + a_o k^2) / (1 + a_r k^2), applied by FFT, to 3 percent of the field's sd; a halo too small for the filter reports a `max_error` above the tolerance.
+- A bright slab overshoots at its edges when the retrieval under-corrects or is absent, and blurs when it over-corrects; its mean is kept.
+- Noise rendered from known bands is measured by `measure_nps` and fitted back: variance within 12 percent, fit error under 15 percent, and ramp noise has more power at high frequency than at low; white noise fits too.
+- Cupping darkens sheets near the middle of the roll more than at the rim and leaves air unchanged; slabs step the gain and change the rings, and one slab gives the release-1 rings.
+- A render with the scan model off equals the previous release's render bit for bit (checked by hand against commit `6abf7ff` on 2026-11-18; not a unit test).
 
-Scope: these are correctness checks on the simulator's own truth, geometry and storage. No realism or calibration check has run, so nothing here says how close a volume is to real CT.
+Scope: these are correctness checks on the simulator's own truth, geometry, scan model and storage. No realism or calibration check has run, so nothing here says how close a volume is to real CT.
 
 Claim label: None (a simulator; its output is synthetic data, and scores on it are Model output about the simulator only).
 
@@ -307,7 +313,8 @@ usage: python -m kit.scrollsim2 make [-h] [--levels LEVELS] [--chunk CHUNK]
                                      [--surfaces] [--resume]
                                      [--max-blocks MAX_BLOCKS]
                                      [--order {zyx,middle}]
-                                     [--preset {pilot,smoke}] [--set SET]
+                                     [--preset {pilot,smoke}]
+                                     [--scan {lab,synchrotron}] [--set SET]
                                      [--seed SEED] [--workers WORKERS]
                                      [--block BLOCK]
                                      out
@@ -323,6 +330,7 @@ usage: python -m kit.scrollsim2 make [-h] [--levels LEVELS] [--chunk CHUNK]
 | `--max-blocks N` | stop after N new blocks (a timing probe; exit 75) |
 | `--order zyx|middle` | block order: index order, or blocks nearest the center first |
 | `--preset NAME` | `smoke` or `pilot` |
+| `--scan NAME` | a scan preset, `synchrotron` or `lab` (same as `--set scan=NAME`); applied after `--preset`, before `--set` |
 | `--set KEY=VALUE` | override one parameter (repeatable; VALUE is JSON) |
 | `--seed N` | the seed, same as `--set seed=N` |
 | `--workers N` | forked worker processes (default: CPU count, at most 16) |
@@ -332,7 +340,8 @@ usage: python -m kit.scrollsim2 make [-h] [--levels LEVELS] [--chunk CHUNK]
 
 ```text
 usage: python -m kit.scrollsim2 estimate [-h] [--sample SAMPLE]
-                                         [--preset {pilot,smoke}] [--set SET]
+                                         [--preset {pilot,smoke}]
+                                         [--scan {lab,synchrotron}] [--set SET]
                                          [--seed SEED] [--workers WORKERS]
                                          [--block BLOCK]
 ```
@@ -341,6 +350,7 @@ usage: python -m kit.scrollsim2 estimate [-h] [--sample SAMPLE]
 | --- | --- |
 | `--sample K` | sheet blocks to time (default 4) |
 | `--preset NAME` | as make |
+| `--scan NAME` | as make |
 | `--set KEY=VALUE` | as make |
 | `--seed N` | as make |
 | `--workers N` | workers the wall time is scaled to |
@@ -393,8 +403,26 @@ usage: python -m kit.scrollsim2 vc3d [-h] [--voxel-um VOXEL_UM] [--copy]
 | --- | --- |
 | `sim` | a complete make folder (with `--surfaces` for the segments) |
 | `out` | a new or empty folder for the VC3D project |
-| `--voxel-um V` | voxel size written to each volume's `meta.json` (default 8; synthetic, nominal) |
+| `--voxel-um V` | voxel size written to each volume's `meta.json` (default: the make's `voxel_um`, 8 unless set) |
 | `--copy` | copy the level arrays instead of linking them |
+
+### `python -m kit.scrollsim2 nps`
+
+```text
+usage: python -m kit.scrollsim2 nps [-h] [--mask MASK] [--tile TILE]
+                                    [--share SHARE] [--out OUT]
+                                    ct
+```
+
+| Option | Meaning |
+| --- | --- |
+| `ct` | a CT crop saved as `.npy` (z, y, x), real or synthetic |
+| `--mask M.npy` | a boolean volume of the same shape; only tiles wholly inside it are used (for example the gaps between sheets) |
+| `--tile T` | tile edge, voxels (default 32) |
+| `--share S` | share of tiles with the least structure to use (default 0.25: gaps and air) |
+| `--out F` | also write the full spectrum (freq, psd, count) and the fit as JSON |
+
+It prints one JSON line: `variance`, `tiles`, `tiles_seen`, `fit` (`nps`, `variance_fit`, `relative_error`) and `set`, the `nps=[...]` value to pass to `make --set`. Labels are never read.
 
 ### `python -m kit.scrollsim2 info`
 
@@ -411,7 +439,7 @@ usage: python -m kit.scrollsim2 info [-h] sim
 | Function | Returns | Raises | Notes |
 | --- | --- | --- | --- |
 | `SimError()` | | | The error every refusal raises (a `ValueError`) |
-| `params(over=None, preset=None)` | dict of every parameter | `SimError` on an unknown key or preset or a value out of range | DEFAULTS, then the preset, then OVER |
+| `params(over=None, preset=None)` | dict of every parameter | `SimError` on an unknown key, preset or scan preset, or a value out of range | DEFAULTS, then the preset, then the scan preset named by `scan`, then OVER |
 | `hashed_normal(seed, z0, z1, y0, y1, x0, x1, salt=HASH_SALT['noise'])` | float32 array (z, y, x) | | Standard normal noise on the box, a function of each voxel's position and the seed only |
 | `Roll(p)` | object | `SimError` when the box holds less than two windings | The sheet geometry: radius, thickness, contacts, delamination, holes and displacement fields; `voxels_all_turns(out)` is the slow reference lookup |
 | `Scroll2(p)` | object | `SimError` as `params`, or when the box is too short in y for a fixed crush | Full-scale lookups and rendering: `voxels(out)`, `scan_block(z0, z1, y0, y1, x0, x1)` returns (CT uint8, labels uint16, air flag), `surface(step, which)` |
@@ -421,7 +449,14 @@ usage: python -m kit.scrollsim2 info [-h] sim
 | `pyramid(out, workers=1)` | dict as `verify`, plus `seconds` | `SimError` when level 0 is incomplete | Rebuilds CT levels 1 and up from level 0 |
 | `publish(src, dst, levels=None, labels=True)` | dict as `verify`, plus `copied_files` | `SimError` when SRC has no `ct.zarr` | Plain file copy (no write-then-rename), clears `.partial` files, then verifies DST |
 | `write_surface(folder, surf, name)` | the folder | | One tifxyz surface and its `winding.npy` |
-| `export_vc3d(sim, out, voxel_um=8.0, copy=False)` | dict: project, volumes, surfaces, project_check | `SimError` on an incomplete make, a non-empty OUT, a voxel size of 0 or less, or a failed project check | A folder VC3D opens; see the tutorial |
+| `phase_model(p)` | dict or None | | The phase filter for parameters P: `a_object_vox2`, `a_recon_vox2`, `ratio`, the fitted `gaussians`, `max_error`, `halo`; None when `phase_mm` is 0 |
+| `apply_phase(v, ph)` | float32 array | | Applies a `phase_model` filter to a gray volume |
+| `scan_report(p)` | dict | | The derived scan model, as `truth.json` `scan_model` records it |
+| `measure_nps(vol, tile=32, share=0.25, mask=None)` | dict: freq, psd, count, variance, tiles | `SimError` on a crop smaller than a tile, a mask of another shape, or no tile inside the mask | Label-free noise power spectrum of a crop |
+| `fit_nps(freq, psd, count=None, tile=32)` | dict: nps, variance_fit, relative_error | | Band sds whose summed spectrum fits a measured one |
+| `ramp_nps(total_sd, cutoff=0.5, n=32)` | list | | Band sds for filtered back-projection noise (a Hann-windowed ramp) |
+| `nps_band_gain(j)`, `nps_band_psd(j, fz, fy, fx)` | float, array | | One noise band's sd for unit white input, and its spectrum at unit variance |
+| `export_vc3d(sim, out, voxel_um=None, copy=False)` | dict: project, volumes, surfaces, project_check | `SimError` on an incomplete make, a non-empty OUT, a voxel size of 0 or less, or a failed project check | A folder VC3D opens; see the tutorial |
 | `code_sha256()` | hex string | | sha256 of `kit/scrollsim2.py`; `make` refuses to resume a folder made by other code |
 | `default_workers()` | int | | The CPU count, at most `MAX_WORKERS` (16) |
 | `single_thread_blas(environ=None)` | None | | Sets `OMP_NUM_THREADS`, `OPENBLAS_NUM_THREADS` and `MKL_NUM_THREADS` to 1 where unset; `main` calls it first |
@@ -429,7 +464,7 @@ usage: python -m kit.scrollsim2 info [-h] sim
 
 ## Inputs
 
-None from disk. Parameters come from `--preset` (`smoke`, 64 x 208 x 208; `pilot`, 1,024 x 1,728 x 3,264 with `alpha` 0), then `--set KEY=VALUE` (values parsed as JSON), then `--seed`. Lengths are output voxels. The main keys:
+None from disk. Parameters come from `--preset` (`smoke`, 64 x 208 x 208; `pilot`, 1,024 x 1,728 x 3,264 with `alpha` 0), then `--scan` (`synchrotron` or `lab`), then `--set KEY=VALUE` (values parsed as JSON), then `--seed`. Lengths are output voxels. The main keys:
 
 | Key | Default | Meaning |
 | --- | --- | --- |
@@ -448,11 +483,32 @@ None from disk. Parameters come from `--preset` (`smoke`, 64 x 208 x 208; `pilot
 
 The defaults are set for about 8 um per voxel; they are not a calibration.
 
+CT scan model keys (all off at the defaults):
+
+| Key | Default | Meaning |
+| --- | --- | --- |
+| `scan` | `""` | scan preset: `synchrotron` or `lab` |
+| `voxel_um` | 8 | voxel size in micrometers: the OME-Zarr scale and the phase model. The sheet lengths above stay in voxels |
+| `phase_mm`, `energy_kev` | 0, 78 | propagation distance (0: no phase contrast) and mean photon energy |
+| `db_object`, `db_recon` | 1000, 1000 | delta over beta of the sheet, and the value the Paganin retrieval assumed (0: no retrieval) |
+| `phase_halo` | 24 | widest phase-filter kernel radius, voxels; `truth.json` reports the fit's `max_error` within it |
+| `nps` | `[]` | noise sd per band, seven values, added to `noise`; bands are G(s) minus G(next s) of white noise for s in 0, 0.5, 1, 1.5, 2, 3, then G(4) |
+| `cupping` | 0 | share of sheet contrast lost where the mean path through the roll is longest (below 1) |
+| `axis_yx` | `[]` | rotation axis (y, x) the rings center on; `[]` is the box center |
+| `slab_z`, `slab_gain` | 0, 0 | acquisition slab height (0: one slab) and the sd of each slab's gain step |
+
+Scan presets (a starting point, not a calibration):
+
+| Preset | Sets |
+| --- | --- |
+| `synchrotron` | `supersample` 2; phase contrast at 78 keV and 220 mm with Paganin retrieval at delta over beta 1000 (the BM18 settings Angelotti et al. report for PHerc. Paris 4: [arXiv 2606.29085](https://arxiv.org/abs/2606.29085), read 2026-11-18) and the sheet's own value set to 1500, so a bright rim stays (an assumption); point spread 0.6; ramp noise `ramp_nps(3.5, 0.5)`; rings 0.6; slabs of 512 slices with 2 percent gain steps |
+| `lab` | `supersample` 2; no phase contrast; point spread 0.9; smoother ramp noise `ramp_nps(3.0, 0.3)`; cupping 0.15; rings 1.2 |
+
 ## Outputs
 
 `make` prints one line of JSON (the `truth.json` document without its center line) and writes:
 
-- `OUT/ct.zarr`: OME-Zarr 0.4 multiscales, zarr format 2, uint8, levels 0 to `--levels`, each half the last.
+- `OUT/ct.zarr`: OME-Zarr 0.4 multiscales, zarr format 2, uint8, levels 0 to `--levels`, each half the last; the scale is in micrometers (`voxel_um` x 2^level).
 - `OUT/truth/labels.zarr/0`: uint16, winding number plus 1 per voxel, 0 for air.
 - `OUT/truth/surfaces/spiral-center/` and `spiral-recto/` (with `--surfaces`): tifxyz (`x.tif`, `y.tif`, `z.tif`, `meta.json`) and `winding.npy`.
 - `OUT/truth/make-key.json` and `OUT/truth/done.txt`: what `--resume` checks and the blocks already written.
@@ -464,6 +520,7 @@ The defaults are set for about 8 um per voxel; they are not a calibration.
 | `pressed_share` | float | share of the sheet past its first turn that is pressed to a neighbor |
 | `sheet_length_vox` | float | length of the sheet, voxels |
 | `params` | object | every parameter used |
+| `scan_model` | object | `version` 2, `scan`, `voxel_um`, `phase` (as `phase_model`, or null), `nps_total_sd`, `cupping`, `slab_z`, `slab_gain`, `axis_yx` |
 | `center_line` | list | (x, y, z) points of the roll's axis in the output frame (in `truth.json` only) |
 | `render` | object | blocks, blocks done, air blocks, `stopped` (`deadline`, `max_blocks` or null), seconds per phase, `peak_rss_mb`, `verified` |
 | `surface_residual_vox` | float | worst surface round-trip error (with `--surfaces`) |
@@ -494,6 +551,17 @@ The defaults are set for about 8 um per voxel; they are not a calibration.
 | `unknown preset...; known:...` | unknown `--preset` | use `smoke` or `pilot` |
 | `unknown parameter...` | unknown `--set` key | see Inputs |
 | `...is 0 or more` | a negative scan-model value | set 0 or more |
+| `...is above 0` | `voxel_um`, `energy_kev` or `db_object` at 0 or below | give a positive value |
+| `unknown scan preset...; known:...` | unknown `--scan` | use `synchrotron` or `lab` |
+| `cupping lies in 0 to below 1` | cupping of 1 or more | set below 1 |
+| `phase_halo is 2 or more` | too small a halo | set 2 or more |
+| `slab_z is 0 or more` | a negative slab height | set 0 (one slab) or more |
+| `nps is [] or...band sds, one per band of...` | `nps` of the wrong length | give seven values, or `[]` |
+| `every nps band sd is 0 or more` | a negative band sd | set 0 or more |
+| `axis_yx is [] or [y, x]` | malformed axis | give two numbers |
+| `the crop is...; nps needs a 3D crop of at least...voxels per axis` | `nps` on a small or 2D crop | give a 3D crop at least one tile wide, or lower `--tile` |
+| `the mask's shape differs from the crop's` | `nps --mask` of another shape | save the mask for the same crop |
+| `no tile lies wholly inside the mask` | `nps --mask` too sparse | lower `--tile` or widen the mask |
 | `the box holds less than two windings; raise shape or lower pitch` | box too small for the spiral | raise `shape` or lower `pitch` |
 | `...was made with other parameters, block, chunk, levels or code; resume needs the same` | `--resume` with other settings or code | resume with the same settings, or start a new folder |
 | `...: chunks missing after the pyramid:...` | a pyramid write was lost | run `pyramid OUT` |
@@ -511,7 +579,11 @@ The defaults are set for about 8 um per voxel; they are not a calibration.
 1. **Sheet.** `Roll` lays the sheet on an unwrapped angle (`ANG` = 1,024 samples per turn) and a z grid (`GZ` = 8 voxels). Each turn's radius is the last turn's plus a gap: the free spacing `pitch` (with smooth variation) where windings lie apart, `touch` times the thickness inside contact zones (a thresholded smooth field covering `contact_share` of interfaces). Thickness, delamination and holes are smooth random fields along the sheet.
 2. **Frames.** Output points map back to the rolled frame through a smooth displacement field (grid `WG` = 16 voxels) and the inverse crush. The center line and surfaces map forward by fixed-point iteration.
 3. **Lookup.** For each voxel `Scroll2.voxels` finds the turn just inside it by binary search over turns, then sums two Gaussian plies (sigma `ply_sigma` times a quarter thickness) for that turn and its neighbors, with periodic fiber tiles (recto along the sheet, verso along z). The label is the nearest winding whose ply band holds the voxel.
-4. **Scan model.** Density maps to gray between `air` and `bright`, then blur and point spread, the phase-edge filter, slow drift, rings and noise (hashed by position, optionally correlated), then rounding to uint8.
+4. **Scan model.** Density (averaged over `supersample`^3 sub-samples) maps to gray between `air` and `bright`, then, in order: cupping, phase contrast, blur and point spread, the phase-edge filter, slow drift, slab gain, rings, noise and noise bands, then rounding to uint8. Each step is a pure function of position and seed, and each filter's reach is in the block halo, so blocks stay independent.
+   - *Phase.* In the weak-absorption limit, propagation over distance d multiplies a projection's spectrum by 1 + a k^2, with a = d x (delta/beta) x wavelength / (4 pi) (the transport-of-intensity form that single-distance Paganin retrieval inverts), and Paganin retrieval with an assumed delta over beta divides by 1 + a_r k^2. For a parallel beam turning about z this acts on the reconstructed volume as the isotropic filter (1 + a_o k^2) / (1 + a_r k^2), which ScrollSim applies in the image domain: a_o/a_r times the volume plus (1 - a_o/a_r) times 1/(1 + a_r k^2), the last fitted as the fewest Gaussians within 0.01 whose kernels fit in `phase_halo`. An image-domain approximation (Interpretation), not a projection and reconstruction.
+   - *Noise.* Each band is independent position-hashed white noise passed through G(s_j) minus G(s_j+1), scaled to unit sd exactly for scipy's kernels and then to its `nps` value. `measure_nps` averages Hann-windowed periodograms of the least-structured tiles; `fit_nps` fits each band's expected windowed periodogram (exact, from the kernels' autocorrelations) by non-negative least squares on frequency shells.
+   - *Cupping.* On a coarse grid (64 x 8 x 8 voxels) the sheet density is sampled, and for each point the line integral of density along rays through it is averaged over 24 angles in the slice; divided by its largest value, that field times `cupping` scales the sheet contrast down.
+   - *Slabs and rings.* Slab k holds z from k x `slab_z`; it has its own gain and ring profile (radius from `axis_yx`), and slab 0's rings are the release-1 rings.
 5. **Blocks.** `make` splits the volume into blocks (`--block`, a multiple of `--chunk`), renders each with a halo of about four filter widths, skips blocks no sheet can reach, writes level 0 in parallel and checks each chunk file landed, appends the block to `done.txt`, then builds the pyramid by 2 x 2 x 2 means and verifies it. A deadline in `KIT_JOB_DEADLINE` (epoch seconds) stops new blocks once less than `KIT_JOB_SPARE_S` (default 180 s) is left.
 
 ## Cost and time
@@ -535,10 +607,11 @@ Stage registry: no stage option. The registry's stages read a real scroll; Scrol
 
 ## Tests
 
-`python -m unittest tests.test_scrollsim2 -v` (about 2 minutes on 4 cores; skips without numpy and scipy, and the make tests skip without zarr). Covered: lookup equality, determinism, parameter refusals, the narrow fixed-axis box, position-hashed noise, block independence, air skipping, make and its pyramid, stop and resume, deadline stop, lost-chunk detection and repair, publish, estimate, the worker cap and BLAS threads. Not covered: the `pilot` preset at full size, and any realism of the volumes.
+`python -m unittest tests.test_scrollsim2 -v` (about 3 minutes on 4 cores; skips without numpy and scipy, and the make tests skip without zarr). Covered: lookup equality, determinism, parameter refusals, the narrow fixed-axis box, position-hashed noise, block independence, air skipping, make and its pyramid, stop and resume, deadline stop, lost-chunk detection and repair, publish, estimate, the worker cap and BLAS threads; the scan model (presets and refusals, block independence with every part on, phase against an exact FFT filter, phase edges by retrieval mismatch, noise measured and fitted back, cupping, slabs and rings, make with the scan model and the `nps` command). Not covered: the `pilot` preset at full size, and any realism of the volumes.
 
 ## History
 
+- 2026-11-18: CT scan model (output version 2): phase contrast with Paganin retrieval, noise bands with `nps` to measure and fit a crop's spectrum, beam-hardening cupping, acquisition slabs, rings about the rotation axis, `--scan synchrotron|lab`, and the voxel size in micrometers in the OME-Zarr scale; all off by default (`db454ca`).
 - 2026-11-18: `vc3d`, a folder VC3D opens, tested with VC3D build 7154682 (`9195926`).
 - 2026-11-18: pictures and four tutorials, every command run on a fresh clone (`49eb2a5`).
 - 2026-11-18: first public release (version 1): full-scale geometry, block rendering and exact winding and surface truth; ink off (`49d26fe`).

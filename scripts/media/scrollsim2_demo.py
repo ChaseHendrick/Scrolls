@@ -243,7 +243,7 @@ def fig_scan(plt, np, out):
     a.set_ylabel("power (gray levels squared)")
     a.set_yscale("log")
     a.grid(True, color="#E4DFD6", lw=0.8)
-    a.legend(frameon=False, fontsize=11, loc="lower center")
+    a.legend(frameon=False, fontsize=11, loc="upper right")
     for sp in ("top", "right"):
         a.spines[sp].set_visible(False)
     fig.suptitle(f"ScrollSim v2 scan models on one synthetic crop, slice z = {z0 + zc}; presets are a starting "
