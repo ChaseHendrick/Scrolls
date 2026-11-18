@@ -227,7 +227,7 @@ python -m unittest tests.test_mpsparity -v
 
 ## History
 
-- 2026-11-18: released to public Scrolls with three built-in synthetic networks and `--script`, `--build` and `--shape` for your own (`RELEASE_COMMIT`). Before that it was developed outside this repository from 7 Nov 2026 for four trainers of our own: the fixed tolerances, then the bf16 bar after the M5 Pro read, applied on fresh seeds on 16 Nov.
+- 2026-11-18: released to public Scrolls with three built-in synthetic networks and `--script`, `--build` and `--shape` for your own (`331b591`). Before that it was developed outside this repository from 7 Nov 2026 for four trainers of our own: the fixed tolerances, then the bf16 bar after the M5 Pro read, applied on fresh seeds on 16 Nov.
 
 ## Related
 
