@@ -50,6 +50,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **bf16 bar**: In [`kit.mpsparity`](docs/tools/mpsparity.md), a device passes when its fp32 result sits nearer the reference fp32 result than bf16 autocast does on the reference device; the bar for networks whose fixed tolerances are stricter than fp32 rounding noise.
 
+**BLAS oversubscription**: Each of many worker processes starting its own pool of as many math-library (BLAS) threads as the machine has CPUs, so the threads fight over the cores; 32 such workers ran 116 times slower than with one thread each in [`kit.cpudiag`](docs/tools/cpudiag.md).
+
 **BM18**: A beamline at the ESRF built for phase-contrast tomography of large objects; used for scroll scans from 2025.
 
 **bootstrap**: Resampling the data many times to estimate how much a score would vary. `kit auc --bootstrap` gives AUC intervals this way.
@@ -442,6 +444,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **sidecar (media sidecar)**: The JSON file next to a picture or clip, `NAME.json`, recording its media label, alt text, caption, license, sizes and SHA-256, inputs, and the command and scripts that made it (schema `scrolls-media/1`; [`docs/tools/media.md`](docs/tools/media.md)).
 
+**SMT (simultaneous multithreading)**: Two hardware threads sharing one physical core; a 32 vCPU cloud machine can be 16 cores, so a process past the 16th shares a core with another.
+
 **Space (Hugging Face Space)**: A small web app hosted on Hugging Face.
 
 **spiral fit**: Fitting one deformed spiral to the whole rolled papyrus of a scroll.
@@ -455,6 +459,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 **stackcheck**: `kit stackcheck`, which checks a stack of consecutive tifxyz segments of one scroll against its umbilicus from geometry alone.
 
 **stop score (fiber tracer)**: An opt-in early stop for villa's beam fiber tracer, proposed in villa #2377: the trace ends before a step where a weighted sum of fiber presence, direction agreement and a stronger fiber just to the side is above zero ([page](docs/tools/fiber-stop-score.md)).
+
+**STREAM triad**: The memory-bandwidth benchmark a = b + s x c over arrays far larger than the caches; [`kit.cpudiag`](docs/tools/cpudiag.md) runs a STREAM-like version to find where adding processes stops adding bandwidth.
 
 **StrokeNet**: A small learned score in this repository for how much a window of an ink map looks like lines of text (`kit strokenet`), with rotation and IAAFT controls ([model card](docs/strokenet.md)).
 
