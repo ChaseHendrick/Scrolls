@@ -114,7 +114,7 @@
       "line": "Command-line tools, benchmarks and script folders that run from a clone of this repository.",
       "area": "Releases and repository",
       "page": "docs/tools/cli.md",
-      "released": "2026-11-17",
+      "released": "2026-11-18",
       "summary": "Command-line tools, benchmarks and script folders that run from a clone of this repository. Each line gives the tool's release date, its weights where it has them, one command to start with, its tool page and its evidence; each page lists the tool's own needs. Their outputs are model output or geometry measurements for a person to check, not readings.",
       "commands": [
         "git clone --depth 1 https://github.com/ChaseHendrick/Scrolls.git",
@@ -827,6 +827,18 @@
           "summary": "Links thinned sheets in single z slices of the m7 surface prediction into chains; every chain that winds a full turn votes by whether its radius grows going round, and each slice also runs mirrored with its votes added flipped. Run blind on 12 scrolls with a catalog direction under a rule fixed beforehand (Model output): 9 of 9 decided right, none wrong, 3 abstained (one-sided p 0.0020); 7 of the 12 were reused truth, so not held out. CPU only, public data.",
           "command": "python3 scripts/spiralsense/slicechains.py --m7 URL --line LINE --voxel-um V --pitch P --z-edges Z0,Z1 --planes 400 --symmetric --out OUT.json",
           "page": "docs/tools/slicechains.md"
+        },
+        {
+          "id": "mpsparity",
+          "name": "mpsparity: same training result on Apple MPS as on the CPU",
+          "released": "2026-11-18",
+          "version": "1.0",
+          "summary": "Builds one seeded copy of a torch network on each device and compares the forward output, one gradient and a short AdamW run on identical synthetic inputs, each with a control that must differ by ten times the tolerance or the check is VOID. Three built-in 3D and 2D networks, or your own with --script, --build and --shape; ops probes 3D data-path operators; --bench times training steps. A device check on synthetic inputs, not a model's quality.",
+          "command": "python -m kit.mpsparity run --device mps --steps 10 --out OUT.json",
+          "page": "docs/tools/mpsparity.md",
+          "evidence": "[checks and controls](docs/tools/mpsparity.md#checks-and-controls)",
+          "line": "Checks that a small torch training gives the same result on Apple's GPU as on the CPU, with controls.",
+          "area": "Compute and cost"
         }
       ],
       "where": "main"

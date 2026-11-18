@@ -9698,6 +9698,153 @@
    ]
   },
   {
+   "id": "mpsparity",
+   "name": "mpsparity",
+   "tagline": "check that a small training gives the same result on Apple MPS as on the CPU",
+   "summary": "`kit.mpsparity` checks that a torch network computes and trains the same on one device (Apple's MPS, or CUDA) as on another (the CPU), with forward, gradient and short-training checks that each carry a control that must be able to fail.",
+   "status": "Current",
+   "kind": [
+    "kit entry point",
+    "kit module"
+   ],
+   "area": "Compute and cost",
+   "commands": [
+    "python -m kit.mpsparity run",
+    "python -m kit.mpsparity ops",
+    "python -m kit.mpsparity list"
+   ],
+   "imports": [
+    "from kit import mpsparity"
+   ],
+   "code": [
+    {
+     "path": "kit/mpsparity.py",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_mpsparity.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed on a machine you already have"
+   },
+   "checked": {
+    "date": "2026-11-18",
+    "commit": "c2cb575"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`mpsparity`",
+    "Status": "Current",
+    "Kind": "kit entry point, kit module",
+    "Area": "Compute and cost",
+    "Run": "`python -m kit.mpsparity run`, `python -m kit.mpsparity ops`, `python -m kit.mpsparity list`, `from kit import mpsparity`",
+    "Code": "`kit/mpsparity.py`",
+    "Tests": "`tests/test_mpsparity.py`",
+    "Needs": "Python 3.10 or newer and torch (checked with torch 2.15.0+cpu and Python 3.13.18). An Apple silicon Mac with an MPS build of torch for `--device mps`, a CUDA card for `cuda`",
+    "Runs on": "CPU, MPS or CUDA. The CPU self check of the three built-in networks took 3.1 s wall at 10 steps (measured 2026-11-18, 4 logical CPU Intel Xeon cloud container)",
+    "Network": "None",
+    "Writes": "Nothing, unless `--out FILE` (one JSON record; parent folders created)",
+    "Go-ahead": "Not needed on a machine you already have",
+    "Released": "Public `main` from the PR that adds this page (2026-11-18)",
+    "Checked": "2026-11-18 against commit `c2cb575`"
+   },
+   "page": "docs/tools/mpsparity.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 22,
+     "end_line": 29,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 30,
+     "end_line": 41,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 42,
+     "end_line": 64,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 65,
+     "end_line": 78,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 79,
+     "end_line": 125,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 126,
+     "end_line": 159,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 160,
+     "end_line": 163,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 164,
+     "end_line": 185,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 186,
+     "end_line": 201,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 202,
+     "end_line": 205,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 206,
+     "end_line": 209,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 210,
+     "end_line": 219,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 220,
+     "end_line": 227,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 228,
+     "end_line": 231,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 232,
+     "end_line": 235,
+     "applicable": true
+    }
+   ]
+  },
+  {
    "id": "offsetdiag",
    "name": "offsetdiag",
    "tagline": "measure how ink AUC changes when a segment's surface moves along its normal",
