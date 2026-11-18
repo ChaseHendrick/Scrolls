@@ -863,6 +863,18 @@
           "evidence": "[checks and controls](docs/tools/mpsparity.md#checks-and-controls)",
           "line": "Checks that a small torch training gives the same result on Apple's GPU as on the CPU, with controls.",
           "area": "Compute and cost"
+        },
+        {
+          "id": "mergedriver",
+          "name": "mergedriver: git merge drivers for tables, registries and indexes",
+          "released": "2026-11-18",
+          "version": "1.0",
+          "summary": "Git merge drivers that merge CSV tables by row (configurable key columns), JSON registries by entry and id without reformatting, and Markdown indexes and JSON-lines logs by line, so two branches that each add a row or entry do not conflict. A real conflict (the same field or line changed two ways) still falls back to git's line merge with markers, and a broken install falls back too. Install per clone; list files in .gitattributes.",
+          "command": "python -m kit.mergedriver install --csv-key date,job_id",
+          "page": "docs/tools/mergedriver.md",
+          "evidence": "[checks and controls](docs/tools/mergedriver.md#checks-and-controls)",
+          "line": "Stops git from reporting conflicts when two branches each add rows to the same table or index.",
+          "area": "Releases and repository"
         }
       ],
       "where": "main"

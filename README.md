@@ -213,10 +213,11 @@ Command-line tools, benchmarks and script folders that run from a clone of this 
 </details>
 
 <details>
-<summary><b>Releases and repository</b> (4)</summary>
+<summary><b>Releases and repository</b> (5)</summary>
 
 | Tool | What it does |
 | --- | --- |
+| [mergedriver: git merge drivers for tables, registries and indexes](docs/tools/mergedriver.md) | Stops git from reporting conflicts when two branches each add rows to the same table or index. |
 | [Recurring repository checks](docs/tools/routines.md) | Lists and runs the registered recurring repository checks and records their status locally. |
 | [Release list and README generator](docs/tools/releases.md) | Keeps the public release list, compact tool inventory and generated README section in step. |
 | [Stale repository reference check](docs/tools/stale.md) | Checks live documentation and registries for outdated references and pending work. |
