@@ -50,8 +50,8 @@ GS = 8.0                   # along-sheet step of the coarse random fields, voxel
 WG = 16.0                  # grid step of the displacement field, voxels
 HALFMAX = 1.1774           # sqrt(2 ln 2): a Gaussian's half width at half maximum, in sigmas
 
-# The sheet and scan model. Lengths in output voxels. The defaults give a plausible look at about 8 um per voxel;
-# they are not a calibration.
+# The sheet and scan model. Lengths in output voxels. The defaults are set for about 8 um per voxel; they are
+# not a calibration.
 BASE = {
     "shape": [256, 512, 512],  # z, y, x of the output volume
     "pitch": 14.0,             # winding center spacing where windings lie apart

@@ -212,7 +212,7 @@ None from disk. Parameters come from `--preset` (`smoke`, 64 x 208 x 208; `pilot
 | `supersample` | 1 | sub-samples per axis averaged into each voxel |
 | `seed` | 0 | every random field comes from it |
 
-The defaults give a plausible look at about 8 um per voxel; they are not a calibration.
+The defaults are set for about 8 um per voxel; they are not a calibration.
 
 ## Outputs
 
