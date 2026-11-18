@@ -7,8 +7,7 @@ tables per flavor (from kit.cpudiag) and turns a container timing into a wall ti
   python -m kit.runlength cpu --task-s S --tasks N [--flavor cpu-performance] [--workers W]
                               [--kind max|stream|scrollsim2|compute] [--json]
 
-Only the CPU estimate is here; the GPU run-length estimates of the workbench this came from read a private job
-ledger and are not part of this repository.
+Only the CPU estimate is here; GPU run-length estimates are not part of this repository.
 """
 
 import argparse
