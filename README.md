@@ -124,7 +124,7 @@ Command-line tools, benchmarks and script folders that run from a clone of this 
 | --- | --- |
 | [Acquisition recipe fidelity against a finer reference scan](docs/tools/sqrecipe.md) | Compares two CT acquisitions of one scroll region by region against a finer reference scan; one frozen PASS on PHerc0332, CT against CT. |
 | [Controlled benchmark gate](docs/tools/gate.md) | Checks recorded benchmark scores against the declared pass rules and required controls. |
-| [Controlled ink AUC scoring](docs/tools/auc.md) | Scores an ink map against labeled ink and background inside a supervision mask, alongside a reverse-depth control. |
+| [Controlled ink AUC scoring](docs/tools/auc.md) | Scores an ink map against labeled ink and background with a reverse-depth control; kit.aucreport adds curves, AP, tiles and a shifted-label null. |
 | [finite: refuse speeds, scores and maps taken from NaN or Inf output](docs/tools/finite.md) | Refuses any speed, score or map taken from model output that holds NaN or Inf, and flags fp16 sums that would overflow. |
 | [Ink map agreement check](docs/tools/verify.md) | Checks whether two ink maps of the same input agree while requiring a deliberately different control to fail. |
 | [Ink map self-check (neighbor-sheet test)](docs/tools/sheetcheck.md) | Checks without labels whether an ink map reads the traced sheet, comparing it with the same model one and two sheets away. |
