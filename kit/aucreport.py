@@ -52,6 +52,8 @@ NULL_MIN_PX = 50         # each class, per shifted copy
 POOL_MIN_SEGMENTS = 5
 FPR_POINTS = (0.01, 0.05, 0.10)
 EXIT_OK, EXIT_NONFINITE, EXIT_INPUT = 0, 1, 2
+UNCONTROLLED = ("no reverse-depth control was given: no number in this report is a result until the same map, read in "
+                "reverse depth order, is scored on the same labels (--control)")
 
 
 # ---------------------------------------------------------------------------------------------------------- labels
@@ -331,18 +333,23 @@ def report_arrays(pred, ink, sup, control=None, compare=None, keep_zero=False, i
         out[name] = base
         if name == "map":
             q_map, use_map = q, use
-    f, c = out["map"]["auc"], out.get("control", {}).get("auc")
-    if f is None:
+    if out["map"]["auc"] is None:
         raise VerifyError(f"no AUC: ink {out['map']['ink_px']} px, background {out['map']['background_px']} px "
                           "in the mask")
-    if c is not None:
-        out["control_gap"] = {"difference": _r(f - c)}
+    if compare is not None and not bootstrap:
+        bootstrap = 300                      # as kit auc: a comparison always gets its interval
+    if control is not None:
+        out["control_gap"] = control_gap(pred, control, ink, sup_in, keep_zero)
+        if bootstrap and out["control_gap"]["difference"] is not None:
+            g = auc.block_bootstrap(pred, ink, sup, bootstrap, block_px, seed, control, keep_zero, inner)["compare"]
+            out["control_gap"].update({"ci95": g["ci95"],
+                                       "share_draws_control_not_behind": g["share_draws_map_not_ahead"]})
+    out["controlled"] = control is not None and out["control_gap"]["difference"] is not None
+    if not out["controlled"]:
+        out["warning"] = UNCONTROLLED if control is None else (
+            "the control has no AUC on the pixels both maps scored: " + UNCONTROLLED.split(": ", 1)[1])
     if bootstrap:
         out["bootstrap"] = auc.block_bootstrap(pred, ink, sup, bootstrap, block_px, seed, compare, keep_zero, inner)
-        if control is not None:
-            gap = auc.block_bootstrap(pred, ink, sup, bootstrap, block_px, seed, control, keep_zero, inner)["compare"]
-            out["control_gap"].update({"ci95": gap["ci95"], "share_draws_control_not_behind":
-                                       gap["share_draws_map_not_ahead"], "shared_px": gap["pixels"]})
     valid = np.ones_like(sup_in) if keep_zero else pred != 0
     if inner:
         valid = auc._edge_mask(np, valid, inner)
@@ -354,6 +361,20 @@ def report_arrays(pred, ink, sup, control=None, compare=None, keep_zero=False, i
     if scan:
         out["offset_scan"] = offset_scan(q_map, ink, sup_in, valid, scan, scan_step)
     return out
+
+
+def control_gap(pred, control, ink, sup, keep_zero=False):
+    """Map minus control on the pixels both scored (each map's exact AUC there), so a control that predicts on fewer
+    pixels cannot move the gap by changing the population. sup should already have its edge removed."""
+    np = _numpy()
+    shared = sup if keep_zero else sup & (pred != 0) & (control != 0)
+    qm, _ = auc._quantize(np, pred)
+    qc, _ = auc._quantize(np, control)
+    a = auc.auc_scores(qm[shared & ink], qm[shared & ~ink])
+    b = auc.auc_scores(qc[shared & ink], qc[shared & ~ink])
+    return {"auc_map_shared": _r(a), "auc_control_shared": _r(b),
+            "difference": _r(a - b) if a is not None and b is not None else None,
+            "shared_px": int(shared.sum()), "ci95": None}
 
 
 def _load_map(path):
@@ -403,13 +424,21 @@ def pool(reports, draws=2000, seed=0):
         if not m or m.get("auc") is None:
             raise VerifyError(f"{name}: no map AUC in this file")
         c = r.get("control") or {}
-        rows.append({"segment": name, "auc": m["auc"], "control_auc": c.get("auc"), "ink_px": m["ink_px"],
+        g = (r.get("control_gap") or {}).get("difference")
+        if "control_gap" not in r and c.get("auc") is not None:
+            g = _r(m["auc"] - c["auc"])          # a kit auc file: each map on its own pixels
+        rows.append({"segment": name, "auc": m["auc"], "control_auc": c.get("auc"), "control_gap": g,
+                     "controlled": g is not None, "ink_px": m["ink_px"],
                      "ap": (m.get("curves") or {}).get("ap"), "ink_share": (m.get("curves") or {}).get("ink_share")})
     v = np.array([x["auc"] for x in rows], float)
     w = np.array([x["ink_px"] for x in rows], float)
     out = {"segments": len(rows), "rows": rows, "mean_auc": _r(v.mean()), "min_auc": _r(v.min()),
            "max_auc": _r(v.max()), "ink_weighted_mean_auc": _r((v * w).sum() / w.sum())}
-    gaps = [x["auc"] - x["control_auc"] for x in rows if x["control_auc"] is not None]
+    gaps = [x["control_gap"] for x in rows if x["control_gap"] is not None]
+    out["uncontrolled_segments"] = sum(not x["controlled"] for x in rows)
+    if out["uncontrolled_segments"]:
+        out["warning"] = (f"{out['uncontrolled_segments']} of {len(rows)} segments have no reverse-depth control: "
+                          "the pooled numbers are not a result")
     if gaps:
         out["control"] = {"segments": len(gaps), "mean_gap": _r(sum(gaps) / len(gaps)),
                           "segments_map_ahead": int(sum(g > 0 for g in gaps))}
@@ -499,6 +528,13 @@ def _xml(s):
 # ------------------------------------------------------------------------------------------------------------ text
 
 def format_report(r):
+    rows = _report_rows(r)
+    if not r.get("controlled", "control" in r):
+        rows = [f"UNCONTROLLED: {r.get('warning', UNCONTROLLED)}"] + [row + " [uncontrolled]" for row in rows]
+    return "\n".join(rows)
+
+
+def _report_rows(r):
     rows = []
     m = r["map"]
     cs = m["curves"]
@@ -528,12 +564,15 @@ def format_report(r):
                 f"{ti['auc_ties_as_losses']:.4f} to {ti['auc_ties_as_wins']:.4f} if ties all lost or all won")
     if "control" in r:
         c = r["control"]
-        g = r["control_gap"]
+        g = r.get("control_gap") or {}
         rows.append(f"control: AUC {c['auc']:.4f}, AP {c['curves']['ap']:.4f}" if c["auc"] is not None
                     else "control: no AUC")
-        if g.get("difference") is not None:
-            line = f"  map minus control {g['difference']:+.4f}"
-            if "ci95" in g:
+        if g.get("difference") is None:
+            rows.append(f"  map minus control: no AUC on the {g.get('shared_px', 0)} px both maps scored")
+        else:
+            line = (f"  map minus control {g['difference']:+.4f} on the {g['shared_px']} px both scored (map "
+                    f"{g['auc_map_shared']:.4f}, control {g['auc_control_shared']:.4f})")
+            if g.get("ci95"):
                 verdict = ("ahead of its control beyond sampling noise" if g["ci95"][0] > 0
                            else "not distinguishable from its control")
                 line += f", 95 % interval {g['ci95'][0]:+.4f} to {g['ci95'][1]:+.4f}: {verdict}"
@@ -565,12 +604,12 @@ def format_report(r):
                     f"at dy {bst['dy']:+d}, dx {bst['dx']:+d}" + (" (at the scan edge: widen it)"
                                                                  if s["best_at_scan_edge"] else "")
                     + "; a diagnosis, not a score")
-    return "\n".join(rows)
+    return rows
 
 
 def format_pool(p):
-    rows = [f"{x['segment']}: AUC {x['auc']:.4f}" + (f", control {x['control_auc']:.4f}"
-                                                    if x["control_auc"] is not None else "") for x in p["rows"]]
+    rows = [f"{x['segment']}: AUC {x['auc']:.4f}" + (f", control {x['control_auc']:.4f}, gap {x['control_gap']:+.4f}"
+                                                    if x["controlled"] else " [uncontrolled]") for x in p["rows"]]
     rows.append(f"{p['segments']} segments: mean AUC {p['mean_auc']:.4f} (min {p['min_auc']:.4f}, max "
                 f"{p['max_auc']:.4f}; weighted by ink px {p['ink_weighted_mean_auc']:.4f})")
     if p.get("control"):
@@ -579,6 +618,10 @@ def format_pool(p):
                     f"{c['mean_gap']:+.4f}")
     sb = p.get("segment_bootstrap")
     rows.append(f"95 % interval over segments {sb['ci95'][0]:.4f} to {sb['ci95'][1]:.4f}" if sb else p["note"])
+    if p.get("uncontrolled_segments"):
+        n = len(p["rows"])
+        rows = ([f"UNCONTROLLED: {p['warning']}"] + rows[:n]
+                + [row + " [uncontrolled]" for row in rows[n:]])
     return "\n".join(rows)
 
 

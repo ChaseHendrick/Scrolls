@@ -184,6 +184,21 @@ class FilesTest(unittest.TestCase):
         code, out, _ = _run(["pool"] + [str(js)] * 5 + ["--json"])
         self.assertEqual(json.loads(out)["segment_bootstrap"]["ci95"][0], json.loads(out)["mean_auc"])
 
+    def test_map_cannot_be_its_own_control(self):
+        with self.assertRaises(verify.VerifyError):
+            aucreport.score_files(self.map, self.root / "inklabels.zarr", self.root / "supervision.zarr",
+                                  control=self.map, null=0, bootstrap=0, tiles=0)
+
+    def test_vacated_edge_leaves_the_supervision(self):
+        args = (self.root / "inklabels.zarr", self.root / "supervision.zarr", "2", (320, 400), None, (320, 400))
+        ink0, sup0 = aucreport.labels_on_map(*args)
+        ink, sup = aucreport.labels_on_map(*args, offset=(30, -25))
+        self.assertTrue(sup0[:30].any() and sup0[:, -25:].any())
+        self.assertFalse(sup[:30].any())
+        self.assertFalse(sup[:, -25:].any())
+        self.assertTrue((ink[30:, :-25] == ink0[:-30, 25:]).all())
+        self.assertTrue((sup[30:, :-25] == sup0[:-30, 25:]).all())
+
     def test_cli_refuses_nan_with_exit_1(self):
         bad = self.root / "bad.npy"
         arr = np.zeros((320, 400), np.float32)
@@ -198,6 +213,109 @@ class FilesTest(unittest.TestCase):
         p = aucreport.pool([("a", k), ("b", k)])
         self.assertEqual(p["mean_auc"], k["forward"]["auc"])
         self.assertEqual(p["control"]["segments_map_ahead"], 2)
+
+
+@unittest.skipIf(np is None, "numpy is needed for kit.aucreport")
+class ControlsTest(unittest.TestCase):
+    """Every check must be able to fail: the control gap, its interval, and the uncontrolled label."""
+
+    def setUp(self):
+        self.pred, self.rev, self.ink, self.sup = aucreport.demo_arrays(0)
+        self.kw = dict(null=0, tiles=0)
+
+    def test_gap_is_map_minus_control_on_shared_pixels(self):
+        rev = self.rev.copy()
+        rev[:, :200] = 0                          # the control predicts on fewer pixels than the map
+        g = aucreport.report_arrays(self.pred, self.ink, self.sup, rev, bootstrap=0, **self.kw)["control_gap"]
+        shared = self.sup & (self.pred != 0) & (rev != 0)
+        a = auc.score_array(self.pred, self.ink, shared)["auc"]
+        b = auc.score_array(rev, self.ink, shared)["auc"]
+        self.assertEqual(g["shared_px"], int(shared.sum()))
+        self.assertAlmostEqual(g["auc_map_shared"], a, places=4)
+        self.assertAlmostEqual(g["auc_control_shared"], b, places=4)
+        self.assertAlmostEqual(g["difference"], a - b, places=3)
+        self.assertGreater(g["difference"], 0.2)
+        swapped = aucreport.report_arrays(rev, self.ink, self.sup, self.pred, bootstrap=0, **self.kw)["control_gap"]
+        self.assertLess(swapped["difference"], -0.2)
+
+    def test_gap_interval_is_the_paired_bootstrap_against_the_control(self):
+        r = aucreport.report_arrays(self.pred, self.ink, self.sup, self.rev, bootstrap=40, seed=3, **self.kw)
+        ref = auc.block_bootstrap(self.pred, self.ink, self.sup, 40, auc.BLOCK_PX, 3, self.rev)["compare"]
+        self.assertEqual(r["control_gap"]["ci95"], ref["ci95"])
+        self.assertLess(r["control_gap"]["ci95"][0], r["control_gap"]["difference"])
+        self.assertGreater(r["control_gap"]["ci95"][1], r["control_gap"]["difference"])
+
+    def test_uncontrolled_numbers_are_labeled(self):
+        r = aucreport.report_arrays(self.pred, self.ink, self.sup, bootstrap=0, **self.kw)
+        self.assertFalse(r["controlled"])
+        lines = aucreport.format_report(r).splitlines()
+        self.assertTrue(lines[0].startswith("UNCONTROLLED"))
+        self.assertTrue(all(x.endswith("[uncontrolled]") for x in lines[1:]))
+        ok = aucreport.report_arrays(self.pred, self.ink, self.sup, self.rev, bootstrap=0, **self.kw)
+        self.assertTrue(ok["controlled"])
+        self.assertNotIn("uncontrolled", aucreport.format_report(ok))
+
+    def test_all_zero_control_is_uncontrolled_not_a_crash(self):
+        zero = np.zeros_like(self.rev)
+        for b in (0, 30):
+            r = aucreport.report_arrays(self.pred, self.ink, self.sup, zero, bootstrap=b, **self.kw)
+            self.assertIsNone(r["control_gap"]["difference"])
+            self.assertFalse(r["controlled"])
+            self.assertTrue(aucreport.format_report(r).startswith("UNCONTROLLED"))
+
+    def test_compare_always_gets_its_interval(self):
+        r = aucreport.report_arrays(self.pred, self.ink, self.sup, self.rev, compare=self.rev, bootstrap=0,
+                                    **self.kw)
+        self.assertIn("compare", r["bootstrap"])
+        self.assertEqual(r["bootstrap"]["draws"], 300)
+
+    def test_pool_labels_uncontrolled_segments(self):
+        a = aucreport.report_arrays(self.pred, self.ink, self.sup, self.rev, bootstrap=0, **self.kw)
+        b = aucreport.report_arrays(self.pred, self.ink, self.sup, bootstrap=0, **self.kw)
+        p = aucreport.pool([("a", a), ("b", b)])
+        self.assertEqual(p["uncontrolled_segments"], 1)
+        self.assertEqual(p["control"]["segments"], 1)
+        self.assertEqual(p["control"]["mean_gap"], a["control_gap"]["difference"])
+        text = aucreport.format_pool(p)
+        self.assertTrue(text.startswith("UNCONTROLLED"))
+        self.assertIn("b: AUC", text)
+        self.assertNotIn("uncontrolled", aucreport.format_pool(aucreport.pool([("a", a)])))
+
+
+@unittest.skipIf(np is None, "numpy is needed for kit.aucreport")
+class MasksTest(unittest.TestCase):
+    def setUp(self):
+        self.pred, self.rev, self.ink, self.sup = aucreport.demo_arrays(0)
+
+    def test_keep_zero_reaches_the_curves(self):
+        pred = self.pred.copy()
+        pred[100:200, 100:300] = 0
+        off = aucreport.report_arrays(pred, self.ink, self.sup, null=0, bootstrap=0, tiles=0)["map"]["curves"]
+        on = aucreport.report_arrays(pred, self.ink, self.sup, keep_zero=True, null=0, bootstrap=0,
+                                     tiles=0)["map"]["curves"]
+        self.assertEqual(on["ink_px"] + on["background_px"], int(self.sup.sum()))
+        self.assertEqual(off["ink_px"] + off["background_px"], int((self.sup & (pred != 0)).sum()))
+
+    def test_null_and_tiles_honor_inner(self):
+        pred = self.pred.copy()
+        e = 60
+        pred[:e] = 1 - pred[:e]                   # a wrong edge that --inner leaves out
+        r = aucreport.report_arrays(pred, self.ink, self.sup, inner=e, null=30, bootstrap=0, tiles=0)
+        self.assertEqual(r["null"]["observed_auc"], r["map"]["auc"])
+        self.assertGreaterEqual(r["null"]["box"][0], e)
+        full = aucreport.report_arrays(pred, self.ink, self.sup, null=30, bootstrap=0, tiles=0)
+        self.assertNotEqual(full["null"]["observed_auc"], r["null"]["observed_auc"])
+
+    def test_exclusion_box_on_a_crop(self):
+        crop = (100, 300, 200, 500)               # y0 y1 x0 x1 of a 640 x 640 surface
+        sup = np.ones((200, 300), bool)
+        ink = np.zeros_like(sup)
+        out, rec = aucreport.exclude_boxes(ink, sup, [[50, 150, 450, 600]], (640, 640), crop, margin=10)
+        self.assertEqual(rec["grown"], [[40, 160, 440, 610]])
+        expect = np.ones_like(sup)
+        expect[0:60, 240:300] = False              # rows 100..160 and columns 440..500 of the surface
+        self.assertTrue((out == expect).all())
+        self.assertEqual(rec["supervised_px_removed"], 60 * 60)
 
 
 @unittest.skipIf(np is None, "numpy is needed for kit.aucreport")
