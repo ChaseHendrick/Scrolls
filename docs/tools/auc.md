@@ -388,7 +388,7 @@ Measured 2026-10-16 in a 4-core 2.1 GHz Xeon cloud container, on a synthetic map
 
 - **Command:** `python -m kit auc MAP.tif --control MAP_reverse.tif --labels L/inklabels.zarr --mask L/supervision.zarr --json`; on a crop add `--crop Y0 Y1 X0 X1 --surface-shape H W --inner 64`; for an interval add `--bootstrap 300`.
 - **Parse:** `forward.auc` and `control.auc`, and with `--bootstrap` or `--compare`, `bootstrap.ci95` and `bootstrap.compare.ci95`.
-- **Detail:** `python -m kit.aucreport score ... --json` for curves, AP, ties, tiles and the shifted-label null (fields under Detailed report); `pool` over the per-segment reports. Report AP with `curves.ink_share` beside it, and never an offset-scan best as a score.
+- **Detail:** `python -m kit.aucreport score ... --json` for curves, AP, ties, tiles and the shifted-label null (fields under Detailed report); `pool` over the per-segment reports (pool `kit.aucreport` reports rather than `kit auc --json` files when a control may be near constant: only they carry the tie check). Report AP with `curves.ink_share` beside it, and never an offset-scan best as a score.
 - **Rerun:** Safe; it only reads its inputs. With `--slug`, each run appends one more check to `run.json`.
 - **Success:** Exit code 0 and a non-null `forward.auc`.
 - **Not a pass:** A forward AUC without its control; a map less than 0.10 above its control; a ranking whose `--compare` interval includes 0; any score on a segment the model trained on.
