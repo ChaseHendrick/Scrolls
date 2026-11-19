@@ -316,10 +316,33 @@ class ControlsTest(unittest.TestCase):
         r = aucreport.report_arrays(self.pred, self.ink, self.sup, flat, bootstrap=0, **self.kw)
         self.assertTrue(r["control_gap"]["control_constant"])
         self.assertFalse(r["controlled"])
-        self.assertIn("constant", r["warning"])
+        self.assertIn("ties 100.00 %", r["warning"])
         self.assertTrue(aucreport.format_report(r).startswith("UNCONTROLLED"))
         ok = aucreport.report_arrays(self.pred, self.ink, self.sup, self.rev, bootstrap=0, **self.kw)
         self.assertFalse(ok["control_gap"]["control_constant"])
+        self.assertLess(ok["control_gap"]["control_tied_pair_share"], 0.01)
+        one = flat.copy()
+        one[300, 300] = 0.9                       # one pixel off constant still cannot fail
+        r1 = aucreport.report_arrays(self.pred, self.ink, self.sup, one, bootstrap=0, **self.kw)
+        self.assertFalse(r1["control_gap"]["control_constant"])
+        self.assertGreater(r1["control_gap"]["control_tied_pair_share"], 0.99)
+        self.assertFalse(r1["controlled"])
+        self.assertIn("ties", r1["warning"])
+
+    def test_pool_keeps_a_reports_uncontrolled_flag(self):
+        flat = np.full_like(self.rev, 0.5)
+        bad = aucreport.report_arrays(self.pred, self.ink, self.sup, flat, bootstrap=0, **self.kw)
+        good = aucreport.report_arrays(self.pred, self.ink, self.sup, self.rev, bootstrap=0, **self.kw)
+        bad = json.loads(json.dumps(bad))          # as read back from --out
+        p = aucreport.pool([("a", good), ("b", bad), ("c", bad)])
+        self.assertFalse(p["controlled"])
+        self.assertEqual(p["uncontrolled_segments"], 2)
+        self.assertEqual(p["control"]["segments"], 1)
+        self.assertEqual(p["control"]["mean_gap"], good["control_gap"]["difference"])
+        text = aucreport.format_pool(p)
+        self.assertIn("b: AUC", text)
+        self.assertTrue([x for x in text.splitlines() if x.startswith("b: AUC")][0].endswith("[uncontrolled]"))
+        self.assertIn("ahead of its control on 1 of 1", text)
 
     def test_compared_map_is_labeled_without_its_own_control(self):
         r = aucreport.report_arrays(self.pred, self.ink, self.sup, self.rev, compare=self.rev, bootstrap=30,
@@ -327,6 +350,7 @@ class ControlsTest(unittest.TestCase):
         self.assertTrue(r["controlled"])
         self.assertFalse(r["compare"]["controlled"])
         self.assertIn("no reverse-depth control of its own", r["compare"]["warning"])
+        self.assertFalse(r["bootstrap"]["compare"]["other_controlled"])
         lines = aucreport.format_report(r).splitlines()
         cmp_lines = [x for x in lines if x.startswith("compared map")]
         self.assertEqual(len(cmp_lines), 1)
