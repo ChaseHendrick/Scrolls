@@ -389,6 +389,21 @@ def report_arrays(pred, ink, sup, control=None, compare=None, keep_zero=False, i
     return out
 
 
+def report_controlled(r):
+    """Whether a report (this version's, an older aucreport file or a kit auc --json file) has a control that can
+    fail. Older files carry no flag: they count as controlled when their control has a gap and, where its curves are
+    recorded, ties under CONTROL_MAX_TIES of ink and background pairs."""
+    if "controlled" in r:
+        return bool(r["controlled"])
+    c = r.get("control") or {}
+    if c.get("auc") is None:
+        return False
+    if "control_gap" in r and (r["control_gap"] or {}).get("difference") is None:
+        return False
+    share = ((c.get("curves") or {}).get("ties") or {}).get("tied_pair_share")
+    return share is None or share < CONTROL_MAX_TIES
+
+
 def control_gap(pred, control, ink, sup, keep_zero=False):
     """Map minus control on the pixels both scored (each map's exact AUC there), so a control that predicts on fewer
     pixels cannot move the gap by changing the population. sup should already have its edge removed."""
@@ -461,7 +476,7 @@ def pool(reports, draws=2000, seed=0):
         if "control_gap" not in r and c.get("auc") is not None:
             g = _r(m["auc"] - c["auc"])          # a kit auc file: each map on its own pixels
         rows.append({"segment": name, "auc": m["auc"], "control_auc": c.get("auc"), "control_gap": g,
-                     "controlled": g is not None and r.get("controlled", True), "ink_px": m["ink_px"],
+                     "controlled": g is not None and report_controlled(r), "ink_px": m["ink_px"],
                      "ap": (m.get("curves") or {}).get("ap"), "ink_share": (m.get("curves") or {}).get("ink_share")})
     v = np.array([x["auc"] for x in rows], float)
     w = np.array([x["ink_px"] for x in rows], float)
@@ -507,7 +522,7 @@ COLORS = {"map": "#2f6db5", "control": "#c8742c", "compare": "#6c8f3a"}
 def write_svg(report, path, title=None):
     """ROC and precision-recall panels as a standalone SVG (no plotting library needed)."""
     S, P, G = 300, 46, 40           # panel side, padding, gap
-    controlled = report.get("controlled", (report.get("control_gap") or {}).get("difference") is not None)
+    controlled = report_controlled(report)
     warn = []
     if not controlled:
         words, line = ("UNCONTROLLED: " + report.get("warning", UNCONTROLLED)).split(), ""
@@ -582,7 +597,7 @@ def _xml(s):
 
 def format_report(r):
     rows = _report_rows(r)
-    if not r.get("controlled", "control" in r):
+    if not report_controlled(r):
         rows = [f"UNCONTROLLED: {r.get('warning', UNCONTROLLED)}"] + [row + " [uncontrolled]" for row in rows]
     return "\n".join(rows)
 
@@ -624,7 +639,9 @@ def _report_rows(r):
             rows.append(f"  map minus control: no AUC on the {g.get('shared_px', 0)} px both maps scored")
         else:
             line = (f"  map minus control {g['difference']:+.4f} on the {g['shared_px']} px both scored (map "
-                    f"{g['auc_map_shared']:.4f}, control {g['auc_control_shared']:.4f})")
+                    f"{g['auc_map_shared']:.4f}, control {g['auc_control_shared']:.4f})" if "shared_px" in g else
+                    f"  map minus control {g['difference']:+.4f} (each map on its own pixels: a report from before "
+                    "the shared-pixel gap)")
             if g.get("ci95"):
                 verdict = ("ahead of its control beyond sampling noise" if g["ci95"][0] > 0 else
                            "behind its control beyond sampling noise" if g["ci95"][1] < 0 else

@@ -329,6 +329,38 @@ class ControlsTest(unittest.TestCase):
         self.assertFalse(r1["controlled"])
         self.assertIn("ties", r1["warning"])
 
+    def test_tie_limit_sits_at_99_percent(self):
+        rng = np.random.default_rng(5)
+        out = {}
+        for f in (0.004, 0.0075):                  # about 99.2 % and 98.5 % tied pairs
+            ctl = np.full_like(self.rev, 0.5)
+            pick = rng.random(ctl.shape) < f
+            ctl[pick] = rng.uniform(0.6, 1.0, int(pick.sum()))
+            out[f] = aucreport.report_arrays(self.pred, self.ink, self.sup, ctl, bootstrap=0, **self.kw)
+        hi, lo = out[0.004], out[0.0075]
+        self.assertTrue(0.99 < hi["control_gap"]["control_tied_pair_share"] < 0.995)
+        self.assertTrue(0.98 < lo["control_gap"]["control_tied_pair_share"] < 0.99)
+        self.assertFalse(hi["controlled"])
+        self.assertTrue(lo["controlled"])
+
+    def test_older_report_files_pool_and_print(self):
+        def legacy(r):                             # a report written before the flag and the shared-pixel gap
+            r = json.loads(json.dumps(r))
+            r.pop("controlled", None)
+            r.pop("warning", None)
+            r["control_gap"] = {"difference": aucreport._r(r["map"]["auc"] - r["control"]["auc"])}
+            return r
+        flat = np.full_like(self.rev, 0.5)
+        bad = legacy(aucreport.report_arrays(self.pred, self.ink, self.sup, flat, bootstrap=0, **self.kw))
+        good = legacy(aucreport.report_arrays(self.pred, self.ink, self.sup, self.rev, bootstrap=0, **self.kw))
+        self.assertFalse(aucreport.report_controlled(bad))
+        self.assertTrue(aucreport.report_controlled(good))
+        p = aucreport.pool([("a", good), ("b", bad)])
+        self.assertEqual(p["uncontrolled_segments"], 1)
+        self.assertTrue(aucreport.format_report(bad).startswith("UNCONTROLLED"))
+        self.assertIn("each map on its own pixels", aucreport.format_report(good))
+        self.assertNotIn("uncontrolled", aucreport.format_report(good))
+
     def test_pool_keeps_a_reports_uncontrolled_flag(self):
         flat = np.full_like(self.rev, 0.5)
         bad = aucreport.report_arrays(self.pred, self.ink, self.sup, flat, bootstrap=0, **self.kw)
