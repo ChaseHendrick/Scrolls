@@ -114,7 +114,7 @@
       "line": "Command-line tools, benchmarks and script folders that run from a clone of this repository.",
       "area": "Releases and repository",
       "page": "docs/tools/cli.md",
-      "released": "2026-11-18",
+      "released": "2026-11-19",
       "summary": "Command-line tools, benchmarks and script folders that run from a clone of this repository. Each line gives the tool's release date, its weights where it has them, one command to start with, its tool page and its evidence; each page lists the tool's own needs. Their outputs are model output or geometry measurements for a person to check, not readings.",
       "commands": [
         "git clone --depth 1 https://github.com/ChaseHendrick/Scrolls.git",
@@ -887,6 +887,17 @@
           "evidence": "[checks and controls](docs/tools/runlength.md#checks-and-controls)",
           "line": "Estimates how long a CPU job takes on a cloud CPU machine from one task timed in a small container.",
           "area": "Compute and cost"
+        },
+        {
+          "id": "finite",
+          "name": "finite: refuse speeds, scores and maps taken from NaN or Inf output",
+          "released": "2026-11-19",
+          "version": "1.0",
+          "summary": "Checks that an output array or saved map (.npy, .npz, .tif, .zarr) holds no NaN or Inf, optionally nothing past fp16's 65,504, and says whether an fp16 sum of N values can overflow (one 128^3 tile of values in 0 to 1 does). In code, finite.require raises before a number is taken and finite.timed refuses a benchmark speed on non-finite output. A software check; it makes no claim about any scroll.",
+          "command": "python -m kit.finite check MAP.npy --json",
+          "page": "docs/tools/finite.md",
+          "line": "Refuses any speed, score or map taken from model output that holds NaN or Inf, and flags fp16 sums that would overflow.",
+          "area": "Scoring and controls"
         }
       ],
       "where": "main"
