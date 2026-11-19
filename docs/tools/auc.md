@@ -159,7 +159,7 @@ usage: python -m kit.aucreport score [-h] --labels LABELS --mask MASK
 | `--offset-step PX` | `1` | Step of the offset grid |
 | `--points POINTS` | `101` | Points per curve in the JSON, CSV and SVG |
 | `--seed SEED` | `0` | Seed of the bootstrap and null draws |
-| `--plot FILE.svg` | none | Write the ROC and precision-recall panels as SVG |
+| `--plot FILE.svg` | none | Write the ROC and precision-recall panels as SVG; an uncontrolled report prints its warning on the plot and marks each legend number `[uncontrolled]` |
 | `--curves FILE.csv` | none | Write the curve points as CSV (`map,curve,x,y`) |
 | `--out FILE.json` | none | Write the full report as JSON |
 | `--json` | off | Print the report as JSON instead of text |
@@ -206,7 +206,7 @@ The same report on synthetic data (text-like strokes, a map that reads them thro
 | `--offset-step PX` | `1` | Step of the offset grid |
 | `--points POINTS` | `101` | Points per curve in the JSON, CSV and SVG |
 | `--seed SEED` | `0` | Seed of the bootstrap and null draws |
-| `--plot FILE.svg` | none | Write the ROC and precision-recall panels as SVG |
+| `--plot FILE.svg` | none | Write the ROC and precision-recall panels as SVG; an uncontrolled report prints its warning on the plot and marks each legend number `[uncontrolled]` |
 | `--curves FILE.csv` | none | Write the curve points as CSV (`map,curve,x,y`) |
 | `--out FILE.json` | none | Write the full report as JSON |
 | `--json` | off | Print the report as JSON instead of text |
@@ -272,11 +272,11 @@ print(auc.format_result(result))
 | `labels_on_map(labels, mask, level, surface_shape, crop, map_shape, offset=(0, 0))` | `(ink, supervised)` | `VerifyError` | As `auc.labels_on_map`, with a label offset |
 | `exclude_boxes(ink, sup, boxes, surface_shape, crop=None, margin=0)` | `(mask, record)` | `VerifyError` | Removes boxes from the supervision |
 | `control_gap(pred, control, ink, sup, keep_zero=False)` | The `control_gap` dict | Nothing of its own | Map minus control on the pixels both scored; `sup` already without its edge |
-| `curve_stats(a, b, points=101)` | The `curves` dict, or `None` when a class is empty | Nothing | From per-level counts of ink (`a`) and background (`b`) |
-| `tile_breakdown(q, ink, use, tile_px=534, min_px=200, origin=(0, 0))` | The `tiles` dict | `VerifyError` for tiles under 8 px | `q` is the quantized map |
-| `shift_null(q, ink, sup, valid, draws=200, min_shift=107, seed=0, min_px=50)` | The `null` dict | `VerifyError` | Cyclic shifts inside the labels' bounding box |
-| `offset_scan(q, ink, sup, valid, radius, step=1, min_px=50)` | The `offset_scan` dict | `VerifyError` | Diagnosis only |
-| `pool(reports, draws=2000, seed=0)` | The pooled dict | `VerifyError` for a file with no map AUC | `reports` is a list of `(name, dict)` |
+| `curve_stats(a, b, points=101)` | The `curves` dict, or `None` when a class is empty | Nothing | From per-level counts of ink (`a`) and background (`b`); a bare AUC and AP: pair it with the control's, or label it uncontrolled |
+| `tile_breakdown(q, ink, use, tile_px=534, min_px=200, origin=(0, 0))` | The `tiles` dict | `VerifyError` for tiles under 8 px | `q` is the quantized map; bare AUCs: pair them with the control's, or label them uncontrolled |
+| `shift_null(q, ink, sup, valid, draws=200, min_shift=107, seed=0, min_px=50)` | The `null` dict | `VerifyError` | Cyclic shifts inside the labels' bounding box; a baseline, never the control: pair it with one |
+| `offset_scan(q, ink, sup, valid, radius, step=1, min_px=50)` | The `offset_scan` dict | `VerifyError` | Diagnosis only; bare AUCs with no control |
+| `pool(reports, draws=2000, seed=0)` | The pooled dict, with `controlled` false and a `warning` when any segment has no control | `VerifyError` for a file with no map AUC | `reports` is a list of `(name, dict)` |
 | `write_svg(report, path, title=None)`, `write_curves_csv(report, path)` | None | `OSError` | The plot and the curve points |
 | `format_report(report)`, `format_pool(pooled)` | str | Nothing | The text the commands print |
 | `demo_arrays(seed=0, shape=(640, 640))` | `(pred, reverse, ink, sup)` | Nothing | The demo's synthetic data |
@@ -401,7 +401,7 @@ Measured 2026-10-16 in a 4-core 2.1 GHz Xeon cloud container, on a synthetic map
 python -m unittest tests.test_auc tests.test_auc_bootstrap_exact tests.test_scoring_guards.AucGuardsTest tests.test_aucreport -v
 ```
 
-They cover the AUC against the pairwise definition, ties, float and uint16 maps, a forward map that reads ink and a reverse that does not, crops lining up with the full map, unpredicted zeros, `--inner`, the refusals (crop outside, missing store, a scale that differs between axes, crop without shape), the command line, and the bootstrap against a per-pixel oracle with quantization, zeros and partial blocks. `AucGuardsTest` checks that maps with a tiny range, negative values or logits keep their ranks, a constant map outside the known scale ties, maps already on a known scale quantize as before, NaN and inf are refused, and the map cannot be its own control. `tests/test_aucreport.py` (28 tests) checks that the ROC area equals the Mann-Whitney AUC and AP matches a brute-force step sum with ties, the tie bounds of a constant map, that the report's AUC is `kit auc`'s on files and arrays, the NaN and Inf refusals (exit 1), tiles finding a half where the map is inverted, a null that passes a reading map and fails a noise map, a planted label offset found by the scan, exclusion boxes (also on a crop) and offsets with their vacated edge, the map refused as its own control, `--keep-zero` in the curves, the null and `--inner`, the control gap's sign, shared pixels and paired interval, an all-zero control, every uncontrolled number labeled (report and pool), `--compare` always getting its interval, the SVG and CSV files, and pooling. They skip without numpy, tifffile and zarr. They do not run on real segment data.
+They cover the AUC against the pairwise definition, ties, float and uint16 maps, a forward map that reads ink and a reverse that does not, crops lining up with the full map, unpredicted zeros, `--inner`, the refusals (crop outside, missing store, a scale that differs between axes, crop without shape), the command line, and the bootstrap against a per-pixel oracle with quantization, zeros and partial blocks. `AucGuardsTest` checks that maps with a tiny range, negative values or logits keep their ranks, a constant map outside the known scale ties, maps already on a known scale quantize as before, NaN and inf are refused, and the map cannot be its own control. `tests/test_aucreport.py` (33 tests) checks that the ROC area equals the Mann-Whitney AUC and AP matches a brute-force step sum with ties, the tie bounds of a constant map, that the report's AUC is `kit auc`'s on files and arrays, the NaN and Inf refusals (exit 1), tiles finding a half where the map is inverted, a null that passes a reading map and fails a noise map, a planted label offset found by the scan, exclusion boxes (also on a crop) and offsets with their vacated edge, the map refused as its own control, `--keep-zero` in the curves, the null and `--inner`, the control gap's sign, shared pixels and paired interval, an all-zero control, every uncontrolled number labeled (report, pool lines, pool JSON and plot), `--keep-zero` in the gap, the verdict against each interval, `--compare` always getting its interval, the SVG and CSV files, and pooling. They skip without numpy, tifffile and zarr. They do not run on real segment data.
 
 ## History
 

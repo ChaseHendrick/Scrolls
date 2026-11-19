@@ -190,14 +190,17 @@ class FilesTest(unittest.TestCase):
                                   control=self.map, null=0, bootstrap=0, tiles=0)
 
     def test_vacated_edge_leaves_the_supervision(self):
-        args = (self.root / "inklabels.zarr", self.root / "supervision.zarr", "2", (320, 400), None, (320, 400))
+        full = np.ones((320, 400), np.uint8) * 255   # supervision to the very edge, so a clamped edge would stay in
+        g = zarr.open_group(str(self.root / "full.zarr"), mode="w")
+        g.create_array("2", data=full)
+        args = (self.root / "inklabels.zarr", self.root / "full.zarr", "2", (320, 400), None, (320, 400))
         ink0, sup0 = aucreport.labels_on_map(*args)
         ink, sup = aucreport.labels_on_map(*args, offset=(30, -25))
-        self.assertTrue(sup0[:30].any() and sup0[:, -25:].any())
+        self.assertTrue(sup0.all())
         self.assertFalse(sup[:30].any())
         self.assertFalse(sup[:, -25:].any())
+        self.assertTrue(sup[30:, :-25].all())
         self.assertTrue((ink[30:, :-25] == ink0[:-30, 25:]).all())
-        self.assertTrue((sup[30:, :-25] == sup0[:-30, 25:]).all())
 
     def test_cli_refuses_nan_with_exit_1(self):
         bad = self.root / "bad.npy"
@@ -280,6 +283,48 @@ class ControlsTest(unittest.TestCase):
         self.assertTrue(text.startswith("UNCONTROLLED"))
         self.assertIn("b: AUC", text)
         self.assertNotIn("uncontrolled", aucreport.format_pool(aucreport.pool([("a", a)])))
+        self.assertFalse(p["controlled"])
+        n = len(p["rows"])
+        lines = text.splitlines()
+        self.assertTrue(all(x.endswith("[uncontrolled]") for x in lines[1 + n:]))
+        self.assertGreaterEqual(len(lines[1 + n:]), 2)
+        self.assertTrue(aucreport.pool([("a", a)])["controlled"])
+
+    def test_gap_keeps_zero_pixels_with_keep_zero(self):
+        rev = self.rev.copy()
+        rev[:, :200] = 0
+        g = aucreport.report_arrays(self.pred, self.ink, self.sup, rev, keep_zero=True, bootstrap=0,
+                                    **self.kw)["control_gap"]
+        self.assertEqual(g["shared_px"], int(self.sup.sum()))
+
+    def test_verdict_follows_the_interval(self):
+        r = aucreport.report_arrays(self.pred, self.ink, self.sup, self.rev, bootstrap=30, **self.kw)
+        for ci, word in (([0.01, 0.05], "ahead of its control beyond sampling noise"),
+                         ([-0.02, 0.03], "not distinguishable from its control"),
+                         ([-0.05, -0.01], "behind its control beyond sampling noise")):
+            r["control_gap"]["ci95"] = ci
+            self.assertIn(word, aucreport.format_report(r))
+        r = aucreport.report_arrays(self.pred, self.ink, self.sup, self.rev, compare=self.rev, bootstrap=30,
+                                    **self.kw)
+        for ci, word in (([0.01, 0.05], "ahead beyond"), ([-0.02, 0.03], "not distinguishable from noise"),
+                         ([-0.05, -0.01], "behind beyond")):
+            r["bootstrap"]["compare"]["ci95"] = ci
+            self.assertIn(word, aucreport.format_report(r))
+
+    def test_plot_labels_uncontrolled_numbers(self):
+        with tempfile.TemporaryDirectory() as d:
+            zero = np.zeros_like(self.rev)
+            for control, labeled in ((None, True), (zero, True), (self.rev, False)):
+                r = aucreport.report_arrays(self.pred, self.ink, self.sup, control, bootstrap=0, **self.kw)
+                path = Path(d) / "p.svg"
+                aucreport.write_svg(r, path)
+                svg = path.read_text()
+                ET.fromstring(svg)
+                texts = [t.text or "" for t in ET.fromstring(svg).iter("{http://www.w3.org/2000/svg}text")]
+                legend = [t for t in texts if t.startswith(("map AUC", "map AP"))]
+                self.assertEqual(len(legend), 2)
+                self.assertEqual("UNCONTROLLED" in svg, labeled)
+                self.assertEqual(all(t.endswith("[uncontrolled]") for t in legend), labeled)
 
 
 @unittest.skipIf(np is None, "numpy is needed for kit.aucreport")
@@ -305,6 +350,10 @@ class MasksTest(unittest.TestCase):
         self.assertGreaterEqual(r["null"]["box"][0], e)
         full = aucreport.report_arrays(pred, self.ink, self.sup, null=30, bootstrap=0, tiles=0)
         self.assertNotEqual(full["null"]["observed_auc"], r["null"]["observed_auc"])
+        q, _ = auc._quantize(np, pred)
+        direct = aucreport.shift_null(q, self.ink, auc._edge_mask(np, self.sup, e),
+                                      auc._edge_mask(np, pred != 0, e), 30, auc.BLOCK_PX, 0)
+        self.assertEqual(r["null"], direct)
 
     def test_exclusion_box_on_a_crop(self):
         crop = (100, 300, 200, 500)               # y0 y1 x0 x1 of a 640 x 640 surface

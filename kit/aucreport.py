@@ -143,7 +143,10 @@ def curve_stats(a, b, points=101):
     Thresholds run over the occupied levels from the top: a pixel is called ink when its level is at or above the
     threshold, so pixels on one level move together and a tie is never split. The ROC area by trapezoids over these
     steps equals the Mann-Whitney AUC with ties counted half. AP is the step sum of precision over recall gains
-    (scikit-learn's average_precision_score)."""
+    (scikit-learn's average_precision_score).
+
+    Bare AUCs with no control: a caller outside report_arrays must pair them with the same call on the reverse-depth
+    control, or label them uncontrolled."""
     np = _numpy()
     P, N = float(a.sum()), float(b.sum())
     if P == 0 or N == 0:
@@ -186,7 +189,10 @@ def curve_stats(a, b, points=101):
 # ----------------------------------------------------------------------------------------------- regions and nulls
 
 def tile_breakdown(q, ink, use, tile_px=TILE_PX, min_px=TILE_MIN_PX, origin=(0, 0)):
-    """AUC per square tile of the map; a tile counts when it holds at least min_px of each class."""
+    """AUC per square tile of the map; a tile counts when it holds at least min_px of each class.
+
+    Bare AUCs with no control: a caller outside report_arrays must pair them with the same call on the reverse-depth
+    control, or label them uncontrolled."""
     np = _numpy()
     if tile_px < 8:
         raise VerifyError("tiles must be at least 8 px")
@@ -226,7 +232,10 @@ def shift_null(q, ink, sup, valid, draws=NULL_DRAWS, min_shift=auc.BLOCK_PX, see
     """AUCs of the map against cyclic shifts of the labels inside their bounding box, and the p value of the real AUC.
 
     Ink and supervision move together, so each draw is the same labeled pattern laid elsewhere on the map. Shifts
-    shorter than min_shift on both axes are refused, since nearby pixels share ink."""
+    shorter than min_shift on both axes are refused, since nearby pixels share ink.
+
+    Bare AUCs with no control: a caller outside report_arrays must pair them with the same call on the reverse-depth
+    control, or label them uncontrolled."""
     np = _numpy()
     if draws < 20:
         raise VerifyError("use at least 20 null draws")
@@ -273,7 +282,10 @@ def _shift(np, arr, dy, dx):
 
 
 def offset_scan(q, ink, sup, valid, radius, step=1, min_px=NULL_MIN_PX):
-    """AUC with the labels moved by every (dy, dx) on a grid within radius px (same convention as --label-offset)."""
+    """AUC with the labels moved by every (dy, dx) on a grid within radius px (same convention as --label-offset).
+
+    Bare AUCs with no control: a caller outside report_arrays must pair them with the same call on the reverse-depth
+    control, or label them uncontrolled."""
     np = _numpy()
     if radius < 1 or step < 1:
         raise VerifyError("the offset scan needs a radius and a step of at least 1 px")
@@ -436,6 +448,7 @@ def pool(reports, draws=2000, seed=0):
            "max_auc": _r(v.max()), "ink_weighted_mean_auc": _r((v * w).sum() / w.sum())}
     gaps = [x["control_gap"] for x in rows if x["control_gap"] is not None]
     out["uncontrolled_segments"] = sum(not x["controlled"] for x in rows)
+    out["controlled"] = out["uncontrolled_segments"] == 0
     if out["uncontrolled_segments"]:
         out["warning"] = (f"{out['uncontrolled_segments']} of {len(rows)} segments have no reverse-depth control: "
                           "the pooled numbers are not a result")
@@ -473,16 +486,32 @@ COLORS = {"map": "#2f6db5", "control": "#c8742c", "compare": "#6c8f3a"}
 def write_svg(report, path, title=None):
     """ROC and precision-recall panels as a standalone SVG (no plotting library needed)."""
     S, P, G = 300, 46, 40           # panel side, padding, gap
-    W, H = 2 * (S + P) + G + 10, S + 2 * P + 30
+    controlled = report.get("controlled", (report.get("control_gap") or {}).get("difference") is not None)
+    warn = []
+    if not controlled:
+        words, line = ("UNCONTROLLED: " + report.get("warning", UNCONTROLLED)).split(), ""
+        for w in words:
+            if line and len(line) + 1 + len(w) > 105:
+                warn.append(line)
+                line = w
+            else:
+                line = f"{line} {w}" if line else w
+        warn.append(line)
+    top = 16 * len(warn)
+    W, H = 2 * (S + P) + G + 10, S + 2 * P + 30 + top
     out = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" viewBox="0 0 {W} {H}" '
            'font-family="Helvetica, Arial, sans-serif" font-size="12">',
            f'<rect width="{W}" height="{H}" fill="#ffffff"/>']
     if title:
         out.append(f'<text x="{W / 2}" y="18" text-anchor="middle" font-size="14">{_xml(title)}</text>')
+    for n, text in enumerate(warn):
+        out.append(f'<text x="{W / 2}" y="{36 + 16 * n}" text-anchor="middle" fill="#b00020" '
+                   f'font-weight="bold">{_xml(text)}</text>')
+    tag = "" if controlled else " [uncontrolled]"
     share = report["map"]["curves"]["ink_share"]
     for k, (curve, xl, yl, base) in enumerate((("roc", "false positive rate", "true positive rate", None),
                                                ("pr", "recall", "precision", share))):
-        ox, oy = P + k * (S + P + G), P + 10
+        ox, oy = P + k * (S + P + G), P + 10 + top
         X = lambda v: ox + v * S
         Y = lambda v: oy + (1 - v) * S
         for t in (0, 0.25, 0.5, 0.75, 1):
@@ -506,12 +535,13 @@ def write_svg(report, path, title=None):
             pts = " ".join(f"{X(x):.1f},{Y(y):.1f}" for x, y in cs[curve])
             dash = ' stroke-dasharray="6 3"' if name == "control" else ""
             out.append(f'<polyline points="{pts}" fill="none" stroke="{COLORS[name]}" stroke-width="2"{dash}/>')
-            legend.append((name, f"{name} AUC {cs['auc']:.3f}" if curve == "roc" else f"{name} AP {cs['ap']:.3f}"))
+            legend.append((name, (f"{name} AUC {cs['auc']:.3f}" if curve == "roc" else f"{name} AP {cs['ap']:.3f}")
+                           + tag))
         if base is not None:
             legend.append((None, f"ink share {base:.3f}"))
         for n, (name, text) in enumerate(legend):
             ly = oy + 16 + 16 * n
-            lx = ox + (S - 150 if curve == "roc" else S - 150)
+            lx = ox + S - (150 if controlled else 200)
             ly = ly + (S - 30 - 16 * len(legend) if curve == "roc" else 0)
             color = COLORS.get(name, "#888")
             out.append(f'<line x1="{lx}" y1="{ly - 4}" x2="{lx + 18}" y2="{ly - 4}" stroke="{color}" stroke-width="2"/>')
@@ -573,8 +603,9 @@ def _report_rows(r):
             line = (f"  map minus control {g['difference']:+.4f} on the {g['shared_px']} px both scored (map "
                     f"{g['auc_map_shared']:.4f}, control {g['auc_control_shared']:.4f})")
             if g.get("ci95"):
-                verdict = ("ahead of its control beyond sampling noise" if g["ci95"][0] > 0
-                           else "not distinguishable from its control")
+                verdict = ("ahead of its control beyond sampling noise" if g["ci95"][0] > 0 else
+                           "behind its control beyond sampling noise" if g["ci95"][1] < 0 else
+                           "not distinguishable from its control")
                 line += f", 95 % interval {g['ci95'][0]:+.4f} to {g['ci95'][1]:+.4f}: {verdict}"
             rows.append(line)
     if "compare" in r and b and b.get("compare"):
