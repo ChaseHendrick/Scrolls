@@ -22,7 +22,7 @@ module scores the same pixels the same way and adds what a reader of that number
 
 Two options change which labels count, the same way for every map scored: `--exclude Y0 Y1 X0 X1` removes a box of
 the surface grid (grown by `--exclude-margin`) from the supervision, for a region that was looked at before, and
-`--offset DY DX` moves the labels by (dy, dx) surface pixels, label[y, x] = labels[y - dy, x - dx], with the
+`--label-offset DY DX` moves the labels by (dy, dx) surface pixels, label[y, x] = labels[y - dy, x - dx], with the
 vacated edge left out of the supervision.
 
     python -m kit.aucreport score MAP.tif --labels L/inklabels.zarr --mask L/supervision.zarr \\
@@ -271,7 +271,7 @@ def _shift(np, arr, dy, dx):
 
 
 def offset_scan(q, ink, sup, valid, radius, step=1, min_px=NULL_MIN_PX):
-    """AUC with the labels moved by every (dy, dx) on a grid within radius px (same convention as --offset)."""
+    """AUC with the labels moved by every (dy, dx) on a grid within radius px (same convention as --label-offset)."""
     np = _numpy()
     if radius < 1 or step < 1:
         raise VerifyError("the offset scan needs a radius and a step of at least 1 px")
@@ -645,7 +645,7 @@ def _parser():
     s.add_argument("--level", default=auc.DEFAULT_LEVEL, help="label pyramid level matching the 9 um grid")
     s.add_argument("--crop", type=int, nargs=4, metavar=("Y0", "Y1", "X0", "X1"))
     s.add_argument("--surface-shape", type=int, nargs=2, metavar=("H", "W"))
-    s.add_argument("--offset", type=int, nargs=2, metavar=("DY", "DX"), help="move the labels by (dy, dx) px")
+    s.add_argument("--label-offset", type=int, nargs=2, metavar=("DY", "DX"), help="move the labels by (dy, dx) px")
     s.add_argument("--exclude", type=int, nargs=4, action="append", metavar=("Y0", "Y1", "X0", "X1"),
                    help="leave a box of the surface grid out of the supervision (repeat for more)")
     s.add_argument("--exclude-margin", type=int, default=0, metavar="PX")
@@ -678,7 +678,7 @@ def main(argv=None):
     try:
         if a.cmd == "score":
             r = score_files(a.prediction, a.labels, a.mask, a.control, a.compare, a.level, a.crop,
-                            a.surface_shape, a.keep_zero, a.inner, a.offset, a.exclude, a.exclude_margin, **_kw(a))
+                            a.surface_shape, a.keep_zero, a.inner, a.label_offset, a.exclude, a.exclude_margin, **_kw(a))
             _emit(a, r, format_report(r))
         elif a.cmd == "demo":
             pred, rev, ink, sup = demo_arrays(a.seed)

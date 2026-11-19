@@ -119,7 +119,8 @@ usage: python -m kit auc [-h] --labels LABELS --mask MASK [--control CONTROL]
 usage: python -m kit.aucreport score [-h] --labels LABELS --mask MASK
                                      [--control CONTROL] [--compare MAP]
                                      [--level LEVEL] [--crop Y0 Y1 X0 X1]
-                                     [--surface-shape H W] [--offset DY DX]
+                                     [--surface-shape H W]
+                                     [--label-offset DY DX]
                                      [--exclude Y0 Y1 X0 X1]
                                      [--exclude-margin PX] [--keep-zero]
                                      [--inner PX] [--bootstrap N]
@@ -143,7 +144,7 @@ usage: python -m kit.aucreport score [-h] --labels LABELS --mask MASK
 | `--level LEVEL` | `2` | Label pyramid level matching the 9 um grid |
 | `--crop Y0 Y1 X0 X1` | none | The map covers only this window of the surface |
 | `--surface-shape H W` | none (the map's own shape) | Full surface shape; required with `--crop` |
-| `--offset DY DX` | none | Move the labels: label[y, x] = labels[y - dy, x - dx]; the vacated edge leaves the supervision |
+| `--label-offset DY DX` | none | Move the labels: label[y, x] = labels[y - dy, x - dx]; the vacated edge leaves the supervision |
 | `--exclude Y0 Y1 X0 X1` | none | Remove this box of the surface grid from the supervision; repeat for more boxes |
 | `--exclude-margin PX` | `0` | Grow every exclusion box by PX on each side |
 | `--keep-zero` | off | Count pixels where a map is exactly 0 |
@@ -233,11 +234,11 @@ python -m kit.aucreport pool w00_report.json ag896_report.json ag405_report.json
 | Ties | Share of ink and background pairs that tie, and the AUC with every tie lost or won | A uint8 or thresholded map has few levels; its AUC can move by half the tied share depending on a convention |
 | Tiles | AUC of each square tile (`--tiles`, default 534 px, 5 mm) holding at least `--tile-min-px` of each class, with min, quartiles, max and the worst tile | One strong patch can carry a segment's AUC while another region fails |
 | Shifted-label null | The labels (ink and supervision together) shifted cyclically inside their bounding box by at least one block (`--null-min-shift`, default 107 px), `--null` times (default 200); the map is scored on each copy | A control that keeps the texture of the map and of the labels and breaks only their alignment. p = (1 + copies at or above the real AUC) / (1 + copies). It can fail: a map that only follows brightness or a sheet texture shared with the labels' layout scores high on the shifted copies too |
-| Offset scan | `--offset-scan R`: the AUC with the labels moved by every (dy, dx) within R px (`--offset-step`) | A peak away from (0, 0) says the labels and the map are not registered. The best offset is picked on these labels, so it is a diagnosis, never a score: fix an offset first (`--offset`), then score it on other labels |
+| Offset scan | `--offset-scan R`: the AUC with the labels moved by every (dy, dx) within R px (`--offset-step`) | A peak away from (0, 0) says the labels and the map are not registered. The best offset is picked on these labels, so it is a diagnosis, never a score: fix an offset first (`--label-offset`), then score it on other labels |
 | Finite check | Every map goes through [`kit.finite`](finite.md) before scoring | A map holding NaN or Inf is refused with exit code 1 and the count of bad values |
 | Pool | `pool` over reports (or `kit auc --json` files): per-segment rows, mean, range, ink-weighted mean, how many segments beat their control, and from 5 segments on a bootstrap interval over segments | Segments differ more than pixels within one; with fewer than 5 the report says so instead of giving an interval |
 
-Two options change which labels count, for every map scored: `--exclude Y0 Y1 X0 X1` (repeatable, surface grid, grown by `--exclude-margin`) removes a region already looked at, and `--offset DY DX` moves the labels, label[y, x] = labels[y - dy, x - dx], with the vacated edge left out (TAUIL-Abd-Elilah's label-shift convention). The report records both.
+Two options change which labels count, for every map scored: `--exclude Y0 Y1 X0 X1` (repeatable, surface grid, grown by `--exclude-margin`) removes a region already looked at, and `--label-offset DY DX` moves the labels, label[y, x] = labels[y - dy, x - dx], with the vacated edge left out (TAUIL-Abd-Elilah's label-shift convention). The report records both.
 
 Options are under [Commands and options](#python--m-kitaucreport-score). `--json` prints the whole report; `--out` saves it. Main fields: `map.auc`, `map.curves.ap`, `map.curves.ink_share`, `map.curves.ties`, `control_gap.difference` and `control_gap.ci95` (the paired interval of map minus control), `bootstrap.ci95`, `tiles.median`, `tiles.worst`, `null.p`, `null.null_95th`, `offset_scan.best`. Exit codes: 0 scored, 1 a map is not finite, 2 bad input.
 
@@ -354,7 +355,7 @@ With `--slug`, the same object is stored as the check's result in `run.json` ([r
 | `MAP: NNN NaN, NNN Inf; kit auc scores no map holding NaN or Inf (replace them with 0 for no prediction)`, exit code 1 (`kit.aucreport`) | `kit.finite` found NaN or Inf in a map | Replace them with 0, or fix the run that wrote them |
 | `not a numeric array (dtype ...): nothing to check` (`kit.aucreport`) | A map that is not numbers | Pass a numeric map |
 | `no AUC: ink N px, background N px in the mask` (`kit.aucreport`) | No ink or no background left after the crop, exclusions and zeros | Check the crop and the boxes |
-| `label offset [DY, DX] moves the labels off the surface` | `--offset` at least the surface size | Use a small offset |
+| `label offset [DY, DX] moves the labels off the surface` | `--label-offset` at least the surface size | Use a small offset |
 | `the exclusion margin cannot be negative`, `an exclusion margin needs at least one exclusion box` | A bad `--exclude-margin` | Give a margin of 0 or more with at least one `--exclude` |
 | `exclusion box [...] is empty: give y0 y1 x0 x1 with y0 < y1, x0 < x1`, `exclusion box [...] lies outside the H x W surface` | A box in the wrong order or off the surface | Give y0 y1 x0 x1 on the surface grid |
 | `tiles must be at least 8 px` | `--tiles` from 1 to 7 | Use the default 534 or 0 for none |
@@ -403,7 +404,7 @@ They cover the AUC against the pairwise definition, ties, float and uint16 maps,
 
 ## History
 
-- 2026-11-19: `python -m kit.aucreport`: ROC and precision-recall curves, AP, tie bounds, per-tile AUCs, a shifted-label null, a label offset scan, `--exclude` and `--offset`, the finite check, segment pooling and SVG and CSV output; `kit auc` itself is unchanged ([#369](https://github.com/ChaseHendrick/Scrolls/pull/369)).
+- 2026-11-19: `python -m kit.aucreport`: ROC and precision-recall curves, AP, tie bounds, per-tile AUCs, a shifted-label null, a label offset scan, `--exclude` and `--label-offset`, the finite check, segment pooling and SVG and CSV output; `kit auc` itself is unchanged ([#369](https://github.com/ChaseHendrick/Scrolls/pull/369)).
 - 2026-10-16: a missing numpy, tifffile or zarr names the command run and the maps extra (`bb8cc06`).
 - 2026-10-16: a constant float map outside 0..65535 ties everywhere (AUC 0.5) instead of crashing (`136b5b2`).
 - 2026-10-16: only the map's own file is refused as its control; an identical copy scores and shows no gap (`0f3afea`).

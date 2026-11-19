@@ -879,73 +879,73 @@
     {
      "name": "Commands and options",
      "start_line": 82,
-     "end_line": 212,
+     "end_line": 213,
      "applicable": true
     },
     {
      "name": "Detailed report: `python -m kit.aucreport`",
-     "start_line": 213,
-     "end_line": 246,
+     "start_line": 214,
+     "end_line": 247,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 247,
-     "end_line": 282,
+     "start_line": 248,
+     "end_line": 283,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 283,
-     "end_line": 293,
+     "start_line": 284,
+     "end_line": 294,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 294,
-     "end_line": 324,
+     "start_line": 295,
+     "end_line": 325,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 325,
-     "end_line": 367,
+     "start_line": 326,
+     "end_line": 368,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 368,
-     "end_line": 380,
+     "start_line": 369,
+     "end_line": 381,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 381,
-     "end_line": 384,
+     "start_line": 382,
+     "end_line": 385,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 385,
-     "end_line": 395,
+     "start_line": 386,
+     "end_line": 396,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 396,
-     "end_line": 403,
+     "start_line": 397,
+     "end_line": 404,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 404,
-     "end_line": 417,
+     "start_line": 405,
+     "end_line": 418,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 418,
-     "end_line": 425,
+     "start_line": 419,
+     "end_line": 426,
      "applicable": true
     }
    ]
