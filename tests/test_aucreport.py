@@ -311,6 +311,36 @@ class ControlsTest(unittest.TestCase):
             r["bootstrap"]["compare"]["ci95"] = ci
             self.assertIn(word, aucreport.format_report(r))
 
+    def test_constant_control_cannot_fail_so_is_uncontrolled(self):
+        flat = np.full_like(self.rev, 0.5)
+        r = aucreport.report_arrays(self.pred, self.ink, self.sup, flat, bootstrap=0, **self.kw)
+        self.assertTrue(r["control_gap"]["control_constant"])
+        self.assertFalse(r["controlled"])
+        self.assertIn("constant", r["warning"])
+        self.assertTrue(aucreport.format_report(r).startswith("UNCONTROLLED"))
+        ok = aucreport.report_arrays(self.pred, self.ink, self.sup, self.rev, bootstrap=0, **self.kw)
+        self.assertFalse(ok["control_gap"]["control_constant"])
+
+    def test_compared_map_is_labeled_without_its_own_control(self):
+        r = aucreport.report_arrays(self.pred, self.ink, self.sup, self.rev, compare=self.rev, bootstrap=30,
+                                    **self.kw)
+        self.assertTrue(r["controlled"])
+        self.assertFalse(r["compare"]["controlled"])
+        self.assertIn("no reverse-depth control of its own", r["compare"]["warning"])
+        lines = aucreport.format_report(r).splitlines()
+        cmp_lines = [x for x in lines if x.startswith("compared map")]
+        self.assertEqual(len(cmp_lines), 1)
+        self.assertTrue(cmp_lines[0].endswith("[no control of its own]"))
+        self.assertFalse(any("[no control of its own]" in x for x in lines if not x.startswith("compared map")))
+        with tempfile.TemporaryDirectory() as d:
+            path = Path(d) / "c.svg"
+            aucreport.write_svg(r, path)
+            texts = [t.text or "" for t in ET.parse(path).getroot().iter("{http://www.w3.org/2000/svg}text")]
+        cmp_legend = [t for t in texts if t.startswith("compare ")]
+        self.assertEqual(len(cmp_legend), 2)
+        self.assertTrue(all(t.endswith("[no control of its own]") for t in cmp_legend))
+        self.assertFalse(any(t.endswith("[no control of its own]") for t in texts if t.startswith("map ")))
+
     def test_plot_labels_uncontrolled_numbers(self):
         with tempfile.TemporaryDirectory() as d:
             zero = np.zeros_like(self.rev)

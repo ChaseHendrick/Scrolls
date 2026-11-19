@@ -54,6 +54,9 @@ FPR_POINTS = (0.01, 0.05, 0.10)
 EXIT_OK, EXIT_NONFINITE, EXIT_INPUT = 0, 1, 2
 UNCONTROLLED = ("no reverse-depth control was given: no number in this report is a result until the same map, read in "
                 "reverse depth order, is scored on the same labels (--control)")
+COMPARE_TAG = " [no control of its own]"
+COMPARE_UNCONTROLLED = ("the compared map has no reverse-depth control of its own: its AUC and AP are not a result; "
+                        "score it alone with its own --control")
 
 
 # ---------------------------------------------------------------------------------------------------------- labels
@@ -356,10 +359,17 @@ def report_arrays(pred, ink, sup, control=None, compare=None, keep_zero=False, i
             g = auc.block_bootstrap(pred, ink, sup, bootstrap, block_px, seed, control, keep_zero, inner)["compare"]
             out["control_gap"].update({"ci95": g["ci95"],
                                        "share_draws_control_not_behind": g["share_draws_map_not_ahead"]})
-    out["controlled"] = control is not None and out["control_gap"]["difference"] is not None
+    out["controlled"] = (control is not None and out["control_gap"]["difference"] is not None
+                         and not out["control_gap"]["control_constant"])
     if not out["controlled"]:
-        out["warning"] = UNCONTROLLED if control is None else (
-            "the control has no AUC on the pixels both maps scored: " + UNCONTROLLED.split(": ", 1)[1])
+        out["warning"] = (UNCONTROLLED if control is None else
+                          ("the control has no AUC on the pixels both maps scored: "
+                           if out["control_gap"]["difference"] is None else
+                           "the control is constant on the pixels both maps scored, so every pair ties and it cannot "
+                           "fail: ") + UNCONTROLLED.split(": ", 1)[1])
+    if compare is not None:
+        out["compare"]["controlled"] = False
+        out["compare"]["warning"] = COMPARE_UNCONTROLLED
     if bootstrap:
         out["bootstrap"] = auc.block_bootstrap(pred, ink, sup, bootstrap, block_px, seed, compare, keep_zero, inner)
     valid = np.ones_like(sup_in) if keep_zero else pred != 0
@@ -386,7 +396,8 @@ def control_gap(pred, control, ink, sup, keep_zero=False):
     b = auc.auc_scores(qc[shared & ink], qc[shared & ~ink])
     return {"auc_map_shared": _r(a), "auc_control_shared": _r(b),
             "difference": _r(a - b) if a is not None and b is not None else None,
-            "shared_px": int(shared.sum()), "ci95": None}
+            "shared_px": int(shared.sum()), "ci95": None,
+            "control_constant": bool(shared.any()) and int(np.unique(qc[shared]).size) == 1}
 
 
 def _load_map(path):
@@ -536,13 +547,15 @@ def write_svg(report, path, title=None):
             dash = ' stroke-dasharray="6 3"' if name == "control" else ""
             out.append(f'<polyline points="{pts}" fill="none" stroke="{COLORS[name]}" stroke-width="2"{dash}/>')
             legend.append((name, (f"{name} AUC {cs['auc']:.3f}" if curve == "roc" else f"{name} AP {cs['ap']:.3f}")
-                           + tag))
+                           + (COMPARE_TAG if name == "compare" else "") + tag))
         if base is not None:
             legend.append((None, f"ink share {base:.3f}"))
+        lx = ox + S - max(150, min(S - 4, 34 + 6.2 * max(len(t) for _, t in legend)))
+        ly0 = oy + 16 + (S - 30 - 16 * len(legend) if curve == "roc" else 0)
+        out.append(f'<rect x="{lx - 4:.1f}" y="{ly0 - 13}" width="{ox + S - lx:.1f}" height="{16 * len(legend) + 4}" '
+                   'fill="#ffffff" fill-opacity="0.85"/>')
         for n, (name, text) in enumerate(legend):
-            ly = oy + 16 + 16 * n
-            lx = ox + S - (150 if controlled else 200)
-            ly = ly + (S - 30 - 16 * len(legend) if curve == "roc" else 0)
+            ly = ly0 + 16 * n
             color = COLORS.get(name, "#888")
             out.append(f'<line x1="{lx}" y1="{ly - 4}" x2="{lx + 18}" y2="{ly - 4}" stroke="{color}" stroke-width="2"/>')
             out.append(f'<text x="{lx + 24}" y="{ly}">{_xml(text)}</text>')
@@ -613,7 +626,7 @@ def _report_rows(r):
         verdict = ("ahead beyond sampling noise" if c["ci95"][0] > 0 else
                    "behind beyond sampling noise" if c["ci95"][1] < 0 else "not distinguishable from noise")
         rows.append(f"compared map: AUC {r['compare']['auc']:.4f}; map minus it {c['difference']:+.4f}, 95 % "
-                    f"interval {c['ci95'][0]:+.4f} to {c['ci95'][1]:+.4f}: {verdict}")
+                    f"interval {c['ci95'][0]:+.4f} to {c['ci95'][1]:+.4f}: {verdict}{COMPARE_TAG}")
     t = r.get("tiles")
     if t:
         if t["scored"]:
