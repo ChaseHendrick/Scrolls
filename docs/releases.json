@@ -424,7 +424,7 @@
           "name": "Controlled ink AUC scoring",
           "area": "Scoring and controls",
           "released": "2026-10-07",
-          "summary": "Scores an ink map against labeled ink and background inside a supervision mask, alongside a reverse-depth control.",
+          "summary": "Scores an ink map against labeled ink and background with a reverse-depth control; kit.aucreport adds curves, AP, tiles and a shifted-label null.",
           "command": "python -m kit auc --help",
           "page": "docs/tools/auc.md"
         },

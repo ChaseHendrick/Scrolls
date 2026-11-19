@@ -29,6 +29,7 @@ One row per module, script folder and docs area. [AGENTS.md](../AGENTS.md) holds
 | `kit/layers.py` | Surface-volume zarr to numbered layer TIFFs (v8in's input), banded reads, optional crop; `kit shuffle` and `kit layers --shuffle SEED` write the depth-shuffle control |
 | `kit/verify.py` | Two maps agree within tolerance, valid only if a control map is caught |
 | `kit/auc.py` | Pixel AUC against a segment's `inklabels.zarr` inside `supervision.zarr`; reverse map as control; `--crop`, `--inner` |
+| `kit/aucreport.py` | `python -m kit.aucreport`: detailed AUC report on `kit auc`'s pixels (ROC and PR curves, AP, ties, per-tile AUC, shifted-label null, label offset scan, exclusion boxes, finite check, segment pooling, SVG and CSV) ([page](tools/auc.md#detailed-report-python--m-kitaucreport)) |
 | `kit/rowscore.py` | Text-row periodicity triage score (port of Bullo27's); a reading order, not a verdict |
 | `kit/provenance.py` | Who ran what, when, on which machine, from which inputs; one digest over the record |
 | `kit/claimcheck.py` | Claims check, `python -m kit.claimcheck items/trace/suggest/add/pin/check/results`: every number in the README's Novel findings matched to a results unit or repository file pinned by sha256 in `docs/claims/sources.json` (or a stated reason), and results units that cite no file held to a baseline; `tests/test_claimcheck.py` fails on a claim with no source ([page](tools/claimcheck.md)) |

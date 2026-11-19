@@ -8,17 +8,17 @@
 | Status | Current |
 | Kind | kit command, kit module |
 | Area | Scoring and controls |
-| Run | `python -m kit auc`, `from kit import auc` |
-| Code | `kit/auc.py`, `kit/cli.py` (`cmd_auc`), `kit/verify.py` (`load_map`, `_numpy`, `VerifyError`), `kit/ledger.py` (`add_check`) |
-| Tests | `tests/test_auc.py`, `tests/test_auc_bootstrap_exact.py`, `tests/test_scoring_guards.py` (`AucGuardsTest`) |
+| Run | `python -m kit auc`, `python -m kit.aucreport`, `from kit import auc, aucreport` |
+| Code | `kit/auc.py`, `kit/aucreport.py`, `kit/cli.py` (`cmd_auc`), `kit/finite.py` (`stats`, `NonFinite`), `kit/verify.py` (`load_map`, `_numpy`, `VerifyError`), `kit/ledger.py` (`add_check`) |
+| Tests | `tests/test_auc.py`, `tests/test_auc_bootstrap_exact.py`, `tests/test_aucreport.py`, `tests/test_scoring_guards.py` (`AucGuardsTest`) |
 | Needs | Python 3.10 or newer, numpy, tifffile (imagecodecs for LZW or zstd TIFFs), zarr (3.x on Python 3.11 or newer; 2.x works for reading) |
 | Runs on | Any CPU. A full-size 5,980 x 8,240 map takes about 5 s with a control and about 6 s with `--bootstrap 300` (measured 2026-10-16, 4-core 2.1 GHz Xeon cloud container, synthetic data) |
 | Network | None |
-| Writes | Nothing (prints only). With `--slug SLUG`, appends one check to `experiments/SLUG/run.json` (or `ROOT/SLUG/run.json` with `--root`) |
+| Writes | Nothing (prints only); `kit.aucreport` writes only the files named by `--plot`, `--curves` and `--out`. With `--slug SLUG`, appends one check to `experiments/SLUG/run.json` (or `ROOT/SLUG/run.json` with `--root`) |
 | Go-ahead | Not needed |
 | Released | Public `main` since 2026-10-07; also inside the AutoPipeline release |
 | Guide | [STANDARDS.md](../STANDARDS.md) (how AUC is used here), [the overlap and baseline log](../logs/2026-10-07-overlap-and-baseline.md) (sampling noise) |
-| Checked | 2026-10-16 against commit `d9eaf42` |
+| Checked | 2026-11-19 against commit `b6ade72` |
 
 ## What it does
 
@@ -113,6 +113,138 @@ usage: python -m kit auc [-h] --labels LABELS --mask MASK [--control CONTROL]
 | `--name NAME` | `label-auc` | Name of that check |
 | `--root ROOT` | `experiments` | Ledger folder (`ledger.DEFAULT_ROOT`) |
 
+### `python -m kit.aucreport score`
+
+```
+usage: python -m kit.aucreport score [-h] --labels LABELS --mask MASK
+                                     [--control CONTROL] [--compare MAP]
+                                     [--level LEVEL] [--crop Y0 Y1 X0 X1]
+                                     [--surface-shape H W]
+                                     [--label-offset DY DX]
+                                     [--exclude Y0 Y1 X0 X1]
+                                     [--exclude-margin PX] [--keep-zero]
+                                     [--inner PX] [--bootstrap N]
+                                     [--block-px BLOCK_PX] [--tiles PX]
+                                     [--tile-min-px TILE_MIN_PX] [--null N]
+                                     [--null-min-shift PX] [--offset-scan R]
+                                     [--offset-step PX] [--points POINTS]
+                                     [--seed SEED] [--plot FILE.svg]
+                                     [--curves FILE.csv] [--out FILE.json]
+                                     [--json]
+                                     prediction
+```
+
+| Option | Default | Meaning |
+| --- | --- | --- |
+| `prediction` | required | The ink map, as for `kit auc` |
+| `--labels LABELS` | required | The segment's `inklabels.zarr` |
+| `--mask MASK` | required | The segment's `supervision.zarr` |
+| `--control CONTROL` | none | Reverse-depth map of the same surface; adds its curves and the paired map minus control interval |
+| `--compare MAP` | none | Another map of the same surface: its curves, and the paired difference on shared pixels |
+| `--level LEVEL` | `2` | Label pyramid level matching the 9 um grid |
+| `--crop Y0 Y1 X0 X1` | none | The map covers only this window of the surface |
+| `--surface-shape H W` | none (the map's own shape) | Full surface shape; required with `--crop` |
+| `--label-offset DY DX` | none | Move the labels: label[y, x] = labels[y - dy, x - dx]; the vacated edge leaves the supervision |
+| `--exclude Y0 Y1 X0 X1` | none | Remove this box of the surface grid from the supervision; repeat for more boxes |
+| `--exclude-margin PX` | `0` | Grow every exclusion box by PX on each side |
+| `--keep-zero` | off | Count pixels where a map is exactly 0 |
+| `--inner PX` | `0` | Leave out PX pixels at every edge |
+| `--bootstrap N` | `300` | Block-bootstrap draws for the map's interval and the paired map minus control (and compared map) intervals; 0 for none |
+| `--block-px BLOCK_PX` | `107` | Bootstrap block side, and the default shortest null shift |
+| `--tiles PX` | `534` | Tile side for the per-region AUC (5 mm at 9.366 um); 0 for none |
+| `--tile-min-px TILE_MIN_PX` | `200` | Pixels of each class a tile needs to be scored |
+| `--null N` | `200` | Shifted-label null draws; 0 for none; at least 20 |
+| `--null-min-shift PX` | the block size | Shortest cyclic shift on at least one axis |
+| `--offset-scan R` | `0` | Score every label offset within R px; 0 for none |
+| `--offset-step PX` | `1` | Step of the offset grid |
+| `--points POINTS` | `101` | Points per curve in the JSON, CSV and SVG |
+| `--seed SEED` | `0` | Seed of the bootstrap and null draws |
+| `--plot FILE.svg` | none | Write the ROC and precision-recall panels as SVG |
+| `--curves FILE.csv` | none | Write the curve points as CSV (`map,curve,x,y`) |
+| `--out FILE.json` | none | Write the full report as JSON |
+| `--json` | off | Print the report as JSON instead of text |
+
+### `python -m kit.aucreport pool`
+
+```
+usage: python -m kit.aucreport pool [-h] [--seed SEED] [--json]
+                                    reports [reports ...]
+```
+
+| Option | Default | Meaning |
+| --- | --- | --- |
+| `reports` | required | Report JSON files from `score --out` (or `kit auc --json` output), one per segment |
+| `--seed SEED` | `0` | Seed of the bootstrap over segments |
+| `--json` | off | Print the pooled result as JSON |
+
+### `python -m kit.aucreport demo`
+
+```
+usage: python -m kit.aucreport demo [-h] [--keep-zero] [--inner PX]
+                                    [--bootstrap N] [--block-px BLOCK_PX]
+                                    [--tiles PX] [--tile-min-px TILE_MIN_PX]
+                                    [--null N] [--null-min-shift PX]
+                                    [--offset-scan R] [--offset-step PX]
+                                    [--points POINTS] [--seed SEED]
+                                    [--plot FILE.svg] [--curves FILE.csv]
+                                    [--out FILE.json] [--json]
+```
+
+The same report on synthetic data (text-like strokes, a map that reads them through noise, and a weak reverse map): nothing to download.
+
+| Option | Default | Meaning |
+| --- | --- | --- |
+| `--keep-zero` | off | Count pixels where a map is exactly 0 |
+| `--inner PX` | `0` | Leave out PX pixels at every edge |
+| `--bootstrap N` | `300` | Block-bootstrap draws for the map's interval and the paired map minus control (and compared map) intervals; 0 for none |
+| `--block-px BLOCK_PX` | `107` | Bootstrap block side, and the default shortest null shift |
+| `--tiles PX` | `534` | Tile side for the per-region AUC (5 mm at 9.366 um); 0 for none |
+| `--tile-min-px TILE_MIN_PX` | `200` | Pixels of each class a tile needs to be scored |
+| `--null N` | `200` | Shifted-label null draws; 0 for none; at least 20 |
+| `--null-min-shift PX` | the block size | Shortest cyclic shift on at least one axis |
+| `--offset-scan R` | `0` | Score every label offset within R px; 0 for none |
+| `--offset-step PX` | `1` | Step of the offset grid |
+| `--points POINTS` | `101` | Points per curve in the JSON, CSV and SVG |
+| `--seed SEED` | `0` | Seed of the bootstrap and null draws |
+| `--plot FILE.svg` | none | Write the ROC and precision-recall panels as SVG |
+| `--curves FILE.csv` | none | Write the curve points as CSV (`map,curve,x,y`) |
+| `--out FILE.json` | none | Write the full report as JSON |
+| `--json` | off | Print the report as JSON instead of text |
+
+## Detailed report: `python -m kit.aucreport`
+
+One AUC answers "does the map rank ink above background here?". The report answers the questions that usually follow, on exactly the pixels `kit auc` scores: its `map.auc` is the number `kit auc` prints, from the same function. Try it without any data first:
+
+```bash
+python -m kit.aucreport demo --plot demo.svg          # synthetic strokes, a map that reads them and its reverse
+```
+
+On a real segment (PHerc0841 w00 from the Quick start):
+
+```bash
+python -m kit.aucreport score w00_prediction.tif --control w00_reverse.tif \
+    --labels w00/inklabels.zarr --mask w00/supervision.zarr \
+    --plot w00_roc_pr.svg --curves w00_curves.csv --out w00_report.json
+python -m kit.aucreport pool w00_report.json ag896_report.json ag405_report.json
+```
+
+| Section | What it says | Why it matters |
+| --- | --- | --- |
+| Curves | ROC and precision-recall curves (101 points each, also as CSV and SVG), average precision (AP), true-positive rate at 1, 5 and 10 % false positives, best F1 and the Youden threshold | Ink is a minority class (often 10 to 30 % of supervised pixels). AP is judged against the ink share, which is what a map with no skill scores; the TPR at low false-positive rates says how clean a binarized map would be |
+| Ties | Share of ink and background pairs that tie, and the AUC with every tie lost or won | A uint8 or thresholded map has few levels; its AUC can move by half the tied share depending on a convention |
+| Tiles | AUC of each square tile (`--tiles`, default 534 px, 5 mm) holding at least `--tile-min-px` of each class, with min, quartiles, max and the worst tile | One strong patch can carry a segment's AUC while another region fails |
+| Shifted-label null | The labels (ink and supervision together) shifted cyclically inside their bounding box by at least one block (`--null-min-shift`, default 107 px), `--null` times (default 200); the map is scored on each copy | A control that keeps the texture of the map and of the labels and breaks only their alignment. p = (1 + copies at or above the real AUC) / (1 + copies). It can fail: a map that only follows brightness or a sheet texture shared with the labels' layout scores high on the shifted copies too |
+| Offset scan | `--offset-scan R`: the AUC with the labels moved by every (dy, dx) within R px (`--offset-step`) | A peak away from (0, 0) says the labels and the map are not registered. The best offset is picked on these labels, so it is a diagnosis, never a score: fix an offset first (`--label-offset`), then score it on other labels |
+| Finite check | Every map goes through [`kit.finite`](finite.md) before scoring | A map holding NaN or Inf is refused with exit code 1 and the count of bad values |
+| Pool | `pool` over reports (or `kit auc --json` files): per-segment rows, mean, range, ink-weighted mean, how many segments beat their control, and from 5 segments on a bootstrap interval over segments | Segments differ more than pixels within one; with fewer than 5 the report says so instead of giving an interval |
+
+Two options change which labels count, for every map scored: `--exclude Y0 Y1 X0 X1` (repeatable, surface grid, grown by `--exclude-margin`) removes a region already looked at, and `--label-offset DY DX` moves the labels, label[y, x] = labels[y - dy, x - dx], with the vacated edge left out (TAUIL-Abd-Elilah's label-shift convention). The report records both.
+
+Options are under [Commands and options](#python--m-kitaucreport-score). `--json` prints the whole report; `--out` saves it. Main fields: `map.auc`, `map.curves.ap`, `map.curves.ink_share`, `map.curves.ties`, `control_gap.difference` and `control_gap.ci95` (the paired interval of map minus control), `bootstrap.ci95`, `tiles.median`, `tiles.worst`, `null.p`, `null.null_95th`, `offset_scan.best`. Exit codes: 0 scored, 1 a map is not finite, 2 bad input.
+
+Cost: on a 5,980 x 8,240 map with a 1,280 x 1,280 labeled area and a control, about 4 s for the scores and curves, plus about 2.5 s for 300 bootstrap draws and about 2 s for 200 null draws (2026-11-19, cloud container, synthetic data). The null and the scan work inside the labels' bounding box, so they grow with the labeled area, not the map.
+
+
 ## Python API
 
 ```python
@@ -130,6 +262,24 @@ print(auc.format_result(result))
 | `labels_on_map(labels, mask, level, surface_shape, crop, map_shape)` | `(ink, supervised)` boolean arrays of `map_shape` | `VerifyError` for unreadable stores, a missing level, or labels and mask of different shapes | Labels resampled onto the map's grid by nearest neighbor |
 | `label_grid(labels_shape, surface_shape, crop, map_shape)` | `(rows, cols)` integer index arrays into the labels | `VerifyError` for a scale that differs between axes, a crop outside the surface, or a crop that does not match the map | The nearest-neighbor lookup `labels_on_map` uses |
 | `format_result(result)` | str | Nothing | The text the command prints |
+
+`kit.aucreport` (`from kit import aucreport`):
+
+| Function | Returns | Raises | Notes |
+| --- | --- | --- | --- |
+| `score_files(prediction, labels, mask, control=None, compare=None, level="2", crop=None, surface_shape=None, keep_zero=False, inner=0, offset=None, exclude=None, exclude_margin=0, **kw)` | The report dict | `VerifyError`, `finite.NonFinite` | What `score` runs; `kw` are `report_arrays`'s options |
+| `report_arrays(pred, ink, sup, control=None, compare=None, keep_zero=False, inner=0, bootstrap=300, block_px=107, tiles=534, tile_min_px=200, null=200, null_min_shift=None, scan=0, scan_step=1, points=101, seed=0, origin=(0, 0))` | The report dict | `VerifyError`, `finite.NonFinite` | Arrays already on the map's grid |
+| `labels_on_map(labels, mask, level, surface_shape, crop, map_shape, offset=(0, 0))` | `(ink, supervised)` | `VerifyError` | As `auc.labels_on_map`, with a label offset |
+| `exclude_boxes(ink, sup, boxes, surface_shape, crop=None, margin=0)` | `(mask, record)` | `VerifyError` | Removes boxes from the supervision |
+| `curve_stats(a, b, points=101)` | The `curves` dict, or `None` when a class is empty | Nothing | From per-level counts of ink (`a`) and background (`b`) |
+| `tile_breakdown(q, ink, use, tile_px=534, min_px=200, origin=(0, 0))` | The `tiles` dict | `VerifyError` for tiles under 8 px | `q` is the quantized map |
+| `shift_null(q, ink, sup, valid, draws=200, min_shift=107, seed=0, min_px=50)` | The `null` dict | `VerifyError` | Cyclic shifts inside the labels' bounding box |
+| `offset_scan(q, ink, sup, valid, radius, step=1, min_px=50)` | The `offset_scan` dict | `VerifyError` | Diagnosis only |
+| `pool(reports, draws=2000, seed=0)` | The pooled dict | `VerifyError` for a file with no map AUC | `reports` is a list of `(name, dict)` |
+| `write_svg(report, path, title=None)`, `write_curves_csv(report, path)` | None | `OSError` | The plot and the curve points |
+| `format_report(report)`, `format_pool(pooled)` | str | Nothing | The text the commands print |
+| `demo_arrays(seed=0, shape=(640, 640))` | `(pred, reverse, ink, sup)` | Nothing | The demo's synthetic data |
+| `main(argv=None)` | Exit code | Nothing | The command line |
 
 ## Inputs
 
@@ -202,6 +352,19 @@ With `--slug`, the same object is stored as the check's result in `run.json` ([r
 | `the mask holds only one class; no AUC to resample` | No ink or no background pixels left to bootstrap | Check the crop; the crops here are the 640 px windows of densest ink |
 | `no experiment at ROOT/SLUG/run.json` | `--slug` names an experiment that was never started | Start it with `python -m kit run init`, or fix `--slug` and `--root` |
 | `map: no AUC (ink 0 px, background N px in the mask)`, exit code 0 | No labeled ink (or no background) inside the scored area | Check the crop and `--inner` |
+| `MAP: NNN NaN, NNN Inf; kit auc scores no map holding NaN or Inf (replace them with 0 for no prediction)`, exit code 1 (`kit.aucreport`) | `kit.finite` found NaN or Inf in a map | Replace them with 0, or fix the run that wrote them |
+| `not a numeric array (dtype ...): nothing to check` (`kit.aucreport`) | A map that is not numbers | Pass a numeric map |
+| `no AUC: ink N px, background N px in the mask` (`kit.aucreport`) | No ink or no background left after the crop, exclusions and zeros | Check the crop and the boxes |
+| `label offset [DY, DX] moves the labels off the surface` | `--label-offset` at least the surface size | Use a small offset |
+| `the exclusion margin cannot be negative`, `an exclusion margin needs at least one exclusion box` | A bad `--exclude-margin` | Give a margin of 0 or more with at least one `--exclude` |
+| `exclusion box [...] is empty: give y0 y1 x0 x1 with y0 < y1, x0 < x1`, `exclusion box [...] lies outside the H x W surface` | A box in the wrong order or off the surface | Give y0 y1 x0 x1 on the surface grid |
+| `tiles must be at least 8 px` | `--tiles` from 1 to 7 | Use the default 534 or 0 for none |
+| `no supervised pixels left to score` | The mask is empty after the crop and exclusions | Check the crop and the boxes |
+| `use at least 20 null draws` | `--null` from 1 to 19 | Use 200, or 0 for none |
+| `the labeled area (h x w px) is too small for shifts of at least N px; lower --null-min-shift or switch the null off` | The labels' bounding box is under twice the shortest shift on both axes | Lower `--null-min-shift` (not below the size of an ink stroke) or use `--null 0` |
+| `only N shifted copies kept enough labeled pixels on the map; the null needs 20` | Most shifts land the labels on unpredicted (zero) pixels | Score the map with `--keep-zero`, or a map that covers the labeled area |
+| `the offset scan needs a radius and a step of at least 1 px`, `no offset kept enough labeled pixels on the map` | A bad `--offset-scan` or `--offset-step`, or labels mostly off the map | Use a radius of a few pixels and a step of 1 or 2 |
+| `FILE: no map AUC in this file` (`pool`) | A JSON without `map.auc` or `forward.auc` | Pool `score --out` files or `kit auc --json` output |
 
 ## How it works
 
@@ -218,12 +381,13 @@ Why blocks: neighboring pixels are not independent, and a segment's labels cover
 
 ## Cost and time
 
-Measured 2026-10-16 in a 4-core 2.1 GHz Xeon cloud container, on a synthetic map the size of PHerc0139 w045 (5,980 x 8,240, uint8) with level-2 labels of 5,820 x 8,020: 4.8 s with `--control`, 5.8 s with `--bootstrap 300`, 5.0 s with `--compare`. Peak memory was about 1.1 GB with `--control` at that size. It runs on any machine; nothing here needs Modal or a GPU.
+Measured 2026-10-16 in a 4-core 2.1 GHz Xeon cloud container, on a synthetic map the size of PHerc0139 w045 (5,980 x 8,240, uint8) with level-2 labels of 5,820 x 8,020: 4.8 s with `--control`, 5.8 s with `--bootstrap 300`, 5.0 s with `--compare`. Peak memory was about 1.1 GB with `--control` at that size. It runs on any machine; nothing here needs Modal or a GPU. `kit.aucreport` on the same map size with a 1,280 x 1,280 labeled area and a control: about 4 s for scores and curves, 6.5 s with 300 bootstrap draws, 5.7 s with 200 null draws, 6.6 s with an 8 px offset scan (measured 2026-11-19, cloud container, synthetic data); the defaults together take about 11 s.
 
 ## For agents
 
 - **Command:** `python -m kit auc MAP.tif --control MAP_reverse.tif --labels L/inklabels.zarr --mask L/supervision.zarr --json`; on a crop add `--crop Y0 Y1 X0 X1 --surface-shape H W --inner 64`; for an interval add `--bootstrap 300`.
 - **Parse:** `forward.auc` and `control.auc`, and with `--bootstrap` or `--compare`, `bootstrap.ci95` and `bootstrap.compare.ci95`.
+- **Detail:** `python -m kit.aucreport score ... --json` for curves, AP, ties, tiles and the shifted-label null (fields under Detailed report); `pool` over the per-segment reports. Report AP with `curves.ink_share` beside it, and never an offset-scan best as a score.
 - **Rerun:** Safe; it only reads its inputs. With `--slug`, each run appends one more check to `run.json`.
 - **Success:** Exit code 0 and a non-null `forward.auc`.
 - **Not a pass:** A forward AUC without its control; a map less than 0.10 above its control; a ranking whose `--compare` interval includes 0; any score on a segment the model trained on.
@@ -233,13 +397,14 @@ Measured 2026-10-16 in a 4-core 2.1 GHz Xeon cloud container, on a synthetic map
 ## Tests
 
 ```bash
-python -m unittest tests.test_auc tests.test_auc_bootstrap_exact tests.test_scoring_guards.AucGuardsTest -v
+python -m unittest tests.test_auc tests.test_auc_bootstrap_exact tests.test_scoring_guards.AucGuardsTest tests.test_aucreport -v
 ```
 
-They cover the AUC against the pairwise definition, ties, float and uint16 maps, a forward map that reads ink and a reverse that does not, crops lining up with the full map, unpredicted zeros, `--inner`, the refusals (crop outside, missing store, a scale that differs between axes, crop without shape), the command line, and the bootstrap against a per-pixel oracle with quantization, zeros and partial blocks. `AucGuardsTest` checks that maps with a tiny range, negative values or logits keep their ranks, a constant map outside the known scale ties, maps already on a known scale quantize as before, NaN and inf are refused, and the map cannot be its own control. They skip without numpy, tifffile and zarr. They do not run on real segment data.
+They cover the AUC against the pairwise definition, ties, float and uint16 maps, a forward map that reads ink and a reverse that does not, crops lining up with the full map, unpredicted zeros, `--inner`, the refusals (crop outside, missing store, a scale that differs between axes, crop without shape), the command line, and the bootstrap against a per-pixel oracle with quantization, zeros and partial blocks. `AucGuardsTest` checks that maps with a tiny range, negative values or logits keep their ranks, a constant map outside the known scale ties, maps already on a known scale quantize as before, NaN and inf are refused, and the map cannot be its own control. `tests/test_aucreport.py` checks that the ROC area equals the Mann-Whitney AUC and AP matches a brute-force step sum with ties, the tie bounds of a constant map, that the report's AUC is `kit auc`'s on files and arrays, the NaN and Inf refusals (exit 1), tiles finding a half where the map is inverted, a null that passes a reading map and fails a noise map, a planted label offset found by the scan, exclusion boxes and offsets, the SVG and CSV files, and pooling. They skip without numpy, tifffile and zarr. They do not run on real segment data.
 
 ## History
 
+- 2026-11-19: `python -m kit.aucreport`: ROC and precision-recall curves, AP, tie bounds, per-tile AUCs, a shifted-label null, a label offset scan, `--exclude` and `--label-offset`, the finite check, segment pooling and SVG and CSV output; `kit auc` itself is unchanged ([#369](https://github.com/ChaseHendrick/Scrolls/pull/369)).
 - 2026-10-16: a missing numpy, tifffile or zarr names the command run and the maps extra (`bb8cc06`).
 - 2026-10-16: a constant float map outside 0..65535 ties everywhere (AUC 0.5) instead of crashing (`136b5b2`).
 - 2026-10-16: only the map's own file is refused as its control; an identical copy scores and shows no gap (`0f3afea`).
