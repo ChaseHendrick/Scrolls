@@ -403,7 +403,7 @@ They cover the AUC against the pairwise definition, ties, float and uint16 maps,
 
 ## History
 
-- 2026-11-19: `python -m kit.aucreport`: ROC and precision-recall curves, AP, tie bounds, per-tile AUCs, a shifted-label null, a label offset scan, `--exclude` and `--offset`, the finite check, segment pooling and SVG and CSV output; `kit auc` itself is unchanged.
+- 2026-11-19: `python -m kit.aucreport`: ROC and precision-recall curves, AP, tie bounds, per-tile AUCs, a shifted-label null, a label offset scan, `--exclude` and `--offset`, the finite check, segment pooling and SVG and CSV output; `kit auc` itself is unchanged ([#369](https://github.com/ChaseHendrick/Scrolls/pull/369)).
 - 2026-10-16: a missing numpy, tifffile or zarr names the command run and the maps extra (`bb8cc06`).
 - 2026-10-16: a constant float map outside 0..65535 ties everywhere (AUC 0.5) instead of crashing (`136b5b2`).
 - 2026-10-16: only the map's own file is refused as its control; an identical copy scores and shows no gap (`0f3afea`).
