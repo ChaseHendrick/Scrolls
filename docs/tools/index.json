@@ -775,10 +775,11 @@
    ],
    "area": "Scoring and controls",
    "commands": [
-    "python -m kit auc"
+    "python -m kit auc",
+    "python -m kit.aucreport"
    ],
    "imports": [
-    "from kit import auc"
+    "from kit import auc, aucreport"
    ],
    "code": [
     {
@@ -786,9 +787,20 @@
      "symbols": []
     },
     {
+     "path": "kit/aucreport.py",
+     "symbols": []
+    },
+    {
      "path": "kit/cli.py",
      "symbols": [
       "cmd_auc"
+     ]
+    },
+    {
+     "path": "kit/finite.py",
+     "symbols": [
+      "stats",
+      "NonFinite"
      ]
     },
     {
@@ -809,6 +821,7 @@
    "tests": [
     "tests/test_auc.py",
     "tests/test_auc_bootstrap_exact.py",
+    "tests/test_aucreport.py",
     "tests/test_scoring_guards.py"
    ],
    "go_ahead": {
@@ -816,8 +829,8 @@
     "text": "Not needed"
    },
    "checked": {
-    "date": "2026-10-16",
-    "commit": "d9eaf42"
+    "date": "2026-11-19",
+    "commit": "b6ade72"
    },
    "license": null,
    "fields": {
@@ -825,17 +838,17 @@
     "Status": "Current",
     "Kind": "kit command, kit module",
     "Area": "Scoring and controls",
-    "Run": "`python -m kit auc`, `from kit import auc`",
-    "Code": "`kit/auc.py`, `kit/cli.py` (`cmd_auc`), `kit/verify.py` (`load_map`, `_numpy`, `VerifyError`), `kit/ledger.py` (`add_check`)",
-    "Tests": "`tests/test_auc.py`, `tests/test_auc_bootstrap_exact.py`, `tests/test_scoring_guards.py` (`AucGuardsTest`)",
+    "Run": "`python -m kit auc`, `python -m kit.aucreport`, `from kit import auc, aucreport`",
+    "Code": "`kit/auc.py`, `kit/aucreport.py`, `kit/cli.py` (`cmd_auc`), `kit/finite.py` (`stats`, `NonFinite`), `kit/verify.py` (`load_map`, `_numpy`, `VerifyError`), `kit/ledger.py` (`add_check`)",
+    "Tests": "`tests/test_auc.py`, `tests/test_auc_bootstrap_exact.py`, `tests/test_aucreport.py`, `tests/test_scoring_guards.py` (`AucGuardsTest`)",
     "Needs": "Python 3.10 or newer, numpy, tifffile (imagecodecs for LZW or zstd TIFFs), zarr (3.x on Python 3.11 or newer; 2.x works for reading)",
     "Runs on": "Any CPU. A full-size 5,980 x 8,240 map takes about 5 s with a control and about 6 s with `--bootstrap 300` (measured 2026-10-16, 4-core 2.1 GHz Xeon cloud container, synthetic data)",
     "Network": "None",
-    "Writes": "Nothing (prints only). With `--slug SLUG`, appends one check to `experiments/SLUG/run.json` (or `ROOT/SLUG/run.json` with `--root`)",
+    "Writes": "Nothing (prints only); `kit.aucreport` writes only the files named by `--plot`, `--curves` and `--out`. With `--slug SLUG`, appends one check to `experiments/SLUG/run.json` (or `ROOT/SLUG/run.json` with `--root`)",
     "Go-ahead": "Not needed",
     "Released": "Public `main` since 2026-10-07; also inside the AutoPipeline release",
     "Guide": "[STANDARDS.md](../STANDARDS.md) (how AUC is used here), [the overlap and baseline log](../logs/2026-10-07-overlap-and-baseline.md) (sampling noise)",
-    "Checked": "2026-10-16 against commit `d9eaf42`"
+    "Checked": "2026-11-19 against commit `b6ade72`"
    },
    "page": "docs/tools/auc.md",
    "sections": [
@@ -866,67 +879,73 @@
     {
      "name": "Commands and options",
      "start_line": 82,
-     "end_line": 115,
+     "end_line": 213,
+     "applicable": true
+    },
+    {
+     "name": "Detailed report: `python -m kit.aucreport`",
+     "start_line": 214,
+     "end_line": 247,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 116,
-     "end_line": 133,
+     "start_line": 248,
+     "end_line": 285,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 134,
-     "end_line": 144,
+     "start_line": 286,
+     "end_line": 296,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 145,
-     "end_line": 175,
+     "start_line": 297,
+     "end_line": 327,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 176,
-     "end_line": 205,
+     "start_line": 328,
+     "end_line": 370,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 206,
-     "end_line": 218,
+     "start_line": 371,
+     "end_line": 383,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 219,
-     "end_line": 222,
+     "start_line": 384,
+     "end_line": 387,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 223,
-     "end_line": 232,
+     "start_line": 388,
+     "end_line": 398,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 233,
-     "end_line": 240,
+     "start_line": 399,
+     "end_line": 406,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 241,
-     "end_line": 253,
+     "start_line": 407,
+     "end_line": 423,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 254,
-     "end_line": 261,
+     "start_line": 424,
+     "end_line": 431,
      "applicable": true
     }
    ]
@@ -5095,6 +5114,150 @@
      "name": "Related",
      "start_line": 264,
      "end_line": 269,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "finite",
+   "name": "finite",
+   "tagline": "refuse speeds, scores and maps taken from NaN or Inf output",
+   "summary": "Checks that a model's output, an array or a saved map holds no NaN or Inf (and, with `--half`, nothing past fp16's 65,504), and whether an fp16 sum can overflow, so no speed or score is ever recorded on broken output.",
+   "status": "Current",
+   "kind": [
+    "kit entry point",
+    "kit module"
+   ],
+   "area": "Scoring and controls",
+   "commands": [
+    "python -m kit.finite check PATHS [--half] [--json]",
+    "python -m kit.finite sum --count N --max V [--dtype DTYPE] [--json]"
+   ],
+   "imports": [],
+   "code": [
+    {
+     "path": "kit/finite.py",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_finite.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed"
+   },
+   "checked": {
+    "date": "2026-11-19",
+    "commit": "a846745"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`finite`",
+    "Status": "Current",
+    "Kind": "kit entry point, kit module",
+    "Area": "Scoring and controls",
+    "Run": "`python -m kit.finite check PATHS [--half] [--json]`; `python -m kit.finite sum --count N --max V [--dtype DTYPE] [--json]`",
+    "Code": "`kit/finite.py`",
+    "Tests": "`tests/test_finite.py`",
+    "Needs": "Python 3.10 or newer and numpy; tifffile for .tif, zarr for .zarr (both optional)",
+    "Runs on": "Any CPU; one pass over each map. Not measured beyond the tests (7 tests in about 0.02 s, 4-core cloud container, 2026-11-19)",
+    "Network": "None",
+    "Writes": "Nothing (prints only)",
+    "Go-ahead": "Not needed",
+    "Released": "Public `main` from the PR that adds this page (2026-11-19)",
+    "Checked": "2026-11-19 against commit `a846745`"
+   },
+   "page": "docs/tools/finite.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 22,
+     "end_line": 29,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 30,
+     "end_line": 39,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 40,
+     "end_line": 54,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 55,
+     "end_line": 62,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 63,
+     "end_line": 90,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 91,
+     "end_line": 104,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 105,
+     "end_line": 108,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 109,
+     "end_line": 130,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 131,
+     "end_line": 142,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 143,
+     "end_line": 146,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 147,
+     "end_line": 150,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 151,
+     "end_line": 160,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 161,
+     "end_line": 164,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 165,
+     "end_line": 168,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 169,
+     "end_line": 171,
      "applicable": true
     }
    ]
@@ -9763,67 +9926,67 @@
     {
      "name": "Commands and options",
      "start_line": 85,
-     "end_line": 319,
+     "end_line": 331,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 320,
-     "end_line": 323,
+     "start_line": 332,
+     "end_line": 335,
      "applicable": false
     },
     {
      "name": "Inputs",
-     "start_line": 324,
-     "end_line": 330,
+     "start_line": 336,
+     "end_line": 342,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 331,
-     "end_line": 367,
+     "start_line": 343,
+     "end_line": 379,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 368,
-     "end_line": 429,
+     "start_line": 380,
+     "end_line": 442,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 430,
-     "end_line": 452,
+     "start_line": 443,
+     "end_line": 465,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 453,
-     "end_line": 468,
+     "start_line": 466,
+     "end_line": 481,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 469,
-     "end_line": 478,
+     "start_line": 482,
+     "end_line": 491,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 479,
-     "end_line": 482,
+     "start_line": 492,
+     "end_line": 495,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 483,
-     "end_line": 493,
+     "start_line": 496,
+     "end_line": 506,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 494,
-     "end_line": 499,
+     "start_line": 507,
+     "end_line": 512,
      "applicable": true
     }
    ]
@@ -13859,6 +14022,10 @@
     "verify",
     "publish",
     "vc3d",
+    "nps",
+    "library",
+    "g1",
+    "g1-compare",
     "info"
    ],
    "imports": [
@@ -13887,13 +14054,13 @@
     "Status": "Experimental",
     "Kind": "kit module",
     "Area": "Surfaces and tracing",
-    "Run": "`python -m kit.scrollsim2 make`, `estimate`, `pyramid`, `verify`, `publish`, `vc3d`, `info`; library `from kit import scrollsim2`",
+    "Run": "`python -m kit.scrollsim2 make`, `estimate`, `pyramid`, `verify`, `publish`, `vc3d`, `nps`, `library`, `g1`, `g1-compare`, `info`; library `from kit import scrollsim2`",
     "Code": "`kit/scrollsim2.py`",
     "Tests": "`tests/test_scrollsim2.py`",
     "Needs": "Python 3.10 or newer, numpy, scipy (ndimage), zarr 3 for `make` (it writes zarr format 2); all in `pip install -e \".[maps]\"`. No scroll data",
     "Runs on": "CPU, any core count (forked workers, at most 16 by default). Smoke scroll (64 x 208 x 208, 4.8 turns): 7.2 s wall on 4 workers, 98 MB peak per process (measured 2026-11-18, 4-core cloud container)",
     "Network": "None",
-    "Writes": "`make OUT`: `OUT/ct.zarr`, `OUT/truth/labels.zarr`, `OUT/truth.json`, `OUT/truth/make-key.json`, `OUT/truth/done.txt`, and with `--surfaces` `OUT/truth/surfaces/spiral-center/` and `spiral-recto/`. `publish SRC DST`: a copy in `DST`. `pyramid OUT`: rewrites CT levels 1 and up. `vc3d SIM OUT`: `OUT/scrollsim2.volpkg.json`, `OUT/volumes/` (links, or copies with `--copy`), `OUT/paths/`",
+    "Writes": "`make OUT`: `OUT/ct.zarr`, `OUT/truth/labels.zarr` (levels as the CT), `OUT/truth.json`, `OUT/truth/make-key.json`, `OUT/truth/done.txt`, with `--truth contact,uvw` `OUT/truth/contact.zarr` and `OUT/truth/uvw.zarr`, and with `--surfaces` `OUT/truth/surfaces/spiral-center/` and `spiral-recto/`; with ink on, `OUT/truth/ink.zarr` and an `ink.tif` in each surface folder. `publish SRC DST`: a copy in `DST`. `pyramid OUT`: rewrites CT and label levels 1 and up. `vc3d SIM OUT`: `OUT/scrollsim2.volpkg.json`, `OUT/volumes/` (links, or copies with `--copy`), `OUT/paths/`",
     "Go-ahead": "Not needed on a local CPU. A rented run follows hard rule 11",
     "Released": "Public `main` since 2026-11-18",
     "Checked": "2026-11-18 against commit `424fb42`"
@@ -13903,103 +14070,103 @@
     {
      "name": "What it does",
      "start_line": 22,
-     "end_line": 51,
+     "end_line": 114,
      "applicable": true
     },
     {
      "name": "Realism: in progress",
-     "start_line": 52,
-     "end_line": 59,
+     "start_line": 115,
+     "end_line": 123,
      "applicable": true
     },
     {
      "name": "When to use it",
-     "start_line": 60,
-     "end_line": 71,
+     "start_line": 124,
+     "end_line": 136,
      "applicable": true
     },
     {
      "name": "Quick start",
-     "start_line": 72,
-     "end_line": 82,
+     "start_line": 137,
+     "end_line": 147,
      "applicable": true
     },
     {
      "name": "Tutorials",
-     "start_line": 83,
-     "end_line": 272,
+     "start_line": 148,
+     "end_line": 337,
      "applicable": true
     },
     {
      "name": "Checks and controls",
-     "start_line": 273,
-     "end_line": 287,
+     "start_line": 338,
+     "end_line": 371,
      "applicable": true
     },
     {
      "name": "Commands and options",
-     "start_line": 288,
-     "end_line": 395,
+     "start_line": 372,
+     "end_line": 555,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 396,
-     "end_line": 416,
+     "start_line": 556,
+     "end_line": 595,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 417,
-     "end_line": 437,
+     "start_line": 596,
+     "end_line": 652,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 438,
-     "end_line": 463,
+     "start_line": 653,
+     "end_line": 686,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 464,
-     "end_line": 495,
+     "start_line": 687,
+     "end_line": 757,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 496,
-     "end_line": 503,
+     "start_line": 758,
+     "end_line": 784,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 504,
-     "end_line": 510,
+     "start_line": 785,
+     "end_line": 791,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 511,
-     "end_line": 522,
+     "start_line": 792,
+     "end_line": 804,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 523,
-     "end_line": 526,
+     "start_line": 805,
+     "end_line": 808,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 527,
-     "end_line": 532,
+     "start_line": 809,
+     "end_line": 820,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 533,
-     "end_line": 536,
+     "start_line": 821,
+     "end_line": 824,
      "applicable": true
     }
    ]

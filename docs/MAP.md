@@ -29,6 +29,7 @@ One row per module, script folder and docs area. [AGENTS.md](../AGENTS.md) holds
 | `kit/layers.py` | Surface-volume zarr to numbered layer TIFFs (v8in's input), banded reads, optional crop; `kit shuffle` and `kit layers --shuffle SEED` write the depth-shuffle control |
 | `kit/verify.py` | Two maps agree within tolerance, valid only if a control map is caught |
 | `kit/auc.py` | Pixel AUC against a segment's `inklabels.zarr` inside `supervision.zarr`; reverse map as control; `--crop`, `--inner` |
+| `kit/aucreport.py` | `python -m kit.aucreport`: detailed AUC report on `kit auc`'s pixels (ROC and PR curves, AP, ties, per-tile AUC, shifted-label null, label offset scan, exclusion boxes, finite check, segment pooling, SVG and CSV) ([page](tools/auc.md#detailed-report-python--m-kitaucreport)) |
 | `kit/rowscore.py` | Text-row periodicity triage score (port of Bullo27's); a reading order, not a verdict |
 | `kit/provenance.py` | Who ran what, when, on which machine, from which inputs; one digest over the record |
 | `kit/claimcheck.py` | Claims check, `python -m kit.claimcheck items/trace/suggest/add/pin/check/results`: every number in the README's Novel findings matched to a results unit or repository file pinned by sha256 in `docs/claims/sources.json` (or a stated reason), and results units that cite no file held to a baseline; `tests/test_claimcheck.py` fails on a claim with no source ([page](tools/claimcheck.md)) |
@@ -75,6 +76,7 @@ One row per module, script folder and docs area. [AGENTS.md](../AGENTS.md) holds
 | `kit/hfrows.py`, `scripts/media/hfrows_demo.py` | `kit run hf-rows`: Hugging Face Jobs into a cost ledger CSV from Hugging Face's own bill (billing API), one row per finished Job, through the Modal ledger's writer and public gate; the demo still for its page ([page](tools/hf-rows.md)) |
 | `kit/modalledger.py` | `kit run modal-row`: one row in a Modal ledger CSV, once per key (idempotent, under a lock); the public ledger only behind `--public-generic` and only for a generic run ([compute.md](compute.md#modal-ledger-rows)) |
 | `kit/cloudcost.py` | Modal cost estimates from dated rates, no network (`python3 -m kit.cloudcost rates/cost/infer/jobs/budget/defaults`); rates and job assumptions in `docs/compute/` |
+| `kit/finite.py`, `tests/test_finite.py` | `python -m kit.finite check\|sum`: refuse a speed, score or map taken from output with NaN or Inf (or past the fp16 range), and say whether an fp16 sum can overflow ([page](tools/finite.md)) |
 | `kit/cpudiag.py`, `tests/test_cpudiag.py` | `python -m kit.cpudiag run\|compare`: CPU, memory-bandwidth, BLAS-thread, I/O and scrollsim2 benchmarks at several process counts, to compare a cloud CPU flavor with a container ([page](tools/cpudiag.md)) |
 | `kit/runlength.py`, `tests/test_runlength.py` | `python -m kit.runlength cpu`: wall time, best workers and timeout of a CPU job on a measured flavor from a container-timed task ([page](tools/runlength.md)) |
 | `docs/evidence/2026-11-18-hf-cpu-diag/` | cpudiag runs in a 4-core container and on Hugging Face `cpu-performance`, and a scrollsim2 pilot timing ([README](evidence/2026-11-18-hf-cpu-diag/README.md)) |
