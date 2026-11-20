@@ -49,6 +49,7 @@ TILE_PX = 534            # 5 mm at 9.366 um
 TILE_MIN_PX = 200        # each class, per tile
 NULL_DRAWS = 200
 NULL_MIN_PX = 50         # each class, per shifted copy
+CONTROL_MAX_TIES = 0.99  # a control tying this share of ink and background pairs cannot fail
 POOL_MIN_SEGMENTS = 5
 FPR_POINTS = (0.01, 0.05, 0.10)
 EXIT_OK, EXIT_NONFINITE, EXIT_INPUT = 0, 1, 2
@@ -359,19 +360,22 @@ def report_arrays(pred, ink, sup, control=None, compare=None, keep_zero=False, i
             g = auc.block_bootstrap(pred, ink, sup, bootstrap, block_px, seed, control, keep_zero, inner)["compare"]
             out["control_gap"].update({"ci95": g["ci95"],
                                        "share_draws_control_not_behind": g["share_draws_map_not_ahead"]})
-    out["controlled"] = (control is not None and out["control_gap"]["difference"] is not None
-                         and not out["control_gap"]["control_constant"])
+    g = out.get("control_gap") or {}
+    out["controlled"] = (control is not None and g["difference"] is not None
+                         and g["control_tied_pair_share"] < CONTROL_MAX_TIES)
     if not out["controlled"]:
         out["warning"] = (UNCONTROLLED if control is None else
-                          ("the control has no AUC on the pixels both maps scored: "
-                           if out["control_gap"]["difference"] is None else
-                           "the control is constant on the pixels both maps scored, so every pair ties and it cannot "
-                           "fail: ") + UNCONTROLLED.split(": ", 1)[1])
+                          ("the control has no AUC on the pixels both maps scored: " if g["difference"] is None else
+                           f"the control ties {g['control_tied_pair_share'] * 100:.2f} % of ink and background pairs "
+                           f"on the pixels both maps scored (limit {CONTROL_MAX_TIES * 100:g} %), so it cannot fail: ")
+                          + UNCONTROLLED.split(": ", 1)[1])
     if compare is not None:
         out["compare"]["controlled"] = False
         out["compare"]["warning"] = COMPARE_UNCONTROLLED
     if bootstrap:
         out["bootstrap"] = auc.block_bootstrap(pred, ink, sup, bootstrap, block_px, seed, compare, keep_zero, inner)
+        if out["bootstrap"].get("compare"):
+            out["bootstrap"]["compare"]["other_controlled"] = False   # auc_other has no control of its own
     valid = np.ones_like(sup_in) if keep_zero else pred != 0
     if inner:
         valid = auc._edge_mask(np, valid, inner)
@@ -383,6 +387,21 @@ def report_arrays(pred, ink, sup, control=None, compare=None, keep_zero=False, i
     if scan:
         out["offset_scan"] = offset_scan(q_map, ink, sup_in, valid, scan, scan_step)
     return out
+
+
+def report_controlled(r):
+    """Whether a report (this version's, an older aucreport file or a kit auc --json file) has a control that can
+    fail. Older files carry no flag: they count as controlled when their control has a gap and, where its curves are
+    recorded, ties under CONTROL_MAX_TIES of ink and background pairs."""
+    if "controlled" in r:
+        return bool(r["controlled"])
+    c = r.get("control") or {}
+    if c.get("auc") is None:
+        return False
+    if "control_gap" in r and (r["control_gap"] or {}).get("difference") is None:
+        return False
+    share = ((c.get("curves") or {}).get("ties") or {}).get("tied_pair_share")
+    return share is None or share < CONTROL_MAX_TIES
 
 
 def control_gap(pred, control, ink, sup, keep_zero=False):
@@ -397,7 +416,13 @@ def control_gap(pred, control, ink, sup, keep_zero=False):
     return {"auc_map_shared": _r(a), "auc_control_shared": _r(b),
             "difference": _r(a - b) if a is not None and b is not None else None,
             "shared_px": int(shared.sum()), "ci95": None,
-            "control_constant": bool(shared.any()) and int(np.unique(qc[shared]).size) == 1}
+            "control_constant": bool(shared.any()) and int(np.unique(qc[shared]).size) == 1,
+            "control_tied_pair_share": _tie_share(*_histograms(qc, ink, shared))}
+
+
+def _tie_share(a, b):
+    n = float(a.sum()) * float(b.sum())
+    return _r(float((a * b).sum()) / n, 6) if n else None
 
 
 def _load_map(path):
@@ -451,13 +476,13 @@ def pool(reports, draws=2000, seed=0):
         if "control_gap" not in r and c.get("auc") is not None:
             g = _r(m["auc"] - c["auc"])          # a kit auc file: each map on its own pixels
         rows.append({"segment": name, "auc": m["auc"], "control_auc": c.get("auc"), "control_gap": g,
-                     "controlled": g is not None, "ink_px": m["ink_px"],
+                     "controlled": g is not None and report_controlled(r), "ink_px": m["ink_px"],
                      "ap": (m.get("curves") or {}).get("ap"), "ink_share": (m.get("curves") or {}).get("ink_share")})
     v = np.array([x["auc"] for x in rows], float)
     w = np.array([x["ink_px"] for x in rows], float)
     out = {"segments": len(rows), "rows": rows, "mean_auc": _r(v.mean()), "min_auc": _r(v.min()),
            "max_auc": _r(v.max()), "ink_weighted_mean_auc": _r((v * w).sum() / w.sum())}
-    gaps = [x["control_gap"] for x in rows if x["control_gap"] is not None]
+    gaps = [x["control_gap"] for x in rows if x["controlled"]]
     out["uncontrolled_segments"] = sum(not x["controlled"] for x in rows)
     out["controlled"] = out["uncontrolled_segments"] == 0
     if out["uncontrolled_segments"]:
@@ -497,7 +522,7 @@ COLORS = {"map": "#2f6db5", "control": "#c8742c", "compare": "#6c8f3a"}
 def write_svg(report, path, title=None):
     """ROC and precision-recall panels as a standalone SVG (no plotting library needed)."""
     S, P, G = 300, 46, 40           # panel side, padding, gap
-    controlled = report.get("controlled", (report.get("control_gap") or {}).get("difference") is not None)
+    controlled = report_controlled(report)
     warn = []
     if not controlled:
         words, line = ("UNCONTROLLED: " + report.get("warning", UNCONTROLLED)).split(), ""
@@ -572,7 +597,7 @@ def _xml(s):
 
 def format_report(r):
     rows = _report_rows(r)
-    if not r.get("controlled", "control" in r):
+    if not report_controlled(r):
         rows = [f"UNCONTROLLED: {r.get('warning', UNCONTROLLED)}"] + [row + " [uncontrolled]" for row in rows]
     return "\n".join(rows)
 
@@ -614,7 +639,9 @@ def _report_rows(r):
             rows.append(f"  map minus control: no AUC on the {g.get('shared_px', 0)} px both maps scored")
         else:
             line = (f"  map minus control {g['difference']:+.4f} on the {g['shared_px']} px both scored (map "
-                    f"{g['auc_map_shared']:.4f}, control {g['auc_control_shared']:.4f})")
+                    f"{g['auc_map_shared']:.4f}, control {g['auc_control_shared']:.4f})" if "shared_px" in g else
+                    f"  map minus control {g['difference']:+.4f} (each map on its own pixels: a report from before "
+                    "the shared-pixel gap)")
             if g.get("ci95"):
                 verdict = ("ahead of its control beyond sampling noise" if g["ci95"][0] > 0 else
                            "behind its control beyond sampling noise" if g["ci95"][1] < 0 else
