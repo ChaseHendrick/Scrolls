@@ -151,7 +151,7 @@ Command-line tools, benchmarks and script folders that run from a clone of this 
 </details>
 
 <details>
-<summary><b>Data and downloads</b> (8)</summary>
+<summary><b>Data and downloads</b> (9)</summary>
 
 | Tool | What it does |
 | --- | --- |
@@ -163,6 +163,7 @@ Command-line tools, benchmarks and script folders that run from a clone of this 
 | [Public bucket downloader](docs/tools/fetch.md) | Copies files under a public data bucket prefix to a local folder and skips complete files when resuming. |
 | [Published ink labels and model exposure](docs/tools/labels.md) | Lists published ink label sets and the recorded training exposure of public ink models. |
 | [VC3D false-404 relay and cache repair](docs/tools/vc3dfix.md) | Runs VC3D through a relay that retries false missing-file responses and checks its empty-chunk cache. |
+| [voltransform: move points between scan volumes with the revision 2 transforms](docs/tools/voltransform.md) | Moves points between scan volumes with the organizers' revision 2 transforms and skips superseded data. |
 
 </details>
 
