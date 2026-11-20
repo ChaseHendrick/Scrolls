@@ -40,11 +40,11 @@ record, how, target = sys.argv[1], sys.argv[2], sys.argv[3]
 sys.argv = [target] + sys.argv[4:]
 try:
     if how == "m":
-        if not sys.flags.safe_path:
+        if not getattr(sys.flags, "safe_path", sys.flags.isolated):
             sys.path[0] = os.getcwd()
         runpy.run_module(target, run_name="__main__", alter_sys=True)
     else:
-        if not sys.flags.safe_path:
+        if not getattr(sys.flags, "safe_path", sys.flags.isolated):
             sys.path[0] = os.path.dirname(os.path.abspath(target))
         runpy.run_path(target, run_name="__main__")
 finally:

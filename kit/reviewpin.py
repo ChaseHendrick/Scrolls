@@ -525,7 +525,7 @@ def derive_checks(root, rec, head, base, old_mb, new_mb, paths, stop=True):
             if subprocess.run(["git", "merge-base", "--is-ancestor", parents[1], base], cwd=str(root)).returncode:
                 why = f"merge {sha[:12]} brings in {parents[1][:12]}, which is not on {base}"
             elif pin_time is not None:
-                made = datetime.fromisoformat(_git(root, "log", "-1", "--format=%cI", sha).strip())
+                made = datetime.fromisoformat(_git(root, "log", "-1", "--format=%cI", sha).strip().replace("Z", "+00:00"))
                 if made <= pin_time:
                     why = f"the pin was recorded after merge {sha[:12]}: pin the head instead"
         if why:
