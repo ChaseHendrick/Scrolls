@@ -56,10 +56,11 @@ Every released tool, one line each; each name opens its guide. Generated from [`
 Command-line tools, benchmarks and script folders that run from a clone of this repository. [Guide](docs/tools/cli.md). Open an area to see its tools.
 
 <details>
-<summary><b>Pipeline and agents</b> (3)</summary>
+<summary><b>Pipeline and agents</b> (4)</summary>
 
 | Tool | What it does |
 | --- | --- |
+| [drivers: background jobs that cannot die unnoticed](docs/tools/drivers.md) | Runs background jobs that report themselves lost after a kill or reboot, and revives only the restartable ones. |
 | [Scan catalog and batch plans](docs/tools/batch.md) | Lists released scan volumes, makes resumable batch plans and watches for new or changed inputs. |
 | [Scroll to ink in one command (experimental)](docs/tools/scroll2ink.md) | Experimental: one command from a public scan and a seed point to an ink map with its reverse-depth control, stopping at a failed check. |
 | [Swap any stage by name](docs/tools/stagereg.md) | Lists every option for each stage of reading a scroll, with its maker, license and maturity, so a workflow can swap any stage by name. |
@@ -190,12 +191,13 @@ Command-line tools, benchmarks and script folders that run from a clone of this 
 </details>
 
 <details>
-<summary><b>Compute and cost</b> (8)</summary>
+<summary><b>Compute and cost</b> (9)</summary>
 
 | Tool | What it does |
 | --- | --- |
 | [accelbench: time a faster version only after its output matches](docs/tools/accelbench.md) | Times a faster version of some code only after its output matches the original, with a control. |
 | [cpudiag: time a CPU flavor against a container, core by core](docs/tools/cpudiag.md) | Benchmarks a cloud CPU machine against a known one to show why a CPU job runs slower than expected. |
+| [hubcall: Hugging Face Hub calls that back off together on a 429](docs/tools/hubcall.md) | Retries Hugging Face Hub calls on 429 and 5xx with one cool-down shared by every process on the machine, and logs who made them. |
 | [Hugging Face Jobs ledger importer](docs/tools/hf-rows.md) | Adds finished Hugging Face Jobs to a cost ledger with the cost from Hugging Face's own bill, once per Job, and restricts public ledgers to generic work. |
 | [Local run time and cost log](docs/tools/run-local.md) | Runs a local command and records its elapsed time and estimated electricity cost, or adds records of past runs. |
 | [Modal ledger row importer](docs/tools/modal-row.md) | Adds a recorded job to a cost ledger once and restricts public ledgers to rows marked generic. |
@@ -206,11 +208,12 @@ Command-line tools, benchmarks and script folders that run from a clone of this 
 </details>
 
 <details>
-<summary><b>Records and provenance</b> (2)</summary>
+<summary><b>Records and provenance</b> (3)</summary>
 
 | Tool | What it does |
 | --- | --- |
 | [Experiment ledger](docs/tools/run-ledger.md) | Keeps a run record with a fixed readout rule, status, costs, file fingerprints and checks. |
+| [freeze: freeze a run by hash, guard what it loads, keep review pins honest](docs/tools/freeze.md) | Freezes a run by the hashes of the files it executes, guards what it loads, and keeps review verdicts tied to the reviewed code. |
 | [Run provenance records](docs/tools/provenance.md) | Records run settings and file fingerprints, then checks the record and its files for changes. |
 
 </details>

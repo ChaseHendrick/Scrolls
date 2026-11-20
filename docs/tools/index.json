@@ -2016,67 +2016,67 @@
     {
      "name": "Commands and options",
      "start_line": 85,
-     "end_line": 212,
+     "end_line": 216,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 213,
-     "end_line": 241,
-     "applicable": true
-    },
-    {
-     "name": "Inputs",
-     "start_line": 242,
+     "start_line": 217,
      "end_line": 245,
      "applicable": true
     },
     {
-     "name": "Outputs",
+     "name": "Inputs",
      "start_line": 246,
-     "end_line": 256,
+     "end_line": 249,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 250,
+     "end_line": 260,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 257,
-     "end_line": 270,
+     "start_line": 261,
+     "end_line": 274,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 271,
-     "end_line": 280,
-     "applicable": true
-    },
-    {
-     "name": "Cost and time",
-     "start_line": 281,
+     "start_line": 275,
      "end_line": 284,
      "applicable": true
     },
     {
-     "name": "For agents",
+     "name": "Cost and time",
      "start_line": 285,
-     "end_line": 294,
+     "end_line": 288,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 289,
+     "end_line": 298,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 295,
-     "end_line": 302,
+     "start_line": 299,
+     "end_line": 306,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 303,
-     "end_line": 314,
+     "start_line": 307,
+     "end_line": 318,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 315,
-     "end_line": 321,
+     "start_line": 319,
+     "end_line": 325,
      "applicable": true
     }
    ]
@@ -3396,6 +3396,163 @@
      "name": "Related",
      "start_line": 283,
      "end_line": 292,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "drivers",
+   "name": "drivers",
+   "tagline": "background jobs that cannot die unnoticed",
+   "summary": "Runs a long command as a recorded background driver with its own work folder, says when it was lost to a kill, a container restart or a reboot, and revives only the drivers started as restartable.",
+   "status": "Current",
+   "kind": [
+    "kit command",
+    "kit module"
+   ],
+   "area": "Pipeline and agents",
+   "commands": [
+    "python -m kit drivers start",
+    "python -m kit drivers status",
+    "python -m kit drivers revive",
+    "python -m kit drivers stop",
+    "python -m kit drivers log",
+    "python -m kit drivers whereami",
+    "python -m kit.drivers"
+   ],
+   "imports": [
+    "from kit import drivers"
+   ],
+   "code": [
+    {
+     "path": "kit/drivers.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/cli.py",
+     "symbols": [
+      "build_parser"
+     ]
+    }
+   ],
+   "tests": [
+    "tests/test_drivers.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed for the tool. A command it runs that rents compute or posts anything needs its own go-ahead (the go-ahead rule, hard rule 8)"
+   },
+   "checked": {
+    "date": "2026-11-20",
+    "commit": "357d2bd"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`drivers`",
+    "Status": "Current",
+    "Kind": "kit command, kit module",
+    "Area": "Pipeline and agents",
+    "Run": "`python -m kit drivers start`, `python -m kit drivers status`, `python -m kit drivers revive`, `python -m kit drivers stop`, `python -m kit drivers log`, `python -m kit drivers whereami`, `python -m kit.drivers`, `from kit import drivers`",
+    "Code": "`kit/drivers.py`, `kit/cli.py` (`build_parser`)",
+    "Tests": "`tests/test_drivers.py`",
+    "Needs": "Python 3.10 or newer, standard library only. Linux or macOS (process groups, `/proc` or `ps`, a boot id from `/proc/sys/kernel/random/boot_id` or `sysctl kern.boottime`)",
+    "Runs on": "Any machine; each action took about 0.2 s wall (measured 2026-11-20, 4-core cloud container)",
+    "Network": "None",
+    "Writes": "The state folder (`$KIT_DRIVERS_DIR`, else `work/drivers` in this checkout, ignored by git): per driver `driver.json`, `attempt-NN.json`, `attempt-NN.log` and the work folder `run/`. Whatever the command itself writes",
+    "Go-ahead": "Not needed for the tool. A command it runs that rents compute or posts anything needs its own go-ahead (the go-ahead rule, hard rule 8)",
+    "Released": "Public `main` from the PR that adds this page (2026-11-20)",
+    "Checked": "2026-11-20 against commit `357d2bd`"
+   },
+   "page": "docs/tools/drivers.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 22,
+     "end_line": 33,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 34,
+     "end_line": 45,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 46,
+     "end_line": 73,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 74,
+     "end_line": 95,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 96,
+     "end_line": 193,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 194,
+     "end_line": 218,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 219,
+     "end_line": 223,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 224,
+     "end_line": 248,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 249,
+     "end_line": 269,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 270,
+     "end_line": 277,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 278,
+     "end_line": 281,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 282,
+     "end_line": 291,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 292,
+     "end_line": 295,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 296,
+     "end_line": 299,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 300,
+     "end_line": 304,
      "applicable": true
     }
    ]
@@ -5263,6 +5420,183 @@
    ]
   },
   {
+   "id": "freeze",
+   "name": "freeze",
+   "tagline": "freeze a run by hash, guard what it loads, and keep review pins honest",
+   "summary": "Fixes the exact files a run executes by their sha256 before the run exists, refuses a launch or a run that loads anything else, and ties each review verdict to the commit it covered so a later edit drops it. For any git repository.",
+   "status": "Current",
+   "kind": [
+    "kit command",
+    "kit module"
+   ],
+   "area": "Records and provenance",
+   "commands": [
+    "python -m kit freeze list",
+    "python -m kit freeze add",
+    "python -m kit freeze check",
+    "python -m kit freeze pin",
+    "python -m kit freeze collect",
+    "python -m kit freeze prereg",
+    "python -m kit reviewpin record",
+    "python -m kit reviewpin delta",
+    "python -m kit reviewpin explain",
+    "python -m kit reviewpin list",
+    "python -m kit.freeze",
+    "python -m kit.reviewpin"
+   ],
+   "imports": [
+    "from kit import freeze, freezeguard, reviewpin"
+   ],
+   "code": [
+    {
+     "path": "kit/freeze.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/freezeguard.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/preregsets.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/reviewpin.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/cli.py",
+     "symbols": [
+      "build_parser"
+     ]
+    }
+   ],
+   "tests": [
+    "tests/test_freeze.py",
+    "tests/test_freezechain.py",
+    "tests/test_freezeguard.py",
+    "tests/test_reviewpin.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed: it records and checks; it launches nothing"
+   },
+   "checked": {
+    "date": "2026-11-20",
+    "commit": "357d2bd"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`freeze`",
+    "Status": "Current",
+    "Kind": "kit command, kit module",
+    "Area": "Records and provenance",
+    "Run": "`python -m kit freeze list`, `python -m kit freeze add`, `python -m kit freeze check`, `python -m kit freeze pin`, `python -m kit freeze collect`, `python -m kit freeze prereg`, `python -m kit reviewpin record`, `python -m kit reviewpin delta`, `python -m kit reviewpin explain`, `python -m kit reviewpin list`, `python -m kit.freeze`, `python -m kit.reviewpin`, `from kit import freeze, freezeguard, reviewpin`",
+    "Code": "`kit/freeze.py`, `kit/freezeguard.py`, `kit/preregsets.py`, `kit/reviewpin.py`, `kit/cli.py` (`build_parser`)",
+    "Tests": "`tests/test_freeze.py`, `tests/test_freezechain.py`, `tests/test_freezeguard.py`, `tests/test_reviewpin.py`",
+    "Needs": "Python 3.10 or newer, standard library only; git (2.38 or newer for the review pins' merge replay, `git merge-tree --write-tree`)",
+    "Runs on": "Any machine. `freeze check` of a two-file freeze took 0.30 s wall (measured 2026-11-20, 4-core cloud container)",
+    "Network": "None, except `reviewpin delta` and `explain` without `--head` or `--no-fetch`, which run `git fetch origin` for the PR head and the base branch",
+    "Writes": "`freeze add`, `pin` and `collect`: the registry (`freeze/freezes.json` by default). `reviewpin record`: one line in the verdict log (`freeze/verdicts.jsonl` by default). Every other action, and every library guard, writes nothing in the repository (`run_script` uses a temporary folder)",
+    "Go-ahead": "Not needed: it records and checks; it launches nothing",
+    "Released": "Public `main` from the PR that adds this page (2026-11-20)",
+    "Checked": "2026-11-20 against commit `357d2bd`"
+   },
+   "page": "docs/tools/freeze.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 22,
+     "end_line": 33,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 34,
+     "end_line": 45,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 46,
+     "end_line": 92,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 93,
+     "end_line": 117,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 118,
+     "end_line": 322,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 323,
+     "end_line": 411,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 412,
+     "end_line": 434,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 435,
+     "end_line": 459,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 460,
+     "end_line": 529,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 530,
+     "end_line": 540,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 541,
+     "end_line": 544,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 545,
+     "end_line": 554,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 555,
+     "end_line": 558,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 559,
+     "end_line": 562,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 563,
+     "end_line": 568,
+     "applicable": true
+    }
+   ]
+  },
+  {
    "id": "gate",
    "name": "gate",
    "tagline": "rank released ink readers on PHerc0841 by the Gate A rule",
@@ -6633,6 +6967,158 @@
      "name": "Related",
      "start_line": 247,
      "end_line": 256,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "hubcall",
+   "name": "hubcall",
+   "tagline": "Hugging Face Hub calls that back off together on a 429",
+   "summary": "Wraps Hugging Face Hub calls so a 429 (rate limited) or a passing 5xx waits and retries on one fixed schedule, every process on the machine shares one cool-down, and a local log names the busiest caller.",
+   "status": "Current",
+   "kind": [
+    "kit command",
+    "kit module"
+   ],
+   "area": "Compute and cost",
+   "commands": [
+    "python -m kit hubcall report",
+    "python -m kit.hubcall report"
+   ],
+   "imports": [
+    "from kit import hubcall"
+   ],
+   "code": [
+    {
+     "path": "kit/hubcall.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/cli.py",
+     "symbols": [
+      "build_parser"
+     ]
+    }
+   ],
+   "tests": [
+    "tests/test_hubcall.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed: it only retries calls your own code makes"
+   },
+   "checked": {
+    "date": "2026-11-20",
+    "commit": "357d2bd"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`hubcall`",
+    "Status": "Current",
+    "Kind": "kit command, kit module",
+    "Area": "Compute and cost",
+    "Run": "`python -m kit hubcall report`, `python -m kit.hubcall report`, `from kit import hubcall`",
+    "Code": "`kit/hubcall.py`, `kit/cli.py` (`build_parser`)",
+    "Tests": "`tests/test_hubcall.py`",
+    "Needs": "Python 3.10 or newer, standard library only; `huggingface_hub` only for `hf_api()`, which builds an `HfApi`",
+    "Runs on": "Any machine. `report` over a short log took 0.17 s wall (measured 2026-11-20, 4-core cloud container)",
+    "Network": "None of its own: it runs the Hub calls you give it, and contacts whatever host they contact",
+    "Writes": "`hubcalls.jsonl` (the call log) and `hub-cooldown.json` (the shared cool-down) in the kit cache folder: `$KIT_HUBCALL_DIR`, else `$XDG_CACHE_HOME/kit`, else `~/.cache/kit`. `report` writes nothing",
+    "Go-ahead": "Not needed: it only retries calls your own code makes",
+    "Released": "Public `main` from the PR that adds this page (2026-11-20)",
+    "Checked": "2026-11-20 against commit `357d2bd`"
+   },
+   "page": "docs/tools/hubcall.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 22,
+     "end_line": 33,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 34,
+     "end_line": 45,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 46,
+     "end_line": 74,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 75,
+     "end_line": 100,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 101,
+     "end_line": 126,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 127,
+     "end_line": 153,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 154,
+     "end_line": 158,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 159,
+     "end_line": 180,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 181,
+     "end_line": 188,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 189,
+     "end_line": 196,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 197,
+     "end_line": 200,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 201,
+     "end_line": 210,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 211,
+     "end_line": 214,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 215,
+     "end_line": 218,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 219,
+     "end_line": 223,
      "applicable": true
     }
    ]

@@ -114,7 +114,7 @@
       "line": "Command-line tools, benchmarks and script folders that run from a clone of this repository.",
       "area": "Releases and repository",
       "page": "docs/tools/cli.md",
-      "released": "2026-11-19",
+      "released": "2026-11-20",
       "summary": "Command-line tools, benchmarks and script folders that run from a clone of this repository. Each line gives the tool's release date, its weights where it has them, one command to start with, its tool page and its evidence; each page lists the tool's own needs. Their outputs are model output or geometry measurements for a person to check, not readings.",
       "commands": [
         "git clone --depth 1 https://github.com/ChaseHendrick/Scrolls.git",
@@ -898,6 +898,42 @@
           "page": "docs/tools/finite.md",
           "line": "Refuses any speed, score or map taken from model output that holds NaN or Inf, and flags fp16 sums that would overflow.",
           "area": "Scoring and controls"
+        },
+        {
+          "id": "hubcall",
+          "name": "hubcall: Hugging Face Hub calls that back off together on a 429",
+          "released": "2026-11-20",
+          "version": "1.0",
+          "summary": "Wraps Hub calls so a 429 waits (Retry-After, else 5 to 120 s) and a 5xx on a read waits 2 and 4 s, with one shared cool-down for every process on the machine and a log that names the busiest caller. An outside check against a local mock server matched every retry count and wait; a second process waited 5.80 s after the first one's 429 against 0.53 s for the control.",
+          "command": "python -m kit hubcall report --json",
+          "page": "docs/tools/hubcall.md",
+          "evidence": "[checks and controls](docs/tools/hubcall.md#checks-and-controls), `tests/test_hubcall.py`",
+          "line": "Retries Hugging Face Hub calls on 429 and 5xx with one cool-down shared by every process on the machine, and logs who made them.",
+          "area": "Compute and cost"
+        },
+        {
+          "id": "drivers",
+          "name": "drivers: background jobs that cannot die unnoticed",
+          "released": "2026-11-20",
+          "version": "1.0",
+          "summary": "Runs a long command under a small supervisor with its own work folder and records its pids, boot id and exit, so status names a driver lost after a kill, a container restart or a reboot (exit 3), and revive restarts only drivers started as restartable. An outside check with SIGKILL, a changed boot id and a fresh process table met every bar. Standard library only.",
+          "command": "python -m kit drivers status --json",
+          "page": "docs/tools/drivers.md",
+          "evidence": "[checks and controls](docs/tools/drivers.md#checks-and-controls), `tests/test_drivers.py`",
+          "line": "Runs background jobs that report themselves lost after a kill or reboot, and revives only the restartable ones.",
+          "area": "Pipeline and agents"
+        },
+        {
+          "id": "freeze",
+          "name": "freeze: freeze a run by hash, guard what it loads, keep review pins honest",
+          "released": "2026-11-20",
+          "version": "1.0",
+          "summary": "Records the sha256 of every file a run executes at the commit that froze it, refuses a launch or a run that loads anything else, and ties review verdicts to the commit they covered (kit reviewpin), for any git repository. An outside check on a toy evaluation repository met all 8 bars: one-byte changes refused and reverts run; GO kept after base-only merges and dropped on a one-byte own-patch change.",
+          "command": "python -m kit freeze check ID --json",
+          "page": "docs/tools/freeze.md",
+          "evidence": "[checks and controls](docs/tools/freeze.md#checks-and-controls), `tests/test_freezechain.py`",
+          "line": "Freezes a run by the hashes of the files it executes, guards what it loads, and keeps review verdicts tied to the reviewed code.",
+          "area": "Records and provenance"
         }
       ],
       "where": "main"
