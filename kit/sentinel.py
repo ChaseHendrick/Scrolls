@@ -1442,7 +1442,9 @@ def preflight(mesh_dir, volume, fetch=fetch_bytes, listing=None):
     if on and vol_id and on.group(1) != vol_id:
         warn.append(f"the mesh is named for volume {on.group(1)}, the render reads {vol_id}")
     siblings = listing if listing is not None else []
-    match = [s for s in siblings if vol_id and f"-on-{vol_id}" in s]
+    from . import voltransform  # newest revision first: a t1 mesh and its -t2 replacement can sit side by side
+    match = sorted([s for s in siblings if vol_id and f"-on-{vol_id}" in s], key=voltransform.path_revision,
+                   reverse=True)
     if vol_id and match and mesh_name not in [m.rstrip("/").split("/")[-1] for m in match]:
         warn.append(f"this segment has a mesh made in volume {vol_id}'s frame: {match[0].rstrip('/').split('/')[-1]}")
     bb = meta.get("bbox")

@@ -889,6 +889,18 @@
           "area": "Compute and cost"
         },
         {
+          "id": "voltransform",
+          "name": "voltransform: move points between scan volumes with the revision 2 transforms",
+          "released": "2026-11-18",
+          "version": "1.0",
+          "summary": "Reads the open-data catalog after its 16 Nov 2026 change: moves points between volumes through the revision 2 affine plus thin-plate spline (identical to villa's own reader on all 13 bent transforms), skips superseded t1 meshes and renders, and finds the lossless vc-delta3d copies of masked volumes.",
+          "command": "python -m kit.voltransform table PHerc0841",
+          "page": "docs/tools/voltransform.md",
+          "evidence": "[checks and controls](docs/tools/voltransform.md#checks-and-controls)",
+          "line": "Moves points between scan volumes with the organizers' revision 2 transforms and skips superseded data.",
+          "area": "Data and downloads"
+        },
+        {
           "id": "finite",
           "name": "finite: refuse speeds, scores and maps taken from NaN or Inf output",
           "released": "2026-11-19",

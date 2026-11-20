@@ -436,13 +436,17 @@ def volume_info(sample_entry, vid):
 
 
 def stored_transforms(cat, sample=None):
-    """[(sample, from volume, transform)] for every transform stored on a volume of the catalog."""
+    """[(sample, from volume, transform)] for every registration fitted from a volume of the catalog. Read from the
+    sample's volume_transforms table (kit.voltransform.volume_affines), since volume.properties.transforms is
+    deprecated (removed after 2026-12-31). Since the 16 Nov 2026 revision the catalog carries no landmarks: they are
+    in each registration's transform.json (fixed_landmarks, moving_landmarks)."""
+    from . import voltransform
     names = [sample] if sample else sorted(cat.get("samples", {}))
     out = []
     for name in names:
         sid, s = _sample_entry(cat, name)
-        for vid, vol in sorted((s.get("volumes") or {}).items()):
-            for t in ((vol.get("properties") or {}).get("transforms") or []):
+        for vid in sorted(s.get("volumes") or {}):
+            for t in voltransform.volume_affines(s, vid):
                 out.append((sid, vid, t))
     return out
 
