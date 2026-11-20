@@ -56,10 +56,11 @@ Every released tool, one line each; each name opens its guide. Generated from [`
 Command-line tools, benchmarks and script folders that run from a clone of this repository. [Guide](docs/tools/cli.md). Open an area to see its tools.
 
 <details>
-<summary><b>Pipeline and agents</b> (3)</summary>
+<summary><b>Pipeline and agents</b> (4)</summary>
 
 | Tool | What it does |
 | --- | --- |
+| [drivers: background jobs that cannot die unnoticed](docs/tools/drivers.md) | Runs background jobs that report themselves lost after a kill or reboot, and revives only the restartable ones. |
 | [Scan catalog and batch plans](docs/tools/batch.md) | Lists released scan volumes, makes resumable batch plans and watches for new or changed inputs. |
 | [Scroll to ink in one command (experimental)](docs/tools/scroll2ink.md) | Experimental: one command from a public scan and a seed point to an ink map with its reverse-depth control, stopping at a failed check. |
 | [Swap any stage by name](docs/tools/stagereg.md) | Lists every option for each stage of reading a scroll, with its maker, license and maturity, so a workflow can swap any stage by name. |
@@ -191,12 +192,13 @@ Command-line tools, benchmarks and script folders that run from a clone of this 
 </details>
 
 <details>
-<summary><b>Compute and cost</b> (8)</summary>
+<summary><b>Compute and cost</b> (9)</summary>
 
 | Tool | What it does |
 | --- | --- |
 | [accelbench: time a faster version only after its output matches](docs/tools/accelbench.md) | Times a faster version of some code only after its output matches the original, with a control. |
 | [cpudiag: time a CPU flavor against a container, core by core](docs/tools/cpudiag.md) | Benchmarks a cloud CPU machine against a known one to show why a CPU job runs slower than expected. |
+| [hubcall: Hugging Face Hub calls that back off together on a 429](docs/tools/hubcall.md) | Retries Hugging Face Hub calls on 429 and 5xx with one cool-down shared by every process on the machine, and logs who made them. |
 | [Hugging Face Jobs ledger importer](docs/tools/hf-rows.md) | Adds finished Hugging Face Jobs to a cost ledger with the cost from Hugging Face's own bill, once per Job, and restricts public ledgers to generic work. |
 | [Local run time and cost log](docs/tools/run-local.md) | Runs a local command and records its elapsed time and estimated electricity cost, or adds records of past runs. |
 | [Modal ledger row importer](docs/tools/modal-row.md) | Adds a recorded job to a cost ledger once and restricts public ledgers to rows marked generic. |
@@ -207,11 +209,12 @@ Command-line tools, benchmarks and script folders that run from a clone of this 
 </details>
 
 <details>
-<summary><b>Records and provenance</b> (2)</summary>
+<summary><b>Records and provenance</b> (3)</summary>
 
 | Tool | What it does |
 | --- | --- |
 | [Experiment ledger](docs/tools/run-ledger.md) | Keeps a run record with a fixed readout rule, status, costs, file fingerprints and checks. |
+| [freeze: freeze a run by hash, guard what it loads, keep review pins honest](docs/tools/freeze.md) | Freezes a run by the hashes of the files it executes, guards what it loads, and keeps review verdicts tied to the reviewed code. |
 | [Run provenance records](docs/tools/provenance.md) | Records run settings and file fingerprints, then checks the record and its files for changes. |
 
 </details>
@@ -280,7 +283,7 @@ Every command is in [`docs/tools/cli.md`](docs/tools/cli.md), and every tool has
 19. **Three hosted text models restored hidden Greek letters in Philodemus, De Musica, less often than a Kneser-Ney letter model** (gap letter accuracy 0.181, 0.181 and 0.118 against 0.331, single letters 0.447 at best against 0.895, no recall detected (probe about 0.08); public text, 22 October 2026, model output).
 20. **Our letter classifier, trained on Hell-Char only, named Greek letters on fresh papyrus photographs better than Hell-Char ConvNeXt-V2** (error 0.291 against 0.340 on the 8,479 ICDAR 2023 test boxes, boxes given, every control passed; as lines with a no-Homer Greek letter model it was level with Hell-Char given the same model; 24 October 2026, model output; photographs, not ink maps).
 21. **windlabel-box's automatic relative windings passed a held-out test on a third scroll and were slightly more often right than two community winding tools** (0.955 of 32,411 judged steps on fresh PHerc0172 boxes, against 0.944 for constraint-gauge's E1 on the same steps and 0.934 for winding-phase at matched coverage, leads with lower bounds +0.009 and +0.005; rules fixed before any box had a prediction; 29 October 2026, model output against the published hand windings).
-22. **labelsnap moved published surface labels closer to the papyrus recto face than the published labels and seven community snaps** (mean +2.153 voxels closer than the published label, +1.892 closer than VC3D's `vc_objrefine` tuned on PHerc0139, 71 fresh PHerc0814 and PHerc0841 sites scored against a finer scan; within 1 voxel 55 to 66 % against 19 %; finesnap, on a finer registered scan, 85 % on PHerc0814 and 91 % on PHerc0139; 25 to 29 October 2026, model output; geometry, not a reading). Scored against a finer scan's face found with labelsnap's own band rule; with a face rule sharing neither, the lead held at about half the size (+1.04, +1.23 voxels).
+22. **labelsnap moved published surface labels closer to the papyrus recto face than the published labels and seven community snaps** (mean +2.153 voxels closer than the published label, +1.892 closer than VC3D's `vc_objrefine` tuned on PHerc0139, 71 fresh PHerc0814 and PHerc0841 sites scored against a finer scan; within 1 voxel 55 to 66 % against 19 %; finesnap, on a finer registered scan, 85 % on PHerc0814 and 91 % on PHerc0139; 25 to 29 October 2026, model output; geometry, not a reading). Scored against a finer scan's face found with labelsnap's own band rule; with a face rule sharing neither, the lead held at about half the size (+1.04, +1.23 voxels). On PHerc0009B (60 fresh sites against a 2.401 um scan, 20 November 2026), with a new face rule sharing no code with labelsnap, the lead over the published label was +0.236 voxels (95 % interval -0.131 to +0.589), not shown; within 1 voxel 38.4 % against 21.1 %.
 23. **Parting, a contact classifier on base dinovol features, told same-layer from next-layer points at touching layers better than dinovol alone on a fragment it never saw** (AUC 0.895 against 0.839, gain +0.056 with bound +0.037, 150 sites over 5 layer pairs of PHercParis1Fr34; one pass in three fragments: misses on a PHerc1667 fragment, +0.045 against a bar of +0.05, and on a PHerc. Paris 2 fragment, +0.010, where dinovol alone scored 0.965; little gain where layers are fused; rule frozen before any of the test's 3D CT was read; 29 October 2026, model output; code released under Apache-2.0, model file on Hugging Face as SharpMeow/parting-v1: [tool page](docs/tools/parting.md)).
 24. **Ringleader labeled every m7 sheet pixel of held-out PHerc0139 slices with its winding far more often right than villa's spiral fit at its defaults, and passed a second scroll** (on-winding E0 0.902 against 0.149 to 0.179 on 41 slices at z 3,240 to 3,400, bar 0.85; on PHerc0332 0.659 against 0.349 to 0.398 for the fit and 0.445 for a constant labeling, bar 0.595, against one organizer mesh; two later tries on other scrolls read VOID, so claimed on two scrolls; PHerc0139 held out by band only, PHerc0332 not fully held out (m7 may have trained on it), and the margin is over villa's default fit, which is not built to label every sheet; rules frozen before the read, each read once; 30 October 2026, model output; code released under Apache-2.0: [tool page](docs/tools/ringleader.md)).
 25. **sqrecipe: on PHerc0332, a finer DLS scan brought down to the 7.910 um grid kept more sheet structure than the scan taken at 7.910 um** (sheet fidelity higher in 0.925 of 120 fresh regions, median +0.042, against an independent ESRF 2.399 um scan, every control held; rule frozen before the read; 30 October 2026, Measurement of the CT; one acquisition pair on one scroll, not ink and not readability: [tool page](docs/tools/sqrecipe.md)).
