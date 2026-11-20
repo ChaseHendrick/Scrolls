@@ -12530,6 +12530,46 @@
     "bar": 0.9
    },
    "limits": "one band of one scroll; the exactness bar sat above what the two truth scans reach together"
+  },
+  {
+   "date": "2026-11-20",
+   "tool": "kit labelsnap against the published label and a parity port of VC3D vc_objrefine (tuned and as shipped) on PHerc0009B, an outside check",
+   "source": "docs/tools/labelsnap.md; preregistration and code kept with the private evidence of 20 Nov 2026",
+   "claim": "Model output, a test with every rule fixed before the read and scored once; NOT SHOWN: the lead over the published label did not clear its bar; geometry only, never a reading",
+   "scroll": "PHerc0009B, on no prize list when read (20 Nov 2026)",
+   "label_scan": "20250521125136 (8.64 um)",
+   "truth": "recto face of the 2.401 um scan 20250820154339, registered per site, found by a new steepest-edge rule that shares no code or band choice with labelsnap",
+   "sites_drawn": 60,
+   "sites_scored": 56,
+   "lead_over_published_label": {
+    "mean": 0.236,
+    "ci95": [
+     -0.131,
+     0.589
+    ],
+    "bar_mean": 0.3,
+    "bar_lower_bound": 0
+   },
+   "lead_over_vc_objrefine_tuned": {
+    "mean": 0.272,
+    "ci95": [
+     -0.217,
+     0.931
+    ]
+   },
+   "lead_over_vc_objrefine_shipped": {
+    "mean": 8.477,
+    "ci95": [
+     7.362,
+     9.558
+    ]
+   },
+   "within_1_voxel": {
+    "labelsnap": 0.384,
+    "published_label": 0.211
+   },
+   "lead_under_labelsnap_own_face_rule": 1.882,
+   "limits": "one fragment and one truth scan; the truth face rule is new and itself unvalidated beyond its controls"
   }
  ],
  "parting_checks": [
