@@ -47,7 +47,7 @@ output is a coordinate, not evidence about ink.
 Do not use it:
 
 - To check a transform against its landmarks: `kit vc3d_landmarks` (or `kit meshaudit transforms`).
-- To fetch segment files: `kit fetch` or the VC3D agent's `fetch_segment`, which now skip superseded sets.
+- To fetch segment files: `kit fetch`. It does not skip superseded sets yet (checked 20 Nov 2026): name the `-t2` folder yourself, or pick it with `voltransform.pick_current` first.
 
 ## Quick start
 
@@ -163,8 +163,10 @@ with 435 control points takes a few seconds and about 200 MB in batches of 50,00
 ## Tests
 
 `python -m unittest tests.test_voltransform`: superseded filtering, path revisions, the deprecated-list fallback,
-chains with inverted steps and forced revisions, spline interpolation and inverse round trip. Not covered: network
+chains with inverted steps and forced revisions, spline interpolation and inverse round trip, a non-diagonal matrix (XYZ order). Not covered: network
 fetches (the tests inject a fetch function) and `open_volume` on a real vcd3d copy (checked by hand, below).
+
+`python -m unittest tests.test_r2_readers` checks that `sheetrefs.find_meshes`, `meshaudit.segment_entries` and `sentinel.preflight` take the current revision (each fails if its filter is dropped or turned around).
 
 ## History
 

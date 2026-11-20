@@ -119,6 +119,14 @@ class MovingPointsTests(unittest.TestCase):
         np.testing.assert_allclose(t.apply(moving), fixed, atol=1e-6)
         np.testing.assert_allclose(t.inverted().apply(fixed), moving, atol=1e-6)
 
+    def test_non_diagonal_matrix_keeps_xyz_order(self):
+        # rows of a stored matrix map to x, y, z of the target: a reader that transposes the 3x3 part or feeds
+        # ZYX points gets other numbers here (a diagonal matrix would hide both mistakes)
+        t = V.Transform.from_json({"transformation_matrix": [[0, 1, 0, 5], [0, 0, 2, -3], [3, 0, 0, 7]]})
+        np.testing.assert_allclose(t.apply([[1.0, 2.0, 3.0]]), [[7.0, 3.0, 10.0]])
+        self.assertFalse(np.allclose(t.apply([[3.0, 2.0, 1.0]]), [[7.0, 3.0, 10.0]]))   # ZYX in: a different point
+        np.testing.assert_allclose(t.inverted().apply([[7.0, 3.0, 10.0]]), [[1.0, 2.0, 3.0]], atol=1e-12)
+
     def test_bent_without_inverse_refuses(self):
         rng = np.random.default_rng(4)
         moving = rng.uniform(0, 100, (10, 3))
