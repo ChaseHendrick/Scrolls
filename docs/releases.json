@@ -114,7 +114,7 @@
       "line": "Command-line tools, benchmarks and script folders that run from a clone of this repository.",
       "area": "Releases and repository",
       "page": "docs/tools/cli.md",
-      "released": "2026-11-18",
+      "released": "2026-11-20",
       "summary": "Command-line tools, benchmarks and script folders that run from a clone of this repository. Each line gives the tool's release date, its weights where it has them, one command to start with, its tool page and its evidence; each page lists the tool's own needs. Their outputs are model output or geometry measurements for a person to check, not readings.",
       "commands": [
         "git clone --depth 1 https://github.com/ChaseHendrick/Scrolls.git",
@@ -424,7 +424,7 @@
           "name": "Controlled ink AUC scoring",
           "area": "Scoring and controls",
           "released": "2026-10-07",
-          "summary": "Scores an ink map against labeled ink and background inside a supervision mask, alongside a reverse-depth control.",
+          "summary": "Scores an ink map against labeled ink and background with a reverse-depth control; kit.aucreport adds curves, AP, tiles and a shifted-label null.",
           "command": "python -m kit auc --help",
           "page": "docs/tools/auc.md"
         },
@@ -831,11 +831,11 @@
         {
           "id": "scrollsim2",
           "name": "ScrollSim v2: a full-scale synthetic scroll",
-          "line": "Renders a synthetic scroll of 100 plus windings block by block, with every voxel's exact winding and the sheet's surfaces as truth.",
+          "line": "Renders a synthetic scroll of 100 plus windings block by block, with a CT scan model, optional ink, and every voxel's exact winding, ink and surfaces as truth.",
           "area": "Surfaces and tracing",
           "released": "2026-11-18",
-          "version": "1.0",
-          "summary": "Rolls one sheet into a spiral of 100 plus windings, presses neighbors together in contact zones, crushes and bends the roll, and renders a CT-like OME-Zarr pyramid block by block on any number of CPU workers, with a winding label volume and the sheet's center and recto surfaces as tifxyz. Every voxel's value is independent of the block that rendered it, and stopped runs resume. Ink is off in this release. Realism is in progress: real CT texture from open-data scans (S2), more physical detail such as compression and delamination (S3), and calibration so readers and tracers score on it as on real scrolls come in the next release. Synthetic data: scores on it say nothing about a real scroll.",
+          "version": "2.0",
+          "summary": "Rolls one sheet into a spiral of 100 plus windings with contact zones, crushing and bending, and renders a CT-like OME-Zarr pyramid block by block on CPU workers, with winding labels and the sheet's surfaces as truth. Version 2.0 adds, all off by default: a CT scan model (Paganin phase retrieval, a fitted noise spectrum, cupping, slabs, rings, scan presets); a texture library with label-free realism statistics; contact and u v w truth volumes; sheet physics (waviness, kolleseis, debris, cracks, bubbles, ply variation); and an ink writer with exact ink truth and a no-ink twin. Every voxel is independent of its block, with every feature on. The ink is not yet calibrated against real readers. Synthetic data: scores on it say nothing about a real scroll.",
           "command": "python -m kit.scrollsim2 make SIM --preset smoke --workers 4 --block 64 --chunk 64 --levels 2 --surfaces",
           "page": "docs/tools/scrollsim2.md",
           "evidence": "[tests](tests/test_scrollsim2.py)"
@@ -863,6 +863,89 @@
           "evidence": "[checks and controls](docs/tools/mpsparity.md#checks-and-controls)",
           "line": "Checks that a small torch training gives the same result on Apple's GPU as on the CPU, with controls.",
           "area": "Compute and cost"
+        },
+        {
+          "id": "cpudiag",
+          "name": "cpudiag: time a CPU flavor against a container, core by core",
+          "released": "2026-11-18",
+          "version": "1.0",
+          "summary": "Fixed pure-Python, numpy, STREAM-like triad, BLAS-thread, small-file I/O and scrollsim2 render benchmarks at several process counts, with P=1 and one-BLAS-thread controls, to tell per-core speed from contention. On Hugging Face cpu-performance (16 cores x 2 threads) memory bandwidth saturated near 68 GB/s from about 8 processes, so 8 to 16 workers rendered more scrollsim2 blocks per second than 32, and forked pools that inherited OMP_NUM_THREADS=32 ran BLAS 116 times slower (Sourced fact, 18 Nov 2026 evidence). Synthetic work only.",
+          "command": "python -m kit.cpudiag run --procs 1,4 --out HERE.json",
+          "page": "docs/tools/cpudiag.md",
+          "evidence": "[evidence](docs/evidence/2026-11-18-hf-cpu-diag/README.md)",
+          "line": "Benchmarks a cloud CPU machine against a known one to show why a CPU job runs slower than expected.",
+          "area": "Compute and cost"
+        },
+        {
+          "id": "runlength",
+          "name": "runlength cpu: wall time and timeout of a CPU job on a measured flavor",
+          "released": "2026-11-18",
+          "version": "1.0",
+          "summary": "Scales one task timed in a 4-core cloud container to a job on Hugging Face cpu-performance from cpudiag's measured slowdown table (memory-bound, scrollsim2 render and cache-resident kinds; max by default), and gives the best worker count and a timeout. Its scrollsim2 row predicted a 32-worker pilot at 26.7 min against 25.2 measured. CPU estimate only.",
+          "command": "python -m kit.runlength cpu --task-s 4.33 --tasks 2458 --kind scrollsim2",
+          "page": "docs/tools/runlength.md",
+          "evidence": "[checks and controls](docs/tools/runlength.md#checks-and-controls)",
+          "line": "Estimates how long a CPU job takes on a cloud CPU machine from one task timed in a small container.",
+          "area": "Compute and cost"
+        },
+        {
+          "id": "voltransform",
+          "name": "voltransform: move points between scan volumes with the revision 2 transforms",
+          "released": "2026-11-18",
+          "version": "1.0",
+          "summary": "Reads the open-data catalog after its 16 Nov 2026 change: moves points between volumes through the revision 2 affine plus thin-plate spline (identical to villa's own reader on all 13 bent transforms), skips superseded t1 meshes and renders, and finds the lossless vc-delta3d copies of masked volumes.",
+          "command": "python -m kit.voltransform table PHerc0841",
+          "page": "docs/tools/voltransform.md",
+          "evidence": "[checks and controls](docs/tools/voltransform.md#checks-and-controls)",
+          "line": "Moves points between scan volumes with the organizers' revision 2 transforms and skips superseded data.",
+          "area": "Data and downloads"
+        },
+        {
+          "id": "finite",
+          "name": "finite: refuse speeds, scores and maps taken from NaN or Inf output",
+          "released": "2026-11-19",
+          "version": "1.0",
+          "summary": "Checks that an output array or saved map (.npy, .npz, .tif, .zarr) holds no NaN or Inf, optionally nothing past fp16's 65,504, and says whether an fp16 sum of N values can overflow (one 128^3 tile of values in 0 to 1 does). In code, finite.require raises before a number is taken and finite.timed refuses a benchmark speed on non-finite output. A software check; it makes no claim about any scroll.",
+          "command": "python -m kit.finite check MAP.npy --json",
+          "page": "docs/tools/finite.md",
+          "line": "Refuses any speed, score or map taken from model output that holds NaN or Inf, and flags fp16 sums that would overflow.",
+          "area": "Scoring and controls"
+        },
+        {
+          "id": "hubcall",
+          "name": "hubcall: Hugging Face Hub calls that back off together on a 429",
+          "released": "2026-11-20",
+          "version": "1.0",
+          "summary": "Wraps Hub calls so a 429 waits (Retry-After, else 5 to 120 s) and a 5xx on a read waits 2 and 4 s, with one shared cool-down for every process on the machine and a log that names the busiest caller. An outside check against a local mock server matched every retry count and wait; a second process waited 5.80 s after the first one's 429 against 0.53 s for the control.",
+          "command": "python -m kit hubcall report --json",
+          "page": "docs/tools/hubcall.md",
+          "evidence": "[checks and controls](docs/tools/hubcall.md#checks-and-controls), `tests/test_hubcall.py`",
+          "line": "Retries Hugging Face Hub calls on 429 and 5xx with one cool-down shared by every process on the machine, and logs who made them.",
+          "area": "Compute and cost"
+        },
+        {
+          "id": "drivers",
+          "name": "drivers: background jobs that cannot die unnoticed",
+          "released": "2026-11-20",
+          "version": "1.0",
+          "summary": "Runs a long command under a small supervisor with its own work folder and records its pids, boot id and exit, so status names a driver lost after a kill, a container restart or a reboot (exit 3), and revive restarts only drivers started as restartable. An outside check with SIGKILL, a changed boot id and a fresh process table met every bar. Standard library only.",
+          "command": "python -m kit drivers status --json",
+          "page": "docs/tools/drivers.md",
+          "evidence": "[checks and controls](docs/tools/drivers.md#checks-and-controls), `tests/test_drivers.py`",
+          "line": "Runs background jobs that report themselves lost after a kill or reboot, and revives only the restartable ones.",
+          "area": "Pipeline and agents"
+        },
+        {
+          "id": "freeze",
+          "name": "freeze: freeze a run by hash, guard what it loads, keep review pins honest",
+          "released": "2026-11-20",
+          "version": "1.0",
+          "summary": "Records the sha256 of every file a run executes at the commit that froze it, refuses a launch or a run that loads anything else, and ties review verdicts to the commit they covered (kit reviewpin), for any git repository. An outside check on a toy evaluation repository met all 8 bars: one-byte changes refused and reverts run; GO kept after base-only merges and dropped on a one-byte own-patch change.",
+          "command": "python -m kit freeze check ID --json",
+          "page": "docs/tools/freeze.md",
+          "evidence": "[checks and controls](docs/tools/freeze.md#checks-and-controls), `tests/test_freezechain.py`",
+          "line": "Freezes a run by the hashes of the files it executes, guards what it loads, and keeps review verdicts tied to the reviewed code.",
+          "area": "Records and provenance"
         },
         {
           "id": "mergedriver",

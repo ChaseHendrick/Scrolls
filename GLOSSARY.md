@@ -50,6 +50,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **bf16 bar**: In [`kit.mpsparity`](docs/tools/mpsparity.md), a device passes when its fp32 result sits nearer the reference fp32 result than bf16 autocast does on the reference device; the bar for networks whose fixed tolerances are stricter than fp32 rounding noise.
 
+**BLAS oversubscription**: Each of many worker processes starting its own pool of as many math-library (BLAS) threads as the machine has CPUs, so the threads fight over the cores; 32 such workers ran 116 times slower than with one thread each in [`kit.cpudiag`](docs/tools/cpudiag.md).
+
 **BM18**: A beamline at the ESRF built for phase-contrast tomography of large objects; used for scroll scans from 2025.
 
 **bootstrap**: Resampling the data many times to estimate how much a score would vary. `kit auc --bootstrap` gives AUC intervals this way.
@@ -112,6 +114,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **depth shuffle**: A control volume in which the layers of a surface volume are put in a random order (`kit shuffle`, `kit layers --shuffle SEED`). Real ink signal should not survive it.
 
+**derived cover (review pin)**: A GO that still covers a pull request's head although its own patch changed, because every commit after the pin is a merge of the base branch, each file's own change is the same by content, and each merge equals an automatic merge of its parents (`kit reviewpin`, [page](docs/tools/freeze.md)).
+
 **Dice score**: An overlap measure between two masks: twice the shared area divided by the sum of both areas. A Dice check is reported beside the same map displaced.
 
 **DINOv2, DINOv3**: Self-supervised image backbones from Meta, trained without labels on very large photo collections. DINOv2 is Apache-2.0; DINOv3's weights are under the DINOv3 License and gated on Hugging Face. `scripts/segzoo/segzoo_probe.py` puts a linear head on their frozen features ([page](docs/tools/segzoo.md)).
@@ -119,6 +123,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 **dinovol**: The Vesuvius Challenge model family that turns small regions of a CT volume into embeddings, or lists of learned features. Those features can be compared to find regions with similar structure; similarity alone does not identify ink.
 
 **Discord**: The chat service where the Vesuvius Challenge community meets and where most announcements appear first.
+
+**driver (`kit drivers`)**: A background job run under a small supervisor that records its pids, boot id and exit, so it is reported lost after a kill or a reboot; only a driver started `--restartable` is ever revived ([page](docs/tools/drivers.md)).
 
 ## E
 
@@ -151,6 +157,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 **fp16 (half precision)**: Storing and computing numbers with 16 bits instead of the usual 32 (fp32). It can make GPU inference faster at a small cost in accuracy. `V8IN_FP16=1` turns it on for v8in on MPS, where it is kept only if the crop check still passes and it is faster.
 
 **fragment**: A detached piece of papyrus, often with visible ink, used as ground truth for ink models.
+
+**freeze (hash freeze)**: A registry entry that fixes the sha256 of every file a run executes at the commit that froze its preregistration. It is live until the run's evidence is collected, then spent; a live freeze's files must not change, and the run refuses to load a repository file the freeze does not list (`kit freeze`, [page](docs/tools/freeze.md)).
 
 **frozen-feature probe (linear probe)**: A test of a pretrained backbone in which the backbone is not trained at all: only a linear (logistic) head on its features is fitted. Cheap enough for a CPU, and a fair first check of whether a big model helps a small task.
 
@@ -376,6 +384,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **Reader v2**: A community fine-tune of `ink_9um` by Domenico Russo. It is AutoPipeline's default ink reader.
 
+**readout set, plumbing set**: The two kinds of `code-sha256` block in a preregistration. Readout files (scoring code, labels, thresholds) change only by a dated amendment; plumbing files (container image, installs, logging) may change by a dated deviation line with the new hash (`kit freeze prereg`, [page](docs/tools/freeze.md)).
+
 **recto**: The written inner side of a roll, where the fibers run horizontally.
 
 **recto face**: The side of a papyrus band in CT that faces the scroll's axis, where a surface label should sit; `kit labelsnap` and `kit finesnap` find it as the band's edge toward the axis along each vertex normal.
@@ -393,6 +403,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 **reverse-depth map**: An ink map made from the same surface volume with its layers in reverse order. It is the required control for an ink AUC: real ink signal should depend on the true depth order.
 
 **Ringleader**: Our winding labeler: it thins a binary surface prediction (such as m7) in a z-slice to a skeleton, cuts it into pieces and gives every piece its turn number about the umbilicus in one convex solve (phase unwrapping, solved exactly as a minimum-cost flow), alone or for a stack of slices; with a scorer against published hand windings. Code in `scripts/ringleader/`, Apache-2.0 (31 October 2026); v1 is the version frozen for its two tests of 30 October 2026. Model output, not a reading ([page](docs/tools/ringleader.md)).
+
+**review pin**: A review verdict (GO, NO-GO or GO-WITH-NOTES) recorded with the commit it covered, so `kit reviewpin delta` can say whether it still covers a pull request's head ([page](docs/tools/freeze.md)).
 
 **ROC curve**: A plot of true positive rate against false positive rate over all thresholds. AUC is the area under it.
 
@@ -444,6 +456,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **sidecar (media sidecar)**: The JSON file next to a picture or clip, `NAME.json`, recording its media label, alt text, caption, license, sizes and SHA-256, inputs, and the command and scripts that made it (schema `scrolls-media/1`; [`docs/tools/media.md`](docs/tools/media.md)).
 
+**SMT (simultaneous multithreading)**: Two hardware threads sharing one physical core; a 32 vCPU cloud machine can be 16 cores, so a process past the 16th shares a core with another.
+
 **Space (Hugging Face Space)**: A small web app hosted on Hugging Face.
 
 **spiral fit**: Fitting one deformed spiral to the whole rolled papyrus of a scroll.
@@ -457,6 +471,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 **stackcheck**: `kit stackcheck`, which checks a stack of consecutive tifxyz segments of one scroll against its umbilicus from geometry alone.
 
 **stop score (fiber tracer)**: An opt-in early stop for villa's beam fiber tracer, proposed in villa #2377: the trace ends before a step where a weighted sum of fiber presence, direction agreement and a stronger fiber just to the side is above zero ([page](docs/tools/fiber-stop-score.md)).
+
+**STREAM triad**: The memory-bandwidth benchmark a = b + s x c over arrays far larger than the caches; [`kit.cpudiag`](docs/tools/cpudiag.md) runs a STREAM-like version to find where adding processes stops adding bandwidth.
 
 **StrokeNet**: A small learned score in this repository for how much a window of an ink map looks like lines of text (`kit strokenet`), with rotation and IAAFT controls ([model card](docs/strokenet.md)).
 

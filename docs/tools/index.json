@@ -775,10 +775,11 @@
    ],
    "area": "Scoring and controls",
    "commands": [
-    "python -m kit auc"
+    "python -m kit auc",
+    "python -m kit.aucreport"
    ],
    "imports": [
-    "from kit import auc"
+    "from kit import auc, aucreport"
    ],
    "code": [
     {
@@ -786,9 +787,20 @@
      "symbols": []
     },
     {
+     "path": "kit/aucreport.py",
+     "symbols": []
+    },
+    {
      "path": "kit/cli.py",
      "symbols": [
       "cmd_auc"
+     ]
+    },
+    {
+     "path": "kit/finite.py",
+     "symbols": [
+      "stats",
+      "NonFinite"
      ]
     },
     {
@@ -809,6 +821,7 @@
    "tests": [
     "tests/test_auc.py",
     "tests/test_auc_bootstrap_exact.py",
+    "tests/test_aucreport.py",
     "tests/test_scoring_guards.py"
    ],
    "go_ahead": {
@@ -816,8 +829,8 @@
     "text": "Not needed"
    },
    "checked": {
-    "date": "2026-10-16",
-    "commit": "d9eaf42"
+    "date": "2026-11-19",
+    "commit": "b6ade72"
    },
    "license": null,
    "fields": {
@@ -825,17 +838,17 @@
     "Status": "Current",
     "Kind": "kit command, kit module",
     "Area": "Scoring and controls",
-    "Run": "`python -m kit auc`, `from kit import auc`",
-    "Code": "`kit/auc.py`, `kit/cli.py` (`cmd_auc`), `kit/verify.py` (`load_map`, `_numpy`, `VerifyError`), `kit/ledger.py` (`add_check`)",
-    "Tests": "`tests/test_auc.py`, `tests/test_auc_bootstrap_exact.py`, `tests/test_scoring_guards.py` (`AucGuardsTest`)",
+    "Run": "`python -m kit auc`, `python -m kit.aucreport`, `from kit import auc, aucreport`",
+    "Code": "`kit/auc.py`, `kit/aucreport.py`, `kit/cli.py` (`cmd_auc`), `kit/finite.py` (`stats`, `NonFinite`), `kit/verify.py` (`load_map`, `_numpy`, `VerifyError`), `kit/ledger.py` (`add_check`)",
+    "Tests": "`tests/test_auc.py`, `tests/test_auc_bootstrap_exact.py`, `tests/test_aucreport.py`, `tests/test_scoring_guards.py` (`AucGuardsTest`)",
     "Needs": "Python 3.10 or newer, numpy, tifffile (imagecodecs for LZW or zstd TIFFs), zarr (3.x on Python 3.11 or newer; 2.x works for reading)",
     "Runs on": "Any CPU. A full-size 5,980 x 8,240 map takes about 5 s with a control and about 6 s with `--bootstrap 300` (measured 2026-10-16, 4-core 2.1 GHz Xeon cloud container, synthetic data)",
     "Network": "None",
-    "Writes": "Nothing (prints only). With `--slug SLUG`, appends one check to `experiments/SLUG/run.json` (or `ROOT/SLUG/run.json` with `--root`)",
+    "Writes": "Nothing (prints only); `kit.aucreport` writes only the files named by `--plot`, `--curves` and `--out`. With `--slug SLUG`, appends one check to `experiments/SLUG/run.json` (or `ROOT/SLUG/run.json` with `--root`)",
     "Go-ahead": "Not needed",
     "Released": "Public `main` since 2026-10-07; also inside the AutoPipeline release",
     "Guide": "[STANDARDS.md](../STANDARDS.md) (how AUC is used here), [the overlap and baseline log](../logs/2026-10-07-overlap-and-baseline.md) (sampling noise)",
-    "Checked": "2026-10-16 against commit `d9eaf42`"
+    "Checked": "2026-11-19 against commit `b6ade72`"
    },
    "page": "docs/tools/auc.md",
    "sections": [
@@ -866,67 +879,73 @@
     {
      "name": "Commands and options",
      "start_line": 82,
-     "end_line": 115,
+     "end_line": 213,
+     "applicable": true
+    },
+    {
+     "name": "Detailed report: `python -m kit.aucreport`",
+     "start_line": 214,
+     "end_line": 247,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 116,
-     "end_line": 133,
+     "start_line": 248,
+     "end_line": 285,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 134,
-     "end_line": 144,
+     "start_line": 286,
+     "end_line": 296,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 145,
-     "end_line": 175,
+     "start_line": 297,
+     "end_line": 327,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 176,
-     "end_line": 205,
+     "start_line": 328,
+     "end_line": 370,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 206,
-     "end_line": 218,
+     "start_line": 371,
+     "end_line": 383,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 219,
-     "end_line": 222,
+     "start_line": 384,
+     "end_line": 387,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 223,
-     "end_line": 232,
+     "start_line": 388,
+     "end_line": 398,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 233,
-     "end_line": 240,
+     "start_line": 399,
+     "end_line": 406,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 241,
-     "end_line": 253,
+     "start_line": 407,
+     "end_line": 423,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 254,
-     "end_line": 261,
+     "start_line": 424,
+     "end_line": 431,
      "applicable": true
     }
    ]
@@ -1997,67 +2016,67 @@
     {
      "name": "Commands and options",
      "start_line": 85,
-     "end_line": 212,
+     "end_line": 216,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 213,
-     "end_line": 241,
-     "applicable": true
-    },
-    {
-     "name": "Inputs",
-     "start_line": 242,
+     "start_line": 217,
      "end_line": 245,
      "applicable": true
     },
     {
-     "name": "Outputs",
+     "name": "Inputs",
      "start_line": 246,
-     "end_line": 256,
+     "end_line": 249,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 250,
+     "end_line": 260,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 257,
-     "end_line": 270,
+     "start_line": 261,
+     "end_line": 274,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 271,
-     "end_line": 280,
-     "applicable": true
-    },
-    {
-     "name": "Cost and time",
-     "start_line": 281,
+     "start_line": 275,
      "end_line": 284,
      "applicable": true
     },
     {
-     "name": "For agents",
+     "name": "Cost and time",
      "start_line": 285,
-     "end_line": 294,
+     "end_line": 288,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 289,
+     "end_line": 298,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 295,
-     "end_line": 302,
+     "start_line": 299,
+     "end_line": 306,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 303,
-     "end_line": 314,
+     "start_line": 307,
+     "end_line": 318,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 315,
-     "end_line": 321,
+     "start_line": 319,
+     "end_line": 325,
      "applicable": true
     }
    ]
@@ -2638,6 +2657,150 @@
      "name": "Related",
      "start_line": 230,
      "end_line": 236,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "cpudiag",
+   "name": "cpudiag",
+   "tagline": "time a CPU flavor against a container, core by core",
+   "summary": "`kit.cpudiag` runs fixed CPU, memory-bandwidth, BLAS-thread, small-file I/O and scrollsim2 render benchmarks at several process counts, so a cloud CPU flavor can be compared with a known machine and CPU job estimates corrected.",
+   "status": "Current",
+   "kind": [
+    "kit entry point",
+    "kit module"
+   ],
+   "area": "Compute and cost",
+   "commands": [
+    "python -m kit.cpudiag run [--procs 1,8,32] [--kernels pyloop,compute,stream,blas] [--mount DIR] [--scrollsim2] [--out FILE]",
+    "python -m kit.cpudiag compare HERE.json THERE.json"
+   ],
+   "imports": [],
+   "code": [
+    {
+     "path": "kit/cpudiag.py",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_cpudiag.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed to run it; a run on rented machines follows hard rule 11"
+   },
+   "checked": {
+    "date": "2026-11-18",
+    "commit": "c2cb575"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`cpudiag`",
+    "Status": "Current",
+    "Kind": "kit entry point, kit module",
+    "Area": "Compute and cost",
+    "Run": "`python -m kit.cpudiag run [--procs 1,8,32] [--kernels pyloop,compute,stream,blas] [--mount DIR] [--scrollsim2] [--out FILE]`; `python -m kit.cpudiag compare HERE.json THERE.json`",
+    "Code": "`kit/cpudiag.py`",
+    "Tests": "`tests/test_cpudiag.py`",
+    "Needs": "Python 3.10 or newer and numpy (measured with 3.12 and 3.13, numpy 2.3.4); scipy and `kit.scrollsim2` for `--scrollsim2` only. Linux for the cgroup and lscpu facts (elsewhere they are null)",
+    "Runs on": "CPU anywhere. All kernels at 1 and 4 processes: about 40 s in a 4-core cloud container; `--scrollsim2` adds the pilot geometry (34 s there, 21 s on Hugging Face `cpu-performance`) and one block per process (5 to 21 s) (2026-11-18)",
+    "Network": "None",
+    "Writes": "`--out FILE` (saved after each phase); `--mount DIR`: a temporary folder of 32 files of 2 MB inside DIR, removed at the end",
+    "Go-ahead": "Not needed to run it; a run on rented machines follows hard rule 11",
+    "Released": "Public `main` from the PR that adds this page (2026-11-18), with [runlength](runlength.md)",
+    "Checked": "2026-11-18 against commit `c2cb575`"
+   },
+   "page": "docs/tools/cpudiag.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 22,
+     "end_line": 29,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 30,
+     "end_line": 39,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 40,
+     "end_line": 58,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 59,
+     "end_line": 64,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 65,
+     "end_line": 76,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 77,
+     "end_line": 98,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 99,
+     "end_line": 102,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 103,
+     "end_line": 120,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 121,
+     "end_line": 128,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 129,
+     "end_line": 132,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 133,
+     "end_line": 156,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 157,
+     "end_line": 168,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 169,
+     "end_line": 176,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 177,
+     "end_line": 180,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 181,
+     "end_line": 185,
      "applicable": true
     }
    ]
@@ -3233,6 +3396,163 @@
      "name": "Related",
      "start_line": 283,
      "end_line": 292,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "drivers",
+   "name": "drivers",
+   "tagline": "background jobs that cannot die unnoticed",
+   "summary": "Runs a long command as a recorded background driver with its own work folder, says when it was lost to a kill, a container restart or a reboot, and revives only the drivers started as restartable.",
+   "status": "Current",
+   "kind": [
+    "kit command",
+    "kit module"
+   ],
+   "area": "Pipeline and agents",
+   "commands": [
+    "python -m kit drivers start",
+    "python -m kit drivers status",
+    "python -m kit drivers revive",
+    "python -m kit drivers stop",
+    "python -m kit drivers log",
+    "python -m kit drivers whereami",
+    "python -m kit.drivers"
+   ],
+   "imports": [
+    "from kit import drivers"
+   ],
+   "code": [
+    {
+     "path": "kit/drivers.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/cli.py",
+     "symbols": [
+      "build_parser"
+     ]
+    }
+   ],
+   "tests": [
+    "tests/test_drivers.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed for the tool. A command it runs that rents compute or posts anything needs its own go-ahead (the go-ahead rule, hard rule 8)"
+   },
+   "checked": {
+    "date": "2026-11-20",
+    "commit": "357d2bd"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`drivers`",
+    "Status": "Current",
+    "Kind": "kit command, kit module",
+    "Area": "Pipeline and agents",
+    "Run": "`python -m kit drivers start`, `python -m kit drivers status`, `python -m kit drivers revive`, `python -m kit drivers stop`, `python -m kit drivers log`, `python -m kit drivers whereami`, `python -m kit.drivers`, `from kit import drivers`",
+    "Code": "`kit/drivers.py`, `kit/cli.py` (`build_parser`)",
+    "Tests": "`tests/test_drivers.py`",
+    "Needs": "Python 3.10 or newer, standard library only. Linux or macOS (process groups, `/proc` or `ps`, a boot id from `/proc/sys/kernel/random/boot_id` or `sysctl kern.boottime`)",
+    "Runs on": "Any machine; each action took about 0.2 s wall (measured 2026-11-20, 4-core cloud container)",
+    "Network": "None",
+    "Writes": "The state folder (`$KIT_DRIVERS_DIR`, else `work/drivers` in this checkout, ignored by git): per driver `driver.json`, `attempt-NN.json`, `attempt-NN.log` and the work folder `run/`. Whatever the command itself writes",
+    "Go-ahead": "Not needed for the tool. A command it runs that rents compute or posts anything needs its own go-ahead (the go-ahead rule, hard rule 8)",
+    "Released": "Public `main` from the PR that adds this page (2026-11-20)",
+    "Checked": "2026-11-20 against commit `357d2bd`"
+   },
+   "page": "docs/tools/drivers.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 22,
+     "end_line": 33,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 34,
+     "end_line": 45,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 46,
+     "end_line": 73,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 74,
+     "end_line": 95,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 96,
+     "end_line": 193,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 194,
+     "end_line": 218,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 219,
+     "end_line": 223,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 224,
+     "end_line": 248,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 249,
+     "end_line": 269,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 270,
+     "end_line": 277,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 278,
+     "end_line": 281,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 282,
+     "end_line": 291,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 292,
+     "end_line": 295,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 296,
+     "end_line": 299,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 300,
+     "end_line": 304,
      "applicable": true
     }
    ]
@@ -4956,6 +5276,327 @@
    ]
   },
   {
+   "id": "finite",
+   "name": "finite",
+   "tagline": "refuse speeds, scores and maps taken from NaN or Inf output",
+   "summary": "Checks that a model's output, an array or a saved map holds no NaN or Inf (and, with `--half`, nothing past fp16's 65,504), and whether an fp16 sum can overflow, so no speed or score is ever recorded on broken output.",
+   "status": "Current",
+   "kind": [
+    "kit entry point",
+    "kit module"
+   ],
+   "area": "Scoring and controls",
+   "commands": [
+    "python -m kit.finite check PATHS [--half] [--json]",
+    "python -m kit.finite sum --count N --max V [--dtype DTYPE] [--json]"
+   ],
+   "imports": [],
+   "code": [
+    {
+     "path": "kit/finite.py",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_finite.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed"
+   },
+   "checked": {
+    "date": "2026-11-19",
+    "commit": "a846745"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`finite`",
+    "Status": "Current",
+    "Kind": "kit entry point, kit module",
+    "Area": "Scoring and controls",
+    "Run": "`python -m kit.finite check PATHS [--half] [--json]`; `python -m kit.finite sum --count N --max V [--dtype DTYPE] [--json]`",
+    "Code": "`kit/finite.py`",
+    "Tests": "`tests/test_finite.py`",
+    "Needs": "Python 3.10 or newer and numpy; tifffile for .tif, zarr for .zarr (both optional)",
+    "Runs on": "Any CPU; one pass over each map. Not measured beyond the tests (7 tests in about 0.02 s, 4-core cloud container, 2026-11-19)",
+    "Network": "None",
+    "Writes": "Nothing (prints only)",
+    "Go-ahead": "Not needed",
+    "Released": "Public `main` from the PR that adds this page (2026-11-19)",
+    "Checked": "2026-11-19 against commit `a846745`"
+   },
+   "page": "docs/tools/finite.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 22,
+     "end_line": 29,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 30,
+     "end_line": 39,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 40,
+     "end_line": 54,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 55,
+     "end_line": 62,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 63,
+     "end_line": 90,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 91,
+     "end_line": 104,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 105,
+     "end_line": 108,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 109,
+     "end_line": 130,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 131,
+     "end_line": 142,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 143,
+     "end_line": 146,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 147,
+     "end_line": 150,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 151,
+     "end_line": 160,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 161,
+     "end_line": 164,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 165,
+     "end_line": 168,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 169,
+     "end_line": 171,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "freeze",
+   "name": "freeze",
+   "tagline": "freeze a run by hash, guard what it loads, and keep review pins honest",
+   "summary": "Fixes the exact files a run executes by their sha256 before the run exists, refuses a launch or a run that loads anything else, and ties each review verdict to the commit it covered so a later edit drops it. For any git repository.",
+   "status": "Current",
+   "kind": [
+    "kit command",
+    "kit module"
+   ],
+   "area": "Records and provenance",
+   "commands": [
+    "python -m kit freeze list",
+    "python -m kit freeze add",
+    "python -m kit freeze check",
+    "python -m kit freeze pin",
+    "python -m kit freeze collect",
+    "python -m kit freeze prereg",
+    "python -m kit reviewpin record",
+    "python -m kit reviewpin delta",
+    "python -m kit reviewpin explain",
+    "python -m kit reviewpin list",
+    "python -m kit.freeze",
+    "python -m kit.reviewpin"
+   ],
+   "imports": [
+    "from kit import freeze, freezeguard, reviewpin"
+   ],
+   "code": [
+    {
+     "path": "kit/freeze.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/freezeguard.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/preregsets.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/reviewpin.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/cli.py",
+     "symbols": [
+      "build_parser"
+     ]
+    }
+   ],
+   "tests": [
+    "tests/test_freeze.py",
+    "tests/test_freezechain.py",
+    "tests/test_freezeguard.py",
+    "tests/test_reviewpin.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed: it records and checks; it launches nothing"
+   },
+   "checked": {
+    "date": "2026-11-20",
+    "commit": "357d2bd"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`freeze`",
+    "Status": "Current",
+    "Kind": "kit command, kit module",
+    "Area": "Records and provenance",
+    "Run": "`python -m kit freeze list`, `python -m kit freeze add`, `python -m kit freeze check`, `python -m kit freeze pin`, `python -m kit freeze collect`, `python -m kit freeze prereg`, `python -m kit reviewpin record`, `python -m kit reviewpin delta`, `python -m kit reviewpin explain`, `python -m kit reviewpin list`, `python -m kit.freeze`, `python -m kit.reviewpin`, `from kit import freeze, freezeguard, reviewpin`",
+    "Code": "`kit/freeze.py`, `kit/freezeguard.py`, `kit/preregsets.py`, `kit/reviewpin.py`, `kit/cli.py` (`build_parser`)",
+    "Tests": "`tests/test_freeze.py`, `tests/test_freezechain.py`, `tests/test_freezeguard.py`, `tests/test_reviewpin.py`",
+    "Needs": "Python 3.10 or newer, standard library only; git (2.38 or newer for the review pins' merge replay, `git merge-tree --write-tree`)",
+    "Runs on": "Any machine. `freeze check` of a two-file freeze took 0.30 s wall (measured 2026-11-20, 4-core cloud container)",
+    "Network": "None, except `reviewpin delta` and `explain` without `--head` or `--no-fetch`, which run `git fetch origin` for the PR head and the base branch",
+    "Writes": "`freeze add`, `pin` and `collect`: the registry (`freeze/freezes.json` by default). `reviewpin record`: one line in the verdict log (`freeze/verdicts.jsonl` by default). Every other action, and every library guard, writes nothing in the repository (`run_script` uses a temporary folder)",
+    "Go-ahead": "Not needed: it records and checks; it launches nothing",
+    "Released": "Public `main` from the PR that adds this page (2026-11-20)",
+    "Checked": "2026-11-20 against commit `357d2bd`"
+   },
+   "page": "docs/tools/freeze.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 22,
+     "end_line": 33,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 34,
+     "end_line": 45,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 46,
+     "end_line": 92,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 93,
+     "end_line": 117,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 118,
+     "end_line": 322,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 323,
+     "end_line": 411,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 412,
+     "end_line": 434,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 435,
+     "end_line": 459,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 460,
+     "end_line": 529,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 530,
+     "end_line": 540,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 541,
+     "end_line": 544,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 545,
+     "end_line": 554,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 555,
+     "end_line": 558,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 559,
+     "end_line": 562,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 563,
+     "end_line": 568,
+     "applicable": true
+    }
+   ]
+  },
+  {
    "id": "gate",
    "name": "gate",
    "tagline": "rank released ink readers on PHerc0841 by the Gate A rule",
@@ -6331,6 +6972,158 @@
    ]
   },
   {
+   "id": "hubcall",
+   "name": "hubcall",
+   "tagline": "Hugging Face Hub calls that back off together on a 429",
+   "summary": "Wraps Hugging Face Hub calls so a 429 (rate limited) or a passing 5xx waits and retries on one fixed schedule, every process on the machine shares one cool-down, and a local log names the busiest caller.",
+   "status": "Current",
+   "kind": [
+    "kit command",
+    "kit module"
+   ],
+   "area": "Compute and cost",
+   "commands": [
+    "python -m kit hubcall report",
+    "python -m kit.hubcall report"
+   ],
+   "imports": [
+    "from kit import hubcall"
+   ],
+   "code": [
+    {
+     "path": "kit/hubcall.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/cli.py",
+     "symbols": [
+      "build_parser"
+     ]
+    }
+   ],
+   "tests": [
+    "tests/test_hubcall.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed: it only retries calls your own code makes"
+   },
+   "checked": {
+    "date": "2026-11-20",
+    "commit": "357d2bd"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`hubcall`",
+    "Status": "Current",
+    "Kind": "kit command, kit module",
+    "Area": "Compute and cost",
+    "Run": "`python -m kit hubcall report`, `python -m kit.hubcall report`, `from kit import hubcall`",
+    "Code": "`kit/hubcall.py`, `kit/cli.py` (`build_parser`)",
+    "Tests": "`tests/test_hubcall.py`",
+    "Needs": "Python 3.10 or newer, standard library only; `huggingface_hub` only for `hf_api()`, which builds an `HfApi`",
+    "Runs on": "Any machine. `report` over a short log took 0.17 s wall (measured 2026-11-20, 4-core cloud container)",
+    "Network": "None of its own: it runs the Hub calls you give it, and contacts whatever host they contact",
+    "Writes": "`hubcalls.jsonl` (the call log) and `hub-cooldown.json` (the shared cool-down) in the kit cache folder: `$KIT_HUBCALL_DIR`, else `$XDG_CACHE_HOME/kit`, else `~/.cache/kit`. `report` writes nothing",
+    "Go-ahead": "Not needed: it only retries calls your own code makes",
+    "Released": "Public `main` from the PR that adds this page (2026-11-20)",
+    "Checked": "2026-11-20 against commit `357d2bd`"
+   },
+   "page": "docs/tools/hubcall.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 22,
+     "end_line": 33,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 34,
+     "end_line": 45,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 46,
+     "end_line": 74,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 75,
+     "end_line": 100,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 101,
+     "end_line": 126,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 127,
+     "end_line": 153,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 154,
+     "end_line": 158,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 159,
+     "end_line": 180,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 181,
+     "end_line": 188,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 189,
+     "end_line": 196,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 197,
+     "end_line": 200,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 201,
+     "end_line": 210,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 211,
+     "end_line": 214,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 215,
+     "end_line": 218,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 219,
+     "end_line": 223,
+     "applicable": true
+    }
+   ]
+  },
+  {
    "id": "ink-atlas",
    "name": "ink-atlas",
    "tagline": "browse and compare seven ink models on the First Letters surfaces, from a page or an agent",
@@ -7379,73 +8172,73 @@
     {
      "name": "Checks and controls",
      "start_line": 73,
-     "end_line": 114,
+     "end_line": 116,
      "applicable": true
     },
     {
      "name": "Commands and options",
-     "start_line": 115,
-     "end_line": 177,
+     "start_line": 117,
+     "end_line": 179,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 178,
-     "end_line": 200,
+     "start_line": 180,
+     "end_line": 202,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 201,
-     "end_line": 206,
+     "start_line": 203,
+     "end_line": 208,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 207,
-     "end_line": 229,
+     "start_line": 209,
+     "end_line": 231,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 230,
-     "end_line": 246,
+     "start_line": 232,
+     "end_line": 248,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 247,
-     "end_line": 258,
+     "start_line": 249,
+     "end_line": 260,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 259,
-     "end_line": 262,
+     "start_line": 261,
+     "end_line": 264,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 263,
-     "end_line": 272,
+     "start_line": 265,
+     "end_line": 274,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 273,
-     "end_line": 276,
+     "start_line": 275,
+     "end_line": 278,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 277,
-     "end_line": 284,
+     "start_line": 279,
+     "end_line": 287,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 285,
-     "end_line": 291,
+     "start_line": 288,
+     "end_line": 294,
      "applicable": true
     }
    ]
@@ -9619,67 +10412,67 @@
     {
      "name": "Commands and options",
      "start_line": 85,
-     "end_line": 319,
+     "end_line": 331,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 320,
-     "end_line": 323,
+     "start_line": 332,
+     "end_line": 335,
      "applicable": false
     },
     {
      "name": "Inputs",
-     "start_line": 324,
-     "end_line": 330,
+     "start_line": 336,
+     "end_line": 342,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 331,
-     "end_line": 367,
+     "start_line": 343,
+     "end_line": 379,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 368,
-     "end_line": 429,
+     "start_line": 380,
+     "end_line": 442,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 430,
-     "end_line": 452,
+     "start_line": 443,
+     "end_line": 465,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 453,
-     "end_line": 468,
+     "start_line": 466,
+     "end_line": 481,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 469,
-     "end_line": 478,
+     "start_line": 482,
+     "end_line": 491,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 479,
-     "end_line": 482,
+     "start_line": 492,
+     "end_line": 495,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 483,
-     "end_line": 493,
+     "start_line": 496,
+     "end_line": 506,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 494,
-     "end_line": 499,
+     "start_line": 507,
+     "end_line": 512,
      "applicable": true
     }
    ]
@@ -12952,6 +13745,151 @@
    ]
   },
   {
+   "id": "runlength",
+   "name": "runlength",
+   "tagline": "how long a CPU job takes on a cloud CPU flavor",
+   "summary": "`python -m kit.runlength cpu` turns one task timed in a 4-core cloud container into the wall time and a timeout for a job on a measured cloud CPU flavor, from slowdown tables that [cpudiag](cpudiag.md) measured, instead of dividing core-seconds by vCPUs.",
+   "status": "Current",
+   "kind": [
+    "kit entry point",
+    "kit module"
+   ],
+   "area": "Compute and cost",
+   "commands": [
+    "python -m kit.runlength cpu"
+   ],
+   "imports": [
+    "from kit import runlength"
+   ],
+   "code": [
+    {
+     "path": "kit/runlength.py",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_runlength.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed"
+   },
+   "checked": {
+    "date": "2026-11-18",
+    "commit": "c2cb575"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`runlength`",
+    "Status": "Current",
+    "Kind": "kit entry point, kit module",
+    "Area": "Compute and cost",
+    "Run": "`python -m kit.runlength cpu`, `from kit import runlength`",
+    "Code": "`kit/runlength.py`",
+    "Tests": "`tests/test_runlength.py`",
+    "Needs": "Python 3.10 or newer; standard library only",
+    "Runs on": "Any machine; instant",
+    "Network": "None",
+    "Writes": "Nothing (prints only)",
+    "Go-ahead": "Not needed",
+    "Released": "Public `main` from the PR that adds this page (2026-11-18), the CPU estimate only, with [cpudiag](cpudiag.md)",
+    "Checked": "2026-11-18 against commit `c2cb575`"
+   },
+   "page": "docs/tools/runlength.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 22,
+     "end_line": 29,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 30,
+     "end_line": 39,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 40,
+     "end_line": 57,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 58,
+     "end_line": 65,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 66,
+     "end_line": 85,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 86,
+     "end_line": 99,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 100,
+     "end_line": 103,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 104,
+     "end_line": 112,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 113,
+     "end_line": 119,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 120,
+     "end_line": 123,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 124,
+     "end_line": 127,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 128,
+     "end_line": 137,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 138,
+     "end_line": 145,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 146,
+     "end_line": 149,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 150,
+     "end_line": 153,
+     "applicable": true
+    }
+   ]
+  },
+  {
    "id": "s3relay",
    "name": "s3relay",
    "tagline": "a local relay that keeps S3's false 404s away from VC3D",
@@ -13716,6 +14654,11 @@
     "pyramid",
     "verify",
     "publish",
+    "vc3d",
+    "nps",
+    "library",
+    "g1",
+    "g1-compare",
     "info"
    ],
    "imports": [
@@ -13736,7 +14679,7 @@
    },
    "checked": {
     "date": "2026-11-18",
-    "commit": "c2cb575"
+    "commit": "424fb42"
    },
    "license": null,
    "fields": {
@@ -13744,113 +14687,119 @@
     "Status": "Experimental",
     "Kind": "kit module",
     "Area": "Surfaces and tracing",
-    "Run": "`python -m kit.scrollsim2 make`, `estimate`, `pyramid`, `verify`, `publish`, `info`; library `from kit import scrollsim2`",
+    "Run": "`python -m kit.scrollsim2 make`, `estimate`, `pyramid`, `verify`, `publish`, `vc3d`, `nps`, `library`, `g1`, `g1-compare`, `info`; library `from kit import scrollsim2`",
     "Code": "`kit/scrollsim2.py`",
     "Tests": "`tests/test_scrollsim2.py`",
     "Needs": "Python 3.10 or newer, numpy, scipy (ndimage), zarr 3 for `make` (it writes zarr format 2); all in `pip install -e \".[maps]\"`. No scroll data",
     "Runs on": "CPU, any core count (forked workers, at most 16 by default). Smoke scroll (64 x 208 x 208, 4.8 turns): 7.2 s wall on 4 workers, 98 MB peak per process (measured 2026-11-18, 4-core cloud container)",
     "Network": "None",
-    "Writes": "`make OUT`: `OUT/ct.zarr`, `OUT/truth/labels.zarr`, `OUT/truth.json`, `OUT/truth/make-key.json`, `OUT/truth/done.txt`, and with `--surfaces` `OUT/truth/surfaces/spiral-center/` and `spiral-recto/`. `publish SRC DST`: a copy in `DST`. `pyramid OUT`: rewrites CT levels 1 and up",
+    "Writes": "`make OUT`: `OUT/ct.zarr`, `OUT/truth/labels.zarr` (levels as the CT), `OUT/truth.json`, `OUT/truth/make-key.json`, `OUT/truth/done.txt`, with `--truth contact,uvw` `OUT/truth/contact.zarr` and `OUT/truth/uvw.zarr`, and with `--surfaces` `OUT/truth/surfaces/spiral-center/` and `spiral-recto/`; with ink on, `OUT/truth/ink.zarr` and an `ink.tif` in each surface folder. `publish SRC DST`: a copy in `DST`. `pyramid OUT`: rewrites CT and label levels 1 and up. `vc3d SIM OUT`: `OUT/scrollsim2.volpkg.json`, `OUT/volumes/` (links, or copies with `--copy`), `OUT/paths/`",
     "Go-ahead": "Not needed on a local CPU. A rented run follows hard rule 11",
     "Released": "Public `main` since 2026-11-18",
-    "Checked": "2026-11-18 against commit `c2cb575`"
+    "Checked": "2026-11-18 against commit `424fb42`"
    },
    "page": "docs/tools/scrollsim2.md",
    "sections": [
     {
      "name": "What it does",
      "start_line": 22,
-     "end_line": 35,
+     "end_line": 114,
      "applicable": true
     },
     {
      "name": "Realism: in progress",
-     "start_line": 36,
-     "end_line": 43,
+     "start_line": 115,
+     "end_line": 123,
      "applicable": true
     },
     {
      "name": "When to use it",
-     "start_line": 44,
-     "end_line": 55,
+     "start_line": 124,
+     "end_line": 136,
      "applicable": true
     },
     {
      "name": "Quick start",
-     "start_line": 56,
-     "end_line": 66,
+     "start_line": 137,
+     "end_line": 147,
+     "applicable": true
+    },
+    {
+     "name": "Tutorials",
+     "start_line": 148,
+     "end_line": 337,
      "applicable": true
     },
     {
      "name": "Checks and controls",
-     "start_line": 67,
-     "end_line": 81,
+     "start_line": 338,
+     "end_line": 371,
      "applicable": true
     },
     {
      "name": "Commands and options",
-     "start_line": 82,
-     "end_line": 175,
+     "start_line": 372,
+     "end_line": 555,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 176,
-     "end_line": 195,
+     "start_line": 556,
+     "end_line": 595,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 196,
-     "end_line": 216,
+     "start_line": 596,
+     "end_line": 652,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 217,
-     "end_line": 242,
+     "start_line": 653,
+     "end_line": 686,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 243,
-     "end_line": 271,
+     "start_line": 687,
+     "end_line": 757,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 272,
-     "end_line": 279,
+     "start_line": 758,
+     "end_line": 784,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 280,
-     "end_line": 286,
+     "start_line": 785,
+     "end_line": 791,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 287,
-     "end_line": 298,
+     "start_line": 792,
+     "end_line": 804,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 299,
-     "end_line": 302,
+     "start_line": 805,
+     "end_line": 808,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 303,
-     "end_line": 306,
+     "start_line": 809,
+     "end_line": 820,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 307,
-     "end_line": 310,
+     "start_line": 821,
+     "end_line": 824,
      "applicable": true
     }
    ]
@@ -19814,6 +20763,153 @@
      "name": "Related",
      "start_line": 166,
      "end_line": 168,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "voltransform",
+   "name": "voltransform",
+   "tagline": "move points between scan volumes with the revision 2 transforms",
+   "summary": "Reads the open-data catalog after its 16 Nov 2026 change: revisioned volume transforms with their thin-plate splines, superseded t1 segment data, and the lossless vc-delta3d volume copies.",
+   "status": "Current",
+   "kind": [
+    "kit module"
+   ],
+   "area": "Data and downloads",
+   "commands": [
+    "python -m kit.voltransform",
+    "table",
+    "map",
+    "superseded"
+   ],
+   "imports": [
+    "from kit import voltransform"
+   ],
+   "code": [
+    {
+     "path": "kit/voltransform.py",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_voltransform.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed"
+   },
+   "checked": {
+    "date": "2026-11-18",
+    "commit": "c371a7f"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`voltransform`",
+    "Status": "Current",
+    "Kind": "kit module",
+    "Area": "Data and downloads",
+    "Run": "`python -m kit.voltransform` (actions `table`, `map`, `superseded`); library: `from kit import voltransform`",
+    "Code": "`kit/voltransform.py`",
+    "Tests": "`tests/test_voltransform.py`",
+    "Needs": "Python 3.10+; numpy only to move points; `vc-delta3d[zarr]>=0.3.2` and zarr >= 3.1.1 only for `open_volume` on a vcd3d copy",
+    "Runs on": "CPU; `table` and `superseded` under 1 s on a cached catalog, `map` about 1 s per transform file fetched (measured 2026-11-18, 4-core cloud container)",
+    "Network": "vesuvius-challenge-open-data.s3.amazonaws.com: `metadata.json` (cached a day) and `<sample>/transforms/<from>-to-<to>-r<N>/fit/transform.json`",
+    "Writes": "`$KIT_VC3D_HOME/cache/open-data-metadata.json` and `$KIT_VC3D_HOME/cache/transforms/` (cached transform files); nothing else",
+    "Go-ahead": "Not needed",
+    "Released": "Public `main` since its PR (2026-11-18); the same file in Scrolls-private",
+    "Checked": "2026-11-18 against commit `c371a7f`"
+   },
+   "page": "docs/tools/voltransform.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 22,
+     "end_line": 40,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 41,
+     "end_line": 51,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 52,
+     "end_line": 72,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 73,
+     "end_line": 82,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 83,
+     "end_line": 94,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 95,
+     "end_line": 121,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 122,
+     "end_line": 125,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 126,
+     "end_line": 130,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 131,
+     "end_line": 141,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 142,
+     "end_line": 147,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 148,
+     "end_line": 152,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 153,
+     "end_line": 162,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 163,
+     "end_line": 170,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 171,
+     "end_line": 174,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 175,
+     "end_line": 180,
      "applicable": true
     }
    ]

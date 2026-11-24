@@ -1,0 +1,37 @@
+{
+  "schema": "scrolls-media/1",
+  "name": "scrollsim2-surface",
+  "label": "Synthetic demo",
+  "alt": "A 3D view of a synthetic sheet's center surface, a crushed spiral wall about 21 windings deep with one quarter cut away, each winding drawn in one of six repeating colors.",
+  "caption": "Synthetic demo: the whole sheet's center surface from ScrollSim v2, colored by winding number. No scan data.",
+  "license": "Apache-2.0",
+  "release_id": null,
+  "data": null,
+  "sources": [],
+  "outputs": [
+    {
+      "file": "scrollsim2-surface.png",
+      "bytes": 263248,
+      "sha256": "0cad61d161f7e3507484083fd7ef1da2f567b2c4512c5cfd436d0ad06644fb55",
+      "width": 1920,
+      "height": 1140,
+      "kind": "still",
+      "format": "png"
+    }
+  ],
+  "inputs": [],
+  "made": "2026-11-18",
+  "tool": {
+    "scripts": [
+      "common.py",
+      "scrollsim2_demo.py"
+    ],
+    "scripts_sha256": "6e1ef78a32db34fc80738b6169c3165bba1a43cbd3a2abfd6fb0ee1e14d54d3a",
+    "base_commit": "fabbd1e377769e609e934f187a2d426b132fb906"
+  },
+  "command": "python scripts/media/scrollsim2_demo.py --work WORK --out-dir docs/assets/scrollsim2",
+  "scrollsim2": {
+    "vertex_stride": 3,
+    "windings": 22
+  }
+}

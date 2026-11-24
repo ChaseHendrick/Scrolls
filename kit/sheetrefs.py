@@ -355,7 +355,12 @@ def find_meshes(opener=None, sample=SAMPLE, volume=VOLUME, voxel_tag=VOXEL_TAG):
             skipped.append({"folder": folder, "reason": "not a winding (no wNNN in its name)"})
             continue
         sub, _ = _list(d + "mesh/", opener)
-        hit = [s for s in sub if s.rstrip("/").endswith(f"-on-{volume}-{voxel_tag}.tifxyz")]
+        hit = [s for s in sub if re.search(rf"-on-{re.escape(volume)}-{re.escape(voxel_tag)}(-t\d+)?\.tifxyz$",
+                                           s.rstrip("/"))]
+        # a superseded t1 set and its -t2 replacement (16 Nov 2026) sit side by side: keep the highest revision
+        from . import voltransform
+        top = max((voltransform.path_revision(s) for s in hit), default=None)
+        hit = [s for s in hit if voltransform.path_revision(s) == top]
         if not hit:
             skipped.append({"folder": folder, "reason": f"no tifxyz in the frame of {volume}"})
             continue

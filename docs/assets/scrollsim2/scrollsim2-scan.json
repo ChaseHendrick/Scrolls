@@ -1,0 +1,55 @@
+{
+  "schema": "scrolls-media/1",
+  "name": "scrollsim2-scan",
+  "label": "Synthetic demo",
+  "alt": "Four panels: the same synthetic crop of papyrus windings three times, first plain, then with synchrotron settings (sharper sheet edges with a bright rim, fine grainy noise and faint rings), then with lab settings (softer, blotchier noise, stronger rings and slightly darker sheets toward the middle of the roll); the fourth panel is a line chart of each version's noise power against frequency on a log scale.",
+  "caption": "Synthetic demo: one ScrollSim v2 crop under no scan model, --scan synchrotron and --scan lab, with each noise power spectrum. No scan data.",
+  "license": "Apache-2.0",
+  "release_id": null,
+  "data": null,
+  "sources": [],
+  "outputs": [
+    {
+      "file": "scrollsim2-scan.png",
+      "bytes": 587692,
+      "sha256": "6528974ca23e37697317f2eeae203382087f3f28a5ff99bf28f87944550b4112",
+      "width": 1920,
+      "height": 540,
+      "kind": "still",
+      "format": "png"
+    }
+  ],
+  "inputs": [],
+  "made": "2026-11-18",
+  "tool": {
+    "scripts": [
+      "common.py",
+      "scrollsim2_demo.py"
+    ],
+    "scripts_sha256": "2c07b385beae8e504345d5c315e2ff3d4f0fd00420db6d2231c7be63c8118253",
+    "base_commit": "49a74ac9b1977d9b30cae39751d3a13471511d7e"
+  },
+  "command": "python scripts/media/scrollsim2_demo.py --work WORK --out-dir docs/assets/scrollsim2",
+  "scrollsim2": {
+    "crop_zyx": [
+      40,
+      56,
+      128,
+      512,
+      128,
+      512
+    ],
+    "slice_z": 48,
+    "nps": {
+      "none": {
+        "variance": 9.146
+      },
+      "synchrotron": {
+        "variance": 12.242
+      },
+      "lab": {
+        "variance": 9.227
+      }
+    }
+  }
+}

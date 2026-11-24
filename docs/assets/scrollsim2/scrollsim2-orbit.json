@@ -1,0 +1,39 @@
+{
+  "schema": "scrolls-media/1",
+  "name": "scrollsim2-orbit",
+  "label": "Synthetic demo",
+  "alt": "Animation of a synthetic sheet's center surface turning once: a crushed spiral wall about 21 windings deep with one quarter cut away, each winding in one of six repeating colors.",
+  "caption": "Synthetic demo: the ScrollSim v2 center surface turning once, colored by winding number. No scan data.",
+  "license": "Apache-2.0",
+  "release_id": null,
+  "data": null,
+  "sources": [],
+  "outputs": [
+    {
+      "file": "scrollsim2-orbit.gif",
+      "bytes": 541042,
+      "sha256": "197130b37bc5240dbbf3d9c39588d4df1c67e8d8f403cf4a138f342ae406105f",
+      "width": 640,
+      "height": 460,
+      "kind": "clip",
+      "format": "gif"
+    }
+  ],
+  "inputs": [],
+  "made": "2026-11-18",
+  "tool": {
+    "scripts": [
+      "common.py",
+      "scrollsim2_demo.py"
+    ],
+    "scripts_sha256": "db18eba53aa44c6589cfe4f0df3f745fd037a41ea9a3e9dd9f3b466e9355e273",
+    "base_commit": "41846a72c51615e46ea903ea3ed9d7c63afae4ac"
+  },
+  "command": "python scripts/media/scrollsim2_demo.py --work WORK --out-dir docs/assets/scrollsim2",
+  "scrollsim2": {
+    "frames": 28,
+    "frame_ms": 110,
+    "vertex_stride": 4,
+    "swing_deg": 50.0
+  }
+}

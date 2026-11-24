@@ -1,0 +1,46 @@
+{
+  "schema": "scrolls-media/1",
+  "name": "scrollsim2-vc3d",
+  "label": "Synthetic demo",
+  "alt": "The VC3D window with a synthetic ScrollSim v2 scroll open: the XY view shows the crushed spiral of windings with the center surface traced in orange on every winding, a side view, and the CT sampled along that surface.",
+  "caption": "Synthetic demo: a ScrollSim v2 scroll exported with kit.scrollsim2 vc3d and opened in VC3D, its center surface traced on every winding. No scan data.",
+  "license": "Apache-2.0",
+  "release_id": null,
+  "data": null,
+  "sources": [],
+  "outputs": [
+    {
+      "file": "scrollsim2-vc3d.png",
+      "bytes": 215263,
+      "sha256": "9efa3007f5f0ffcb08f063eea3c0fb273058f7f6595e92ff5b3ffbdec2281f2d",
+      "width": 796,
+      "height": 796,
+      "kind": "still",
+      "format": "png"
+    }
+  ],
+  "inputs": [],
+  "made": "2026-11-18",
+  "tool": {
+    "scripts": [
+      "common.py",
+      "scrollsim2_demo.py"
+    ],
+    "scripts_sha256": "6e1ef78a32db34fc80738b6169c3165bba1a43cbd3a2abfd6fb0ee1e14d54d3a",
+    "base_commit": "50354cc1dc38a5cc190ffa9c82a61f05fe9b3032"
+  },
+  "command": "python -m kit.scrollsim2 vc3d SIM OUT on the 96 x 640 x 640 scroll of scrollsim2_demo.py, then VC3D 7154682 (villa AppImage of 28 Oct 2026) offscreen with its agent bridge: open OUT/scrollsim2.volpkg.json, attach both surfaces, viewer.zoom 3 on the XY, XZ and YZ viewers, screenshot.capture of the window",
+  "vc3d": {
+    "build": "7154682-2026-10-28",
+    "bridge_calls": [
+      "volume.open",
+      "segments.attach",
+      "segments.activate",
+      "viewer.zoom",
+      "screenshot.capture"
+    ]
+  },
+  "code": [
+    "kit/scrollsim2.py"
+  ]
+}

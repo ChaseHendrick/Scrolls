@@ -1,0 +1,52 @@
+{
+  "schema": "scrolls-media/1",
+  "name": "scrollsim2-ink-layers",
+  "label": "Synthetic demo",
+  "alt": "Animation of three stacked strips of a flattened synthetic sheet, stepping through layers from the gap beside the inked face into the sheet: CT with ink, the noink twin, and their difference, where random letters appear only in the layers nearest the face.",
+  "caption": "Synthetic demo: layers through a ScrollSim v2 sheet at its inked face, ink beside the noink twin and their difference. Random letters, not text; not a reading. No scan data.",
+  "license": "Apache-2.0",
+  "release_id": null,
+  "data": null,
+  "sources": [],
+  "outputs": [
+    {
+      "file": "scrollsim2-ink-layers.gif",
+      "bytes": 1169529,
+      "sha256": "82f65ecd6ca13f402c54f2463b81837f84242b20006a3dae19bc135935b94c13",
+      "width": 620,
+      "height": 596,
+      "kind": "clip",
+      "format": "gif"
+    }
+  ],
+  "inputs": [],
+  "made": "2026-11-18",
+  "tool": {
+    "scripts": [
+      "common.py",
+      "scrollsim2_demo.py"
+    ],
+    "scripts_sha256": "db18eba53aa44c6589cfe4f0df3f745fd037a41ea9a3e9dd9f3b466e9355e273",
+    "base_commit": "41846a72c51615e46ea903ea3ed9d7c63afae4ac"
+  },
+  "command": "python scripts/media/scrollsim2_demo.py --work WORK --out-dir docs/assets/scrollsim2",
+  "scrollsim2": {
+    "frames": 14,
+    "frame_ms": 450,
+    "shifts": [
+      -3.0,
+      -2.0,
+      -1.0,
+      0.0,
+      1.0,
+      2.0,
+      3.0,
+      4.0
+    ],
+    "s_range": [
+      6311.316926760094,
+      6610.316926760094
+    ],
+    "diff_lim": 19.38
+  }
+}

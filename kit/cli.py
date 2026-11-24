@@ -1,4 +1,4 @@
-"""Command line: python -m kit {start,help,prizes,submitcheck,live,style,stages,doctor,plan,cost,find,labels,centerline,cite,fetch,s3relay,vc3dcache,prclock,prtext,villaports,verify,rowscore,auc,hpscore,overlap,collate,stackcheck,tifxyz,sheetview,atlas,coverage,uvgate,windconsistency,axispolish,windlabel-box,hopbench,meshaudit,snap,labelsnap,finesnap,ensemble,fibertensor,sheetcheck,labelsuggest,altrain,gate,layers,shuffle,provenance,compute,run,surfacefix,phantom,view,strokenet,letterread,letterlines,letterdemo,greeklm,releases,spaceconnect,leaderboard,routines,stale,integrity,volumeview,segzoo,fibers,scroll2ink,vxsummary,zarrbox,expatlas,sentinel}.
+"""Command line: python -m kit {start,help,prizes,submitcheck,live,style,stages,doctor,plan,cost,find,labels,centerline,cite,fetch,s3relay,vc3dcache,prclock,prtext,villaports,verify,rowscore,auc,hpscore,overlap,collate,stackcheck,tifxyz,sheetview,atlas,coverage,uvgate,windconsistency,axispolish,windlabel-box,hopbench,meshaudit,snap,labelsnap,finesnap,ensemble,fibertensor,sheetcheck,labelsuggest,altrain,gate,layers,shuffle,provenance,compute,run,surfacefix,phantom,view,strokenet,letterread,letterlines,letterdemo,greeklm,releases,spaceconnect,leaderboard,routines,drivers,freeze,reviewpin,hubcall,stale,integrity,volumeview,segzoo,fibers,scroll2ink,vxsummary,zarrbox,expatlas,sentinel}.
 
 An installed package (pyproject.toml) has the same commands as console scripts: scrolls-workbench (every command;
 gate, releases and leaderboard read the repository's docs/ and README.md, so they need a clone), and scrolls-letterread,
@@ -1037,7 +1037,7 @@ GROUPS = (
                                            "strokenet", "fibertensor", "sheetcheck", "phantom", "shuffle", "gate",
                                            "leaderboard", "labelsuggest", "altrain")),
     ("Letters and text", ("letterread", "letterlines", "letterdemo", "greeklm")),
-    ("Runs and records", ("run", "provenance", "compute", "routines")),
+    ("Runs and records", ("run", "provenance", "compute", "routines", "drivers", "freeze", "reviewpin", "hubcall")),
     ("villa pull requests and issues", ("prclock", "prtext", "villaports")),
     ("This repository", ("releases", "spaceconnect", "vxsummary", "stale", "integrity")),
 )
@@ -1762,6 +1762,30 @@ def build_parser(prog="python -m kit", sub_progs=None):
     from . import routines
     routines.add_arguments(p)
     p.set_defaults(func=routines.run)
+
+    p = sub.add_parser("drivers", help="background jobs that cannot die unnoticed: start, status (lost after a kill "
+                                       "or reboot), revive restartable ones, stop, log (kit/drivers.py)")
+    from . import drivers
+    drivers.add_arguments(p)
+    p.set_defaults(func=drivers.run)
+
+    p = sub.add_parser("freeze", help="freeze a run by hash: register the exact files it executes, check them, pin "
+                                      "the commit, collect the run (kit/freeze.py)")
+    from . import freeze
+    freeze.add_arguments(p)
+    p.set_defaults(func=freeze.run)
+
+    p = sub.add_parser("reviewpin", help="tie a review verdict to the commit it covered and say whether it still "
+                                         "covers a pull request's head (kit/reviewpin.py)")
+    from . import reviewpin
+    reviewpin.add_arguments(p)
+    p.set_defaults(func=reviewpin.run)
+
+    p = sub.add_parser("hubcall", help="Hugging Face Hub calls and 429s per caller in this machine's log "
+                                       "(kit/hubcall.py)")
+    from . import hubcall
+    hubcall.add_arguments(p)
+    p.set_defaults(func=hubcall.run)
 
     p = sub.add_parser("stale", help="what live pages and registries still say that is no longer true: old handoff "
                                      "rows, gone branches, retired names, dead links, MAP rows (kit/stale.py; read-only)")
