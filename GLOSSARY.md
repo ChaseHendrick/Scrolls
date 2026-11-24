@@ -294,6 +294,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **MedSAM2**: SAM 2 fine-tuned on 3D medical images and video. Its weights are licensed for research and education only, so nothing trained from it is released here.
 
+**merge driver**: A program git runs instead of its line merge for files listed in `.gitattributes`; [`kit.mergedriver`](docs/tools/mergedriver.md) merges CSV tables by row, JSON registries by entry and indexes by line, and falls back to git's line merge on a real conflict.
+
 **mesh**: A connected surface made of vertices and faces. Traced segments are stored as meshes, usually in tifxyz form.
 
 **m7**: The organizers' public surface prediction for PHerc0139 scan 20250728140407 (`...-surface-m7-L0-th0.2.zarr` under `PHerc0139/representations/predictions/surfaces/`), stored as 0 or 255. `kit hopbench` uses it as its default prediction and baseline.

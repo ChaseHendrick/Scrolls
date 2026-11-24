@@ -10478,6 +10478,153 @@
    ]
   },
   {
+   "id": "mergedriver",
+   "name": "mergedriver",
+   "tagline": "git merge drivers for tables, registries and indexes that many branches append to",
+   "summary": "`python -m kit.mergedriver` installs git merge drivers that merge CSV tables by row, JSON registries by entry and Markdown indexes and JSON-lines logs by line, so two branches that each add a row no longer conflict, while a real conflict still stops the merge.",
+   "status": "Current",
+   "kind": [
+    "kit entry point",
+    "kit module"
+   ],
+   "area": "Releases and repository",
+   "commands": [
+    "python -m kit.mergedriver install",
+    "python -m kit.mergedriver status",
+    "python -m kit.mergedriver attributes"
+   ],
+   "imports": [
+    "from kit import mergedriver"
+   ],
+   "code": [
+    {
+     "path": "kit/mergedriver.py",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_mergedriver.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed"
+   },
+   "checked": {
+    "date": "2026-11-18",
+    "commit": "f16c9e3"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`mergedriver`",
+    "Status": "Current",
+    "Kind": "kit entry point, kit module",
+    "Area": "Releases and repository",
+    "Run": "`python -m kit.mergedriver install`, `python -m kit.mergedriver status`, `python -m kit.mergedriver attributes`, `from kit import mergedriver`",
+    "Code": "`kit/mergedriver.py`",
+    "Tests": "`tests/test_mergedriver.py`",
+    "Needs": "Python 3.10 or newer (standard library only) and git 2.x on `PATH`; kit importable as `python3 -m kit.mergedriver` from the clone's top folder (a clone of this repository, or kit on `PYTHONPATH`)",
+    "Runs on": "Any machine; a merge of a file takes milliseconds",
+    "Network": "None",
+    "Writes": "`install`: `merge.kit-csv.*`, `merge.kit-json.*` and `merge.kit-lines.*` in the clone's `.git/config`. A driver run (git calls it): the merged file into git's OURS temporary file",
+    "Go-ahead": "Not needed",
+    "Released": "Public `main` from the PR that adds this page (2026-11-18)",
+    "Checked": "2026-11-18 against commit `f16c9e3`"
+   },
+   "page": "docs/tools/mergedriver.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 22,
+     "end_line": 33,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 34,
+     "end_line": 42,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 43,
+     "end_line": 63,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 64,
+     "end_line": 69,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 70,
+     "end_line": 97,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 98,
+     "end_line": 118,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 119,
+     "end_line": 122,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 123,
+     "end_line": 133,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 134,
+     "end_line": 153,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 154,
+     "end_line": 157,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 158,
+     "end_line": 161,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 162,
+     "end_line": 171,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 172,
+     "end_line": 179,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 180,
+     "end_line": 183,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 184,
+     "end_line": 186,
+     "applicable": true
+    }
+   ]
+  },
+  {
    "id": "meshaudit",
    "name": "meshaudit",
    "tagline": "audit published cross-scan transforms, meshes and render depth",
