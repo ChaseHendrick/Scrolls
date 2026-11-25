@@ -55,6 +55,7 @@ import argparse
 import hashlib
 import json
 import math
+import re
 import os
 import sys
 import time
@@ -1986,11 +1987,180 @@ def load_library(path):
 # ---------------------------------------------------------------------------------------------------- G1 statistics
 # Label-free realism statistics of a CT crop, real or simulated: sheet and gap run lengths, normalized gray levels,
 # noise and its correlation, drift, structure-tensor coherence, waviness, ply splits and bright inclusions.
-G1_VERSION = 1
+# Version 2 (18 Nov 2026, before it was run on any real crop) adds the contact statistics of pressed and touching sheets:
+# peak_spacing, dip_depth, close_pair_share, shallow_dip_share, band_thick, contact_extent and contact_share.
+# Version 3 (19 Nov 2026, before it was run on any real crop) adds contact_column_lift: how much more often the next
+# interface outward along a normal is a close pair, given this one is (formation physics predicts columns of contacts),
+# its within-profile shuffle control contact_column_lift_perm, and gap_noise_zratio, the sd of gap noise differences
+# along z over that in-plane (projection-space CT physics predicts noise that is not isotropic).
+G1_VERSION = 3
 QN = 101            # quantiles kept per distribution (0, 1, ..., 100 percent)
-G1_DIST = ("sheet_runs", "gap_runs", "sheet_gray", "gap_gray", "coherence", "normal_turn")
+G1_DIST = ("sheet_runs", "gap_runs", "sheet_gray", "gap_gray", "coherence", "normal_turn", "peak_spacing",
+           "dip_depth", "band_thick", "contact_extent")
 G1_SCALAR = ("touching_share", "closed_share", "gap_q05", "gap_noise", "slice_drift", "ply_split_share",
-             "bright_share")
+             "bright_share", "close_pair_share", "shallow_dip_share", "contact_share", "contact_column_lift",
+             "contact_column_lift_perm", "contact_column_lift_lo", "contact_column_excess_lo", "gap_noise_zratio")
+CLOSE_PAIR = 6.0     # adjacent sheet peaks at most this many target voxels apart (about one real band width) are a close pair
+SHALLOW_DIP = 0.3    # a dip under this (normalized gray, sheet median 1) between adjacent peaks counts as shallow
+FUSED = 1.6          # a band thicker than this many times the lower-quartile band counts as fused (two sheets, no gap)
+G1_SLICES = 8        # slices sampled per crop, whatever its height (version 3: simulated and real crops alike)
+G1_IQR_FLOOR = {"sheet_runs": 0.5, "gap_runs": 0.5, "peak_spacing": 0.5, "band_thick": 0.5, "contact_extent": 0.5,
+                "sheet_gray": 0.01, "gap_gray": 0.01, "dip_depth": 0.01, "coherence": 0.01, "normal_turn": 0.01}
+PERM_N = 20          # contact_column_lift_perm is the mean over this many seeded within-profile shuffles
+COLUMN_MIN = 20      # contact_column_lift needs at least this many close interfaces with a next interface, else None
+COLUMN_BOOT = 200    # cluster bootstrap resamples for contact_column_lift_lo and contact_column_excess_lo
+COLUMN_SPAN = 1.5    # a stacked step spans over this many times the crop's median band_thick (three separate bands)
+HOLDOUT_SCANS = ()   # names of sealed hold-out scans (scan id, scroll name or box id, matched case-insensitively): a
+# frozen test lists its own here so they never enter g1-compare as --real; empty in the released kit
+SCAN_ID = re.compile(r"(?<!\d)\d{14}(?!\d)")   # an open-data scan id: a 14-digit timestamp
+MASK_ERODE = 2                        # zero voxels are opened by a ball of this radius before the component test
+MASK_COMPONENT = 4096                 # zero voxels count as masked fill only in 3D components at least this large
+
+
+def _peaks(prof, floor, sep=3):
+    """Indices of local maxima of PROF above FLOOR, in order, after non-maximum suppression: taken highest first, a
+    maximum closer than SEP to one already kept is dropped (so a run of small maxima does not chain into one)."""
+    mx = [i for i in range(1, len(prof) - 1) if prof[i] >= prof[i - 1] and prof[i] > prof[i + 1] and prof[i] > floor]
+    kept = []
+    for i in sorted(mx, key=lambda j: (-float(prof[j]), j)):
+        if all(abs(i - k) >= sep for k in kept):
+            kept.append(i)
+    return sorted(kept)
+
+
+def _pairs(ps, pk):
+    """Adjacent peak pairs of profile PS at peak indices PK: (spacing in samples, dip = lower peak minus the lowest
+    value between them)."""
+    return [(int(i1 - i0), float(min(ps[i0], ps[i1]) - ps[i0:i1 + 1].min())) for i0, i1 in zip(pk[:-1], pk[1:])]
+
+
+def _column_counts(flags, spans, span_min):
+    """(steps, close now, close now and next across three bands, close next) of one profile: FLAGS are its adjacent
+    peak pairs' close flags in order along the normal, SPANS the outer span p[i+2] - p[i] of each step. A close-close
+    step counts as stacked only when its span is over SPAN_MIN, so three peaks inside one multi-peaked band (split
+    plies, fiber texture) are not read as three stacked windings."""
+    n = nc = both = close = 0
+    for k in range(len(flags) - 1):
+        a, b = flags[k], flags[k + 1]
+        n += 1
+        nc += a
+        both += a and b and spans[k] > span_min
+        close += b
+    return n, nc, both, close
+
+
+def _lift_of(c):
+    """The lift of summed counts C = (steps, close now, stacked, close next); None when undefined or thin."""
+    n, nc, both, close = (float(x) for x in c)
+    if nc < COLUMN_MIN or n == 0 or close == 0 or close == n:
+        return None
+    return (both / nc) / (close / n)
+
+
+def _column_lift(seqs, span_min=0.0, seed=0, boot=None):
+    """contact_column_lift from SEQS, one (cluster, flags, spans) per normal profile (see _column_counts):
+    P(the next interface is close and a separate band | this one is close) over P(an interface is close). 1 means
+    contacts fall independently of their neighbors; above 1, contacts stack in columns across windings. Returns
+    (lift, perm, lift_lo, excess_lo): PERM is the mean lift over PERM_N seeded shuffles of each profile's flags
+    within it (spans stay in place), the control for crops where some regions are simply more crushed; LIFT_LO and
+    EXCESS_LO are the 5th percentiles, over BOOT (default COLUMN_BOOT) resamples of whole (slice, tile) clusters with
+    replacement, of the lift and of the lift minus one shuffle's lift. None where undefined (fewer than COLUMN_MIN
+    close interfaces)."""
+    np = _np()
+    boot = COLUMN_BOOT if boot is None else boot
+    if not seqs:
+        return None, None, None, None
+    rng = np.random.default_rng(seed)
+    cnt = np.array([_column_counts(f, sp, span_min) for _, f, sp in seqs], float)
+    pc = np.array([[_column_counts(list(rng.permutation(f)) if len(f) > 1 else f, sp, span_min)
+                    for _, f, sp in seqs] for _ in range(PERM_N)], float)
+    lift = _lift_of(cnt.sum(0))
+    if lift is None:
+        return None, None, None, None
+    perms = [x for x in (_lift_of(pc[k].sum(0)) for k in range(PERM_N)) if x is not None]
+    perm = float(np.mean(perms)) if perms else None
+    keys = sorted({c for c, _, _ in seqs})
+    idx = {c: i for i, c in enumerate(keys)}
+    cl = np.array([idx[c] for c, _, _ in seqs])
+    lb, eb = [], []
+    for b in range(boot):
+        w = np.bincount(rng.integers(0, len(keys), len(keys)), minlength=len(keys))[cl].astype(float)
+        lv = _lift_of(w @ cnt)
+        pv = _lift_of(w @ pc[b % PERM_N])
+        if lv is not None:
+            lb.append(lv)
+            if pv is not None:
+                eb.append(lv - pv)
+    lo = float(np.percentile(lb, 5)) if len(lb) >= boot // 2 else None
+    elo = float(np.percentile(eb, 5)) if len(eb) >= boot // 2 else None
+    r = lambda x: None if x is None else round(x, 4)
+    return r(lift), r(perm), r(lo), r(elo)
+
+
+def _ridge_widths(np, nd, sheet2d, m2d, thr, Jxx, Jyy, Jxy, reach=24, step=0.25):
+    """Ridge points of one slice's sheet mask and the band width through each, measured across the band. The local
+    normal comes from the smoothed structure tensor (JXX, JYY, JXY); a ridge point is a sheet pixel whose distance
+    to the gap is at least that at one voxel either way along the normal (so a band that widens along its length
+    keeps its centre line). The width is the distance between the two places where the smoothed slice M2D falls
+    below the sheet threshold THR along the normal, sampled every STEP voxels with linear interpolation and the
+    crossing interpolated, so it does not depend on band parity or orientation. A width with a crossing cut by
+    the slice edge, or with either half (centre to crossing) beyond REACH voxels, is left out: it is not observed,
+    and is counted in _ridge_widths.dropped. Returns (ys, xs, widths)."""
+    d = nd.distance_transform_edt(sheet2d)
+    ang = 0.5 * np.arctan2(2 * Jxy, Jxx - Jyy)
+    ny, nx = np.sin(ang), np.cos(ang)
+    ys, xs = np.nonzero(d >= 1)
+    if ys.size == 0:
+        return ys, xs, np.zeros(0)
+    vy, vx = ny[ys, xs], nx[ys, xs]
+    dp = nd.map_coordinates(d, [ys + vy, xs + vx], order=1, mode="nearest")
+    dm = nd.map_coordinates(d, [ys - vy, xs - vx], order=1, mode="nearest")
+    r = (d[ys, xs] >= dp) & (d[ys, xs] >= dm)
+    ys, xs, vy, vx = ys[r], xs[r], vy[r], vx[r]
+    t = np.arange(0.0, reach + step, step)
+    width = np.zeros(ys.size)
+    ok = np.ones(ys.size, bool)
+    rows = np.arange(ys.size)
+    for sgn in (1.0, -1.0):
+        py = ys[:, None] + sgn * t[None] * vy[:, None]
+        px = xs[:, None] + sgn * t[None] * vx[:, None]
+        val = nd.map_coordinates(m2d, [py.ravel(), px.ravel()], order=1, mode="constant",
+                                 cval=np.nan).reshape(py.shape)
+        above = val > thr
+        run = np.cumprod(above, axis=1).sum(axis=1)            # samples above THR from the centre on
+        good = (run >= 1) & (run < t.size)
+        i = np.minimum(np.maximum(run, 1), t.size - 1)
+        v0, v1 = val[rows, i - 1], val[rows, i]
+        good &= np.isfinite(v1)                                # the crossing lies inside the slice
+        frac = np.where(good, (v0 - thr) / np.where(v0 - v1 > 0, v0 - v1, 1.0), 0.0)
+        width += t[i - 1] + np.clip(frac, 0, 1) * step
+        ok &= good
+    _ridge_widths.dropped += int((~ok).sum())
+    return ys[ok], xs[ok], width[ok]
+
+
+_ridge_widths.dropped = 0         # ridge points whose width was not observed, counted per g1stats call
+
+
+def _fused_pieces(np, nd, ys, xs, fused_mask_shape, keep):
+    """In-plane length of each 8-connected fused ridge piece (after a 1-voxel dilation joins a ridge broken by one
+    pixel): the range of its points along their first principal axis, plus one, so it does not depend on the
+    piece's orientation."""
+    m = np.zeros(fused_mask_shape, bool)
+    m[ys[keep], xs[keep]] = True
+    lab, n = nd.label(nd.binary_dilation(m, np.ones((3, 3), bool)), np.ones((3, 3), int))
+    out = []
+    li = lab[ys[keep], xs[keep]]
+    for k in range(1, n + 1):
+        pts = np.stack([ys[keep][li == k], xs[keep][li == k]], 1).astype(float)
+        if len(pts) == 1:
+            out.append(1)
+            continue
+        c = pts - pts.mean(0)
+        u = np.linalg.svd(c, full_matrices=False)[2][0]
+        proj = c @ u
+        out.append(int(round(float(proj.max() - proj.min()) + 1)))
+    return out
 
 
 def resample(vol, voxel_um, target_um):
@@ -2026,9 +2196,24 @@ def g1stats(vol, voxel_um, target_um=8.64, tile=32, step=3, seed=0):
     tensor coherence of papyrus tiles; normal_turn: angle change of the sheet normal between neighboring tiles
     (waviness); ply_split_share: sheet runs of 4 voxels or more whose profile has two maxima with a dip of at least
     0.1; bright_share: voxels above 1.6 (inclusions). Ring energy needs the scan center, which a crop does not hold,
-    so it is not measured here."""
+    so it is not measured here.
+
+    Contact statistics (version 2), for pressed and touching sheets: peak_spacing, the distance between adjacent
+    sheet peaks along the normal (on the 1-voxel-smoothed slice, maxima above the threshold, closer than 3 voxels
+    suppressed highest first); dip_depth, the lower peak minus the lowest gray between them; close_pair_share,
+    pairs at most CLOSE_PAIR apart; shallow_dip_share, dips under SHALLOW_DIP; band_thick, the band's width across
+    it at each ridge point, between the threshold crossings of the smoothed crop (widths cut by the slice edge left
+    out); contact_share, the share of
+    ridge points wider than FUSED times the crop's lower-quartile width (fused bands); contact_extent, the in-plane
+    length of each fused piece along its principal axis (voxels)."""
     np = _np()
     nd = _ndi()
+    vol = np.asarray(vol)
+    if vol.dtype.kind == "f" and not np.isfinite(vol).all():
+        raise SimError("the crop holds NaN or Inf voxels; g1 measures finite CT only")
+    zero_share = float((vol == 0).mean())             # every exact 0 (dark gaps can hold a few in uint8)
+    mask_share = _mask_share(np, nd, vol)             # zeros in large 3D components: masked fill (over 1% refuses a box)
+    _ridge_widths.dropped = 0
     v = resample(vol, voxel_um, target_um)
     if min(v.shape[1:]) < 2 * tile or v.shape[0] < 8:
         raise SimError(f"the crop is {list(v.shape)} voxels at {target_um} um; g1 needs {2 * tile} in y and x and 8 "
@@ -2045,14 +2230,19 @@ def g1stats(vol, voxel_um, target_um=8.64, tile=32, step=3, seed=0):
         raise SimError("sheet is not brighter than gap in this crop")
     g = (v - gap_med) / c
     Z, H, W = g.shape
-    zs = np.unique(np.linspace(tile // 2, Z - 1 - tile // 2, max(2, min(8, Z // tile))).round().astype(int))
+    zs = np.unique(np.linspace(tile // 2, Z - 1 - tile // 2, G1_SLICES).round().astype(int))   # same count for every crop
     zs = zs[(zs >= 0) & (zs < Z)]
+    if zs.size < G1_SLICES:
+        raise SimError(f"the crop has {Z} slices at {target_um} um; g1 samples {G1_SLICES} distinct slices and needs "
+                       f"at least {tile + G1_SLICES} slices")
     runs_s, runs_g, coh, turn, splits, nsplit = [], [], [], [], 0, 0
+    spacing, dips, ridges, seqs = [], [], [], []
     thr_n = (thr - gap_med) / c
     for z in zs:
         img = nd.gaussian_filter(g[z], 1.0)
         gy, gx = np.gradient(img)
         Jxx, Jyy, Jxy = (nd.gaussian_filter(a, 4) for a in (gx * gx, gy * gy, gx * gy))
+        ridges.append(_ridge_widths(np, nd, sheet[z], m[z], thr, Jxx, Jyy, Jxy))
         angs = {}
         for y0 in range(0, H - tile + 1, tile):
             for x0 in range(0, W - tile + 1, tile):
@@ -2074,6 +2264,14 @@ def g1stats(vol, voxel_um, target_um=8.64, tile=32, step=3, seed=0):
                     if ok.sum() < tile:
                         continue
                     prof = nd.map_coordinates(g[z], [py[ok], px[ok]], order=1)
+                    ps = nd.map_coordinates(img, [py[ok], px[ok]], order=1)
+                    pk = _peaks(ps, thr_n)
+                    pp = _pairs(ps, pk)
+                    for sp, dp in pp:
+                        spacing.append(sp)
+                        dips.append(dp)
+                    seqs.append(((int(z), y0, x0), [sp <= CLOSE_PAIR for sp, _ in pp],
+                                 [int(pk[k + 2] - pk[k]) for k in range(len(pk) - 2)]))
                     on = prof > thr_n
                     edges = np.flatnonzero(np.diff(on.astype(np.int8))) + 1
                     pieces = np.split(np.arange(len(on)), edges)
@@ -2106,7 +2304,32 @@ def g1stats(vol, voxel_um, target_um=8.64, tile=32, step=3, seed=0):
     pap_mean = [float(g[z][sheet[z]].mean()) for z in range(Z) if sheet[z].any()]
     s_ = np.asarray(runs_s, float)
     g_ = np.asarray(runs_g, float)
-    return {"g1_version": G1_VERSION, "voxel_um": float(voxel_um), "target_um": float(target_um),
+    sp_ = np.asarray(spacing, float)
+    dp_ = np.asarray(dips, float)
+    thick = np.concatenate([w for _, _, w in ridges]) if ridges else np.zeros(0)
+    extent, n_fused = [], 0
+    if thick.size >= 10:
+        cut = FUSED * float(np.percentile(thick, 25))           # one cutoff for the whole crop
+        for ys, xs, w in ridges:
+            keep = w > cut
+            n_fused += int(keep.sum())
+            if keep.any():
+                extent.extend(_fused_pieces(np, nd, ys, xs, g.shape[1:], keep))
+    n_ridge = int(thick.size)
+    span_min = COLUMN_SPAN * float(np.median(thick)) if thick.size else 0.0
+    lift, lift_perm, lift_lo, excess_lo = _column_lift(seqs, span_min, seed=seed)
+    dz = g[1:] - g[:-1]
+    mz = deep[1:] & deep[:-1]
+    dy = g[:, 1:] - g[:, :-1]
+    my = deep[:, 1:] & deep[:, :-1]
+    inplane = np.concatenate([dd, dy[my]])
+    zratio = (round(float(np.std(dz[mz]) / np.std(inplane)), 4)
+              if mz.sum() > 100 and inplane.size > 100 and np.std(inplane) > 0 else None)
+    out = {"g1_version": G1_VERSION, "code_sha256": code_sha256(), "voxel_um": float(voxel_um),
+            "target_um": float(target_um), "zero_share": round(zero_share, 6),
+            "mask_share": round(mask_share, 6), "ridge_dropped_share": round(_ridge_widths.dropped / max(1, n_ridge +
+            _ridge_widths.dropped), 4), "ridge_points": n_ridge,
+            "ridge_dropped": int(_ridge_widths.dropped),
             "shape": [int(x) for x in g.shape], "slices": [int(x) for x in zs],
             "sheet_share_voxels": round(float(sheet.mean()), 4), "contrast_raw": round(c, 3),
             "sheet_runs": _q(np, s_), "gap_runs": _q(np, g_), "runs": [int(s_.size), int(g_.size)],
@@ -2120,19 +2343,70 @@ def g1stats(vol, voxel_um, target_um=8.64, tile=32, step=3, seed=0):
             "coherence": _q(np, coh), "normal_turn": _q(np, turn),
             "ply_split_share": round(splits / nsplit, 4) if nsplit else None,
             "bright_share": round(float((g > 1.6).mean()), 5),
+            "peak_spacing": _q(np, sp_), "dip_depth": _q(np, dp_), "band_thick": _q(np, thick),
+            "contact_extent": _q(np, extent), "peak_pairs": int(sp_.size), "contact_pieces": len(extent),
+            "close_pair_share": round(float((sp_ <= CLOSE_PAIR).mean()), 4) if sp_.size else None,
+            "shallow_dip_share": round(float((dp_ < SHALLOW_DIP).mean()), 4) if dp_.size else None,
+            "contact_share": round(n_fused / n_ridge, 4) if n_ridge else None,
+            "contact_column_lift": lift, "contact_column_lift_perm": lift_perm,
+            "contact_column_lift_lo": lift_lo, "contact_column_excess_lo": excess_lo,
+            "column_span_min": round(span_min, 3), "gap_noise_zratio": zratio,
             "not_measured": ["ring_energy (needs the scan center)"]}
+    _all_finite(out)
+    return out
+
+
+def is_holdout(name):
+    """True when NAME (a scan field or a file path) names a sealed hold-out scan listed in HOLDOUT_SCANS."""
+    low = re.sub(r"[^a-z0-9]", "", str(name).lower())    # PHerc0001-A and pherc_0001_a both match
+    return any(re.sub(r"[^a-z0-9]", "", h.lower()) in low for h in HOLDOUT_SCANS)
+
+
+def _mask_share(np, nd, vol):
+    """Share of the crop's voxels that are exact 0 in 3D 6-connected components of at least MASK_COMPONENT voxels,
+    after a morphological opening by a ball of radius MASK_ERODE (erode, then dilate back inside the zeros): the
+    masked volumes' thick fill outside the scroll, counted in full, not the odd dark gap voxel nor a thin gap sheet
+    clipped to 0 by the scan's window."""
+    z = vol == 0
+    if not z.any():
+        return 0.0
+    r = MASK_ERODE
+    g = np.ogrid[-r:r + 1, -r:r + 1, -r:r + 1]
+    ball = (g[0] ** 2 + g[1] ** 2 + g[2] ** 2) <= r * r
+    er = nd.binary_erosion(z, structure=ball, border_value=1)     # fill at the crop's edge is not eroded away
+    zo = nd.binary_dilation(er, structure=ball) & z
+    if not zo.any():
+        return 0.0
+    z = zo
+    lab, n = nd.label(z)
+    sizes = np.bincount(lab.ravel())[1:]
+    return float(sizes[sizes >= MASK_COMPONENT].sum() / z.size)
+
+
+def _all_finite(x, where="g1"):
+    """Refuse a NaN or Inf anywhere in a g1 result (AGENTS.md rule 21); None stays allowed (not measured)."""
+    if isinstance(x, dict):
+        for k, v in x.items():
+            _all_finite(v, f"{where}.{k}")
+    elif isinstance(x, (list, tuple)):
+        for i, v in enumerate(x):
+            _all_finite(v, f"{where}[{i}]")
+    elif isinstance(x, float) and not math.isfinite(x):
+        raise SimError(f"{where} is not finite")
 
 
 def g1distance(a, b):
     """Per-statistic distance between two g1stats results: for a distribution, the 1D Wasserstein distance (mean
-    absolute difference of the quantile functions) over the pooled interquartile range; for a scalar, the absolute
+    absolute difference of the quantile functions) over the pooled interquartile range, floored at
+    G1_IQR_FLOOR (half a voxel for lengths, 0.01 for gray, coherence and angles); for a scalar, the absolute
     difference; for noise_corr, the mean absolute difference over the lags."""
     np = _np()
     out = {}
     for k in G1_DIST:
         if a.get(k) and b.get(k):
             qa, qb = np.asarray(a[k]), np.asarray(b[k])
-            iqr = max(0.5 * ((qa[75] - qa[25]) + (qb[75] - qb[25])), 1e-9)
+            iqr = 0.5 * ((qa[75] - qa[25]) + (qb[75] - qb[25]))
+            iqr = max(iqr, G1_IQR_FLOOR[k])             # a near-zero range (integer lengths) cannot blow the distance up
             out[k] = round(float(np.abs(qa - qb).mean() / iqr), 4)
     for k in G1_SCALAR:
         if a.get(k) is not None and b.get(k) is not None:
@@ -2144,13 +2418,28 @@ def g1distance(a, b):
     return out
 
 
-def g1compare(real, sim=None):
+def g1compare(real, sim=None, need_ids=False):
     """The real-to-real spread (largest pairwise distance per statistic over REAL crops of different scans, told
     apart by their 'scan' field) and, with SIM, each statistic's mean distance from SIM to the real crops and whether
     it lies inside that spread. REAL and SIM are g1stats dicts; each real one carries a 'scan' name. Crops of one
-    scan give no spread, so a statistic with no pair of scans is not judged."""
+    scan give no spread, so a statistic with no pair of scans is not judged. All inputs must share one g1_version. With NEED_IDS (the CLI and the real read), every
+    real crop's scan must hold an open-data scan id, so a renamed file cannot slip the hold-out guard."""
+    vers = {d.get("g1_version") for d in list(real) + ([sim] if sim is not None else [])}
+    if len(vers) > 1:
+        raise SimError(f"g1-compare got g1 versions {sorted(map(str, vers))}; measure every crop with one version")
+    held = [d.get("scan") for d in real if d.get("role") == "holdout" or is_holdout(d.get("scan"))]
+    if held:
+        raise SimError("g1-compare got the sealed hold-out as a real crop; it never enters the spread")
+    if need_ids:
+        bad = [d.get("scan") for d in real if not SCAN_ID.search(str(d.get("scan")))]
+        if bad:
+            raise SimError(f"g1-compare got a real crop whose scan field {bad[0]!r} holds no open-data scan id")
+    codes = {d.get("code_sha256") for d in list(real) + ([sim] if sim is not None else [])}
+    if len(codes) > 1:
+        raise SimError("g1-compare got g1 results of different code (code_sha256); remeasure every crop with one code")
     keys = sorted(set(G1_DIST) | set(G1_SCALAR) | {"noise_corr"})
     spread = {k: None for k in keys}
+    npair = {k: 0 for k in keys}
     pairs = 0
     for i in range(len(real)):
         for j in range(i + 1, len(real)):
@@ -2159,8 +2448,9 @@ def g1compare(real, sim=None):
             pairs += 1
             for k, d in g1distance(real[i], real[j]).items():
                 spread[k] = d if spread[k] is None else max(spread[k], d)
+                npair[k] += 1
     out = {"g1_version": G1_VERSION, "real_crops": len(real), "scans": sorted({str(r.get("scan")) for r in real}),
-           "scan_pairs": pairs, "spread": spread}
+           "scan_pairs": pairs, "spread": spread, "spread_pairs": npair}
     if sim is not None:
         np = _np()
         rows = {}
@@ -2997,13 +3287,22 @@ def main(argv=None):
             print(json.dumps({k: (len(v) if hasattr(v, "shape") else v) for k, v in lib.items()}))
         elif args.cmd == "g1":
             np = _np()
+            held = is_holdout(args.scan) or is_holdout(args.ct)
+            if held and not args.out:
+                raise SimError("g1 on a sealed hold-out needs --out; its values are never printed")
             doc = g1stats(np.load(args.ct, mmap_mode="r"), args.voxel_um, args.target_um)
             doc["scan"] = args.scan or Path(args.ct).stem
-            _emit(doc, args.out)
+            if held:
+                doc["role"] = "holdout"
+                text = json.dumps(doc) + "\n"
+                Path(args.out).write_text(text)
+                print(json.dumps({"sealed": args.out, "sha256": hashlib.sha256(text.encode()).hexdigest()}))
+            else:
+                _emit(doc, args.out)
         elif args.cmd == "g1-compare":
             real = [json.loads(Path(f).read_text()) for f in args.real]
             sim = json.loads(Path(args.sim).read_text()) if args.sim else None
-            _emit(g1compare(real, sim), args.out)
+            _emit(g1compare(real, sim, need_ids=True), args.out)
         elif args.cmd in ("pyramid", "verify", "publish"):
             if args.cmd == "publish":
                 rep = publish(args.src, args.dst, args.levels, not args.no_labels)

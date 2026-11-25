@@ -182,6 +182,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **halo (block halo)**: The margin rendered around a block and then cut away, wide enough for every filter, so a voxel's value does not depend on which block rendered it. ScrollSim v2 uses one ([page](docs/tools/scrollsim2.md)).
 
+**Hard Cases (ScrollSim Hard Cases, hardcases)**: `python -m kit hardcases`, exact 3D sheet layouts of the hard parts of papyrus CT (folds, contact, crushing, delamination, cracks, edges, spiral centres), each sheet keeping one id, with a zone map and a physics CT render. Synthetic data ([page](docs/tools/hardcases.md)).
+
 **Harness2 (Harness squared)**: An optional framework for testing changes to the software around an agent while keeping model weights fixed. Scrolls uses a bounded local adapter to compare provenance workflows on generated files; it does not train an ink reader. See [the adapter guide](docs/tools/harness2.md).
 
 **Headless VC3D**: The released `vc3d-agent` package, which exposes villa tools through shell commands and an MCP server so scripts and agents can trace, check, flatten and render surfaces without a graphical display. See [the tool page](docs/tools/vc3d-agent.md).
