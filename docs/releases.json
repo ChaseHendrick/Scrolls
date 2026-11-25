@@ -843,11 +843,11 @@
         {
           "id": "hardcases",
           "name": "ScrollSim Hard Cases: exact 3D layouts of the hard parts of papyrus CT",
-          "line": "Exact 3D layouts of folds, contact, crushing, delamination, cracks, edges and spiral centres, with a zone map and CT render, as tiles or blocks.",
+          "line": "Exact 3D layouts of folds, contact, crushing, delamination, cracks, edges and spiral centers, with a zone map and CT render, as tiles or blocks.",
           "area": "Surfaces and tracing",
           "released": "2026-11-25",
           "version": "1.0",
-          "summary": "Rebuilds the 2D hard cases of Synthetic-Slices v0.2 (vincentl065, MIT) as continuous 3D fields: hairpins, U folds, tight bends, accordions, crushed mush, delamination, cracks, frayed outer edges, contact patches and flattened spiral centres, which the 2D generator lacks. Any block, slice direction or grid gives the same sheets, every sheet keeps one id round a fold, and a zone map marks each hard case so a detector or tracer can be scored per case. Writes training tiles in the Synthetic-Slices shard format or 3D blocks. Synthetic data: scores on it say nothing about real CT.",
+          "summary": "Rebuilds the 2D hard cases of Synthetic-Slices v0.2 (vincentl065, MIT) as continuous 3D fields: hairpins, U folds, tight bends, accordions, crushed mush, delamination, cracks, frayed outer edges, contact patches and flattened spiral centers, which the 2D generator lacks. Any block, slice direction or grid gives the same sheets, every sheet keeps one id round a fold, and a zone map marks each hard case so a detector or tracer can be scored per case. Writes training tiles in the Synthetic-Slices shard format or 3D blocks. Synthetic data: scores on it say nothing about real CT.",
           "command": "python -m kit hardcases tiles OUT.npz --n 2000 --seed 1",
           "page": "docs/tools/hardcases.md",
           "evidence": "[tests](tests/test_hardcases.py)"
