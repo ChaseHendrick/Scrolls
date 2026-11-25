@@ -3,12 +3,12 @@
 import importlib.util
 import unittest
 
-import numpy as np
+HAVE_SCIPY = importlib.util.find_spec("numpy") is not None and importlib.util.find_spec("scipy") is not None
+if HAVE_SCIPY:
+    import numpy as np
 
-HAVE_SCIPY = importlib.util.find_spec("scipy") is not None
 
-
-@unittest.skipUnless(HAVE_SCIPY, "needs scipy")
+@unittest.skipUnless(HAVE_SCIPY, "needs numpy and scipy")
 class TestLayouts(unittest.TestCase):
     def setUp(self):
         from kit import hardcases
@@ -141,7 +141,7 @@ class TestLayouts(unittest.TestCase):
             self.S.Layout("pretzel", 1)
 
 
-@unittest.skipUnless(HAVE_SCIPY, "needs scipy")
+@unittest.skipUnless(HAVE_SCIPY, "needs numpy and scipy")
 class TestSelfCheck(unittest.TestCase):
     def _lay(self, levels, thick):
         from kit import hardcases

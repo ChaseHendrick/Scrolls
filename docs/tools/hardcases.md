@@ -1,13 +1,13 @@
 # ScrollSim Hard Cases: exact 3D hard-case sheet layouts
 
-Makes exact 3D papyrus sheet layouts of the hard cases (hairpins, U folds, bends, accordions, crushed mush, delamination, cracks, frayed edges, contact, spiral centres) as continuous fields, with a physics CT render and training tiles in the Synthetic-Slices format.
+Makes exact 3D papyrus sheet layouts of the hard cases (hairpins, U folds, bends, accordions, crushed mush, delamination, cracks, frayed edges, contact, spiral centers) as continuous fields, with a physics CT render and training tiles in the Synthetic-Slices format.
 
 | Field | Value |
 | --- | --- |
 | Id | `hardcases` |
 | Status | Experimental |
 | Kind | kit module |
-| Area | Scoring and controls |
+| Area | Surfaces and tracing |
 | Run | `python -m kit hardcases tiles OUT.npz --n N --seed S`, `python -m kit hardcases volume OUT.npz --kind K --seed S --shape Z,Y,X`, `python -m kit hardcases info`; library `from kit import hardcases` |
 | Code | `kit/hardcases.py` |
 | Tests | `tests/test_hardcases.py` |
@@ -21,11 +21,11 @@ Makes exact 3D papyrus sheet layouts of the hard cases (hairpins, U folds, bends
 
 ## What it does
 
-Synthetic-Slices v0.2 (vincentl065, code MIT, [repository](https://github.com/vincentl065/Synthetic-Slices), read 24 Nov 2026) draws exact 2D sheet layouts for hard cases and paints CT around them. Its own limits list "2D slices only. No spiral centres and no 3D volumes yet". Hard Cases rebuilds those hard cases as 3D fields for ScrollSim: each layout is a function of continuous position (z, y, x) giving a sheet coordinate f, with sheets centred on fixed levels of f. Any block, any slice direction (axial or side) and any grid gives the same sheets, and every sheet keeps one exact id (a hairpin's folded sheet keeps its id round the fold).
+Synthetic-Slices v0.2 (vincentl065, code MIT, [repository](https://github.com/vincentl065/Synthetic-Slices), read 24 Nov 2026) draws exact 2D sheet layouts for hard cases and paints CT around them. Its own limits list "2D slices only. No spiral centres and no 3D volumes yet". Hard Cases rebuilds those hard cases as 3D fields for ScrollSim: each layout is a function of continuous position (z, y, x) giving a sheet coordinate f, with sheets centered on fixed levels of f. Any block, any slice direction (axial or side) and any grid gives the same sheets, and every sheet keeps one exact id (a hairpin's folded sheet keeps its id round the fold).
 
-Kinds (`KINDS`): plain, spiral (flattened spiral with its centre in or near the box), hairpin, tight_u, tight_bend (offsets of an arc with tangent arms), accordion (rounded zig-zag, optionally compact), mush (crushed, short weak waviness), delamination (one sheet's plies part over a lens, both keeping the id), crack (jagged fault, sheets cut, offset and receding, the opening is air), edge (outer edge, last sheets ending raggedly, air beyond). Extras: contact (two neighbours pressed together over a patch by a monotone level squeeze, lines still at least 3 px apart) and a crushed patch.
+Kinds (`KINDS`): plain, spiral (flattened spiral with its center in or near the box), hairpin, tight_u, tight_bend (offsets of an arc with tangent arms), accordion (rounded zig-zag, optionally compact), mush (crushed, short weak waviness), delamination (one sheet's plies part over a lens, both keeping the id), crack (jagged fault, sheets cut, offset and receding, the opening is air), edge (outer edge, last sheets ending raggedly, air beyond). Extras: contact (two neighbors pressed together over a patch by a monotone level squeeze, lines still at least 3 px apart) and a crushed patch.
 
-Beside the labels it writes a hard-case zone map (`ZONES`: fold, contact, delamination, crack, crushed, edge, centre bits), so a detector or tracer can be scored per hard case. The physics render draws two plies per sheet, a fibre texture, gap debris, the crushed look, inclusions and debris, point spread, a phase-contrast rim, white, ramp and correlated noise and slow gain, all randomized per tile.
+Beside the labels it writes a hard-case zone map (`ZONES`: fold, contact, delamination, crack, crushed, edge, center bits), so a detector or tracer can be scored per hard case. The physics render draws two plies per sheet, a fiber texture, gap debris, the crushed look, inclusions and debris, point spread, a phase-contrast rim, white, ramp and correlated noise and slow gain, all randomized per tile.
 
 It is a simulator. A score on its tiles is model output on synthetic data and says nothing about a real scroll.
 
@@ -51,7 +51,7 @@ It printed (25 Nov 2026, Scrolls `main` plus this module): `{"out": "/tmp/t.npz"
 
 ## Checks and controls
 
-The tests check that every kind rasterizes with lines of different sheets at least 3 px apart (spirals excepted, whose winding ids meet at the branch cut and are relabelled per connected piece in tiles), that a block cut from a bigger block and an axial slice equal the bigger block voxel for voxel, that the level maps used for contact and delamination are monotone, that cracks hold no sheet or line, that the edge has air beyond the last sheet, that delamination's opening is bordered by the same sheet id on both sides, and that rendered sheets are brighter than air.
+The tests check that every kind rasterizes with lines of different sheets at least 3 px apart (spirals excepted, whose winding ids meet at the branch cut and are relabeled per connected piece in tiles), that a block cut from a bigger block and an axial slice equal the bigger block voxel for voxel, that the level maps used for contact and delamination are monotone, that cracks hold no sheet or line, that the edge has air beyond the last sheet, that delamination's opening is bordered by the same sheet id on both sides, and that rendered sheets are brighter than air.
 
 Cross-scroll validation: not applicable to the generator itself (it reads no scroll). Any claim that a detector trained on these tiles transfers to real CT needs a frozen test on real labels from more than one scroll, with a ridge filter and a shifted-label control; none is published here.
 
@@ -167,7 +167,7 @@ Measured 24 Nov 2026 in a 4-core cloud container: 0.15 to 0.38 s per 256 px tile
 
 ## History
 
-- 2026-11-25: released in the Scrolls kit on base `4536292`: the hard cases of Synthetic-Slices v0.2 rebuilt as 3D fields, with spiral centres and a zone map.
+- 2026-11-25: released in the Scrolls kit on base `4536292`: the hard cases of Synthetic-Slices v0.2 rebuilt as 3D fields, with spiral centers and a zone map.
 
 ## Related
 

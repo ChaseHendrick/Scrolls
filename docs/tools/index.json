@@ -6058,12 +6058,12 @@
    "id": "hardcases",
    "name": "ScrollSim Hard Cases",
    "tagline": "exact 3D hard-case sheet layouts",
-   "summary": "Makes exact 3D papyrus sheet layouts of the hard cases (hairpins, U folds, bends, accordions, crushed mush, delamination, cracks, frayed edges, contact, spiral centres) as continuous fields, with a physics CT render and training tiles in the Synthetic-Slices format.",
+   "summary": "Makes exact 3D papyrus sheet layouts of the hard cases (hairpins, U folds, bends, accordions, crushed mush, delamination, cracks, frayed edges, contact, spiral centers) as continuous fields, with a physics CT render and training tiles in the Synthetic-Slices format.",
    "status": "Experimental",
    "kind": [
     "kit module"
    ],
-   "area": "Scoring and controls",
+   "area": "Surfaces and tracing",
    "commands": [
     "python -m kit hardcases tiles OUT.npz --n N --seed S",
     "python -m kit hardcases volume OUT.npz --kind K --seed S --shape Z,Y,X",
@@ -6094,7 +6094,7 @@
     "Id": "`hardcases`",
     "Status": "Experimental",
     "Kind": "kit module",
-    "Area": "Scoring and controls",
+    "Area": "Surfaces and tracing",
     "Run": "`python -m kit hardcases tiles OUT.npz --n N --seed S`, `python -m kit hardcases volume OUT.npz --kind K --seed S --shape Z,Y,X`, `python -m kit hardcases info`; library `from kit import hardcases`",
     "Code": "`kit/hardcases.py`",
     "Tests": "`tests/test_hardcases.py`",
