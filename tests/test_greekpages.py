@@ -7,13 +7,17 @@ import os
 import tempfile
 import unittest
 
-import numpy as np
+try:
+    import numpy as np
+except ImportError:  # pragma: no cover
+    np = None
 
-HAVE_SCIPY = importlib.util.find_spec("scipy") is not None
+HAVE_SCIPY = np is not None and importlib.util.find_spec("scipy") is not None
 TEXT = ("Μῆνιν ἄειδε θεὰ Πηληϊάδεω Ἀχιλῆος οὐλομένην, ἣ μυρί᾽ Ἀχαιοῖς ἄλγε᾽ ἔθηκε, πολλὰς δ᾽ ἰφθίμους ψυχὰς "
         "Ἄϊδι προΐαψεν ἡρώων, αὐτοὺς δὲ ἑλώρια τεῦχε κύνεσσιν οἰωνοῖσί τε πᾶσι, Διὸς δ᾽ ἐτελείετο βουλή.")
 
 
+@unittest.skipIf(np is None, "needs numpy")
 class TestTextAndStyle(unittest.TestCase):
     def setUp(self):
         from kit import greekpages

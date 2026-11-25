@@ -1,15 +1,16 @@
 """Tests for kit.sheethug (fused-contact sheet stacks, two-scale net, split-recall score)"""
 
 import importlib.util
-import json
 import os
-import sys
 import tempfile
 import unittest
 
-import numpy as np
+try:
+    import numpy as np
+except ImportError:  # pragma: no cover
+    np = None
 
-HAVE_SCIPY = importlib.util.find_spec("scipy") is not None
+HAVE_SCIPY = np is not None and importlib.util.find_spec("scipy") is not None
 HAVE_SKIMAGE = importlib.util.find_spec("skimage") is not None
 HAVE_TORCH = importlib.util.find_spec("torch") is not None
 HAVE_SS = (importlib.util.find_spec("synthetic_slices") is not None
