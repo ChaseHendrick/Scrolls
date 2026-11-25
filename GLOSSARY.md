@@ -434,6 +434,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **seating (of a surface)**: Whether a traced surface lies on papyrus rather than in the gap between sheets. A seating check can reject misplaced surfaces, but passing it does not by itself rule out a jump to a neighboring sheet.
 
+**sheethug**: `python -m kit.sheethug`, synthetic 3D sheet stacks whose pressed contacts are fused to zero gap, a two-scale 3D sheet net, and the split recall score ([page](docs/tools/sheethug.md)).
+
 **seed (seed point)**: A starting point for tracing a surface. villa's tracer does not hold an explicit seed, so a trace can start on the next winding.
 
 **SegFormer**: A 2D segmentation network with a hierarchical transformer encoder (Mix Transformer, sizes B0 to B5) and a light MLP decoder. Its code and weights are under NVIDIA's non-commercial license.
@@ -489,6 +491,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 **synchrotron**: A particle accelerator that produces very bright X-rays, used for the scroll scans.
 
 **synthetic data**: Data made by a program, with a known answer, used to test that a tool works before it runs on real scans.
+
+**split recall**: The share of true sheet centre-line pixels that have a predicted line pixel within 2 px assigned to the same sheet. Plain recall cannot see two touching sheets merged into one line; split recall can. Used by `kit.sheethug` in contact zones.
 
 ## T
 

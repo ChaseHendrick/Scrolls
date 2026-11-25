@@ -15600,6 +15600,158 @@
    ]
   },
   {
+   "id": "sheethug",
+   "name": "sheethug",
+   "tagline": "sheet surfaces through pressed and touching sheets",
+   "summary": "Makes synthetic 3D sheet stacks whose contacts are fused islands like real pressed sheets, trains a two-scale 3D net on them, and scores sheet lines inside contact zones with a merge-sensitive split recall.",
+   "status": "Experimental",
+   "kind": [
+    "kit module"
+   ],
+   "area": "Surfaces and tracing",
+   "commands": [
+    "python -m kit.sheethug block OUT.npz --seed S",
+    "python -m kit.sheethug bank DIR --n N --seed S --workers W",
+    "python -m kit.sheethug train DIR OUT.pt --arm ARM --seed S",
+    "python -m kit.sheethug gate DIR --weights W.pt ... --out F.json",
+    "python -m kit.sheethug info"
+   ],
+   "imports": [],
+   "code": [
+    {
+     "path": "kit/sheethug.py",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_sheethug.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed"
+   },
+   "checked": {
+    "date": "2026-11-25",
+    "commit": "bd011dc"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`sheethug`",
+    "Status": "Experimental",
+    "Kind": "kit module",
+    "Area": "Surfaces and tracing",
+    "Run": "`python -m kit.sheethug block OUT.npz --seed S`, `python -m kit.sheethug bank DIR --n N --seed S --workers W`, `python -m kit.sheethug train DIR OUT.pt --arm ARM --seed S` (ARM wide or local), `python -m kit.sheethug gate DIR --weights W.pt ... --out F.json`, `python -m kit.sheethug info`",
+    "Code": "`kit/sheethug.py`",
+    "Tests": "`tests/test_sheethug.py`",
+    "Needs": "Python 3.10 or newer, numpy, scipy; scikit-image for scoring; torch for the net; the `synthetic_slices` package at commit `bf8d26f502ed38c188c409d7f3011a7a11c4cf89` (`--no-deps`) for NMS 2. No scroll data",
+    "Runs on": "CPU for blocks: about 12 s for one 192^3 block on one core of a 4-core cloud container (25 Nov 2026). Training on a GPU (about 0.55 s a step at batch 8 on an RTX Pro 6000; CPU about 2 s a step at batch 2)",
+    "Network": "None",
+    "Writes": "`block`: one `.npz`; `bank`: `DIR/block-SEED-I.npz`; `train`: one `.pt` (state and meta); `gate --out`: JSON",
+    "Go-ahead": "Not needed",
+    "Released": "Public, with the November 2026 Progress Prize entry (pending)",
+    "Checked": "2026-11-25 against commit `bd011dc`"
+   },
+   "page": "docs/tools/sheethug.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 22,
+     "end_line": 33,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 34,
+     "end_line": 45,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 46,
+     "end_line": 58,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 59,
+     "end_line": 66,
+     "applicable": true
+    },
+    {
+     "name": "Result so far (Model output, synthetic data only)",
+     "start_line": 67,
+     "end_line": 80,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 81,
+     "end_line": 103,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 104,
+     "end_line": 140,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 141,
+     "end_line": 144,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 145,
+     "end_line": 154,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 155,
+     "end_line": 167,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 168,
+     "end_line": 176,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 177,
+     "end_line": 180,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 181,
+     "end_line": 190,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 191,
+     "end_line": 194,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 195,
+     "end_line": 198,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 199,
+     "end_line": 201,
+     "applicable": true
+    }
+   ]
+  },
+  {
    "id": "sheetview",
    "name": "sheetview",
    "tagline": "show a volume on a sheet's surface in Neuroglancer",
