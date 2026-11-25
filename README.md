@@ -81,12 +81,13 @@ Command-line tools, benchmarks and script folders that run from a clone of this 
 </details>
 
 <details>
-<summary><b>Surfaces and tracing</b> (19)</summary>
+<summary><b>Surfaces and tracing</b> (21)</summary>
 
 | Tool | What it does |
 | --- | --- |
 | [Autocrop: good regions of a spiral fit](docs/tools/autocrop.md) | Keeps the regions of a villa spiral fit most likely on the right winding and writes them as relative windings, with controls. |
 | [Bounded surface correction (experimental)](docs/tools/surfacefix.md) | Suggests bounded surface shifts using agreement between maps from two traces and keeps only shifts that pass its controls. |
+| [freshmap: where a scroll's papyrus is still untraced](docs/tools/freshmap.md) | Maps a scroll's untraced m7 papyrus by band, angle and radius, ranks targets and checks new meshes against it. |
 | [Label snap on a finer registered scan](docs/tools/finesnap.md) | Snaps a label traced on a coarse scan onto the recto face seen in a finer, per-site registered scan of the same scroll. |
 | [Label snap onto the recto face](docs/tools/labelsnap.md) | Moves a tifxyz surface label along its normals onto the recto face of its papyrus band, with an abstain mask and VC3D review points. |
 | [Mesh and cross-scan audit](docs/tools/meshaudit.md) | Checks cross-scan transforms, mesh canvases and rendering depth against public catalog geometry. |
@@ -100,6 +101,7 @@ Command-line tools, benchmarks and script folders that run from a clone of this 
 | [Segment Atlas](docs/tools/atlas.md) | Measures published segment meshes with the same geometry checks and builds a searchable table. |
 | [Segment stack check](docs/tools/stackcheck.md) | Checks a stack of consecutive tifxyz segments against the umbilicus from geometry alone: winding order, spacing, gaps and overlaps. |
 | [Segments without VC3D](docs/tools/tifxyz.md) | Reads a tifxyz segment, local or from the open-data bucket, and reports its true area, grid, holes and folds, with numpy and tifffile only. |
+| [sheethug: fused-sheet blocks and a split score for pressed sheets](docs/tools/sheethug.md) | Synthetic fused-contact sheet stacks and split recall, a score that sees when a model merges two touching sheets. |
 | [Surface overlap and map comparison](docs/tools/overlap.md) | Checks whether traced surfaces cover the same sheet and compares their labels or ink maps with controls. |
 | [Touching-sheets benchmark](docs/tools/hopbench.md) | Plants sheet hops at real contacts between PHerc0139's hand-traced windings and measures how often a one-sheet check misses them. |
 | [UV overlap gate](docs/tools/uvgate.md) | Checks a flattened sheet's UV triangles for any overlap, with exact arithmetic, plus coverage. |
@@ -141,13 +143,14 @@ Command-line tools, benchmarks and script folders that run from a clone of this 
 </details>
 
 <details>
-<summary><b>Letters and titles</b> (4)</summary>
+<summary><b>Letters and titles</b> (5)</summary>
 
 | Tool | What it does |
 | --- | --- |
 | [Greek character language model](docs/tools/greeklm.md) | Builds and scores a character language model from public Greek text for the letter reader. |
 | [Greek gap restoration benchmark](docs/tools/greekfill.md) | Hides letters in public Greek text and scores hosted text models against a Kneser-Ney letter model under a frozen rule. |
 | [Greek letter classifier and line reader for agents](docs/tools/letterclass.md) | Names Greek capital letters in given boxes on papyrus photographs and reads lines of boxes, as a JSON command and an MCP server. |
+| [greekpages: synthetic Greek book-hand pages with exact letter labels](docs/tools/greekpages.md) | Synthetic Greek book-hand pages as ink-probability maps with exact letter labels and pluggable styles, for training letter readers. |
 | [Scroll Text Reader](docs/tools/letterread.md) | Proposes Greek capital letters with boxes and confidences on ink maps, drawn labels and photographs, on a CPU, with null and orientation controls. |
 
 </details>
