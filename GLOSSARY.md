@@ -160,6 +160,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **freeze (hash freeze)**: A registry entry that fixes the sha256 of every file a run executes at the commit that froze its preregistration. It is live until the run's evidence is collected, then spent; a live freeze's files must not change, and the run refuses to load a repository file the freeze does not list (`kit freeze`, [page](docs/tools/freeze.md)).
 
+**freshmap**: `python -m kit.freshmap`, a map of where a scroll's m7 papyrus prediction lies more than about one sheet pitch from every surface already read or traced (FRESH), with ranked targets and a check of new meshes against it ([page](docs/tools/freshmap.md)).
+
 **frozen-feature probe (linear probe)**: A test of a pretrained backbone in which the backbone is not trained at all: only a linear (logistic) head on its features is fitted. Cheap enough for a CPU, and a fair first check of whether a big model helps a small task.
 
 ## G
@@ -177,6 +179,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 **Grand Prize**: The largest Vesuvius Challenge prize of a challenge year.
 
 **GrowPatch**: A VC3D tracer that grows a surface mesh outward step by step by optimization.
+
+**greekpages**: `python -m kit.greekpages`, synthetic Greek book-hand pages drawn as ink-probability maps with exact letter labels; the hand, map model and background come from a pluggable style file ([page](docs/tools/greekpages.md)).
 
 ## H
 
@@ -434,6 +438,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **seating (of a surface)**: Whether a traced surface lies on papyrus rather than in the gap between sheets. A seating check can reject misplaced surfaces, but passing it does not by itself rule out a jump to a neighboring sheet.
 
+**sheethug**: `python -m kit.sheethug`, synthetic 3D sheet stacks whose pressed contacts are fused to zero gap, a two-scale 3D sheet net, and the split recall score ([page](docs/tools/sheethug.md)).
+
 **seed (seed point)**: A starting point for tracing a surface. villa's tracer does not hold an explicit seed, so a trace can start on the next winding.
 
 **SegFormer**: A 2D segmentation network with a hierarchical transformer encoder (Mix Transformer, sizes B0 to B5) and a light MLP decoder. Its code and weights are under NVIDIA's non-commercial license.
@@ -489,6 +495,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 **synchrotron**: A particle accelerator that produces very bright X-rays, used for the scroll scans.
 
 **synthetic data**: Data made by a program, with a known answer, used to test that a tool works before it runs on real scans.
+
+**split recall**: The share of true sheet centre-line pixels that have a predicted line pixel within 2 px assigned to the same sheet. Plain recall cannot see two touching sheets merged into one line; split recall can. Used by `kit.sheethug` in contact zones.
 
 ## T
 

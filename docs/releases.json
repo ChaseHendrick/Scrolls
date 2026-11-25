@@ -958,6 +958,42 @@
           "evidence": "[checks and controls](docs/tools/freeze.md#checks-and-controls), `tests/test_freezechain.py`",
           "line": "Freezes a run by the hashes of the files it executes, guards what it loads, and keeps review verdicts tied to the reviewed code.",
           "area": "Records and provenance"
+        },
+        {
+          "id": "sheethug",
+          "name": "sheethug: fused-sheet blocks and a split score for pressed sheets",
+          "released": "2026-11-25",
+          "version": "1.0",
+          "summary": "Synthetic 192^3 sheet stacks whose pressed contacts are fused to zero gap, as in real scans, a two-scale 3D sheet net as a baseline, and split recall, a line score that counts a true sheet line only when a line assigned to its own sheet lies within 2 px, so a model that merges two touching sheets scores low. In a test fixed before it ran, the merge control scored 0.44 contact split F1, a ridge filter 0.56, the nets 0.69 to 0.72 and the oracle 0.996; the test's own question failed (wide context did not beat the local net). Synthetic data only.",
+          "command": "python -m kit.sheethug block demo.npz",
+          "page": "docs/tools/sheethug.md",
+          "evidence": "[result so far](docs/tools/sheethug.md#result-so-far-model-output-synthetic-data-only), `tests/test_sheethug.py`",
+          "line": "Synthetic fused-contact sheet stacks and split recall, a score that sees when a model merges two touching sheets.",
+          "area": "Surfaces and tracing"
+        },
+        {
+          "id": "greekpages",
+          "name": "greekpages: synthetic Greek book-hand pages with exact letter labels",
+          "released": "2026-11-25",
+          "version": "1.0",
+          "summary": "Draws any number of Greek majuscule pages as an ink model's probability map shows them (broad nib, patchy dropout, warp, blur, tone curve, procedural papyrus), each with its ink mask, letter boxes, text and parameters. The hand, map model and background are one pluggable style file; the default generic book hand uses assumed ranges measured on no scroll, and anyone can write their own. The text is the user's. Checked for label correctness; whether it helps a reader on real maps is untested.",
+          "command": "python -m kit.greekpages gen out --text my-greek.txt --n 10",
+          "page": "docs/tools/greekpages.md",
+          "evidence": "[checks and controls](docs/tools/greekpages.md#checks-and-controls), `tests/test_greekpages.py`",
+          "line": "Synthetic Greek book-hand pages as ink-probability maps with exact letter labels and pluggable styles, for training letter readers.",
+          "area": "Letters and titles"
+        },
+        {
+          "id": "freshmap",
+          "name": "freshmap: where a scroll's papyrus is still untraced",
+          "released": "2026-11-25",
+          "version": "1.0",
+          "summary": "Classes every papyrus voxel of a scroll's m7 surface prediction as read, traced, boxed or fresh by exact distance to the meshes you list, sums the classes by band, angle and radius, ranks fresh targets with a box to start from, and checks new meshes before anyone renders them. On public PHerc0343 its public segment, queried against the map built from it, came out 0% fresh and 100% near read; the band took 50 s on CPU. Areas are face-count estimates; fresh is geometry, not ink.",
+          "command": "python -m kit.freshmap build --scroll PHerc0343 --read READ_DIR --out OUT --z 9500:11000",
+          "page": "docs/tools/freshmap.md",
+          "evidence": "[checks and controls](docs/tools/freshmap.md#checks-and-controls), `tests/test_freshmap.py`",
+          "line": "Maps a scroll's untraced m7 papyrus by band, angle and radius, ranks targets and checks new meshes against it.",
+          "area": "Surfaces and tracing"
         }
       ],
       "where": "main"

@@ -5597,6 +5597,152 @@
    ]
   },
   {
+   "id": "freshmap",
+   "name": "freshmap",
+   "tagline": "where a scroll's papyrus is still unread",
+   "summary": "Maps where a scroll's public m7 papyrus prediction lies away from every surface already read or traced, by band, angle and radius, ranks targets and measures new meshes against it, so tracing and unrolls aim at new papyrus.",
+   "status": "Experimental",
+   "kind": [
+    "kit module"
+   ],
+   "area": "Surfaces and tracing",
+   "commands": [
+    "python -m kit.freshmap build",
+    "python -m kit.freshmap query",
+    "python -m kit.freshmap show",
+    "python -m kit.freshmap summarise",
+    "python -m kit.freshmap index"
+   ],
+   "imports": [],
+   "code": [
+    {
+     "path": "kit/freshmap.py",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_freshmap.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed (free CPU, geometry and a public prediction only)"
+   },
+   "checked": {
+    "date": "2026-11-25",
+    "commit": "859fc14"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`freshmap`",
+    "Status": "Experimental",
+    "Kind": "kit module",
+    "Area": "Surfaces and tracing",
+    "Run": "`python -m kit.freshmap build`, `python -m kit.freshmap query`, `python -m kit.freshmap show`, `python -m kit.freshmap summarise`, `python -m kit.freshmap index`",
+    "Code": "`kit/freshmap.py`",
+    "Tests": "`tests/test_freshmap.py`",
+    "Needs": "Python 3.10 or newer with numpy, scipy, tifffile and numcodecs; the scroll's m7 surface prediction (public for many scrolls) and your meshes as tifxyz folders or tars",
+    "Runs on": "CPU. Public PHerc0343, z 9,500 to 11,000 (432 chunks, one mesh): 50 s with 8 jobs on a 4-core cloud container (measured 2026-11-25). A whole scroll with about 4,000 meshes: about 25 minutes with 4 jobs, peak about 3 GB",
+    "Network": "The Vesuvius Challenge open data bucket on S3 (m7 chunks, and the volume listing for the voxel size; anonymous), unless `--volume` is a local folder and `--voxel-um` is given",
+    "Writes": "`build`: `OUT/` (summary.json, grid.npz, occ-read.bits, occ-traced.bits, meshes.json, unrolled.png, side.png) and the mesh cache (default `OUT/cache`)",
+    "Go-ahead": "Not needed (free CPU, geometry and a public prediction only)",
+    "Released": "Public, with the November 2026 Progress Prize entry (pending)",
+    "Checked": "2026-11-25 against commit `859fc14`"
+   },
+   "page": "docs/tools/freshmap.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 22,
+     "end_line": 38,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 39,
+     "end_line": 50,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 51,
+     "end_line": 80,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 81,
+     "end_line": 94,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 95,
+     "end_line": 181,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 182,
+     "end_line": 218,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 219,
+     "end_line": 225,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 226,
+     "end_line": 256,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 257,
+     "end_line": 272,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 273,
+     "end_line": 278,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 279,
+     "end_line": 282,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 283,
+     "end_line": 292,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 293,
+     "end_line": 296,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 297,
+     "end_line": 300,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 301,
+     "end_line": 304,
+     "applicable": true
+    }
+   ]
+  },
+  {
    "id": "gate",
    "name": "gate",
    "tagline": "rank released ink readers on PHerc0841 by the Gate A rule",
@@ -6050,6 +6196,151 @@
      "name": "Related",
      "start_line": 233,
      "end_line": 241,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "greekpages",
+   "name": "greekpages",
+   "tagline": "synthetic Greek book-hand pages for training letter readers",
+   "summary": "Synthetic pages of Greek majuscule text drawn as a reader's ink map would show them, with exact letter labels.",
+   "status": "Experimental",
+   "kind": [
+    "kit module"
+   ],
+   "area": "Letters and titles",
+   "commands": [
+    "python -m kit.greekpages gen OUT --text TEXT",
+    "python -m kit.greekpages preview PAGE.npz OUT.png",
+    "python -m kit.greekpages style",
+    "python -m kit.greekpages info"
+   ],
+   "imports": [],
+   "code": [
+    {
+     "path": "kit/greekpages.py",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_greekpages.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed"
+   },
+   "checked": {
+    "date": "2026-11-25",
+    "commit": "bd011dc"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`greekpages`",
+    "Status": "Experimental",
+    "Kind": "kit module",
+    "Area": "Letters and titles",
+    "Run": "`python -m kit.greekpages gen OUT --text TEXT`, `python -m kit.greekpages preview PAGE.npz OUT.png`, `python -m kit.greekpages style`, `python -m kit.greekpages info`",
+    "Code": "`kit/greekpages.py`",
+    "Tests": "`tests/test_greekpages.py`",
+    "Needs": "Python 3.10 or newer, numpy, scipy; Pillow for `preview`; a Greek text (UTF-8 .txt) of your choice",
+    "Runs on": "CPU: about 2 s for one 512 px page on one core of a 4-core cloud container (measured 2026-11-25)",
+    "Network": "None",
+    "Writes": "`gen`: `OUT/page-SEED-I.npz`; `preview`: one PNG",
+    "Go-ahead": "Not needed",
+    "Released": "Public, with the November 2026 Progress Prize entry (pending)",
+    "Checked": "2026-11-25 against commit `bd011dc`"
+   },
+   "page": "docs/tools/greekpages.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 22,
+     "end_line": 33,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 34,
+     "end_line": 44,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 45,
+     "end_line": 54,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 55,
+     "end_line": 62,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 63,
+     "end_line": 80,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 81,
+     "end_line": 104,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 105,
+     "end_line": 108,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 109,
+     "end_line": 118,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 119,
+     "end_line": 135,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 136,
+     "end_line": 144,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 145,
+     "end_line": 148,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 149,
+     "end_line": 158,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 159,
+     "end_line": 162,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 163,
+     "end_line": 166,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 167,
+     "end_line": 169,
      "applicable": true
     }
    ]
@@ -15595,6 +15886,158 @@
      "name": "Related",
      "start_line": 283,
      "end_line": 289,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "sheethug",
+   "name": "sheethug",
+   "tagline": "sheet surfaces through pressed and touching sheets",
+   "summary": "Makes synthetic 3D sheet stacks whose contacts are fused islands like real pressed sheets, trains a two-scale 3D net on them, and scores sheet lines inside contact zones with a merge-sensitive split recall.",
+   "status": "Experimental",
+   "kind": [
+    "kit module"
+   ],
+   "area": "Surfaces and tracing",
+   "commands": [
+    "python -m kit.sheethug block OUT.npz --seed S",
+    "python -m kit.sheethug bank DIR --n N --seed S --workers W",
+    "python -m kit.sheethug train DIR OUT.pt --arm ARM --seed S",
+    "python -m kit.sheethug gate DIR --weights W.pt ... --out F.json",
+    "python -m kit.sheethug info"
+   ],
+   "imports": [],
+   "code": [
+    {
+     "path": "kit/sheethug.py",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_sheethug.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed"
+   },
+   "checked": {
+    "date": "2026-11-25",
+    "commit": "bd011dc"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`sheethug`",
+    "Status": "Experimental",
+    "Kind": "kit module",
+    "Area": "Surfaces and tracing",
+    "Run": "`python -m kit.sheethug block OUT.npz --seed S`, `python -m kit.sheethug bank DIR --n N --seed S --workers W`, `python -m kit.sheethug train DIR OUT.pt --arm ARM --seed S` (ARM wide or local), `python -m kit.sheethug gate DIR --weights W.pt ... --out F.json`, `python -m kit.sheethug info`",
+    "Code": "`kit/sheethug.py`",
+    "Tests": "`tests/test_sheethug.py`",
+    "Needs": "Python 3.10 or newer, numpy, scipy; scikit-image for scoring; torch for the net; the `synthetic_slices` package at commit `bf8d26f502ed38c188c409d7f3011a7a11c4cf89` (`--no-deps`) for NMS 2. No scroll data",
+    "Runs on": "CPU for blocks: about 12 s for one 192^3 block on one core of a 4-core cloud container (25 Nov 2026). Training on a GPU (about 0.55 s a step at batch 8 on an RTX Pro 6000; CPU about 2 s a step at batch 2)",
+    "Network": "None",
+    "Writes": "`block`: one `.npz`; `bank`: `DIR/block-SEED-I.npz`; `train`: one `.pt` (state and meta); `gate --out`: JSON",
+    "Go-ahead": "Not needed",
+    "Released": "Public, with the November 2026 Progress Prize entry (pending)",
+    "Checked": "2026-11-25 against commit `bd011dc`"
+   },
+   "page": "docs/tools/sheethug.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 22,
+     "end_line": 33,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 34,
+     "end_line": 45,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 46,
+     "end_line": 58,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 59,
+     "end_line": 66,
+     "applicable": true
+    },
+    {
+     "name": "Result so far (Model output, synthetic data only)",
+     "start_line": 67,
+     "end_line": 80,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 81,
+     "end_line": 103,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 104,
+     "end_line": 140,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 141,
+     "end_line": 144,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 145,
+     "end_line": 154,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 155,
+     "end_line": 167,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 168,
+     "end_line": 176,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 177,
+     "end_line": 180,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 181,
+     "end_line": 190,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 191,
+     "end_line": 194,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 195,
+     "end_line": 198,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 199,
+     "end_line": 201,
      "applicable": true
     }
    ]
