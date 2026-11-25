@@ -5597,6 +5597,152 @@
    ]
   },
   {
+   "id": "freshmap",
+   "name": "freshmap",
+   "tagline": "where a scroll's papyrus is still unread",
+   "summary": "Maps where a scroll's public m7 papyrus prediction lies away from every surface already read or traced, by band, angle and radius, ranks targets and measures new meshes against it, so tracing and unrolls aim at new papyrus.",
+   "status": "Experimental",
+   "kind": [
+    "kit module"
+   ],
+   "area": "Surfaces and tracing",
+   "commands": [
+    "python -m kit.freshmap build",
+    "python -m kit.freshmap query",
+    "python -m kit.freshmap show",
+    "python -m kit.freshmap summarise",
+    "python -m kit.freshmap index"
+   ],
+   "imports": [],
+   "code": [
+    {
+     "path": "kit/freshmap.py",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_freshmap.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed (free CPU, geometry and a public prediction only)"
+   },
+   "checked": {
+    "date": "2026-11-25",
+    "commit": "859fc14"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`freshmap`",
+    "Status": "Experimental",
+    "Kind": "kit module",
+    "Area": "Surfaces and tracing",
+    "Run": "`python -m kit.freshmap build`, `python -m kit.freshmap query`, `python -m kit.freshmap show`, `python -m kit.freshmap summarise`, `python -m kit.freshmap index`",
+    "Code": "`kit/freshmap.py`",
+    "Tests": "`tests/test_freshmap.py`",
+    "Needs": "Python 3.10 or newer with numpy, scipy, tifffile and numcodecs; the scroll's m7 surface prediction (public for many scrolls) and your meshes as tifxyz folders or tars",
+    "Runs on": "CPU. Public PHerc0343, z 9,500 to 11,000 (432 chunks, one mesh): 50 s with 8 jobs on a 4-core cloud container (measured 2026-11-25). A whole scroll with about 4,000 meshes: about 25 minutes with 4 jobs, peak about 3 GB",
+    "Network": "The Vesuvius Challenge open data bucket on S3 (m7 chunks, and the volume listing for the voxel size; anonymous), unless `--volume` is a local folder and `--voxel-um` is given",
+    "Writes": "`build`: `OUT/` (summary.json, grid.npz, occ-read.bits, occ-traced.bits, meshes.json, unrolled.png, side.png) and the mesh cache (default `OUT/cache`)",
+    "Go-ahead": "Not needed (free CPU, geometry and a public prediction only)",
+    "Released": "Public, with the November 2026 Progress Prize entry (pending)",
+    "Checked": "2026-11-25 against commit `859fc14`"
+   },
+   "page": "docs/tools/freshmap.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 22,
+     "end_line": 38,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 39,
+     "end_line": 50,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 51,
+     "end_line": 80,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 81,
+     "end_line": 94,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 95,
+     "end_line": 181,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 182,
+     "end_line": 218,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 219,
+     "end_line": 225,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 226,
+     "end_line": 256,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 257,
+     "end_line": 272,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 273,
+     "end_line": 278,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 279,
+     "end_line": 282,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 283,
+     "end_line": 292,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 293,
+     "end_line": 296,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 297,
+     "end_line": 300,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 301,
+     "end_line": 304,
+     "applicable": true
+    }
+   ]
+  },
+  {
    "id": "gate",
    "name": "gate",
    "tagline": "rank released ink readers on PHerc0841 by the Gate A rule",

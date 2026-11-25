@@ -160,6 +160,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **freeze (hash freeze)**: A registry entry that fixes the sha256 of every file a run executes at the commit that froze its preregistration. It is live until the run's evidence is collected, then spent; a live freeze's files must not change, and the run refuses to load a repository file the freeze does not list (`kit freeze`, [page](docs/tools/freeze.md)).
 
+**freshmap**: `python -m kit.freshmap`, a map of where a scroll's m7 papyrus prediction lies more than about one sheet pitch from every surface already read or traced (FRESH), with ranked targets and a check of new meshes against it ([page](docs/tools/freshmap.md)).
+
 **frozen-feature probe (linear probe)**: A test of a pretrained backbone in which the backbone is not trained at all: only a linear (logistic) head on its features is fitted. Cheap enough for a CPU, and a fair first check of whether a big model helps a small task.
 
 ## G
