@@ -178,6 +178,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **GrowPatch**: A VC3D tracer that grows a surface mesh outward step by step by optimization.
 
+**greekpages**: `python -m kit.greekpages`, synthetic Greek book-hand pages drawn as ink-probability maps with exact letter labels; the hand, map model and background come from a pluggable style file ([page](docs/tools/greekpages.md)).
+
 ## H
 
 **halo (block halo)**: The margin rendered around a block and then cut away, wide enough for every filter, so a voxel's value does not depend on which block rendered it. ScrollSim v2 uses one ([page](docs/tools/scrollsim2.md)).

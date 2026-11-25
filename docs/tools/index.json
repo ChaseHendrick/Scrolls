@@ -6055,6 +6055,151 @@
    ]
   },
   {
+   "id": "greekpages",
+   "name": "greekpages",
+   "tagline": "synthetic Greek book-hand pages for training letter readers",
+   "summary": "Synthetic pages of Greek majuscule text drawn as a reader's ink map would show them, with exact letter labels.",
+   "status": "Experimental",
+   "kind": [
+    "kit module"
+   ],
+   "area": "Letters and titles",
+   "commands": [
+    "python -m kit.greekpages gen OUT --text TEXT",
+    "python -m kit.greekpages preview PAGE.npz OUT.png",
+    "python -m kit.greekpages style",
+    "python -m kit.greekpages info"
+   ],
+   "imports": [],
+   "code": [
+    {
+     "path": "kit/greekpages.py",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_greekpages.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed"
+   },
+   "checked": {
+    "date": "2026-11-25",
+    "commit": "bd011dc"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`greekpages`",
+    "Status": "Experimental",
+    "Kind": "kit module",
+    "Area": "Letters and titles",
+    "Run": "`python -m kit.greekpages gen OUT --text TEXT`, `python -m kit.greekpages preview PAGE.npz OUT.png`, `python -m kit.greekpages style`, `python -m kit.greekpages info`",
+    "Code": "`kit/greekpages.py`",
+    "Tests": "`tests/test_greekpages.py`",
+    "Needs": "Python 3.10 or newer, numpy, scipy; Pillow for `preview`; a Greek text (UTF-8 .txt) of your choice",
+    "Runs on": "CPU: about 2 s for one 512 px page on one core of a 4-core cloud container (measured 2026-11-25)",
+    "Network": "None",
+    "Writes": "`gen`: `OUT/page-SEED-I.npz`; `preview`: one PNG",
+    "Go-ahead": "Not needed",
+    "Released": "Public, with the November 2026 Progress Prize entry (pending)",
+    "Checked": "2026-11-25 against commit `bd011dc`"
+   },
+   "page": "docs/tools/greekpages.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 22,
+     "end_line": 33,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 34,
+     "end_line": 44,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 45,
+     "end_line": 54,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 55,
+     "end_line": 62,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 63,
+     "end_line": 80,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 81,
+     "end_line": 104,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 105,
+     "end_line": 108,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 109,
+     "end_line": 118,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 119,
+     "end_line": 135,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 136,
+     "end_line": 144,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 145,
+     "end_line": 148,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 149,
+     "end_line": 158,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 159,
+     "end_line": 162,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 163,
+     "end_line": 166,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 167,
+     "end_line": 169,
+     "applicable": true
+    }
+   ]
+  },
+  {
    "id": "hardcases",
    "name": "ScrollSim Hard Cases",
    "tagline": "exact 3D hard-case sheet layouts",
