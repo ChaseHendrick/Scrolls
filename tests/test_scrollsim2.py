@@ -1,4 +1,7 @@
+import contextlib
+import io
 import json
+import os
 import tempfile
 import unittest
 from pathlib import Path
@@ -1226,6 +1229,284 @@ class ScrollSim2AllFeaturesTest(unittest.TestCase):
                 q = {k: v for k, v in p.items() if k not in drop}
                 other = s2.Scroll2(q).scan_block(8, 24, 20, 80, 20, 80)[0]
                 self.assertFalse(np.array_equal(whole[:16, :60, :60], other), drop)
+
+
+@unittest.skipUnless(HAVE, "needs numpy and scipy")
+class ScrollSim2G1Test(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        from kit import scrollsim2 as s2
+        cls.s2 = s2
+        cls.crops = []
+        for seed, noise in ((11, 4.0), (12, 4.0), (13, 12.0)):
+            sc = s2.Scroll2(dict(TINY, seed=seed, noise=noise))
+            ct, _, _ = sc.scan_block(0, 48, 20, 140, 20, 140)
+            cls.crops.append(ct)
+
+    def test_stats_are_finite_and_label_free(self):
+        d = self.s2.g1stats(self.crops[0], 8.64)
+        self.assertEqual(len(d["sheet_runs"]), self.s2.QN)
+        self.assertGreater(d["runs"][0], 20)
+        for k in self.s2.G1_SCALAR:
+            if not k.startswith("contact_column"):                     # None by design when a crop has few close pairs
+                self.assertIsNotNone(d[k], k)
+        self.assertTrue(0 <= d["touching_share"] <= 1)
+        self.assertAlmostEqual(np.percentile(np.asarray(d["sheet_gray"]), 50), 1.0, delta=0.05)
+
+    def test_distance_zero_to_itself_and_grows_with_noise(self):
+        a, b, c = (self.s2.g1stats(x, 8.64) for x in self.crops)
+        self.assertTrue(all(v == 0 for v in self.s2.g1distance(a, a).values()))
+        self.assertGreater(self.s2.g1distance(a, c)["gap_noise"], self.s2.g1distance(a, b)["gap_noise"])
+
+    def test_compare_spread_and_inside(self):
+        st = [dict(self.s2.g1stats(x, 8.64), scan=f"s{i}") for i, x in enumerate(self.crops)]
+        r = self.s2.g1compare(st[:2], st[2])
+        self.assertEqual(r["scan_pairs"], 1)
+        self.assertFalse(r["sim"]["gap_noise"]["inside"])      # three times the noise lies outside a 4-to-4 spread
+        same = self.s2.g1compare([st[0], dict(st[1], scan="s0")])
+        self.assertEqual(same["scan_pairs"], 0)                  # crops of one scan give no spread
+
+    def test_contact_statistics_see_pressed_sheets(self):
+        # flat sheets along x: one crop with every gap open, one where pairs press together with a shallow dip
+        def sheets(centers, z=40, h=160, w=96):
+            y = np.arange(h, dtype=np.float32)[:, None]
+            img = np.full((h, w), 40.0, np.float32)
+            for cy in centers:
+                img += 160.0 * np.exp(-0.5 * ((y - cy) / 1.6) ** 2)
+            rng = np.random.default_rng(5)
+            return np.clip(img[None].repeat(z, 0) + rng.normal(0, 3, (z, h, w)), 0, 255)
+        apart_c = list(range(8, 156, 16))
+        pressed_c = [c + d for i, c in enumerate(apart_c) for d in ((0,) if i % 2 else (0, 5))]
+        apart = self.s2.g1stats(sheets(apart_c), 8.64)
+        pressed = self.s2.g1stats(sheets(pressed_c), 8.64)
+        self.assertEqual(apart["g1_version"], 3)
+        self.assertEqual(apart["close_pair_share"], 0)
+        self.assertEqual(apart["contact_share"], 0)
+        self.assertGreater(pressed["close_pair_share"], 0.2)
+        self.assertGreater(pressed["shallow_dip_share"], apart["shallow_dip_share"])
+        self.assertGreater(pressed["contact_share"], 0.3)
+        self.assertGreater(pressed["band_thick"][50], apart["band_thick"][50])
+        self.assertGreater(pressed["contact_extent"][50], 60)              # the bands run the whole 96 px width
+        self.assertEqual(len(pressed["dip_depth"]), self.s2.QN)
+
+    def test_column_lift_independent_against_stacked(self):
+        rng = np.random.default_rng(3)
+        L = self.s2._column_lift
+
+        def prof(flags, k):                              # wide spans: every step crosses three separate bands
+            return ((k // 4, k % 4, 0), list(flags), [20] * (len(flags) - 1))
+        indep = [prof(rng.random(12) < 0.3, k) for k in range(400)]
+        lift, perm, lo, elo = L(indep)
+        self.assertAlmostEqual(lift, 1.0, delta=0.15)
+        self.assertLess(elo, 0.2)                        # no stacking: the bootstrap excess bound stays low
+        cols = [prof([bool(rng.random() < 0.3)] * 12, k) for k in range(400)]
+        lift_c, perm_c, lo_c, elo_c = L(cols)
+        self.assertGreater(lift_c, 2.0)
+        alt = [prof([i % 2 == 0 for i in range(12)], k) for k in range(50)]
+        self.assertLess(L(alt)[0], 0.1)
+        self.assertIsNone(L([prof([True, False], k) for k in range(5)])[0])     # fewer than COLUMN_MIN
+        self.assertIsNone(L([prof([True, True], k) for k in range(30)])[0])     # no open interface: undefined
+
+    def test_column_min_is_pinned(self):
+        self.assertEqual(self.s2.COLUMN_MIN, 20)
+        def seqs(n_close):                               # n_close close interfaces, each followed by an open one
+            return [((k, 0, 0), [True, False, False], [20, 20]) for k in range(n_close)] + \
+                   [((1000, 0, 0), [False, True], [20])]
+        self.assertIsNone(self.s2._column_lift(seqs(19), boot=10)[0])
+        self.assertIsNotNone(self.s2._column_lift(seqs(20), boot=10)[0])
+
+    def test_short_crops_are_refused(self):
+        with self.assertRaises(self.s2.SimError):
+            self.s2.g1stats(self.crops[0][:36], 8.64)
+
+    def test_column_lift_ignores_one_multi_peaked_band(self):
+        # one band with split plies gives three close peaks, but its span is under the three-band minimum
+        rng = np.random.default_rng(4)
+        seqs = []
+        for k in range(600):
+            f = list(rng.random(10) < 0.3)
+            sp = [20] * 9
+            if k % 2 == 0:                               # half the profiles hold a split-ply band: close, close, narrow
+                f[3], f[4] = True, True
+                sp[3] = 8
+            seqs.append(((k // 6, k % 6, 0), f, sp))
+        lift, perm, lo, elo = self.s2._column_lift(seqs, span_min=1.5 * 7.0)
+        self.assertLess(abs(lift - perm), 0.25)
+        self.assertLess(elo, 0.2)
+
+    def test_column_lift_sees_stacked_contacts_in_a_crop(self):
+        def sheets(centers, z=40, h=192, w=96):
+            y = np.arange(h, dtype=np.float32)[:, None]
+            img = np.full((h, w), 40.0, np.float32)
+            for cy in centers:
+                img += 160.0 * np.exp(-0.5 * ((y - cy) / 1.6) ** 2)
+            rng = np.random.default_rng(7)
+            return np.clip(img[None].repeat(z, 0) + rng.normal(0, 3, (z, h, w)), 0, 255)
+        # stacked: three pressed pairs in a row, then open sheets; spread: pressed pairs separated by open ones
+        stacked = [8, 13, 18, 23, 28, 33, 50, 66, 82, 98, 114, 130, 146, 162, 178]
+        spread = [8, 13, 30, 46, 51, 68, 84, 89, 106, 122, 127, 144, 160, 165, 182]
+        a = self.s2.g1stats(sheets(stacked), 8.64)
+        b = self.s2.g1stats(sheets(spread), 8.64)
+        self.assertIsNotNone(a["contact_column_lift"])
+        self.assertIsNotNone(b["contact_column_lift"])
+        self.assertGreater(a["contact_column_lift"], 1.5)
+        self.assertLess(b["contact_column_lift"], 1.0)
+        self.assertGreater(a["contact_column_lift"], b["contact_column_lift"])
+        self.assertLess(a["contact_column_lift_perm"], a["contact_column_lift"])   # shuffling breaks the columns
+        self.assertIsNotNone(a["contact_column_lift_lo"])
+
+    def test_version3_guards(self):
+        d = self.s2.g1stats(self.crops[0], 8.64)
+        self.assertEqual(d["code_sha256"], self.s2.code_sha256())
+        self.assertEqual(len(d["slices"]), self.s2.G1_SLICES)
+        self.assertGreaterEqual(d["ridge_points"], 1)
+        self.assertGreaterEqual(d["ridge_dropped"], 0)
+        masked = self.crops[0].copy()
+        masked[:, :12] = 0                                   # a masked-volume edge
+        mk = self.s2.g1stats(masked, 8.64)
+        self.assertGreater(mk["zero_share"], 0.05)
+        self.assertGreater(mk["mask_share"], 0.05)
+        self.assertLess(d["mask_share"], 0.01)
+        sparse = self.crops[0].copy()
+        sparse[:, ::7, ::7] = 0                          # scattered dark voxels are not mask fill
+        self.assertLess(self.s2.g1stats(sparse, 8.64)["mask_share"], 0.001)
+        with self.assertRaises(self.s2.SimError):        # a sealed hold-out never enters the spread
+            self.s2.g1compare([dict(d, scan="a"), dict(d, scan="b", role="holdout")])
+        other = dict(d, scan="b", code_sha256="0" * 64)
+        with self.assertRaises(self.s2.SimError):
+            self.s2.g1compare([dict(d, scan="a"), other])
+        r = self.s2.g1compare([dict(d, scan="a"), dict(self.s2.g1stats(self.crops[1], 8.64), scan="b")])
+        self.assertEqual(r["spread_pairs"]["band_thick"], 1)
+        # a near-zero quartile range is floored, so integer quantiles cannot blow a distance up
+        a = dict(d, contact_extent=[5.0] * self.s2.QN)
+        b = dict(d, contact_extent=[5.0] * 50 + [5.00001] * 51)
+        self.assertLess(self.s2.g1distance(a, b)["contact_extent"], 0.001)
+        with self.assertRaises(self.s2.SimError):
+            self.s2._all_finite({"x": [1.0, float("nan")]})
+
+    def test_holdout_and_mask_guards_v3b(self):
+        from unittest import mock
+        from scipy import ndimage as ndi
+        guard = mock.patch.object(self.s2, "HOLDOUT_SCANS", ("PHerc0001A", "20990101000000"))
+        guard.start()
+        self.addCleanup(guard.stop)
+        d = self.s2.g1stats(self.crops[0], 8.64)
+        thin = self.crops[0].copy()
+        thin[:, 40:42, :] = 0                            # a 2-voxel gap sheet clipped to 0 is not mask fill
+        self.assertLess(self.s2._mask_share(np, ndi, thin), 0.001)
+        thick = self.crops[0].copy()
+        thick[:, :16, :] = 0                             # thick fill still counts, in full (an opening, not an erosion)
+        true = float((thick == 0).mean())
+        self.assertAlmostEqual(self.s2._mask_share(np, ndi, thick), true, delta=0.1 * true)
+        slab = self.crops[0].copy()
+        n = max(6, int(round(0.0156 * slab.shape[1])))
+        slab[:, :n, :] = 0                               # a thin edge slab (5% of this small crop) is not undercounted
+        self.assertAlmostEqual(self.s2._mask_share(np, ndi, slab), float((slab == 0).mean()), delta=0.002)
+        self.assertEqual(self.s2.HOLDOUT_SCANS, ("PHerc0001A", "20990101000000"))
+        for name in ("PHerc0001A-primary", "pherc0001a", "x-20990101000000", "PHerc0001-A", "pherc_0001_a"):
+            self.assertTrue(self.s2.is_holdout(name))
+            with self.assertRaises(self.s2.SimError):
+                self.s2.g1compare([dict(d, scan="PHerc0172-20241024131839"), dict(d, scan=name)])
+        self.assertFalse(self.s2.is_holdout("PHerc0172-20241024131839"))
+        with self.assertRaises(self.s2.SimError):         # the CLI path needs real scan ids
+            self.s2.g1compare([dict(d, scan="a"), dict(d, scan="b")], need_ids=True)
+        ok = self.s2.g1compare([dict(d, scan="PHerc0172-20241024131839"), dict(d, scan="PHerc0343-20250521140437")],
+                               need_ids=True)
+        self.assertEqual(ok["scan_pairs"], 1)
+        with tempfile.TemporaryDirectory() as t:
+            ct = os.path.join(t, "PHerc0001A-p.npy")
+            np.save(ct, self.crops[0])
+            with self.assertRaises(SystemExit):          # never printed: --out is required
+                self.s2.main(["g1", ct, "--voxel-um", "8.64"])
+            out = os.path.join(t, "h.json")
+            buf = io.StringIO()
+            with contextlib.redirect_stdout(buf):
+                self.s2.main(["g1", ct, "--voxel-um", "8.64", "--out", out])
+            line = json.loads(buf.getvalue())
+            self.assertEqual(set(line), {"sealed", "sha256"})
+            self.assertEqual(json.loads(Path(out).read_text())["role"], "holdout")
+
+    def test_gap_noise_zratio_sees_anisotropic_noise(self):
+        rng = np.random.default_rng(9)
+        z, h, w = 40, 160, 96
+        y = np.arange(h, dtype=np.float32)[:, None]
+        img = np.full((h, w), 40.0, np.float32)
+        for cy in range(8, 156, 16):
+            img += 160.0 * np.exp(-0.5 * ((y - cy) / 1.6) ** 2)
+        white = rng.normal(0, 4, (z, h, w))
+        iso = self.s2.g1stats(np.clip(img[None] + white, 0, 255), 8.64)
+        from scipy import ndimage as ndi
+        smooth_z = ndi.gaussian_filter1d(rng.normal(0, 8, (z, h, w)), 2.0, axis=0)   # correlated along z only
+        aniso = self.s2.g1stats(np.clip(img[None] + smooth_z, 0, 255), 8.64)
+        self.assertAlmostEqual(iso["gap_noise_zratio"], 1.0, delta=0.1)
+        self.assertLess(aniso["gap_noise_zratio"], 0.6)
+
+    def test_contact_widths_are_parity_edge_slice_and_orientation_safe(self):
+        from scipy import ndimage as ndi
+
+        def bands(rows, h=160, w=96, z=40):
+            img = np.full((h, w), 40.0, np.float32)
+            for r0, r1 in rows:
+                img[r0:r1] = 200.0
+            return np.clip(img[None].repeat(z, 0) + np.random.default_rng(1).normal(0, 2, (z, h, w)), 0, 255)
+        g1 = lambda v: self.s2.g1stats(v, 8.64)
+        alt, y = [], 8                                   # well-separated 4- and 5-row bands: none touch
+        while y < 150:
+            wd = 4 if len(alt) % 2 == 0 else 5
+            alt.append((y, y + wd))
+            y += wd + 9
+        self.assertEqual(g1(bands(alt))["contact_share"], 0)
+        edge = g1(bands([(0, 5)] + [(y, y + 5) for y in range(18, 150, 14)]))   # a band cut by the crop edge
+        self.assertEqual(edge["contact_share"], 0)
+        one = bands([(y, y + 5) for y in range(8, 150, 14)])
+        two = bands([(y, y + 9) for y in range(8, 150, 18)])                    # pressed bands in half the slices
+        self.assertGreater(g1(np.concatenate([one[:20], two[20:]], 0))["contact_share"], 0.3)
+        rows = [(y, y + 5) for y in range(10, 190, 14)]
+        rows[6] = (rows[6][0], rows[6][0] + 10)                                 # one pressed band among singles
+        flat = bands(rows, h=200, w=200)
+        a0 = g1(flat)
+        a45 = g1(ndi.rotate(flat, 45, axes=(1, 2), reshape=False, order=1, mode="constant", cval=40.0))
+        for d in (a0, a45):
+            self.assertTrue(0.05 < d["contact_share"] < 0.25, d["contact_share"])
+        self.assertLess(abs(a0["contact_extent"][100] - a45["contact_extent"][100]), 15)
+        self.assertLess(abs(a0["band_thick"][50] - a45["band_thick"][50]), 1.0)
+
+    def test_pairs_and_v2_names_compared(self):
+        ps = np.array([0.0, 1.0, 0.4, 0.0, 0.9, 0.85, 1.2, 0.0])
+        pk = self.s2._peaks(ps, 0.5)
+        self.assertEqual(pk, [1, 6])                          # 4 is within 3 of 6, lower, so suppressed
+        (sp, dip), = self.s2._pairs(ps, pk)
+        self.assertEqual(sp, 5)
+        self.assertAlmostEqual(dip, 1.0)                      # lower peak 1.0 minus the 0.0 between
+        a = self.s2.g1stats(self.crops[0], 8.64)
+        b = self.s2.g1stats(self.crops[2], 8.64)
+        dist = self.s2.g1distance(a, b)
+        for k in ("peak_spacing", "dip_depth", "band_thick", "close_pair_share", "shallow_dip_share",
+                  "contact_share"):
+            self.assertIn(k, dist)
+        self.assertIn("contact_extent", self.s2.G1_DIST)
+
+    def test_peaks_do_not_chain_and_refusals_of_v2(self):
+        prof = np.array([0, 2, 0, 3, 0, 4, 0, 5, 0], float)
+        self.assertEqual(self.s2._peaks(prof, 0.5), [3, 7])          # highest first, 3 apart: two peaks, not one
+        bad = self.crops[0].astype(np.float32)
+        bad[3, 5, 5] = np.nan
+        with self.assertRaises(self.s2.SimError):
+            self.s2.g1stats(bad, 8.64)
+        a = dict(self.s2.g1stats(self.crops[0], 8.64), scan="a")
+        with self.assertRaises(self.s2.SimError):
+            self.s2.g1compare([a, dict(a, scan="b", g1_version=1)])
+
+    def test_resample_and_refusals(self):
+        v = self.s2.resample(self.crops[0], 4.32, 8.64)
+        self.assertEqual(v.shape, (24, 60, 60))
+        with self.assertRaises(self.s2.SimError):
+            self.s2.g1stats(v[:4], 8.64)
+        with self.assertRaises(self.s2.SimError):
+            self.s2.g1stats(self.crops[0], 2.0)                  # shrinks below twice the tile
+
+
+# ---------------------------------------------------------------------------------------------- texture and realism
 
 
 if __name__ == "__main__":

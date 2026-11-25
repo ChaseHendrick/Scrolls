@@ -81,7 +81,7 @@ Command-line tools, benchmarks and script folders that run from a clone of this 
 </details>
 
 <details>
-<summary><b>Surfaces and tracing</b> (18)</summary>
+<summary><b>Surfaces and tracing</b> (19)</summary>
 
 | Tool | What it does |
 | --- | --- |
@@ -95,7 +95,8 @@ Command-line tools, benchmarks and script folders that run from a clone of this 
 | [Relative winding consistency check](docs/tools/windconsistency.md) | Passes relative winding counts only when every one is an integer and all of them can hold at once. |
 | [Relative windings in a box](docs/tools/windlabel-box.md) | Grows chains of sheet crossings around a point and writes villa's relative_windings.json for a spiral fit, with a VC3D plugin. |
 | [Scroll center (umbilicus) finder and coverage polish](docs/tools/umbilicus.md) | Finds a scroll's winding center line (umbilicus) in its CT scan with two small U-Nets and writes umbilicus.json for VC3D. |
-| [ScrollSim v2: a full-scale synthetic scroll](docs/tools/scrollsim2.md) | Renders a synthetic scroll of 100 plus windings block by block, with a CT scan model, optional ink, and every voxel's exact winding, ink and surfaces as truth. |
+| [ScrollSim Hard Cases: exact 3D layouts of the hard parts of papyrus CT](docs/tools/hardcases.md) | Exact 3D layouts of folds, contact, crushing, delamination, cracks, edges and spiral centres, with a zone map and CT render, as tiles or blocks. |
+| [ScrollSim v2: a full-scale synthetic scroll](docs/tools/scrollsim2.md) | Renders a synthetic scroll of 100 plus windings block by block, with a CT scan model, optional ink, realism statistics and exact winding and surface truth. |
 | [Segment Atlas](docs/tools/atlas.md) | Measures published segment meshes with the same geometry checks and builds a searchable table. |
 | [Segment stack check](docs/tools/stackcheck.md) | Checks a stack of consecutive tifxyz segments against the umbilicus from geometry alone: winding order, spacing, gaps and overlaps. |
 | [Segments without VC3D](docs/tools/tifxyz.md) | Reads a tifxyz segment, local or from the open-data bucket, and reports its true area, grid, holes and folds, with numpy and tifffile only. |

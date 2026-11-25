@@ -39,7 +39,7 @@ What works today:
 
 - **Texture library and realism statistics** (2026-11-18). Off by default, so a render without `library` is unchanged bit for bit (checked against the previous code on twelve blocks).
   - *Texture library*: `python -m kit.scrollsim2 library CT.npy LIB.npz` cuts small cubes from a CT crop you choose, for example a crop of public open-data CT, with no labels: sheet cubes keep the fiber texture (the crop minus its smoothed self) and gap cubes keep the debris and loose fibers between sheets (the gap voxels minus the gap median). Both are divided by the crop's sheet-to-gap contrast. `--set library=LIB.npz` adds that residual texture to a render on a global grid of half-overlapping, Hann-weighted tiles; a hash of each tile's position and the seed picks its cube, so the texture is the same whatever the block size. Sheet voxels get sheet cubes, voxels inside the roll get gap cubes, open air gets none. `lib_gain` scales it.
-  - *Realism statistics*: `python -m kit.scrollsim2 g1 CT.npy --voxel-um V` measures label-free statistics of any CT crop, real or simulated, after resampling to 8.64 um: sheet and gap run lengths along the sheet normal, touching gaps, normalized gray in sheet and gap, gap noise and its correlation, slice drift, structure-tensor coherence, waviness, split plies and bright inclusions. `g1-compare` takes the largest distance between crops of different real scans as the real-to-real spread and reports, statistic by statistic, whether a simulated crop lies inside it.
+  - *Realism statistics*: `python -m kit.scrollsim2 g1 CT.npy --voxel-um V` measures label-free statistics of any CT crop, real or simulated, after resampling to 8.64 um: sheet and gap run lengths along the sheet normal, touching gaps, normalized gray in sheet and gap, gap noise and its correlation, slice drift, structure-tensor coherence, waviness, split plies and bright inclusions. Version 3 (25 Nov 2026 release) adds contact statistics for pressed and touching sheets: spacing between neighboring sheet peaks, the depth of the dip between them, band thickness, the extent and share of fused contacts, and `contact_column_lift` (how much more often the next interface outward is also a contact, with a shuffled control), plus `gap_noise_zratio` (noise along z against in-plane, a projection-space CT effect). `g1-compare` takes the largest distance between crops of different real scans as the real-to-real spread and reports, statistic by statistic, whether a simulated crop lies inside it.
 - **Sheet physics** (stage S3, 2026-11-18). All off by default, so the CT and labels are unchanged bit for bit; each part has its own `--set` keys (Inputs). Labels stay the exact winding truth: a voxel is labeled when a winding's ply band holds it, as before.
   - *Short-scale waviness* (`wave_amp`, `wave_len`): each winding ripples radially with a peak wavelength of a few thicknesses, along z and along the sheet. The ripple is added to the radius grid when the scroll is built, so voxels, labels, surfaces and the center line read one geometry and stay exact.
   - *Kolleseis* (`kolle_every`, `kolle_len`, `kolle_jitter`, `kolle_thick`): glued joins between sheets, at jittered spacings along the sheet, where the sheet is about twice as thick over the overlap and its label band widens with it.
@@ -526,7 +526,7 @@ usage: python -m kit.scrollsim2 g1 [-h] --voxel-um VOXEL_UM
 | `--scan NAME` | the scan name written into the result, which `g1-compare` uses to tell scans apart (default: the file name) |
 | `--out F` | write the JSON there instead of printing it |
 
-After resampling the crop needs at least 64 voxels in y and x and 8 slices.
+After resampling the crop needs at least 64 voxels in y and x and 8 slices. A crop whose `--scan` or file name matches `HOLDOUT_SCANS` (a frozen test's sealed scans; empty in the released kit) is never printed: it needs `--out`, is marked `role: holdout`, and only the file's sha256 is printed.
 
 ### `python -m kit.scrollsim2 g1-compare`
 
@@ -537,7 +537,7 @@ usage: python -m kit.scrollsim2 g1-compare [-h] --real REAL [REAL ...]
 
 | Option | Meaning |
 | --- | --- |
-| `--real A.json ...` | `g1` results of real crops; crops with the same `scan` never form a pair |
+| `--real A.json ...` | `g1` results of real crops; crops with the same `scan` never form a pair; each `scan` must hold an open-data scan id (a 14-digit timestamp), and a sealed hold-out or a mix of `g1` versions or code hashes is refused |
 | `--sim S.json` | a `g1` result of a simulated crop to judge against the real spread |
 | `--out F` | write the JSON there instead of printing it |
 
@@ -588,7 +588,8 @@ usage: python -m kit.scrollsim2 info [-h] sim
 | `resample(vol, voxel_um, target_um)` | float32 array | | Gaussian anti-alias when shrinking, then linear interpolation with voxels as cells, so the mean is kept; unchanged within 2 percent |
 | `g1stats(vol, voxel_um, target_um=8.64, tile=32, step=3, seed=0)` | dict of statistics (`G1_VERSION`; distributions as `QN` = 101 quantiles) | `SimError` on a crop too small after resampling, or no sheet or gap | Label-free realism statistics of one crop; see the `g1` command |
 | `g1distance(a, b)` | dict: statistic to distance | | Distributions: 1D Wasserstein distance over the pooled interquartile range; scalars: absolute difference; `noise_corr`: mean absolute difference over lags |
-| `g1compare(real, sim=None)` | dict: `spread`, `scan_pairs`, and with SIM `sim`, `inside`, `judged` | | The real-to-real spread over pairs of different scans, and whether SIM lies inside it per statistic |
+| `g1compare(real, sim=None, need_ids=False)` | dict: `spread`, `scan_pairs`, and with SIM `sim`, `inside`, `judged` | `SimError` on mixed versions or code, a hold-out crop, or (NEED_IDS) a scan with no open-data id | The real-to-real spread over pairs of different scans, and whether SIM lies inside it per statistic |
+| `is_holdout(name)` | bool | | True when NAME matches `HOLDOUT_SCANS`, ignoring case and punctuation |
 | `default_workers()` | int | | The CPU count, at most `MAX_WORKERS` (16) |
 | `single_thread_blas(environ=None)` | None | | Sets `OMP_NUM_THREADS`, `OPENBLAS_NUM_THREADS` and `MKL_NUM_THREADS` to 1 where unset; `main` calls it first |
 | `main(argv=None)` | exit code | `SystemExit` with `scrollsim2: MESSAGE` on a `SimError` | The command line |
@@ -754,6 +755,14 @@ Scan presets (a starting point, not a calibration):
 | `library is a path to a .npz, or empty` / `lib_gain is 0 or more` | bad `--set` value | give a path string, and a gain of 0 or more |
 | `the crop is...voxels at...um; g1 needs...in y and x and 8 slices` | `g1` crop too small after resampling | give a larger crop, or check `--voxel-um` |
 | `g1-compare` shows `scan_pairs` 0 and `judged` 0 | every real crop has the same `scan` name | measure crops of at least two scans, with `--scan` set |
+| `the crop holds NaN or Inf voxels; g1 measures finite CT only` | the crop has non-finite values | cast or clean the crop; g1 never measures it |
+| `the crop has...slices at...um; g1 samples...distinct slices and needs at least...slices` | too few slices after resampling for `G1_SLICES` | give a taller crop |
+| `g1-compare got g1 versions...; measure every crop with one version` | results from different `G1_VERSION`s | remeasure every crop with this code |
+| `g1-compare got g1 results of different code (code_sha256); remeasure every crop with one code` | results measured by different code | remeasure every crop with one code |
+| `g1-compare got the sealed hold-out as a real crop; it never enters the spread` | a crop marked `role: holdout` or named in `HOLDOUT_SCANS` | leave it out of `--real` |
+| `g1-compare got a real crop whose scan field...holds no open-data scan id` | a real crop's `scan` has no 14-digit scan id | measure it with `--scan` set to a name holding the scan id |
+| `g1 on a sealed hold-out needs --out; its values are never printed` | the crop is named in `HOLDOUT_SCANS` | pass `--out`; only the sha256 is printed |
+| `...is not finite` | a g1 statistic came out NaN or Inf | report the crop; no result is written |
 
 ## How it works
 
@@ -804,10 +813,11 @@ Stage registry: no stage option. The registry's stages read a real scroll; Scrol
 
 ## Tests
 
-`python -m unittest tests.test_scrollsim2 -v` (about 7 minutes on 4 cores; skips without numpy and scipy, and the make tests skip without zarr). Covered: lookup equality, determinism, parameter refusals, the narrow fixed-axis box, position-hashed noise, block independence, air skipping, make and its pyramid, stop and resume, deadline stop, lost-chunk detection and repair, publish, estimate, the worker cap and BLAS threads; the truth extras (label pyramid rule, contact share, u, v and w signs and bounds, their block independence, `--truth` on the command line and its resume check); the sheet physics (defaults off and refusals, the ripple's short-scale power with exact lookup and surfaces, thicker joins, gap debris without labels, cracks, bubbles and ply variation, block independence with every feature on); the scan model (presets and refusals, block independence with every part on, phase against an exact FFT filter, phase edges by retrieval mismatch, noise measured and fitted back, cupping, slabs and rings, make with the scan model and the `nps` command), the texture library (build, refusals, the residual it adds, block independence) and the realism statistics (determinism, distances, the spread judgment, resampling, the three commands), all on synthetic inputs. ; ink off by default and its refusals, the partial-volume share, inked voxels at the recto face, the gray excess against the ink's mass, the noink twin, `ink.tif` against the 3D truth and the inked shares, and block independence with ink on. Not covered: the `pilot` preset at full size, ink at full scale, the `font` refusal on a machine without the font, a `make` run with a library, and any realism of the volumes against real CT.
+`python -m unittest tests.test_scrollsim2 -v` (about 7 minutes on 4 cores; skips without numpy and scipy, and the make tests skip without zarr). Covered: lookup equality, determinism, parameter refusals, the narrow fixed-axis box, position-hashed noise, block independence, air skipping, make and its pyramid, stop and resume, deadline stop, lost-chunk detection and repair, publish, estimate, the worker cap and BLAS threads; the truth extras (label pyramid rule, contact share, u, v and w signs and bounds, their block independence, `--truth` on the command line and its resume check); the sheet physics (defaults off and refusals, the ripple's short-scale power with exact lookup and surfaces, thicker joins, gap debris without labels, cracks, bubbles and ply variation, block independence with every feature on); the scan model (presets and refusals, block independence with every part on, phase against an exact FFT filter, phase edges by retrieval mismatch, noise measured and fitted back, cupping, slabs and rings, make with the scan model and the `nps` command), the texture library (build, refusals, the residual it adds, block independence) and the realism statistics (determinism, distances, the spread judgment, resampling, the three commands; version 3's contact statistics on pressed against separate sheets, the contact column lift against its shuffle, anisotropic noise, mask fill, the hold-out and scan-id guards), all on synthetic inputs. ; ink off by default and its refusals, the partial-volume share, inked voxels at the recto face, the gray excess against the ink's mass, the noink twin, `ink.tif` against the 3D truth and the inked shares, and block independence with ink on. Not covered: the `pilot` preset at full size, ink at full scale, the `font` refusal on a machine without the font, a `make` run with a library, and any realism of the volumes against real CT.
 
 ## History
 
+- 2026-11-25: realism statistics version 3: contact statistics of pressed and touching sheets, contact columns with a shuffle control, z-to-in-plane noise ratio, masked-fill share, finite-value checks, and hold-out and scan-id guards in `g1-compare`. Renders are unchanged. Released with [ScrollSim Hard Cases](hardcases.md).
 - 2026-11-18: eight more pictures and GIFs: pressed sheets, truth layers, sheet physics, the ink writer with its noink twin, and the surface swinging in 3D, all synthetic ([PR #367](https://github.com/ChaseHendrick/Scrolls/pull/367)).
 - 2026-11-18: ink writer, off by default: Greek capitals on the recto face as a thin deposit with a density and texture change, exact 3D ink truth (`truth/ink.zarr`) and per-surface `ink.tif`, the noink twin (`--noink`), the inked share in `truth.json` (`cf59063`).
 - 2026-11-18: sheet physics (stage S3), all off by default: short-scale waviness, kolleseis, gap debris (inclusions, strands, dust), cracks, carbonization bubbles and density variation between plies (`64c6ba4`).
@@ -820,5 +830,6 @@ Stage registry: no stage option. The registry's stages read a real scroll; Scrol
 
 ## Related
 
+- [ScrollSim Hard Cases](hardcases.md): exact 3D layouts of folds, cracks, delamination, contact, crushing, edges and spiral centres, as training tiles or blocks.
 - [tifxyz](tifxyz.md): reads and checks the surfaces it writes.
 - [auc](auc.md): scoring on real published labels, where real claims come from.

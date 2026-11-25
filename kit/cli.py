@@ -1106,6 +1106,11 @@ def build_parser(prog="python -m kit", sub_progs=None):
     p.add_argument("cmd", nargs=argparse.REMAINDER)
     p.set_defaults(func=lambda a: __import__("kit.stagereg", fromlist=["x"]).main(a.cmd))
 
+    p = sub.add_parser("hardcases", help="ScrollSim Hard Cases: exact 3D layouts of folds, cracks, delamination, "
+                                         "contact, crushed areas, edges and spiral centres, with a zone map")
+    __import__("kit.hardcases", fromlist=["x"]).build_parser(p)      # stdlib at import; numpy loads on use
+    p.set_defaults(func=lambda a: __import__("kit.hardcases", fromlist=["x"]).cmd_hardcases(a))
+
     p = sub.add_parser("style", help="the Scrolls terminal look: hook install, remove or status (style every "
                                      "script in a checkout), demo, pipe")
     p.add_argument("cmd", nargs=argparse.REMAINDER)

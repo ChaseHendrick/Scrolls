@@ -114,7 +114,7 @@
       "line": "Command-line tools, benchmarks and script folders that run from a clone of this repository.",
       "area": "Releases and repository",
       "page": "docs/tools/cli.md",
-      "released": "2026-11-20",
+      "released": "2026-11-25",
       "summary": "Command-line tools, benchmarks and script folders that run from a clone of this repository. Each line gives the tool's release date, its weights where it has them, one command to start with, its tool page and its evidence; each page lists the tool's own needs. Their outputs are model output or geometry measurements for a person to check, not readings.",
       "commands": [
         "git clone --depth 1 https://github.com/ChaseHendrick/Scrolls.git",
@@ -831,14 +831,26 @@
         {
           "id": "scrollsim2",
           "name": "ScrollSim v2: a full-scale synthetic scroll",
-          "line": "Renders a synthetic scroll of 100 plus windings block by block, with a CT scan model, optional ink, and every voxel's exact winding, ink and surfaces as truth.",
+          "line": "Renders a synthetic scroll of 100 plus windings block by block, with a CT scan model, optional ink, realism statistics and exact winding and surface truth.",
           "area": "Surfaces and tracing",
-          "released": "2026-11-18",
-          "version": "2.0",
-          "summary": "Rolls one sheet into a spiral of 100 plus windings with contact zones, crushing and bending, and renders a CT-like OME-Zarr pyramid block by block on CPU workers, with winding labels and the sheet's surfaces as truth. Version 2.0 adds, all off by default: a CT scan model (Paganin phase retrieval, a fitted noise spectrum, cupping, slabs, rings, scan presets); a texture library with label-free realism statistics; contact and u v w truth volumes; sheet physics (waviness, kolleseis, debris, cracks, bubbles, ply variation); and an ink writer with exact ink truth and a no-ink twin. Every voxel is independent of its block, with every feature on. The ink is not yet calibrated against real readers. Synthetic data: scores on it say nothing about a real scroll.",
+          "released": "2026-11-25",
+          "version": "2.1",
+          "summary": "Rolls one sheet into a spiral of 100 plus windings with contact zones, crushing and bending, and renders a CT-like OME-Zarr pyramid block by block on CPU workers, with winding labels and surfaces as truth. Version 2 adds, all off by default: a CT scan model (Paganin phase retrieval, fitted noise spectrum, cupping, slabs, rings), a texture library, contact and u v w truth, sheet physics, and an ink writer with a no-ink twin. Version 2.1 adds contact measures to the label-free realism statistics (pressed-sheet spacing and dips, fused bands, contact columns with a shuffle control, noise anisotropy) and hold-out guards; renders unchanged. The ink is not calibrated against real readers. Synthetic data: scores on it say nothing about a real scroll.",
           "command": "python -m kit.scrollsim2 make SIM --preset smoke --workers 4 --block 64 --chunk 64 --levels 2 --surfaces",
           "page": "docs/tools/scrollsim2.md",
           "evidence": "[tests](tests/test_scrollsim2.py)"
+        },
+        {
+          "id": "hardcases",
+          "name": "ScrollSim Hard Cases: exact 3D layouts of the hard parts of papyrus CT",
+          "line": "Exact 3D layouts of folds, contact, crushing, delamination, cracks, edges and spiral centres, with a zone map and CT render, as tiles or blocks.",
+          "area": "Surfaces and tracing",
+          "released": "2026-11-25",
+          "version": "1.0",
+          "summary": "Rebuilds the 2D hard cases of Synthetic-Slices v0.2 (vincentl065, MIT) as continuous 3D fields: hairpins, U folds, tight bends, accordions, crushed mush, delamination, cracks, frayed outer edges, contact patches and flattened spiral centres, which the 2D generator lacks. Any block, slice direction or grid gives the same sheets, every sheet keeps one id round a fold, and a zone map marks each hard case so a detector or tracer can be scored per case. Writes training tiles in the Synthetic-Slices shard format or 3D blocks. Synthetic data: scores on it say nothing about real CT.",
+          "command": "python -m kit hardcases tiles OUT.npz --n 2000 --seed 1",
+          "page": "docs/tools/hardcases.md",
+          "evidence": "[tests](tests/test_hardcases.py)"
         },
         {
           "id": "accelbench",
