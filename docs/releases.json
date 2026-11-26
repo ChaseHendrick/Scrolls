@@ -114,7 +114,7 @@
       "line": "Command-line tools, benchmarks and script folders that run from a clone of this repository.",
       "area": "Releases and repository",
       "page": "docs/tools/cli.md",
-      "released": "2026-11-25",
+      "released": "2026-11-26",
       "summary": "Command-line tools, benchmarks and script folders that run from a clone of this repository. Each line gives the tool's release date, its weights where it has them, one command to start with, its tool page and its evidence; each page lists the tool's own needs. Their outputs are model output or geometry measurements for a person to check, not readings.",
       "commands": [
         "git clone --depth 1 https://github.com/ChaseHendrick/Scrolls.git",
@@ -843,14 +843,26 @@
         {
           "id": "hardcases",
           "name": "ScrollSim Hard Cases: exact 3D layouts of the hard parts of papyrus CT",
-          "line": "Exact 3D layouts of folds, contact, crushing, delamination, cracks, edges and spiral centers, with a zone map and CT render, as tiles or blocks.",
+          "line": "Exact 3D layouts of folds, contact, crushing, cracks, edges and spiral centers, with a zone map and a CT render you can fit to a real scan.",
           "area": "Surfaces and tracing",
-          "released": "2026-11-25",
-          "version": "1.0",
-          "summary": "Rebuilds the 2D hard cases of Synthetic-Slices v0.2 (vincentl065, MIT) as continuous 3D fields: hairpins, U folds, tight bends, accordions, crushed mush, delamination, cracks, frayed outer edges, contact patches and flattened spiral centers, which the 2D generator lacks. Any block, slice direction or grid gives the same sheets, every sheet keeps one id round a fold, and a zone map marks each hard case so a detector or tracer can be scored per case. Writes training tiles in the Synthetic-Slices shard format or 3D blocks. Synthetic data: scores on it say nothing about real CT.",
+          "released": "2026-11-26",
+          "version": "1.1",
+          "summary": "Rebuilds the 2D hard cases of Synthetic-Slices v0.2 (vincentl065, MIT) as continuous 3D fields (hairpins, U folds, bends, accordions, crushed mush, delamination, cracks, frayed edges, contact, flattened spiral centers), with one id per sheet round a fold and a zone map per hard case; writes Synthetic-Slices shards or 3D blocks. Version 1.1 adds render bounds (noise, point spread, ply width, rim, gap fill, spacing, sheet fill), default tiles unchanged bit for bit, and kit.simreal, which measures a scan's gray values and fits those bounds, with a linear realism test and kit.ctmatch histogram matching. Fitted bounds barely help: on PHerc0343P the linear test still tells fitted tiles from real CT at AUC 1.000. Synthetic data: scores on it say nothing about real CT.",
           "command": "python -m kit hardcases tiles OUT.npz --n 2000 --seed 1",
           "page": "docs/tools/hardcases.md",
-          "evidence": "[tests](tests/test_hardcases.py)"
+          "evidence": "[tests](tests/test_hardcases.py), [simreal](docs/tools/simreal.md)"
+        },
+        {
+          "id": "simcritic",
+          "name": "simcritic: a held-apart judge of how real simulated CT looks",
+          "line": "Fresh critics try to tell real CT from simulated tiles, with a real-against-real control and views that show what gives the simulation away.",
+          "area": "Scoring and controls",
+          "released": "2026-11-26",
+          "version": "1.0",
+          "summary": "Fits three fresh critics on every call (a 46-feature logistic, a CNN and a context CNN), never saved, on folds grouped by whole real slice and whole simulated tile, and refuses real slices a generator trained on, so it cannot be tuned against. A set passes only if even the worst critic sits near a real-against-real control; planted cases show it can pass and fail; attribution views (histogram, spectrum, phase, scale, ridge geometry) say what separates the sets. On PHerc0343P (Model output, development use) every ScrollSim set tried still fails, at worst-critic AUC 0.971 to 1.000 against a control of 0.473; fine-scale spectrum and grain orientation give the simulation away. Gray values only, no labels.",
+          "command": "python3 -c \"from kit import simcritic; help(simcritic.judge)\"",
+          "page": "docs/tools/simcritic.md",
+          "evidence": "[results and checks](docs/tools/simcritic.md#results)"
         },
         {
           "id": "accelbench",
@@ -1166,7 +1178,7 @@
       "area": "Surfaces and tracing",
       "page": "docs/tools/snapped-labels.md",
       "released": "2026-10-27",
-      "summary": "[SharpMeow/vesuvius-snapped-labels](https://huggingface.co/datasets/SharpMeow/vesuvius-snapped-labels) holds 108 published surface labels of PHerc0139, PHerc0814, PHerc0841 and PHerc0172 (32.9 million vertices) with each vertex moved along its normal onto the papyrus recto face in the CT, as tifxyz meshes on the same grid and voxel frame as their sources, so they drop into VC3D or villa as they are. On fresh test sites scored against an independent 1.129 µm scan, **91.2% of snapped PHerc0139 vertices sit within one voxel of the face, against 23.7% for the published labels** (PHerc0814: 71.0% against 24.2%), and a 3D surface model trained on snapped labels placed the surface 0.61 voxels closer on a scroll neither saw. Each segment has a per-vertex abstain code (snapped, filled from measured neighbors, or left in place; 1.0.1 split the last two), confidence and release mask, a `release.json` with source URLs and sha256, and `SHA256SUMS` covers everything. In a test fixed before it ran (29 Oct), labelsnap, its code where no finer scan exists, put labels closer to a finer scan's recto face than the published labels and seven community snaps on 71 fresh PHerc0814 and PHerc0841 sites (pooled, 2.15 voxels closer than published). Scored against a finer scan's face found with labelsnap's own band rule; with a face rule sharing neither, the lead held at about half the size (+1.04, +1.23 voxels). Not 1-voxel exactness; PHerc0814 is held out by site only. The [Snapped Labels](https://huggingface.co/spaces/SharpMeow/snapped-labels) Space draws the published and snapped lines over open-data CT for any segment and plane. CC BY-NC 4.0, like the open data.",
+      "summary": "[SharpMeow/vesuvius-snapped-labels](https://huggingface.co/datasets/SharpMeow/vesuvius-snapped-labels) holds 89 published surface labels of PHerc0139, PHerc0814, PHerc0841 and PHerc0172 (30.9 million vertices) with each vertex moved along its normal onto the papyrus recto face in the CT, as tifxyz meshes on the same grid and voxel frame as their sources, so they drop into VC3D or villa as they are. On fresh test sites scored against an independent 1.129 µm scan, **91.2% of snapped PHerc0139 vertices sit within one voxel of the face, against 23.7% for the published labels** (PHerc0814: 71.0% against 24.2%), and a 3D surface model trained on snapped labels placed the surface 0.61 voxels closer on a scroll neither saw. Each segment has a per-vertex abstain code (snapped, filled from measured neighbors, or left in place; 1.0.1 split the last two), confidence and release mask, a `release.json` with source URLs and sha256, and `SHA256SUMS` covers everything. In a test fixed before it ran (29 Oct), labelsnap, its code where no finer scan exists, put labels closer to a finer scan's recto face than the published labels and seven community snaps on 71 fresh PHerc0814 and PHerc0841 sites (pooled, 2.15 voxels closer than published). Scored against a finer scan's face found with labelsnap's own band rule; with a face rule sharing neither, the lead held at about half the size (+1.04, +1.23 voxels). Not 1-voxel exactness; PHerc0814 is held out by site only. The [Snapped Labels](https://huggingface.co/spaces/SharpMeow/snapped-labels) Space draws the published and snapped lines over open-data CT for any segment and plane. CC BY-NC 4.0, like the open data.",
       "commands": [
         "hf download SharpMeow/vesuvius-snapped-labels --repo-type dataset --local-dir snapped-labels",
         "cd snapped-labels && sha256sum -c SHA256SUMS",
@@ -1193,11 +1205,11 @@
     {
       "id": "vesuvius-radar",
       "title": "Vesuvius Radar (new papers, code and data for the scrolls)",
-      "line": "New papers, code, models and data that could help read the scrolls, from public sources around the clock, scored, with an API and MCP (Space).",
+      "line": "New papers, code, models, data and videos that could help read the scrolls, scored around the clock, with a weekly digest, an API and MCP (Space).",
       "area": "Viewers and apps",
       "page": "docs/tools/vesuvius-radar.md",
       "released": "2026-10-29",
-      "summary": "[Vesuvius Radar](https://huggingface.co/spaces/SharpMeow/vesuvius-radar) reads arXiv, GitHub (including ScrollPrize/villa pull requests, issues and releases), Hugging Face, PyPI, Zenodo, Crossref journals, the Vesuvius Challenge blog and news searches (Google News, Bing News, Hacker News) on a schedule, keeps 30 days, and scores every item from 0 to 100 by keywords, with a term-by-term breakdown, and by meaning, with a small sentence-embedding model (BAAI/bge-small-en-v1.5) on CPU. Status: released. Version: 1.2.2. Pick any lookback from 1 minute to 30 days, by publish date or by when the radar found an item, and a view for researchers, the Challenge team, or contributors; the page has charts, a per-topic briefing, search by meaning and \"more like this\"; a villa issue or pull request card names who made its latest comment, review or change and what it said, beside who opened it; the filters you set, the minimum score among them, and your theme stay where you put them. Everything is open as JSON, CSV, RSS and an MCP server with nine tools, with no key or login, and it uses no GPU quota. License: Apache 2.0 for the code; item text and links belong to their sources. A score is a triage aid, not a judgment of the work.",
+      "summary": "[Vesuvius Radar](https://huggingface.co/spaces/SharpMeow/vesuvius-radar) reads arXiv, GitHub (including ScrollPrize/villa pull requests, issues and releases), Hugging Face, PyPI, Zenodo, Crossref and OpenAlex (with works citing the field's founding papers), the Vesuvius Challenge blog and YouTube channel, and news searches (Google News, Bing News, Hacker News) on a schedule, keeps 30 days, and scores every item from 0 to 100 with a small model fitted to blind ratings, beside a term-by-term keyword breakdown and a meaning score from a sentence-embedding model (BAAI/bge-small-en-v1.5) on CPU. Status: released. Version: 2.0.0. A This week tab compares each ISO week with the week before (new items scored medium or high, the topics that got busier, the ten best items, lists of papers, code, data, villa merges and videos), also as Markdown and a weekly RSS feed; top picks name the best paper, code, data or model and community item for any window; every item has a page you can share, with a link preview. Pick any lookback from 1 minute to 30 days and a view for researchers, the Challenge team, or contributors; the page has charts, a per-topic briefing, search by meaning and \"more like this\". Everything is open as JSON, CSV, RSS and an MCP server with eleven tools, with no key or login, and it uses no GPU quota. License: Apache 2.0 for the code; item text and links belong to their sources. A score is a triage aid, not a judgment of the work.",
       "details": "Opens at [huggingface.co/spaces/SharpMeow/vesuvius-radar](https://huggingface.co/spaces/SharpMeow/vesuvius-radar). Source: [`spaces/vesuvius-radar/`](spaces/vesuvius-radar/); page: [`docs/tools/vesuvius-radar.md`](docs/tools/vesuvius-radar.md). API: `https://sharpmeow-vesuvius-radar.hf.space/api/items?since=1d`; MCP: `https://sharpmeow-vesuvius-radar.hf.space/mcp`.",
       "where": "main"
     },

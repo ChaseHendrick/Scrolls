@@ -166,5 +166,35 @@ class TestSelfCheck(unittest.TestCase):
             lay._self_check()
 
 
+@unittest.skipUnless(HAVE_SCIPY, "needs numpy and scipy")
+class TestDense(unittest.TestCase):
+    """kit.hardcases.dense: denser sheets, the default tiles unchanged without it."""
+
+    def test_default_unchanged_and_dense_fills_more(self):
+        import numpy as np
+        from kit import hardcases as H
+        a = H.tiles(3, 5, 128)
+        b = H.tiles(3, 5, 128, dense_look=None)
+        self.assertTrue(np.array_equal(a["image"], b["image"]) and np.array_equal(a["lines"], b["lines"]))
+        self.assertIsNone(H.FILL)
+        fills = {}
+        for name, look in (("default", None), ("dense", {"fill": (0.75, 0.95), "core": (0.8, 1.1)})):
+            with H.dense(**(look or {})):
+                lay = H.Layout("plain", 42, size=(64, 128, 128))
+                r = H.raster(lay, "z", (32, 0, 0), (128, 128))
+            fills[name] = float(np.isfinite(r["q"]).mean())
+            self.assertGreaterEqual(float(lay.thick.min()), H.THICK_MIN - 1e-9)
+            self.assertGreater(lay.check["min_gap_f"], 0)
+        self.assertGreater(fills["dense"], fills["default"] + 0.1)
+        self.assertIsNone(H.FILL)
+        self.assertIsNone(H.CORE)
+
+    def test_bounds_checked(self):
+        from kit import hardcases as H
+        with self.assertRaises(H.SimError):
+            with H.dense(fill=(0.9, 1.2)):
+                pass
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -38,7 +38,7 @@
   "against-the-1-129-m-scan-alone-the": {
    "line": 163,
    "sources": {
-    "docs/tools/snapped-labels.md": "3369d672268fb54e79d37f1c1bdf4bbb39ca96560361b7762855be0d31d65116"
+    "docs/tools/snapped-labels.md": "32643a2aa916dee0b23927d0dc0f14eb945f22528c108ff5fa7524f53a0cf538"
    },
    "doc": "docs/pipeline-october-2026.md"
   },
@@ -62,7 +62,7 @@
    "sources": {
     "docs/tools/umbilicus.md": "93f4282582098663eb38df8cff29c729a53943788f08605cd4857beefa3bfbe2",
     "docs/tools/contact-barrier.md": "1f7409ebb26b4f34af7cb8dc15175f8440b9b68d80c65424c1351bba4f23cca4",
-    "docs/tools/snapped-labels.md": "3369d672268fb54e79d37f1c1bdf4bbb39ca96560361b7762855be0d31d65116",
+    "docs/tools/snapped-labels.md": "32643a2aa916dee0b23927d0dc0f14eb945f22528c108ff5fa7524f53a0cf538",
     "docs/tools/windlabel-box.md": "33a0b04a5781d069518f5f158573a4e0117abd05f9da8afd54f773a2554c284f",
     "docs/tools/labelsuggest.md": "4d93cd8dbe31106498a16ed7b8efdab8c38e5f7fb26c0715aec8e9a5bb56709d",
     "docs/logs/2026-10-29-parting-fragment-contact.md": "43f809fbb25dcb0bf3defa37e9df8fe7ccf127b01d87653892a2d96580746443"
@@ -156,7 +156,7 @@
    "line": 16,
    "sources": {
     "docs/results.json": "c690346f0a963306577884c5e793e9006de3fac94ce62987b49ebb6ec3b85630",
-    "docs/tools/snapped-labels.md": "3369d672268fb54e79d37f1c1bdf4bbb39ca96560361b7762855be0d31d65116"
+    "docs/tools/snapped-labels.md": "32643a2aa916dee0b23927d0dc0f14eb945f22528c108ff5fa7524f53a0cf538"
    },
    "doc": "docs/FINDINGS.md"
   },
@@ -176,7 +176,7 @@
   "moves-each-traced-surface-onto-the-recto-face": {
    "line": 70,
    "sources": {
-    "docs/tools/snapped-labels.md": "3369d672268fb54e79d37f1c1bdf4bbb39ca96560361b7762855be0d31d65116"
+    "docs/tools/snapped-labels.md": "32643a2aa916dee0b23927d0dc0f14eb945f22528c108ff5fa7524f53a0cf538"
    },
    "doc": "docs/pipeline-october-2026.md",
    "reasons": {
@@ -196,7 +196,7 @@
   "on-pherc0814-finesnap-which-places-the-dataset-s": {
    "line": 162,
    "sources": {
-    "docs/tools/snapped-labels.md": "3369d672268fb54e79d37f1c1bdf4bbb39ca96560361b7762855be0d31d65116"
+    "docs/tools/snapped-labels.md": "32643a2aa916dee0b23927d0dc0f14eb945f22528c108ff5fa7524f53a0cf538"
    },
    "doc": "docs/pipeline-october-2026.md"
   },
@@ -264,7 +264,7 @@
   "real-runs-need-villa-s-vc3d-tools-python3": {
    "line": 43,
    "sources": {
-    "docs/releases.json": "688d9db826e4c9187b2d42d0f40e82dfb1c904e3177e3ffc3b423b2d7859f9e7"
+    "docs/releases.json": "dda310344450b3178a38f3b212420d574b2b412b4fa61214b49c953a141c5b66"
    },
    "doc": "docs/pipeline-october-2026.md",
    "reasons": {
@@ -376,7 +376,7 @@
   "the-two-scan-result-holds-on-the-share": {
    "line": 175,
    "sources": {
-    "docs/tools/snapped-labels.md": "3369d672268fb54e79d37f1c1bdf4bbb39ca96560361b7762855be0d31d65116"
+    "docs/tools/snapped-labels.md": "32643a2aa916dee0b23927d0dc0f14eb945f22528c108ff5fa7524f53a0cf538"
    },
    "doc": "docs/pipeline-october-2026.md"
   },
