@@ -43,7 +43,7 @@ models line up pixel for pixel and can be compared, stacked or ensembled directl
 
 Every map is model output, not a reading.
 
-![Seven ink models and their ensemble on one PHerc0343 reference surface, in the same box](assets/hero.jpg)
+![Seven ink models and their ensemble on one PHerc0343 reference surface, in the same box](https://huggingface.co/datasets/SharpMeow/first-letters-ink-atlas/resolve/main/assets/hero.jpg)
 
 **At a glance:** 32 surfaces (25 from 13 First Letters scrolls, 7 references on PHerc0343) · 116.2 cm² of
 papyrus surface · 1,216 model maps, 128 ensemble maps, 32 CT layers and 32 previews · 7 models, all with MIT
@@ -94,7 +94,7 @@ From an agent: the Space's MCP server is `https://sharpmeow-ink-atlas.hf.space/g
 
 ## What is in it
 
-![One surface: the 65-layer canvas, the three depth windows, the two depth orders and the files](assets/anatomy.png)
+![One surface: the 65-layer canvas, the three depth windows, the two depth orders and the files](https://huggingface.co/datasets/SharpMeow/first-letters-ink-atlas/resolve/main/assets/anatomy.png)
 
 | Path | What it is |
 | --- | --- |
@@ -185,7 +185,7 @@ z = -2 + 6 * v                 # an ensemble map: mean z-score, from -2 to 4
    and it did; it flagged all seven PHerc0343 references. `atlas.json` counts the surfaces of each scroll that are not
    in this release.
 
-![Surfaces in this release by scroll](assets/surfaces-per-scroll.png)
+![Surfaces in this release by scroll](https://huggingface.co/datasets/SharpMeow/first-letters-ink-atlas/resolve/main/assets/surfaces-per-scroll.png)
 
 ## Models
 
@@ -198,9 +198,9 @@ z = -2 + 6 * v                 # an ensemble map: mean z-score, from -2 to 4
 | `d9v2` | d9v2 | TAUIL-Abd-Elilah | [pherc0826-first-letters-search](https://github.com/TAUIL-Abd-Elilah/pherc0826-first-letters-search) | MIT |
 | `hecate-9.6` | Hecate 9.6 µm | Vesuvius Challenge | [scrollprize/hecate](https://huggingface.co/scrollprize/hecate) | MIT |
 
-![Every model on one PHerc0343 reference surface](assets/models.gif)
+![Every model on one PHerc0343 reference surface](https://huggingface.co/datasets/SharpMeow/first-letters-ink-atlas/resolve/main/assets/models.gif)
 
-![One model across the three depth windows on the same surface](assets/depth.gif)
+![One model across the three depth windows on the same surface](https://huggingface.co/datasets/SharpMeow/first-letters-ink-atlas/resolve/main/assets/depth.gif)
 
 **Training exposure.** None of these models' published training lists names any scroll in this release, PHerc0343
 included (d9v2, Reader v2 and Reader V3 list PHerc0343P, a separate object). Hecate's audited training manifest is not
