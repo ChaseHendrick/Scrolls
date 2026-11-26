@@ -123,6 +123,8 @@ week that reaches past the 30 days kept says so.
 - The store lives in the Space's memory and on its temporary disk. After a restart the collector backfills 30 days
   within minutes, but "Found by the radar" times restart from that moment.
 - Logged-out GitHub search allows a few requests a minute, so a busy hour can miss a repository until the next check.
+- OpenAlex limits logged-out calls per address per day, and a Space shares its address, so OpenAlex can answer "429"
+  for a while; Journals then shows partial on the Sources tab and still keeps Crossref's rows.
 - OpenAlex dates a work by its publication day, so a work indexed late shows under "Found by the radar" rather than
   by date.
 - The learned model was fitted to items from October 2026 and has never seen a video or an OpenAlex-only work, so
