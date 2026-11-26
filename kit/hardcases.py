@@ -19,7 +19,8 @@ https://github.com/vincentl065/Synthetic-Slices, read 24 Nov 2026), rebuilt here
 
 Extras on top of a kind: contact (two neighbours pressed together over a patch, their lines at least 3 px apart)
 and a crushed patch. A physics renderer (two plies per sheet, fibre texture, gap debris, inclusions, point spread,
-a phase-contrast rim, white, ramp and correlated noise, slow gain) turns a layout into CT.
+a phase-contrast rim, white, ramp and correlated noise, slow gain) turns a layout into CT. realism() and dense() change
+the render's draw bounds; kit.simreal measures real CT and fits them.
 
     python -m kit hardcases tiles OUT.npz --n 2000 --seed 1 [--size 256] [--side 0.3] [--kinds plain,spiral,...]
     python -m kit hardcases volume OUT.npz --kind hairpin --seed 3 [--shape 64,256,256]
@@ -32,6 +33,7 @@ It is a simulator: a score on its tiles is model output on synthetic data and sa
 """
 
 import argparse
+import contextlib
 import json
 import math
 import sys
@@ -54,6 +56,84 @@ LINE_SEP_MIN = 3.0
 # Hard-case zone bits of raster()["zone"], so a detector or tracer can be scored per hard case.
 ZONES = {"fold": 1, "contact": 2, "delamination": 4, "crack": 8, "crushed": 16, "edge": 32, "centre": 64}
 DIST_CLIP = 255
+
+
+# Dense sheets (25 Nov 2026). Windows of PHerc0343P (a public fragment scan) are about 61 % bright (Otsu) against
+# about 31 % for default tiles at about the same sheet spacing, so its sheets fill far more of each gap and look
+# solid rather than two plies around a dark core. dense() sets, inside
+# a block: FILL, the (lo, hi) bounds of each sheet's thickness as a fraction of its nearest centre gap (default 0.38
+# to 0.66; 0.38 to 0.62 for spirals, 0.40 to 0.62 for folds), and CORE, the bounds of the brightness between a
+# sheet's two plies (default 0.15 to 0.55). The 1.5 voxel minimum gap and THICK_MIN still hold, and the draws keep
+# their count and order, so with both None the tiles are the default tiles exactly.
+FILL = None
+CORE = None
+# Real-CT render settings (25 Nov 2026). Real CT windows, grey values only, can look cleaner and wider than default
+# tiles (less residual noise, a larger best ridge scale). realism() sets, inside a block, the (lo, hi) bounds render() draws from: SD (noise level,
+# default 0.04 to 0.16), PSF (point spread sigma in voxels, default 0.5 to 1.4), PLY_W (ply width in sheet
+# half-thickness units, default 0.22 to 0.42), RIM (phase rim gain, default 0 to 1.2), GAP (grey fill between
+# sheets, default 0 to 0.18) and PITCH (a factor on every sheet gap a layout draws, one draw per call when set,
+# default 1). The draws keep their count and order, so with every bound None the tiles are the default tiles exactly.
+# kit.simreal fits them to real CT.
+REAL = {}
+REAL_KEYS = {"sd": (0.04, 0.16), "psf": (0.5, 1.4), "ply_w": (0.22, 0.42), "rim": (0.0, 1.2), "gap": (0.0, 0.18),
+             "pitch": (1.0, 1.0)}
+
+
+def _bounds(name, b):
+    if b is None:
+        return None
+    lo, hi = (float(v) for v in b)
+    if not 0 < lo <= hi < (1 if name == "fill" else 2):
+        raise SimError(f"{name} bounds {b!r} out of range")
+    return (lo, hi)
+
+
+@contextlib.contextmanager
+def realism(**bounds):
+    """Within the block, render() draws the named settings (REAL_KEYS: sd, psf, ply_w, rim, gap, pitch) from the
+    given (lo, hi) bounds instead of their defaults; a None bound keeps the default. Setting pitch, even to (1, 1),
+    takes one extra draw per layout, so it shifts every later draw: leave it None for the default tiles."""
+    global REAL
+    old = REAL
+    new = {}
+    for k, b in bounds.items():
+        if k not in REAL_KEYS:
+            raise SimError(f"realism: unknown setting {k!r} (known: {sorted(REAL_KEYS)})")
+        if b is None:
+            continue
+        lo, hi = (float(v) for v in b)
+        if not (0 <= lo <= hi < 50):
+            raise SimError(f"realism: {k} bounds {b!r} out of range")
+        new[k] = (lo, hi)
+    REAL = new
+    try:
+        yield
+    finally:
+        REAL = old
+
+
+def _rb(key):
+    """Render bounds of KEY: the realism() bounds when set, else the default."""
+    return REAL.get(key, REAL_KEYS[key])
+
+
+@contextlib.contextmanager
+def dense(fill=None, core=None):
+    """Within the block, draw sheet thicknesses with FILL and ply cores with CORE (each (lo, hi) or None)."""
+    global FILL, CORE
+    old = (FILL, CORE)
+    FILL, CORE = _bounds("fill", fill), _bounds("core", core)
+    try:
+        yield
+    finally:
+        FILL, CORE = old
+
+
+def _thick_frac(rng, lo, hi, n=None):
+    """rng.uniform(lo, hi, n), or the FILL bounds when set (same draws, other bounds)."""
+    if FILL is not None:
+        lo, hi = FILL
+    return rng.uniform(lo, hi) if n is None else rng.uniform(lo, hi, n)
 
 
 class SimError(ValueError):
@@ -96,9 +176,10 @@ class Wave:
 def pitch_draw(rng, n, compact=False):
     """N gaps between sheet centres, in voxels: lognormal about PITCH_P50, or near the minimum when COMPACT."""
     np = _np()
+    m = rng.uniform(*REAL["pitch"]) if "pitch" in REAL else 1.0
     if compact:
-        return np.clip(rng.uniform(PITCH_MIN, PITCH_MIN + 4, n), PITCH_MIN, None)
-    return np.clip(PITCH_P50 * np.exp(rng.normal(0, PITCH_SIGMA, n)), PITCH_MIN, 48.0)
+        return np.clip(m * rng.uniform(PITCH_MIN, PITCH_MIN + 4, n), PITCH_MIN, None)
+    return np.clip(m * PITCH_P50 * np.exp(rng.normal(0, PITCH_SIGMA, n)), PITCH_MIN, 48.0)
 
 
 def _levels(rng, lo, hi, compact=False, scale=1.0, start=None):
@@ -116,7 +197,7 @@ def _levels(rng, lo, hi, compact=False, scale=1.0, start=None):
     left = np.concatenate([[gaps[0]], gaps])
     right = np.concatenate([gaps, [gaps[-1]]])
     near = np.minimum(left, right)
-    t = rng.uniform(0.38, 0.66, len(lv)) * near
+    t = _thick_frac(rng, 0.38, 0.66, len(lv)) * near
     t = np.clip(t, THICK_MIN, 16.0)
     # keep a gap of at least 1.5 voxels between neighbours
     for i in range(len(lv) - 1):
@@ -231,7 +312,7 @@ class Layout:
         rmax = math.hypot(H, W) * 2.5 + 2 * self.sp
         k0 = int(math.ceil(self.hole / self.sp))
         self.levels = np.arange(k0, int(rmax / self.sp) + 2, dtype=float) * self.sp
-        t = rng.uniform(0.38, 0.62) * self.sp * np.ones(len(self.levels))
+        t = _thick_frac(rng, 0.38, 0.62) * self.sp * np.ones(len(self.levels))
         t *= np.exp(rng.normal(0, 0.12, len(t)))
         self.thick = np.clip(t, THICK_MIN, self.sp - 1.5)
 
@@ -276,7 +357,7 @@ class Layout:
         left = np.concatenate([[gaps[0]], gaps])
         right = np.concatenate([gaps, [gaps[-1]]])
         near = np.minimum(left, right)
-        t = np.clip(rng.uniform(0.4, 0.62, len(lv)) * near, THICK_MIN, 14.0)
+        t = np.clip(_thick_frac(rng, 0.4, 0.62, len(lv)) * near, THICK_MIN, 14.0)
         if self.kind == "hairpin":
             i0 = int(np.argmin(np.abs(lv)))
             t[i0] = min(t[i0], 2 * self.R0 - 1.0)
@@ -648,11 +729,11 @@ def render(r, seed, crushed=0, inclusions=False, debris=False):
     inside = np.isfinite(q)
     qq = np.where(inside, q, 0.0)
     ply_off = rng.uniform(0.35, 0.6)
-    ply_w = rng.uniform(0.22, 0.42)
+    ply_w = rng.uniform(*_rb("ply_w"))
     gain_a = rng.uniform(0.75, 1.1)
     gain_b = rng.uniform(0.75, 1.1)
     prof = gain_a * np.exp(-((qq + ply_off) / ply_w) ** 2) + gain_b * np.exp(-((qq - ply_off) / ply_w) ** 2)
-    prof = prof + rng.uniform(0.15, 0.55)              # the core between plies
+    prof = prof + rng.uniform(*(CORE or (0.15, 0.55)))  # the core between plies (CORE: dense())
     prof = prof / prof.max() if prof.max() > 0 else prof
     edge = np.clip((1 - np.abs(qq)) / rng.uniform(0.15, 0.35), 0, 1)
     dens = np.where(inside, prof * edge, 0.0)
@@ -663,7 +744,7 @@ def render(r, seed, crushed=0, inclusions=False, debris=False):
     big /= big.std() + 1e-9
     dens = dens * np.clip(1 + rng.uniform(0.1, 0.35) * fib + rng.uniform(0.05, 0.2) * big, 0.2, 2.0)
     # gap debris and fill
-    fill = rng.uniform(0.0, 0.18)
+    fill = rng.uniform(*_rb("gap"))
     blobs = nd.gaussian_filter(rng.normal(size=shape), rng.uniform(1.5, 4.0))
     blobs = np.clip(blobs / (blobs.std() + 1e-9) - rng.uniform(0.8, 2.0), 0, None)
     gapv = fill * np.clip(0.6 + 0.4 * big, 0, 2) + rng.uniform(0.0, 0.25) * blobs
@@ -688,12 +769,12 @@ def render(r, seed, crushed=0, inclusions=False, debris=False):
         spot = (rng.random(shape) < 0.0015) & air
         dens = dens + nd.gaussian_filter(spot.astype(float), 1.0) * rng.uniform(1, 4)
     v = dens
-    psf = rng.uniform(0.5, 1.4)
+    psf = rng.uniform(*_rb("psf"))
     v = nd.gaussian_filter(v, psf)
-    rim = rng.uniform(0.0, 1.2)
+    rim = rng.uniform(*_rb("rim"))
     if rim > 0:
         v = v + rim * (v - nd.gaussian_filter(v, rng.uniform(1.0, 3.0)))
-    sd = rng.uniform(0.04, 0.16)
+    sd = rng.uniform(*_rb("sd"))
     w = rng.normal(size=shape)
     mixw = rng.dirichlet([1.0, 1.0, 1.0])
     ramp = w - nd.gaussian_filter(w, 1.0)
@@ -759,15 +840,21 @@ def tile(seed, k, size=256, recipe=None, side=0.3, extras=None):
     raise SimError(f"tile {k}: no valid layout after 20 tries")
 
 
-def tiles(n, seed, size=256, recipe=None, side=0.3, k0=0, progress=None):
-    """N tiles as one shard dict of stacked arrays (Synthetic-Slices keys plus air, plane and layout JSON)."""
+def tiles(n, seed, size=256, recipe=None, side=0.3, k0=0, progress=None, dense_look=None):
+    """N tiles as one shard dict of stacked arrays (Synthetic-Slices keys plus air, plane and layout JSON).
+    DENSE_LOOK, a dict with "fill" and "core" bounds, draws the tiles inside dense(); None keeps the default. Its
+    other keys (REAL_KEYS, such as a kit.simreal preset's sd, psf, gap or pitch) draw them inside realism()."""
     np = _np()
     recs = []
     t0 = time.time()
-    for k in range(k0, k0 + n):
-        recs.append(tile(seed, k, size, recipe, side))
-        if progress and (k - k0 + 1) % 50 == 0:
-            progress(f"PROGRESS {k - k0 + 1}/{n} tiles, {time.time() - t0:.0f} s")
+    look = dict(dense_look or {})
+    dl = {k: look.pop(k) for k in ("fill", "core") if k in look}
+    # an empty look keeps any realism() bounds already set around this call
+    with dense(**dl), (realism(**look) if look else contextlib.nullcontext()):
+        for k in range(k0, k0 + n):
+            recs.append(tile(seed, k, size, recipe, side))
+            if progress and (k - k0 + 1) % 50 == 0:
+                progress(f"PROGRESS {k - k0 + 1}/{n} tiles, {time.time() - t0:.0f} s")
     out = {key: np.stack([r[key] for r in recs]) for key in ("image", "lines", "sheet_id", "dist", "crack", "air",
                                                              "crushed_mask", "zone")}
     out["crushed"] = np.array([r["crushed"] for r in recs], np.uint8)

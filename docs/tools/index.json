@@ -6402,91 +6402,91 @@
     {
      "name": "What it does",
      "start_line": 22,
-     "end_line": 31,
+     "end_line": 33,
      "applicable": true
     },
     {
      "name": "When to use it",
-     "start_line": 32,
-     "end_line": 42,
+     "start_line": 34,
+     "end_line": 45,
      "applicable": true
     },
     {
      "name": "Quick start",
-     "start_line": 43,
-     "end_line": 51,
+     "start_line": 46,
+     "end_line": 54,
      "applicable": true
     },
     {
      "name": "Checks and controls",
-     "start_line": 52,
-     "end_line": 59,
+     "start_line": 55,
+     "end_line": 62,
      "applicable": true
     },
     {
      "name": "Commands and options",
-     "start_line": 60,
-     "end_line": 103,
+     "start_line": 63,
+     "end_line": 106,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 104,
-     "end_line": 122,
+     "start_line": 107,
+     "end_line": 127,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 123,
-     "end_line": 126,
+     "start_line": 128,
+     "end_line": 131,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 127,
-     "end_line": 135,
+     "start_line": 132,
+     "end_line": 140,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 136,
-     "end_line": 145,
-     "applicable": true
-    },
-    {
-     "name": "How it works",
-     "start_line": 146,
-     "end_line": 149,
-     "applicable": true
-    },
-    {
-     "name": "Cost and time",
-     "start_line": 150,
+     "start_line": 141,
      "end_line": 153,
      "applicable": true
     },
     {
-     "name": "For agents",
+     "name": "How it works",
      "start_line": 154,
-     "end_line": 163,
+     "end_line": 157,
      "applicable": true
     },
     {
-     "name": "Tests",
-     "start_line": 164,
-     "end_line": 167,
+     "name": "Cost and time",
+     "start_line": 158,
+     "end_line": 161,
      "applicable": true
     },
     {
-     "name": "History",
-     "start_line": 168,
+     "name": "For agents",
+     "start_line": 162,
      "end_line": 171,
      "applicable": true
     },
     {
-     "name": "Related",
+     "name": "Tests",
      "start_line": 172,
      "end_line": 175,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 176,
+     "end_line": 180,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 181,
+     "end_line": 186,
      "applicable": true
     }
    ]
@@ -16194,6 +16194,310 @@
      "name": "Related",
      "start_line": 271,
      "end_line": 277,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "simcritic",
+   "name": "simcritic",
+   "tagline": "judge how real simulated CT looks",
+   "summary": "Asks fresh critics, never used in training, to tell real CT windows from simulated tiles, with a real-against-real control and views that say what gives the simulation away.",
+   "status": "Experimental",
+   "kind": [
+    "kit module"
+   ],
+   "area": "Scoring and controls",
+   "commands": [],
+   "imports": [
+    "from kit import simcritic"
+   ],
+   "code": [
+    {
+     "path": "kit/simcritic.py",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_simcritic.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed"
+   },
+   "checked": {
+    "date": "2026-11-26",
+    "commit": "9cadb40"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`simcritic`",
+    "Status": "Experimental",
+    "Kind": "kit module",
+    "Area": "Scoring and controls",
+    "Run": "None (library): `from kit import simcritic`",
+    "Code": "`kit/simcritic.py`",
+    "Tests": "`tests/test_simcritic.py`",
+    "Needs": "Python 3.10 or newer, numpy, scipy, torch (CPU or CUDA) for the CNN critics, scikit-image for the ridge view; real CT gray values and simulated tiles as 2D arrays; no labels",
+    "Runs on": "CPU for the feature critic and small checks (planted checks, 2 critics at 400 steps: about 12 minutes in a 4-core cloud container, 25 Nov 2026); a full judge of several sets with every view is best split over many CPU workers or run on a GPU",
+    "Network": "None",
+    "Writes": "Nothing (it returns dicts; `dumps` gives JSON text)",
+    "Go-ahead": "Not needed",
+    "Released": "Scrolls kit (26 Nov 2026)",
+    "Checked": "2026-11-26 against commit `9cadb40` plus this module (10 tests, about 5 s)"
+   },
+   "page": "docs/tools/simcritic.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 22,
+     "end_line": 31,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 32,
+     "end_line": 43,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 44,
+     "end_line": 62,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 63,
+     "end_line": 72,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 73,
+     "end_line": 76,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 77,
+     "end_line": 98,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 99,
+     "end_line": 104,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 105,
+     "end_line": 108,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 109,
+     "end_line": 121,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 122,
+     "end_line": 129,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 130,
+     "end_line": 133,
+     "applicable": true
+    },
+    {
+     "name": "Results",
+     "start_line": 134,
+     "end_line": 147,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 148,
+     "end_line": 157,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 158,
+     "end_line": 161,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 162,
+     "end_line": 165,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 166,
+     "end_line": 169,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "simreal",
+   "name": "simreal",
+   "tagline": "measure how real CT looks and fit the Hard Cases render to it",
+   "summary": "Gray-value statistics of real CT windows (brightness, noise, grain, sheet width, pitch, contrast), a linear realism test that can fail, and a fit of [hardcases](hardcases.md) render bounds to a scan; with ctmatch, a training augmentation that matches a tile's histogram and noise to real CT.",
+   "status": "Experimental",
+   "kind": [
+    "kit module"
+   ],
+   "area": "Training",
+   "commands": [
+    "python -m kit.simreal measure SLICES.npz OUT.json",
+    "python -m kit.simreal fit OUT.json NAME=SUMMARY.json ..."
+   ],
+   "imports": [
+    "from kit import simreal, ctmatch"
+   ],
+   "code": [
+    {
+     "path": "kit/simreal.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/ctmatch.py",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_simreal.py",
+    "tests/test_ctmatch.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed"
+   },
+   "checked": {
+    "date": "2026-11-26",
+    "commit": "9cadb40"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`simreal`",
+    "Status": "Experimental",
+    "Kind": "kit module",
+    "Area": "Training",
+    "Run": "`python -m kit.simreal measure SLICES.npz OUT.json`, `python -m kit.simreal fit OUT.json NAME=SUMMARY.json ...`; library `from kit import simreal, ctmatch`",
+    "Code": "`kit/simreal.py`, `kit/ctmatch.py`",
+    "Tests": "`tests/test_simreal.py`, `tests/test_ctmatch.py`",
+    "Needs": "Python 3.10 or newer, numpy, scipy, scikit-image (Sato ridge filter); torch for `ctmatch.apply`",
+    "Runs on": "CPU. `measure` of 40 windows about 7 s in a 4-core cloud container (26 Nov 2026); a `fit` over the default grid of 108 points at 96 tiles each takes about 30 s a point on one core (measured at 16 tiles, scaled), so about an hour on one core: use `--workers`",
+    "Network": "None",
+    "Writes": "`measure`: one JSON summary; `fit`: one JSON of the ranked points; the library writes nothing (`ctmatch.save` writes a reference `.npz` when asked)",
+    "Go-ahead": "Not needed",
+    "Released": "Scrolls kit (26 Nov 2026)",
+    "Checked": "2026-11-26 against commit `9cadb40` plus this module (13 tests, about 10 s; the quick start's output below)"
+   },
+   "page": "docs/tools/simreal.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 22,
+     "end_line": 34,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 35,
+     "end_line": 45,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 46,
+     "end_line": 53,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 54,
+     "end_line": 64,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 65,
+     "end_line": 85,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 86,
+     "end_line": 116,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 117,
+     "end_line": 120,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 121,
+     "end_line": 129,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 130,
+     "end_line": 141,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 142,
+     "end_line": 145,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 146,
+     "end_line": 149,
+     "applicable": true
+    },
+    {
+     "name": "Results",
+     "start_line": 150,
+     "end_line": 153,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 154,
+     "end_line": 163,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 164,
+     "end_line": 167,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 168,
+     "end_line": 171,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 172,
+     "end_line": 176,
      "applicable": true
     }
    ]
