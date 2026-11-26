@@ -19,7 +19,7 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent.parent / "spaces" / "vesuvius-radar"
-NAMES = ("scanner", "app", "radar_mcp")
+NAMES = ("digest", "scanner", "app", "radar_mcp")
 
 
 def _load():
@@ -653,7 +653,7 @@ class AppTest(unittest.TestCase):
         init = self.mcp({"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {"protocolVersion": "2025-06-18"}})
         self.assertEqual(init["result"]["serverInfo"]["name"], "vesuvius-radar")
         tools = self.mcp({"jsonrpc": "2.0", "id": 2, "method": "tools/list"})["result"]["tools"]
-        self.assertEqual(len(tools), 9)
+        self.assertEqual(len(tools), 11)
         call = lambda n, a: self.mcp({"jsonrpc": "2.0", "id": 3, "method": "tools/call", "params": {"name": n, "arguments": a}})["result"]  # noqa: E731
         r = call("search_items", {"since": "30d", "query": "ink", "min_score": 0})
         self.assertFalse(r["isError"])
@@ -661,6 +661,12 @@ class AppTest(unittest.TestCase):
         self.assertTrue(call("search_items", {"since": "soon"})["isError"])
         self.assertTrue(call("get_item", {"item_id": "nope"})["isError"])
         self.assertFalse(call("briefing", {"since": "30d", "view": "team"})["isError"])
+        wk = call("weekly_digest", {"week": "this", "markdown": True})
+        self.assertFalse(wk["isError"])
+        self.assertIn("# Vesuvius Radar: week", wk["structuredContent"]["markdown"])
+        self.assertTrue(call("weekly_digest", {"week": "1999-W01"})["isError"])
+        tp = call("top_picks", {"since": "30d"})["structuredContent"]["picks"]
+        self.assertTrue(tp and all(p["page"].startswith(app.PUBLIC_URL + "/item?id=") for p in tp))
         self.assertNotIn("timeline", call("overview", {"since": "7d"})["structuredContent"])
         self.assertIsNone(self.mcp({"jsonrpc": "2.0", "method": "notifications/initialized"}, 202))
         self.assertEqual(self.mcp({"jsonrpc": "2.0", "id": 4, "method": "nope"})["error"]["code"], -32601)
@@ -767,7 +773,7 @@ class LicenseTest(unittest.TestCase):
 class PublicSafetyTest(unittest.TestCase):
     """The Space is public: no key handling, no private links, no Discord, no internal marks."""
 
-    FILES = [p for p in HERE.rglob("*") if p.is_file() and "__pycache__" not in p.parts and p.suffix != ".png"]
+    FILES = [p for p in HERE.rglob("*") if p.is_file() and "__pycache__" not in p.parts and p.suffix not in (".png", ".jpg")]
 
     def test_no_secrets_or_private_material(self):
         # The repository's pre-push leak check covers private repository and storage names; this covers the rest.
@@ -784,7 +790,160 @@ class PublicSafetyTest(unittest.TestCase):
         src = (HERE / "scanner.py").read_text()
         hosts = set(re.findall(r"https://([a-z0-9.-]+)/", src))
         self.assertLessEqual(hosts, {"rss.arxiv.org", "arxiv.org", "export.arxiv.org", "api.github.com", "huggingface.co",
-                                     "pypi.org", "zenodo.org", "api.crossref.org", "doi.org"})
+                                     "pypi.org", "zenodo.org", "api.crossref.org", "doi.org", "api.openalex.org"})
+
+
+class DigestTest(unittest.TestCase):
+    """The weekly digest, top picks and item pages (digest.py) and their routes."""
+
+    def setUp(self):
+        self.d = importlib.import_module("digest") if "digest" in sys.modules else self._digest()
+
+    @staticmethod
+    def _digest():
+        spec = importlib.util.spec_from_file_location("radar_digest", HERE / "digest.py")
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        return mod
+
+    def mk(self, i, kind, date, score, created=None, **kw):
+        band = "high" if score >= 60 else "medium" if score >= 35 else "low"
+        it = {"id": f"x:{i}", "source": "github" if kind in ("repo", "pr") else "arxiv", "kind": kind, "title": f"T{i}",
+              "url": f"https://example.org/{i}", "date": date, "score": score, "band": band, "topics": ["Scroll work"]}
+        if created:
+            it["created"] = created
+        it.update(kw)
+        return it
+
+    def test_weeks_parse_and_bound(self):
+        d = self.d
+        now = dt.datetime(2026, 11, 26, 18, tzinfo=dt.timezone.utc)  # a Thursday in 2026-W48
+        self.assertEqual(d.week_name(d.parse_week("this", now)), "2026-W48")
+        self.assertEqual(d.week_name(d.parse_week("last", now)), "2026-W47")
+        self.assertEqual(d.parse_week("2026-W48", now), dt.datetime(2026, 11, 23, tzinfo=dt.timezone.utc))
+        for bad in ("2026-W60", "next week", "W48"):
+            with self.assertRaises(ValueError):
+                d.parse_week(bad, now)
+
+    def test_counts_use_creation_time_and_ignore_low_scores(self):
+        d = self.d
+        now = dt.datetime(2026, 11, 26, 18, tzinfo=dt.timezone.utc)
+        items = [
+            # opened last week, updated this week: active this week, new last week
+            self.mk(1, "pr", "2026-11-24T10:00:00Z", 80, created="2026-11-18T10:00:00Z", state="merged"),
+            self.mk(2, "repo", "2026-11-25T10:00:00Z", 70, created="2026-11-25T09:00:00Z"),
+            self.mk(3, "paper", "2026-11-24T10:00:00Z", 10),  # low: counted in all items, not in the comparison
+            self.mk(4, "paper", "2026-11-17T10:00:00Z", 50),
+        ]
+        w = d.week_digest(items, d.parse_week("this", now), now)
+        self.assertEqual((w["totals"]["items"], w["totals"]["relevant"], w["totals"]["code"]), (2, 1, 1))
+        self.assertEqual((w["last_week"]["relevant"], w["last_week"]["papers"]), (2, 1))
+        self.assertEqual([i["id"] for i in w["top"]], ["x:1", "x:2", "x:3"])  # active this week, best first
+        self.assertFalse(w["complete"])
+        self.assertEqual(w["totals"]["villa_merged"], 0)  # merged this week, but opened last week: new last week
+        md = d.week_markdown(w, "https://example.org")
+        self.assertIn("**1** new items scored medium or high (down from 2)", md)
+        self.assertNotIn("\u2014", md)
+
+    def test_top_picks_one_per_kind_of_work(self):
+        items = [self.mk(1, "paper", "2026-11-24T10:00:00Z", 70), self.mk(2, "paper", "2026-11-24T10:00:00Z", 90),
+                 self.mk(3, "repo", "2026-11-24T10:00:00Z", 30), self.mk(4, "pr", "2026-11-24T10:00:00Z", 45)]
+        picks = self.d.top_picks(items)
+        self.assertEqual([(p["group"], p["id"]) for p in picks], [("paper", "x:2"), ("community", "x:4")])
+
+    def test_item_page_escapes_and_has_link_preview(self):
+        it = self.mk(1, "repo", "2026-11-24T10:00:00Z", 77, summary='<script>alert(1)</script> "quoted"')
+        it["title"] = "A <b>bold</b> repo"
+        page = self.d.item_page(it, [], site="Vesuvius Radar", base="https://r.example", labels={"github": "GitHub"},
+                                image="https://r.example/static/og.jpg")
+        self.assertNotIn("<script>alert", page)
+        self.assertIn('property="og:title" content="A &lt;b&gt;bold&lt;/b&gt; repo"', page)
+        self.assertIn('href="https://r.example/item?id=x%3A1"', page)
+        self.assertIn("og:image", page)
+
+
+@unittest.skipIf(app is None, "fastapi is not installed")
+class DigestRouteTest(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        from fastapi.testclient import TestClient
+        now = dt.datetime.now(dt.timezone.utc)
+        sc = scanner.Scorer(CFG)
+        its = []
+        for k, (title, mins) in enumerate([("Virtual unwrapping of Herculaneum scrolls from X-ray CT", 30),
+                                           ("someone/vesuvius-ink-tools", 60 * 30)]):
+            it = scanner.make_item(sc, source="github" if k else "arxiv", kind="repo" if k else "paper", id=f"r:{k}",
+                                   title=title, url=f"https://example.org/{k}", date=iso(now - dt.timedelta(minutes=mins)),
+                                   text="Vesuvius Challenge ink detection for herculaneum papyri")
+            scanner.finish([it], sc, None)
+            it["first_seen"] = it["date"]
+            its.append(it)
+        with app.LOCK:
+            app.STORE["items"] = {i["id"]: i for i in its}
+        cls.c = TestClient(app.app)
+
+    def test_routes(self):
+        c = self.c
+        w = c.get("/api/week").json()
+        self.assertEqual(w["week"], w["weeks"][0])
+        self.assertEqual(c.get("/api/week?week=1999-W01").status_code, 400)
+        self.assertEqual(c.get("/api/week?view=nobody").status_code, 400)
+        self.assertTrue(c.get("/week.md?week=last").text.startswith("# Vesuvius Radar: week"))
+        ET.fromstring(c.get("/week.xml").content)  # well-formed RSS
+        self.assertIn("picks", c.get("/api/picks?since=30d").json())
+        r = c.get("/item?id=r:0")
+        self.assertEqual(r.status_code, 200)
+        self.assertIn("og:title", r.text)
+        self.assertEqual(c.get("/item?id=gone").status_code, 404)
+        for old in ("/", "/api/items", "/api/overview", "/api/briefing", "/feed.xml", "/api/export.csv", "/CONNECT.md",
+                    "/connect.json"):
+            self.assertEqual(c.get(old).status_code, 200, old)  # every 1.x address still answers
+
+
+class NewSourcesTest(unittest.TestCase):
+    def test_openalex_abstract_and_rows(self):
+        self.assertEqual(scanner.oa_abstract({"ink": [1], "Carbonized": [0], "detection": [2]}), "Carbonized ink detection")
+        self.assertEqual(scanner.oa_abstract(None), "")
+        sc = scanner.Scorer(CFG)
+        work = {"id": "https://openalex.org/W1", "doi": "https://doi.org/10.1/ABC", "display_name": "Herculaneum papyri ink",
+                "publication_date": "2026-11-20", "type": "article", "abstract_inverted_index": {"virtual": [0], "unwrapping": [1]},
+                "authorships": [{"author": {"display_name": "A. Writer"}}], "primary_location": {"source": {"display_name": "J"}},
+                "cited_by_count": 2}
+        calls = []
+
+        def fake(url, *a, **k):
+            calls.append(url)
+            if "doi%3A" in url or "filter=doi" in url:
+                return {"results": [{"id": "https://openalex.org/W9"}]}
+            return {"results": [work]}
+        old, scanner.FETCH.json = scanner.FETCH.json, fake
+        try:
+            state = {}
+            out, read, notes = scanner.openalex_works(sc, dt.datetime(2026, 11, 1, tzinfo=dt.timezone.utc),
+                                                      {"queries": ["herculaneum papyri"], "cites": ["10.1/x"]}, state)
+        finally:
+            scanner.FETCH.json = old
+        self.assertEqual(list(out), ["doi:10.1/abc"])
+        row = out["doi:10.1/abc"]
+        self.assertTrue(row["cites_field"])  # found by the citation lookup too
+        self.assertEqual((row["source"], row["kind"], row["who"]), ("journals", "journal article", "A. Writer"))
+        self.assertEqual(state["openalex_cites"], ["W9"])
+        self.assertEqual((read, notes), (2, []))
+        self.assertTrue(all(u.startswith("https://api.openalex.org/works?") for u in calls))
+
+    def test_youtube_atom_feed(self):
+        xml = (b'<feed xmlns="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/">'
+               b'<entry><title>Office hours: 3D ink</title><link rel="alternate" href="https://www.youtube.com/watch?v=abc"/>'
+               b'<published>2026-11-20T10:00:00+00:00</published><media:group><media:description>Ink on the scrolls'
+               b'</media:description><media:community><media:statistics views="321"/></media:community></media:group>'
+               b'</entry><entry><title>Old</title><link href="https://www.youtube.com/watch?v=old"/>'
+               b'<published>2025-01-01T00:00:00+00:00</published></entry></feed>')
+        root = ET.fromstring(xml)
+        out = scanner.atom_entries(scanner.Scorer(CFG), root, {"kind": "video"}, "Vesuvius Challenge on YouTube",
+                                   dt.datetime(2026, 11, 1, tzinfo=dt.timezone.utc))
+        self.assertEqual(len(out), 1)
+        self.assertEqual((out[0]["kind"], out[0]["views"], out[0]["id"]), ("video", 321, "video:https://www.youtube.com/watch?v=abc"))
+        self.assertGreaterEqual(out[0]["keyword"], 50)
 
 
 if __name__ == "__main__":
