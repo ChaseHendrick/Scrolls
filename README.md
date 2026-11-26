@@ -261,68 +261,24 @@ python -m unittest discover -s tests
 
 Every command is in [`docs/tools/cli.md`](docs/tools/cli.md), and every tool has a page in [`docs/tools/`](docs/tools/README.md). Install AutoPipeline in its own environment, since both install `kit`.
 
-## Open prizes (snapshot 2026-11-11)
+## Open prizes
 
-| Prize | Money | Deadline | What wins |
-| --- | --- | --- | --- |
-| [2027 Grand Prize](https://scrollprize.org/prizes#2027-grand-prize) | $800k / $100k / $50k / $50k | 25 Jun 2027 | Fully unroll one of 13 sealed scrolls; at least 70% of each counted column's preserved characters legible; submitted through its form |
-| [First Letters](https://scrollprize.org/prizes#first-letters-prizes) | $50k per scroll, 8 more ($400k remaining; two already used, PHerc. 343 and PHerc. 306B) | 25 Jun 2027 | First team to show 10 legible letters in a single 4 cm² area of one of 20 eligible scrolls |
-| [PHerc. Paris 4 title](https://scrollprize.org/prizes#first-title-prize) | $50k | 25 Jun 2027 | A papyrologist-readable image of Scroll 1's title |
-| [Progress Prizes](https://scrollprize.org/prizes#progress-prizes) | $20k best of month, plus $250 to $20k awards | monthly, several entries a month allowed (next: 11:59pm Pacific, 30 Nov 2026) | Open-source tools, models, datasets, fixes, reports that help read the scrolls |
+Checked November 26, 2026. Deadlines are at 11:59 pm Pacific. [Official rules, eligible scrolls and submission forms](https://scrollprize.org/prizes)
 
-> [!IMPORTANT]
-> All prizes require open-sourcing your method (permissive license) to accept the money. Details, submission contents and the eligible-scroll lists: [`docs/prizes.md`](docs/prizes.md).
+| Prize | Deadline | What qualifies |
+| --- | --- | --- |
+| 2027 Grand Prize | June 25, 2027 | Unroll the recto of an eligible scroll and make at least 70% of the preserved characters in each counted column individually legible. The rules specify an exception for small disconnected outer patches. |
+| First Letters | June 25, 2027 | Show ten legible letters within one 4 cm² area. The organizers list 17 eligible scrolls and will give awards for up to five more scrolls. |
+| Scroll 1 Title | June 25, 2027 | Submit the flattened title-region mesh and a render in which papyrologists can read the title. |
+| Progress Prizes | November 30, 2026 is the next cutoff | Monthly awards for open contributions that help read the scrolls. Multiple entries per month are welcome. |
 
 ## Novel findings
 
-> [!NOTE]
-> **Reviewed 4 November 2026.** One line per finding, newest group first. Each keeps its number, so "finding N" elsewhere still points at the right one. The full text of each, with its controls, limits, corrections and links, is in [`docs/FINDINGS.md`](docs/FINDINGS.md); every number with its settings and source is in [`docs/results.json`](docs/results.json). Public labeled data only; an ink map is model output, not a reading.
+- **Pressed sheets can fool a tracer.** On synthetic fused contacts, widening the SheetHug network’s field of view failed to improve sheet separation under the predeclared test. Its split-recall metric scored a deliberately merged prediction at 0.44 and a perfect one at 0.996. [SheetHug benchmark and limits](docs/tools/sheethug.md)
+- **Surface placement depends on the scroll.** On PHerc0814 and PHerc0841, labelsnap brought surface labels closer to the recto. On a later PHerc0009B check, the estimated gain was 0.24 voxels and its 95% interval included zero. [Finding 22 and the follow-up](docs/FINDINGS.md#tool-results)
+- **Two benchmark segments cover the same sheet.** On PHerc0841, w00 and ag896 overlap. A train/test split that treats those segments as independent can put the same papyrus on both sides. [Finding 5 and the overlap measurement](docs/FINDINGS.md#earlier-measurements-and-corrections)
 
-**Tool results** ([details](docs/FINDINGS.md#tool-results))
-
-15. **Center Finder:** 0.73 mm median from the 13 published lines with each scroll held out, and level with villa's `vc_gen_umbilicus` on two sealed lines (0.56 against 0.81 mm; closer on PHerc0139 only) (13 and 22 October 2026, model output).
-16. **StrokeNet tells text from the same text turned 90 degrees far better than any simple score** (AUC 0.994 against 0.865, six held-out PHerc. Paris 4 tracings, 14 October 2026, model output); it passed 7 of the 9 bars of that first test, plain ink density matched it at text against blank papyrus, and part of its sense of orientation may come from the direction of the papyrus rather than the writing.
-17. **Inkfilter's face mix** scored mean AUC 0.736 against 0.704 for alpha compositing on 56 confirmation windows, from the segments it was developed on; not a trained-reader comparison (17 October 2026).
-18. **StrokeNet's two-density score, with no network, came out ahead of ink density inside segments on PHerc0500P2 with ink_9um** (mean within-segment AUC 0.701 against 0.662, ahead in all 11 segments, both controls passed; 22 October 2026, model output; ink_9um reads this scroll weakly).
-19. **Three hosted text models restored hidden Greek letters in Philodemus, De Musica, less often than a Kneser-Ney letter model** (gap letter accuracy 0.181, 0.181 and 0.118 against 0.331, single letters 0.447 at best against 0.895, no recall detected (probe about 0.08); public text, 22 October 2026, model output).
-20. **Our letter classifier, trained on Hell-Char only, named Greek letters on fresh papyrus photographs better than Hell-Char ConvNeXt-V2** (error 0.291 against 0.340 on the 8,479 ICDAR 2023 test boxes, boxes given, every control passed; as lines with a no-Homer Greek letter model it was level with Hell-Char given the same model; 24 October 2026, model output; photographs, not ink maps).
-21. **windlabel-box's automatic relative windings passed a held-out test on a third scroll and were slightly more often right than two community winding tools** (0.955 of 32,411 judged steps on fresh PHerc0172 boxes, against 0.944 for constraint-gauge's E1 on the same steps and 0.934 for winding-phase at matched coverage, leads with lower bounds +0.009 and +0.005; rules fixed before any box had a prediction; 29 October 2026, model output against the published hand windings).
-22. **labelsnap moved published surface labels closer to the papyrus recto face than the published labels and seven community snaps** (mean +2.153 voxels closer than the published label, +1.892 closer than VC3D's `vc_objrefine` tuned on PHerc0139, 71 fresh PHerc0814 and PHerc0841 sites scored against a finer scan; within 1 voxel 55 to 66 % against 19 %; finesnap, on a finer registered scan, 85 % on PHerc0814 and 91 % on PHerc0139; 25 to 29 October 2026, model output; geometry, not a reading). Scored against a finer scan's face found with labelsnap's own band rule; with a face rule sharing neither, the lead held at about half the size (+1.04, +1.23 voxels). On PHerc0009B (60 fresh sites against a 2.401 um scan, 20 November 2026), with a new face rule sharing no code with labelsnap, the lead over the published label was +0.236 voxels (95 % interval -0.131 to +0.589), not shown; within 1 voxel 38.4 % against 21.1 %.
-23. **Parting, a contact classifier on base dinovol features, told same-layer from next-layer points at touching layers better than dinovol alone on a fragment it never saw** (AUC 0.895 against 0.839, gain +0.056 with bound +0.037, 150 sites over 5 layer pairs of PHercParis1Fr34; one pass in three fragments: misses on a PHerc1667 fragment, +0.045 against a bar of +0.05, and on a PHerc. Paris 2 fragment, +0.010, where dinovol alone scored 0.965; little gain where layers are fused; rule frozen before any of the test's 3D CT was read; 29 October 2026, model output; code released under Apache-2.0, model file on Hugging Face as SharpMeow/parting-v1: [tool page](docs/tools/parting.md)).
-24. **Ringleader labeled every m7 sheet pixel of held-out PHerc0139 slices with its winding far more often right than villa's spiral fit at its defaults, and passed a second scroll** (on-winding E0 0.902 against 0.149 to 0.179 on 41 slices at z 3,240 to 3,400, bar 0.85; on PHerc0332 0.659 against 0.349 to 0.398 for the fit and 0.445 for a constant labeling, bar 0.595, against one organizer mesh; two later tries on other scrolls read VOID, so claimed on two scrolls; PHerc0139 held out by band only, PHerc0332 not fully held out (m7 may have trained on it), and the margin is over villa's default fit, which is not built to label every sheet; rules frozen before the read, each read once; 30 October 2026, model output; code released under Apache-2.0: [tool page](docs/tools/ringleader.md)).
-25. **sqrecipe: on PHerc0332, a finer DLS scan brought down to the 7.910 um grid kept more sheet structure than the scan taken at 7.910 um** (sheet fidelity higher in 0.925 of 120 fresh regions, median +0.042, against an independent ESRF 2.399 um scan, every control held; rule frozen before the read; 30 October 2026, Measurement of the CT; one acquisition pair on one scroll, not ink and not readability: [tool page](docs/tools/sqrecipe.md)).
-26. **villa's flow-gradient smoothing cut its spiral fit's seam switches on held-out PHerc0172 but not on PHerc0332, and the PHerc0172 gain came with a misplaced center line** (-7.5 to -15.4 switches per 1000 sheet neighbor pairs at three of three seeds, bar -7.5, exact share kept; on PHerc0332 it added 0.3 to 14.0 per 1000 and failed; the PHerc0172 fits used our released `umbilicus-lines-v1` line, later found 3.9 to 12.6 mm off the hand windings' center in that band; rules frozen before each read; 30 October 2026, model output; not a general switch cut).
-
-<!-- New block so GitHub keeps the number 29. -->
-
-29. **Ringleader's ladders made villa's spiral fit put more sheet pixels on the right winding on two scrolls** (on PHerc0172 z 9,680 to 9,904, on-winding E0 0.288 with the ladders against 0.069 alone and 0.037 for a plus-one control, bar +0.10, got +0.219; on PHerc0139 0.409 against 0.227; a test on a third scroll in between missed its bar, and the PHerc0172 band was picked after that miss; the taught fit stays below Ringleader's own labels; rules frozen before each read, each read once; 4 and 6 November 2026, model output; code released under Apache-2.0: [tool page](docs/tools/ringleader.md#checks-and-controls)).
-30. **slicechains called the winding direction of 9 of 9 decided scrolls right from the m7 surface prediction alone, with no labels** (one-sided p 0.0020, 3 of 12 abstained, truth 5 CW and 7 ACW; 7 of the 12 were reused truth, so not held out; 17 November 2026, model output against the open-data catalog).
-
-**Pipeline and reader checks** ([details](docs/FINDINGS.md#pipeline-and-reader-checks))
-
-12. **A transient S3 404 becomes a permanent hole of zeros in VC3D's renders and traces** ([villa #2058](https://github.com/ScrollPrize/villa/issues/2058); our fix, [villa #2060](https://github.com/ScrollPrize/villa/pull/2060), was closed unmerged on 30 October because VC3D's rendering is moving to vc_reader; 8 to 12 October 2026).
-13. **villa's tracer did not hold an explicit seed, so a trace could start on the next winding** ([villa #2059](https://github.com/ScrollPrize/villa/issues/2059); one seed on PHerc0139, 11 and 12 October 2026); fixed by our `seed_anchor_xyz` option, merged in [villa #2063](https://github.com/ScrollPrize/villa/pull/2063) on 30 October.
-14. **A traced surface's render comes out turned, and `ink_9um` reads it much worse until it is turned upright** (one trace, development data, 13 October 2026); Reader v2 did not replicate it cleanly, so `ink.orient` stays opt in.
-
-<!-- New block so GitHub keeps the number 28. -->
-
-28. **villa's released sheet tracer does not record which bands of PHerc0139 and PHerc1667 it held out, and fine-tuning it on a small patch set stopped before the first step** ([villa #2444](https://github.com/ScrollPrize/villa/issues/2444), fix in [villa #2445](https://github.com/ScrollPrize/villa/pull/2445), open; 4 November 2026); PHerc0841 is not in its training config, so it is the clean scroll to score it on.
-
-**Earlier measurements and corrections** ([details](docs/FINDINGS.md#earlier-measurements-and-corrections))
-
-1. **On w045, v8in scores below `ink_9um`, but `ink_9um` trained on that surface,** so the test cannot say which reads an unseen surface better (corrected 8 and 9 October 2026).
-2. **Scoring a crop needs an edge margin:** a 64 px edge makes bare-crop and whole-map scores agree.
-3. **A threshold taken from a training segment misses about 96 % of real ink on an unseen scroll.**
-4. **Averaging depth windows matches the best window chosen with labels on PHerc0841** (related prior work is cited).
-5. **Two of PHerc0841's three labeled segments, w00 and ag896, are the same papyrus.**
-6. **Raw CT brightness alone carries almost no ink signal on PHerc0841.**
-7. **Ink-map agreement between two traces falls with their distance** (model output; the maps are probably in-sample).
-8. **PHerc0841 has 3.4 cm² of supervision, so its AUCs need intervals.**
-9. **Cross-trace agreement suggests a label-free triage experiment** (untested idea).
-10. **Every published surface volume matches a published mesh, but the stored PHerc1667 matrix contradicts its own landmarks** (reported earlier by kadenpool in [villa #1843](https://github.com/ScrollPrize/villa/issues/1843); our CT check agrees with the landmarks).
-11. **PHerc1667's 1.129 um renders appear misplaced** (post hoc; the preregistered version failed its control, so it needs a calibrated rerun).
-
-Follow-up tests, partial results, the adaptive-geometry experiment and the CPU speed checks are listed after finding 11 in [`docs/FINDINGS.md`](docs/FINDINGS.md#earlier-measurements-and-corrections).
+The [full findings record](docs/FINDINGS.md) keeps the original numbering, controls and corrections. The [results ledger](docs/results.json) contains the measurements.
 
 ## Documentation
 
