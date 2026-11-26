@@ -16905,79 +16905,79 @@
     {
      "name": "Quick start",
      "start_line": 49,
-     "end_line": 58,
+     "end_line": 60,
      "applicable": true
     },
     {
      "name": "Checks and controls",
-     "start_line": 59,
-     "end_line": 68,
+     "start_line": 61,
+     "end_line": 70,
      "applicable": true
     },
     {
      "name": "Commands and options",
-     "start_line": 69,
-     "end_line": 117,
+     "start_line": 71,
+     "end_line": 119,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 118,
-     "end_line": 133,
+     "start_line": 120,
+     "end_line": 135,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 134,
-     "end_line": 137,
+     "start_line": 136,
+     "end_line": 139,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 138,
-     "end_line": 159,
+     "start_line": 140,
+     "end_line": 163,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 160,
-     "end_line": 172,
-     "applicable": true
-    },
-    {
-     "name": "How it works",
-     "start_line": 173,
+     "start_line": 164,
      "end_line": 176,
      "applicable": true
     },
     {
-     "name": "Cost and time",
+     "name": "How it works",
      "start_line": 177,
      "end_line": 180,
      "applicable": true
     },
     {
-     "name": "For agents",
+     "name": "Cost and time",
      "start_line": 181,
-     "end_line": 191,
+     "end_line": 184,
      "applicable": true
     },
     {
-     "name": "Tests",
-     "start_line": 192,
+     "name": "For agents",
+     "start_line": 185,
      "end_line": 195,
      "applicable": true
     },
     {
-     "name": "History",
+     "name": "Tests",
      "start_line": 196,
-     "end_line": 203,
+     "end_line": 199,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 200,
+     "end_line": 208,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 204,
-     "end_line": 208,
+     "start_line": 209,
+     "end_line": 213,
      "applicable": true
     }
    ]
