@@ -166,6 +166,7 @@ class TestSelfCheck(unittest.TestCase):
             lay._self_check()
 
 
+@unittest.skipUnless(HAVE_SCIPY, "needs numpy and scipy")
 class TestDense(unittest.TestCase):
     """kit.hardcases.dense: denser sheets, the default tiles unchanged without it."""
 

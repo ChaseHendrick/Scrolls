@@ -3,9 +3,12 @@
 import importlib.util
 import unittest
 
-import numpy as np
+try:
+    import numpy as np
+except ImportError:  # the map tests skip without their numerical dependencies
+    np = None
 
-HAVE_SCIPY = importlib.util.find_spec("scipy") is not None
+HAVE_SCIPY = np is not None and importlib.util.find_spec("scipy") is not None
 HAVE_SKIMAGE = importlib.util.find_spec("skimage") is not None
 HAVE_TORCH = importlib.util.find_spec("torch") is not None
 
