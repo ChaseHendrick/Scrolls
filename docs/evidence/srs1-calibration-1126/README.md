@@ -4,7 +4,7 @@ Run of the rule fixed in [`../../prereg/2026-11-26-srs1-null-calibration.md`](..
 
 - Command: `python -m kit run local --device x86-cpu --rate 0 srs1-calibration-1126 -- python3 -m kit.simscore calibrate --out docs/evidence/srs1-calibration-1126/calibration.json`
 - Machine: 4-core cloud container, one core used; 290 s wall, 0.0052 kWh, no charge.
-- Output: [`calibration.json`](calibration.json), SHA-256 `396c4a862eece1820e40e86bb8259fbdf819506d46f0384c1343d347aea182f7`, with every replicate's control AUC, set AUC, gap and verdict.
+- Output: [`calibration.json`](calibration.json), the summary per size. The run's full output (every replicate's control AUC, set AUC, gap and verdict) had SHA-256 `396c4a862eece1820e40e86bb8259fbdf819506d46f0384c1343d347aea182f7`; `python -m kit.simscore calibrate` regenerates it on the same seeds.
 - Disclosed: a 3-replicate pipeline smoke (G 6, a 40-tile pool, 24 simulated tiles) ran on the same seeds a few minutes before the full run, after the rule was committed. It could not change the rule.
 
 ## Result
