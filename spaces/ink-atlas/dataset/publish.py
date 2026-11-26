@@ -2,8 +2,11 @@
 
   python3 spaces/ink-atlas/dataset/publish.py STAGE [--repo OWNER/NAME] [--yes]
 
-STAGE holds the files to add, laid out as in the dataset: README.md (this folder's card), metadata.jsonl,
-surfaces/metadata.jsonl, index/*.csv and assets/*.{jpg,png} (from build_index.py and card_visuals.py). The script
+STAGE holds the files to add, laid out as in the dataset: README.md (this folder's card), provenance.json (this
+folder's), metadata.jsonl, surfaces/metadata.jsonl, index/*.csv and assets/*.{jpg,png} (from build_index.py and
+card_visuals.py), and SHA256SUMS, written last over the dataset as it will be with
+`python -m kit.datacard sums SharpMeow/first-letters-ink-atlas --overlay STAGE --write` and checked with
+`python -m kit.datacard check ... --overlay STAGE` (the scroll dataset card standard, docs/standards/dataset-card.md). The script
 lists them with their SHA-256 and size, refuses any path that would replace an existing file other than README.md,
 asks y/N unless --yes, and uploads them in one commit. It never deletes or moves a file. Needs huggingface_hub and a
 token with write access.
@@ -14,9 +17,10 @@ import sys
 from pathlib import Path
 
 REPO = "SharpMeow/first-letters-ink-atlas"
-ALLOWED = ("README.md", "metadata.jsonl", "surfaces/metadata.jsonl", "index/", "assets/")
-REPLACEABLE = {"README.md", "metadata.jsonl", "surfaces/metadata.jsonl", "index/surfaces.csv", "index/maps.csv",
-               "assets/hero.jpg", "assets/anatomy.png"}
+ALLOWED = ("README.md", "provenance.json", "SHA256SUMS", "metadata.jsonl", "surfaces/metadata.jsonl", "index/",
+           "assets/")
+REPLACEABLE = {"README.md", "provenance.json", "SHA256SUMS", "metadata.jsonl", "surfaces/metadata.jsonl",
+               "index/surfaces.csv", "index/maps.csv", "assets/hero.jpg", "assets/anatomy.png"}
 
 
 def plan(stage, existing):

@@ -14,7 +14,7 @@
 | Needs | Python 3.10 or newer, numpy and tifffile (imagecodecs for the LZW-compressed meshes, about a fifth of them); scipy when installed; matplotlib for the card's figures (skipped without it). `huggingface_hub` only for `scripts/atlas/hf_atlas.py` |
 | Runs on | Any CPU, but the whole bucket is large: 908 meshes, 69.4 GB of x, y and z files (listed 24 Oct 2026), 50.6 GB of them PHerc. Paris 4's. Per mesh on a 4-core cloud container (24 Oct 2026, download included): 1.2 to 1.5 s at 9.362 um, 7.6 to 8.4 s at 2.4 um, 23.5 s at 1.129 um. The largest mesh (about 116 million nodes) needs about 3 GB of memory, so the daily build runs as a Hugging Face Job on `cpu-upgrade` (8 vCPU, 32 GB) |
 | Network | `vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` (metadata.json, ListObjectsV2 listings, each mesh's four files); `show` reads the published `atlas.jsonl` from `huggingface.co` unless `--atlas` names a file |
-| Writes | `build`: OUT/`atlas.jsonl`, `atlas.csv`, `segments.csv`, `scrolls.csv`, `summary.json`, `README.md`, `assets/*.png` (with matplotlib) and, with `--lens`, `lens/*.slg.gz`; each mesh is fetched into a temporary folder that is deleted after it is measured. `show`: nothing. `hf_atlas.py job`: the public dataset |
+| Writes | `build`: OUT/`atlas.jsonl`, `atlas.csv`, `segments.csv`, `scrolls.csv`, `summary.json`, `README.md`, `provenance.json`, `assets/*.png` (with matplotlib) and, with `--lens`, `lens/*.slg.gz`; each mesh is fetched into a temporary folder that is deleted after it is measured. `show`: nothing. `hf_atlas.py job`: the public dataset, with `SHA256SUMS` written last over every file but the card (`atlas.seal`) |
 | License | Code Apache-2.0; the dataset's numbers and preview grids CC BY-NC 4.0, as the meshes they come from (Vesuvius Challenge open data, CC BY-NC 4.0) |
 | Go-ahead | Not needed for `build` and `show` (public data, local files). The dataset is public, published after the leak check (AGENTS.md rule 8; Chase asked for it on 24 Oct 2026) |
 | Released | Public `main` from the change that adds it (24 Oct 2026) |
@@ -30,7 +30,7 @@ The numbers are exactly those of `kit tifxyz info`, `stretch` and `check` with d
 
 `--previous` makes a refresh cheap: a mesh is measured again only when the ETag or size of one of its three files changed, or its row has an error, or its Lens preview is missing, or its row predates a column in `NEWER` (so a new column fills every row on the next refresh, once).
 
-Beside the mesh table, `build` writes `segments.csv` (one row per segment, from its finest-voxel measured top-level mesh, the mesh the per-scroll area counts) and `scrolls.csv` (one row per scroll), the configs `segments` and `scrolls` of the dataset, and three figures in `assets/` drawn by `kit/atlasfig.py` from the rows and Lens grids of scrolls on no prize list only: `hero.png` (twelve preview grids, shaded by surface direction, flags painted on), `by_scroll.png` (traced area and clean share) and `quality.png` (isometry and flagged area). The card (`card()`) documents every column from `COLUMN_DOCS`, which a test keeps in step with `COLUMNS`.
+Beside the mesh table, `build` writes `segments.csv` (one row per segment, from its finest-voxel measured top-level mesh, the mesh the per-scroll area counts) and `scrolls.csv` (one row per scroll), the configs `segments` and `scrolls` of the dataset, and three figures in `assets/` drawn by `kit/atlasfig.py` from the rows and Lens grids of scrolls on no prize list only: `hero.png` (twelve preview grids, shaded by surface direction, flags painted on), `by_scroll.png` (traced area and clean share) and `quality.png` (isometry and flagged area). The card (`card()`) documents every column from `COLUMN_DOCS`, which a test keeps in step with `COLUMNS`. The dataset follows the [scroll dataset card standard](../standards/dataset-card.md): `write` adds `provenance.json` (`provenance()`, with the kit commit and an empty spent list, since the atlas uses no labels, seeds or model), the card has a Spent seeds and truth section, and the Job seals the folder with `SHA256SUMS`; a test builds, seals and checks a folder with `kit.datacard`.
 
 `--lens` also writes, for scrolls on no prize list, a small preview grid per mesh that the Segment Lens viewer reads. Scrolls on a prize list get numbers only, never a preview (the public media rule, [docs/media/README.md](../media/README.md)).
 
@@ -237,6 +237,7 @@ A local build of one small scroll takes minutes. The whole bucket is a Hugging F
 
 ## History
 
+- 2026-11-26: `provenance.json`, `SHA256SUMS` (`seal`) and a Spent seeds and truth section under the scroll dataset card standard ([#391](https://github.com/ChaseHendrick/Scrolls/pull/391)).
 - 2026-10-24: added `build`, `show`, the Lens preview format and the daily Hugging Face Job (on top of `c610c7a`).
 
 ## Related

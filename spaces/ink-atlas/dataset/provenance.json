@@ -1,0 +1,107 @@
+{
+  "standard": "scroll-dataset-card/0.1",
+  "dataset": "SharpMeow/first-letters-ink-atlas",
+  "version": "2026-11-26",
+  "updated": "2026-11-26",
+  "kind": [
+    "model-output",
+    "real-derived",
+    "images"
+  ],
+  "license": "cc-by-nc-4.0",
+  "sources": [
+    {
+      "name": "Vesuvius Challenge open data CT scans",
+      "url": "https://scrollprize.org/data",
+      "license": "cc-by-nc-4.0",
+      "ref": "each meta.json names its CT volume"
+    },
+    {
+      "name": "ketchupbyheinz vesuvius-scroll-survey traced meshes",
+      "url": "https://github.com/ketchupbyheinz/vesuvius-scroll-survey",
+      "license": "cc-by-nc-4.0",
+      "ref": "commit 1f12c1ce (code MIT, meshes CC BY-NC 4.0)"
+    },
+    {
+      "name": "face check, villa PR #2318 by ketchupbyheinz",
+      "url": "https://github.com/ScrollPrize/villa/pull/2318",
+      "license": "mit",
+      "ref": "PR #2318"
+    },
+    {
+      "name": "ink_9um seeds 42 and 43, step 75,000",
+      "url": "https://huggingface.co/scrollprize/ink_9um",
+      "license": "mit",
+      "ref": "weights SHA-256 in each meta.json"
+    },
+    {
+      "name": "Reader v2",
+      "url": "https://huggingface.co/domenicor046/reader-v2",
+      "license": "mit",
+      "ref": "weights SHA-256 in each meta.json"
+    },
+    {
+      "name": "Reader V3",
+      "url": "https://huggingface.co/domenicor046/reader-v3",
+      "license": "mit",
+      "ref": "weights SHA-256 in each meta.json"
+    },
+    {
+      "name": "dense_native, step 16,000",
+      "url": "https://huggingface.co/Nieuwlaar/ink9um-dense-native",
+      "license": "mit",
+      "ref": "weights SHA-256 in each meta.json"
+    },
+    {
+      "name": "d9v2",
+      "url": "https://github.com/TAUIL-Abd-Elilah/pherc0826-first-letters-search",
+      "license": "mit",
+      "ref": "weights SHA-256 in each meta.json"
+    },
+    {
+      "name": "Hecate 9.6 um",
+      "url": "https://huggingface.co/scrollprize/hecate",
+      "license": "mit",
+      "ref": "weights SHA-256 in each meta.json"
+    }
+  ],
+  "code": {
+    "repo": "https://github.com/ChaseHendrick/Scrolls",
+    "commit": "95d731b",
+    "command": "python3 spaces/ink-atlas/dataset/build_index.py; python3 spaces/ink-atlas/dataset/card_visuals.py",
+    "note": "95d731b builds the index tables and card pictures from the published meta.json files. The maps themselves are from the first release of 27 October 2026; each surface's meta.json records its render SHA-256 and every model's weights."
+  },
+  "model_output": true,
+  "caveats": [
+    "No ground truth: there are no ink labels here, so nothing in this dataset scores a model.",
+    "Not a reading: ink maps are model output; nothing here says that letters were found or read.",
+    "A screened subset: the 25 First Letters surfaces are those a fixed rule let out, not a random sample of each scroll.",
+    "Training exposure is unknown for most model pairs; most models do not publish their full training lists.",
+    "One render per surface: a different trace of the same sheet can change every map."
+  ],
+  "spent": {
+    "seeds": [],
+    "truth": [
+      {
+        "what": "seven models' maps, both depth orders and three windows",
+        "scope": "the 32 surfaces in this release",
+        "use": "released",
+        "note": "a later read of them with these models is not blind"
+      },
+      {
+        "what": "PHerc0343 First Letters prize mesh and the other PHerc0343 references",
+        "scope": "7 PHerc0343 reference surfaces",
+        "use": "testing",
+        "note": "the release rule had to flag the prize mesh, and did"
+      }
+    ],
+    "held_back": [
+      {
+        "what": "surfaces the release rule did not let out",
+        "scope": "counted per scroll in atlas.json",
+        "note": "not in this release"
+      }
+    ],
+    "none_reason": ""
+  }
+}
