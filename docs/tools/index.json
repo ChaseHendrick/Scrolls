@@ -630,6 +630,10 @@
      "symbols": []
     },
     {
+     "path": "kit/atlasfig.py",
+     "symbols": []
+    },
+    {
      "path": "kit/cli.py",
      "symbols": [
       "build_parser"
@@ -648,8 +652,8 @@
     "text": "Not needed for `build` and `show` (public data, local files). The dataset is public, published after the leak check (AGENTS.md rule 8; Chase asked for it on 24 Oct 2026)"
    },
    "checked": {
-    "date": "2026-10-24",
-    "commit": "cc03099"
+    "date": "2026-11-26",
+    "commit": "51a17e6"
    },
    "license": "Code Apache-2.0; the dataset's numbers and preview grids CC BY-NC 4.0, as the meshes they come from (Vesuvius Challenge open data, CC BY-NC 4.0)",
    "fields": {
@@ -658,107 +662,107 @@
     "Kind": "kit command, kit module, script, data",
     "Area": "Surfaces and tracing",
     "Run": "`python -m kit atlas build`, `python -m kit atlas show`, `python -m kit.atlas`, `from kit import atlas`, `python scripts/atlas/hf_atlas.py`",
-    "Code": "`kit/atlas.py`, `kit/cli.py` (`build_parser`), `scripts/atlas/hf_atlas.py`",
+    "Code": "`kit/atlas.py`, `kit/atlasfig.py` (the card's figures), `kit/cli.py` (`build_parser`), `scripts/atlas/hf_atlas.py`",
     "Tests": "`tests/test_atlas.py`",
-    "Needs": "Python 3.10 or newer, numpy and tifffile (imagecodecs for the LZW-compressed meshes, about a fifth of them); scipy when installed. `huggingface_hub` only for `scripts/atlas/hf_atlas.py`",
+    "Needs": "Python 3.10 or newer, numpy and tifffile (imagecodecs for the LZW-compressed meshes, about a fifth of them); scipy when installed; matplotlib for the card's figures (skipped without it). `huggingface_hub` only for `scripts/atlas/hf_atlas.py`",
     "Runs on": "Any CPU, but the whole bucket is large: 908 meshes, 69.4 GB of x, y and z files (listed 24 Oct 2026), 50.6 GB of them PHerc. Paris 4's. Per mesh on a 4-core cloud container (24 Oct 2026, download included): 1.2 to 1.5 s at 9.362 um, 7.6 to 8.4 s at 2.4 um, 23.5 s at 1.129 um. The largest mesh (about 116 million nodes) needs about 3 GB of memory, so the daily build runs as a Hugging Face Job on `cpu-upgrade` (8 vCPU, 32 GB)",
     "Network": "`vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` (metadata.json, ListObjectsV2 listings, each mesh's four files); `show` reads the published `atlas.jsonl` from `huggingface.co` unless `--atlas` names a file",
-    "Writes": "`build`: OUT/`atlas.jsonl`, `atlas.csv`, `summary.json`, `README.md` and, with `--lens`, `lens/*.slg.gz`; each mesh is fetched into a temporary folder that is deleted after it is measured. `show`: nothing. `hf_atlas.py job`: the public dataset",
+    "Writes": "`build`: OUT/`atlas.jsonl`, `atlas.csv`, `segments.csv`, `scrolls.csv`, `summary.json`, `README.md`, `assets/*.png` (with matplotlib) and, with `--lens`, `lens/*.slg.gz`; each mesh is fetched into a temporary folder that is deleted after it is measured. `show`: nothing. `hf_atlas.py job`: the public dataset",
     "License": "Code Apache-2.0; the dataset's numbers and preview grids CC BY-NC 4.0, as the meshes they come from (Vesuvius Challenge open data, CC BY-NC 4.0)",
     "Go-ahead": "Not needed for `build` and `show` (public data, local files). The dataset is public, published after the leak check (AGENTS.md rule 8; Chase asked for it on 24 Oct 2026)",
     "Released": "Public `main` from the change that adds it (24 Oct 2026)",
-    "Checked": "2026-10-24 against commit `cc03099`"
+    "Checked": "2026-11-26 against commit `51a17e6`"
    },
    "page": "docs/tools/atlas.md",
    "sections": [
     {
      "name": "What it does",
      "start_line": 23,
-     "end_line": 36,
+     "end_line": 38,
      "applicable": true
     },
     {
      "name": "When to use it",
-     "start_line": 37,
-     "end_line": 47,
+     "start_line": 39,
+     "end_line": 49,
      "applicable": true
     },
     {
      "name": "Quick start",
-     "start_line": 48,
-     "end_line": 57,
+     "start_line": 50,
+     "end_line": 59,
      "applicable": true
     },
     {
      "name": "Checks and controls",
-     "start_line": 58,
-     "end_line": 67,
+     "start_line": 60,
+     "end_line": 73,
      "applicable": true
     },
     {
      "name": "Commands and options",
-     "start_line": 68,
-     "end_line": 123,
+     "start_line": 74,
+     "end_line": 129,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 124,
-     "end_line": 150,
+     "start_line": 130,
+     "end_line": 158,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 151,
-     "end_line": 154,
+     "start_line": 159,
+     "end_line": 162,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 155,
-     "end_line": 185,
+     "start_line": 163,
+     "end_line": 195,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 186,
-     "end_line": 200,
+     "start_line": 196,
+     "end_line": 210,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 201,
-     "end_line": 209,
+     "start_line": 211,
+     "end_line": 219,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 210,
-     "end_line": 213,
-     "applicable": true
-    },
-    {
-     "name": "For agents",
-     "start_line": 214,
+     "start_line": 220,
      "end_line": 223,
      "applicable": true
     },
     {
-     "name": "Tests",
+     "name": "For agents",
      "start_line": 224,
-     "end_line": 227,
+     "end_line": 233,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 234,
+     "end_line": 237,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 228,
-     "end_line": 231,
+     "start_line": 238,
+     "end_line": 241,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 232,
-     "end_line": 235,
+     "start_line": 242,
+     "end_line": 245,
      "applicable": true
     }
    ]
@@ -16901,79 +16905,79 @@
     {
      "name": "Quick start",
      "start_line": 49,
-     "end_line": 58,
+     "end_line": 60,
      "applicable": true
     },
     {
      "name": "Checks and controls",
-     "start_line": 59,
-     "end_line": 68,
+     "start_line": 61,
+     "end_line": 70,
      "applicable": true
     },
     {
      "name": "Commands and options",
-     "start_line": 69,
-     "end_line": 117,
+     "start_line": 71,
+     "end_line": 119,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 118,
-     "end_line": 133,
+     "start_line": 120,
+     "end_line": 135,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 134,
-     "end_line": 137,
+     "start_line": 136,
+     "end_line": 139,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 138,
-     "end_line": 159,
+     "start_line": 140,
+     "end_line": 163,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 160,
-     "end_line": 172,
-     "applicable": true
-    },
-    {
-     "name": "How it works",
-     "start_line": 173,
+     "start_line": 164,
      "end_line": 176,
      "applicable": true
     },
     {
-     "name": "Cost and time",
+     "name": "How it works",
      "start_line": 177,
      "end_line": 180,
      "applicable": true
     },
     {
-     "name": "For agents",
+     "name": "Cost and time",
      "start_line": 181,
-     "end_line": 191,
+     "end_line": 184,
      "applicable": true
     },
     {
-     "name": "Tests",
-     "start_line": 192,
+     "name": "For agents",
+     "start_line": 185,
      "end_line": 195,
      "applicable": true
     },
     {
-     "name": "History",
+     "name": "Tests",
      "start_line": 196,
-     "end_line": 203,
+     "end_line": 199,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 200,
+     "end_line": 208,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 204,
-     "end_line": 208,
+     "start_line": 209,
+     "end_line": 213,
      "applicable": true
     }
    ]

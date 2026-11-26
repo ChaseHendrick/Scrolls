@@ -56,7 +56,10 @@ COLUMNS = ("id", "scroll", "segment", "mesh", "kind", "volume", "voxel_um", "vox
            "cell_area_p50", "angle_p5", "angle_p50", "angle_p95",
            "holes_nodes", "holes_mm2", "folds_nodes", "folds_mm2", "stretched_nodes", "stretched_mm2", "clean",
            "z_min", "z_max", "bytes", "banded", "lens", "seconds", "error", "url", "fingerprint", "last_modified",
-           "measured_at")
+           "measured_at", "x_min", "x_max", "y_min", "y_max", "extent_x_mm", "extent_y_mm", "extent_z_mm")
+# Columns added after the first release go at the end, so code that reads the CSV by position keeps working. A row
+# measured before a column in NEWER existed is measured again on the next refresh (once), so every row has it.
+NEWER = ("x_min", "extent_x_mm")
 
 
 # ---------------------------------------------------------------- listing
@@ -275,9 +278,14 @@ def measure(seg, band_rows=BAND_ROWS, band_nodes=BAND_NODES):
     meta_area = seg.meta.get("area_vx2")
     out["meta_area_ratio"] = (round(area / float(meta_area), 4)
                               if isinstance(meta_area, (int, float)) and meta_area > 0 else None)
+    out.update({k: None for k in ("x_min", "x_max", "y_min", "y_max", "extent_x_mm", "extent_y_mm", "extent_z_mm")})
     if filled:
-        z = seg.xyz[..., 2][seg.valid]
-        out["z_min"], out["z_max"] = round(float(z.min()), 1), round(float(z.max()), 1)
+        for i, axis in enumerate("xyz"):
+            v = seg.xyz[..., i][seg.valid]
+            lo, hi = float(v.min()), float(v.max())
+            out[f"{axis}_min"], out[f"{axis}_max"] = round(lo, 1), round(hi, 1)
+            if um is not None:     # the bounding box of the filled nodes, in mm of the scan
+                out[f"extent_{axis}_mm"] = round((hi - lo) * um * 1e-3, 2)
     return out, m
 
 
@@ -420,6 +428,8 @@ def build(out_dir, scrolls=None, previous=None, workers=None, lens=False, limit=
     for r in rows:
         prev = old.get(r["id"])
         keep = prev and prev.get("fingerprint") == r["fingerprint"] and not prev.get("error")
+        if keep and not all(k in prev for k in NEWER):
+            keep = False                  # measured before a newer column existed: measure again to fill it
         if keep and lens and not r["prize_lists"] and not prev.get("lens"):
             keep = False                  # measured before without a preview: measure again to make one
         if keep and lens and prev.get("lens") and not (lens_dir / prev["lens"]).is_file():
@@ -449,7 +459,157 @@ def build(out_dir, scrolls=None, previous=None, workers=None, lens=False, limit=
     return write(out, done)
 
 
-def write(out, rows):
+SEGMENT_COLUMNS = ("scroll", "segment", "meshes", "volumes", "best_mesh", "volume", "voxel_um", "area_cm2",
+                   "filled_share", "within_10pct", "median_abs_log", "holes_mm2", "folds_mm2", "stretched_mm2", "clean",
+                   "extent_x_mm", "extent_y_mm", "extent_z_mm", "z_min", "z_max", "prize_lists", "lens", "url")
+SCROLL_COLUMNS = ("scroll", "segments", "meshes", "measured", "errors", "clean_meshes", "clean_segments", "area_cm2",
+                  "largest_segment_cm2", "median_segment_cm2", "median_within_10pct", "voxel_sizes_um", "prize_lists")
+FIRST_RELEASE = "2026-10-24"
+CHANGELOG = (
+    ("2026-11-26", "Segment and scroll tables (`segments.csv`, `scrolls.csv`, configs `segments` and `scrolls`); "
+                   "bounding box and physical extent columns on every mesh (`x_min` to `extent_z_mm`, added at the "
+                   "end so column positions do not move); figures in `assets/`; a fuller card. Every existing "
+                   "file, path and column is unchanged."),
+    (FIRST_RELEASE, "First release: one row per tifxyz mesh on the open-data bucket, Segment Lens previews, daily "
+                    "refresh."),
+)
+RELATED = (
+    ("SharpMeow/first-letters-ink-atlas", "dataset", "public ink models run on the same public First Letters "
+                                                     "surfaces, on one shared canvas"),
+    ("SharpMeow/vesuvius-snapped-labels", "dataset", "published ink labels snapped onto public traced surfaces"),
+    ("SharpMeow/segment-lens", "space", "browse this atlas in 3D in the browser: every mesh's preview grid "
+                                        "with its holes, folds and stretched nodes"),
+)
+# (type, unit, meaning) for every column of atlas.csv; a test requires one entry per column
+COLUMN_DOCS = {
+    "id": ("string", "", "SCROLL/SEGMENT/MESH, unique per row"),
+    "scroll": ("string", "", "scroll id as the bucket spells it, such as PHerc0139"),
+    "segment": ("string", "", "segment folder name on the bucket"),
+    "mesh": ("string", "", "mesh folder under the segment's `mesh/`, such as `SEG-on-VOLUME-2.399um.tifxyz`"),
+    "kind": ("string", "", "`mesh` for a top-level mesh folder, else the subfolder name (such as `intermediate`)"),
+    "volume": ("number", "", "id of the scan volume the mesh is mapped to (a 14-digit timestamp), when known"),
+    "voxel_um": ("number", "um", "voxel size of that volume"),
+    "voxel_um_from": ("string", "", "where the voxel size came from: `folder name`, `volume metadata` or "
+                                   "`the scroll's only volume`"),
+    "prize_lists": ("string", "", "prize lists the scroll is on in kit's dated snapshot; `[]` when none, else ids "
+                                 "joined by `;`"),
+    "grid_h": ("integer", "nodes", "grid rows"),
+    "grid_w": ("integer", "nodes", "grid columns"),
+    "nodes_filled": ("integer", "nodes", "grid nodes with a position"),
+    "filled_share": ("number", "0 to 1", "nodes_filled over grid_h times grid_w"),
+    "area_cm2": ("number", "cm2", "surface area: two triangles per complete grid cell, times the voxel size squared"),
+    "meta_area_ratio": ("number", "ratio", "area_cm2 over the `area_vx2` VC3D wrote into `meta.json`, where there "
+                                          "is one"),
+    "edge_p5": ("number", "ratio", "5th percentile of grid edge length over the step `meta.json` promises (1.0 is "
+                                   "exact)"),
+    "edge_p50": ("number", "ratio", "median of the same"),
+    "edge_p95": ("number", "ratio", "95th percentile of the same"),
+    "within_10pct": ("number", "0 to 1", "share of edges within 10 % of the promised step"),
+    "within_25pct": ("number", "0 to 1", "share of edges within 25 % of the promised step"),
+    "median_abs_log": ("number", "", "median of the absolute log of edge length over step (0 is exact)"),
+    "cell_area_p50": ("number", "ratio", "median cell area over the promised cell area"),
+    "angle_p5": ("number", "degrees", "5th percentile of the angle between the two grid directions (90 is square)"),
+    "angle_p50": ("number", "degrees", "median of the same"),
+    "angle_p95": ("number", "degrees", "95th percentile of the same"),
+    "holes_nodes": ("integer", "nodes", "missing nodes not joined to the grid's border through missing nodes"),
+    "holes_mm2": ("number", "mm2", "the same as an area"),
+    "folds_nodes": ("integer", "nodes", "nodes of neighboring cells whose normals turn by more than 90 degrees"),
+    "folds_mm2": ("number", "mm2", "the same as an area"),
+    "stretched_nodes": ("integer", "nodes", "nodes on an edge more than 1.5 times too long or too short"),
+    "stretched_mm2": ("number", "mm2", "the same as an area"),
+    "clean": ("boolean", "", "true when holes, folds and stretched nodes are all 0"),
+    "z_min": ("number", "voxels", "lowest z of the filled nodes, in the volume's voxels"),
+    "z_max": ("number", "voxels", "highest z of the filled nodes"),
+    "bytes": ("integer", "bytes", "size of x.tif, y.tif and z.tif together"),
+    "banded": ("boolean", "", "true when the mesh was measured in bands of 1,024 rows (over 12 million nodes)"),
+    "lens": ("string", "", "preview file in `lens/`, for scrolls on no prize list; empty otherwise"),
+    "seconds": ("number", "s", "time to fetch and measure the mesh"),
+    "error": ("string", "", "why the mesh was not measured; empty when it was"),
+    "url": ("string", "", "the mesh folder on the open-data bucket"),
+    "fingerprint": ("string", "", "hash of the ETags and sizes of x.tif, y.tif and z.tif"),
+    "last_modified": ("string", "UTC", "newest Last-Modified of the three files on the bucket"),
+    "measured_at": ("string", "UTC", "when this row was measured"),
+    "x_min": ("number", "voxels", "lowest x of the filled nodes"),
+    "x_max": ("number", "voxels", "highest x of the filled nodes"),
+    "y_min": ("number", "voxels", "lowest y of the filled nodes"),
+    "y_max": ("number", "voxels", "highest y of the filled nodes"),
+    "extent_x_mm": ("number", "mm", "(x_max minus x_min) times the voxel size: the width of the mesh's bounding "
+                                    "box in the scan"),
+    "extent_y_mm": ("number", "mm", "the same along y"),
+    "extent_z_mm": ("number", "mm", "the same along z (the scroll's long axis on most scans)"),
+}
+
+
+def _prize_text(v):
+    return ";".join(v) if isinstance(v, (list, tuple)) else (v or "")
+
+
+def _median(vals):
+    vals = sorted(v for v in vals if v is not None)
+    if not vals:
+        return None
+    n = len(vals)
+    return vals[n // 2] if n % 2 else (vals[n // 2 - 1] + vals[n // 2]) / 2
+
+
+def _best(rows):
+    """The row that stands for a segment: its finest-voxel measured top-level mesh (as the per-scroll area), else
+    any measured top-level mesh, else None."""
+    top = [r for r in rows if r.get("kind") == "mesh" and r.get("grid_h") is not None and not r.get("error")]
+    with_area = [r for r in top if r.get("area_cm2") is not None]
+    pool = with_area or top
+    return min(pool, key=lambda r: (r.get("voxel_um") or 99, r["id"])) if pool else None
+
+
+def segment_rows(rows):
+    """One row per segment (SEGMENT_COLUMNS), its numbers from the mesh _best picks."""
+    by = {}
+    for r in rows:
+        by.setdefault((r["scroll"], r["segment"]), []).append(r)
+    out = []
+    for (scroll, segment), rs in sorted(by.items()):
+        b = _best(rs) or {}
+        row = {"scroll": scroll, "segment": segment, "meshes": len(rs),
+               "volumes": len({r.get("volume") for r in rs if r.get("volume")}), "best_mesh": b.get("id"),
+               "prize_lists": _prize_text(rs[0].get("prize_lists"))}
+        for c in ("volume", "voxel_um", "area_cm2", "filled_share", "within_10pct", "median_abs_log", "holes_mm2",
+                  "folds_mm2", "stretched_mm2", "clean", "extent_x_mm", "extent_y_mm", "extent_z_mm", "z_min",
+                  "z_max", "lens", "url"):
+            row[c] = b.get(c)
+        out.append(row)
+    return out
+
+
+def scroll_rows(rows, segs=None):
+    """One row per scroll (SCROLL_COLUMNS)."""
+    segs = segment_rows(rows) if segs is None else segs
+    summary = summarize(rows)["scrolls"]
+    out = []
+    for scroll, s in sorted(summary.items()):
+        mine = [g for g in segs if g["scroll"] == scroll]
+        areas = [g["area_cm2"] for g in mine if g.get("area_cm2") is not None]
+        top = [r for r in rows if r["scroll"] == scroll and r.get("kind") == "mesh" and not r.get("error")]
+        out.append({"scroll": scroll, "segments": s["segments"], "meshes": s["meshes"], "measured": s["measured"],
+                    "errors": s["errors"], "clean_meshes": s["clean"],
+                    "clean_segments": sum(1 for g in mine if g.get("clean")), "area_cm2": s["area_cm2"],
+                    "largest_segment_cm2": round(max(areas), 3) if areas else None,
+                    "median_segment_cm2": round(_median(areas), 3) if areas else None,
+                    "median_within_10pct": _median([r.get("within_10pct") for r in top]),
+                    "voxel_sizes_um": ";".join(f"{v:g}" for v in sorted({r["voxel_um"] for r in rows if
+                                                                         r["scroll"] == scroll and r.get("voxel_um")})),
+                    "prize_lists": _prize_text(s["prize_lists"])})
+    return out
+
+
+def _write_csv(path, columns, rows):
+    with open(path, "w", newline="", encoding="utf-8") as f:
+        w = csv.writer(f)
+        w.writerow(columns)
+        for r in rows:
+            w.writerow([r.get(c) for c in columns])
+
+
+def write(out, rows, figures=True):
     out = Path(out)
     with open(out / "atlas.jsonl", "w", encoding="utf-8") as f:
         for r in rows:
@@ -459,73 +619,263 @@ def write(out, rows):
         w.writerow(COLUMNS)
         for r in rows:
             w.writerow([";".join(r[c]) if c == "prize_lists" and r.get(c) else r.get(c) for c in COLUMNS])
+    segs = segment_rows(rows)
+    _write_csv(out / "segments.csv", SEGMENT_COLUMNS, segs)
+    _write_csv(out / "scrolls.csv", SCROLL_COLUMNS, scroll_rows(rows, segs))
     summary = summarize(rows)
+    summary["figures"] = []
+    if figures:
+        try:
+            from . import atlasfig
+            summary["figures"] = atlasfig.write_all(out, rows, segs)
+        except ImportError:
+            pass                          # no matplotlib: the card is written without figures
+        except Exception as exc:          # a figure must never stop the tables from being published
+            summary["figure_error"] = f"{type(exc).__name__}: {exc}"[:300]
     (out / "summary.json").write_text(json.dumps(summary, indent=1) + "\n", encoding="utf-8")
-    (out / "README.md").write_text(card(summary), encoding="utf-8")
+    (out / "README.md").write_text(card(summary, segs), encoding="utf-8")
     return summary
 
 
-def card(summary):
-    """The dataset card (README.md) for the published atlas, from its summary."""
-    rows = [f"| {k} | {v['segments']} | {v['meshes']} | {v['measured']} | {v['clean']} | {v['area_cm2']} | "
-            f"{', '.join(v['prize_lists']) or 'none'} |" for k, v in sorted(summary["scrolls"].items())]
+FIGURE_TEXT = {
+    "hero": ("Preview grids of the largest top-level mesh of twelve public segments, shaded by surface direction, "
+             "with holes, folds and stretched nodes marked"),
+    "by_scroll": "Traced area and clean share per scroll",
+    "quality": "How isometric the grids are, and how much of each mesh is a hole, fold or stretched node",
+}
+
+
+def _num(v, n=1):
+    return "" if v is None else f"{v:,.{n}f}"
+
+
+def card(summary, segs=None):
+    """The dataset card (README.md) for the published atlas, from its summary (and the segment rows, for the
+    per-scroll largest segment)."""
+    segs = segs or []
+    largest = {}
+    for g in segs:
+        if g.get("area_cm2") is not None and g["area_cm2"] > largest.get(g["scroll"], -1):
+            largest[g["scroll"]] = g["area_cm2"]
+    rows = [f"| {k} | {v['segments']} | {v['meshes']} | {v['measured']} | {v['clean']} | {_num(v['area_cm2'])} | "
+            f"{_num(largest.get(k))} | {', '.join(v['prize_lists']) or 'none'} |"
+            for k, v in sorted(summary["scrolls"].items())]
+    total_area = sum(v["area_cm2"] for v in summary["scrolls"].values())
+    clean = sum(v["clean"] for v in summary["scrolls"].values())
+    figs = set(summary.get("figures") or [])
+
+    def fig(name):
+        return f"\n![{FIGURE_TEXT[name]}](assets/{name}.png)\n" if name in figs else ""
+
+    cols = "\n".join(f"| `{c}` | {COLUMN_DOCS[c][0]} | {COLUMN_DOCS[c][1]} | {COLUMN_DOCS[c][2]} |" for c in COLUMNS)
+    related = "\n".join(f"- [{rid}]({_find.HUB}/{'spaces/' if kind == 'space' else 'datasets/'}{rid}): {text}"
+                        for rid, kind, text in RELATED)
+    changes = "\n".join(f"- **{d}**: {t}" for d, t in CHANGELOG)
+    base = f"hf://datasets/{DATASET}"
     return f"""---
 license: cc-by-nc-4.0
 pretty_name: Vesuvius Segment Atlas
+language:
+- en
+size_categories:
+- 1K<n<10K
 tags:
 - vesuvius-challenge
 - herculaneum
+- papyrus
+- x-ray-ct
 - tifxyz
+- mesh
 - segmentation
+- geometry
+- tabular
 configs:
 - config_name: default
+  default: true
   data_files:
   - split: train
     path: atlas.csv
+- config_name: segments
+  data_files:
+  - split: train
+    path: segments.csv
+- config_name: scrolls
+  data_files:
+  - split: train
+    path: scrolls.csv
 ---
 
 # Vesuvius Segment Atlas
 
-The same geometry numbers for every traced segment the [Vesuvius Challenge open data]({_find.BUCKET}/) publishes:
-one row per tifxyz mesh (a segment mapped to one scan volume), with its area in cm2, how much of its grid is filled,
-how isometric the grid is, and how many grid nodes sit in holes inside the sheet, in folds, or on over-stretched
-edges. Built by `python -m kit atlas build` from [ChaseHendrick/Scrolls](https://github.com/ChaseHendrick/Scrolls)
-(page: `docs/tools/atlas.md`), refreshed daily by a Hugging Face Job that measures only new or changed meshes.
+One table of geometry numbers for every traced segment the [Vesuvius Challenge open data]({_find.BUCKET}/)
+publishes, measured the same way: one row per tifxyz mesh (a segment mapped to one scan volume) with its area, how
+much of its grid is filled, how isometric the grid is, how many nodes sit in holes, folds or over-stretched edges,
+and where it lies in the scan. Use it to pick segments to work on, to compare tracing quality across scrolls and
+volumes, or to cite a segment's size with a fixed method and a dated source. A Hugging Face Job rebuilds it every
+day at 06:17 UTC and measures only new or changed meshes.
+{fig("hero")}
+**At a glance** (built {summary['built']}, kit commit `{summary['kit_commit']}`): {summary['meshes']:,} meshes of
+{summary['segments']:,} segments on {len(summary['scrolls'])} scrolls, {_num(total_area)} cm2 of traced surface
+(each segment counted once), {clean:,} meshes with no holes, folds or stretched nodes, and {summary['errors']} not
+measured (the `error` column says why).
 
-Built {summary['built']} from commit `{summary['kit_commit']}`: {summary['meshes']} meshes of {summary['segments']}
-segments, {summary['errors']} not measured (the `error` column says why).
+## Quick start
 
-| Scroll | Segments | Meshes | Measured | Clean | Area, cm2 (each segment once) | Prize lists (kit snapshot) |
-| --- | --- | --- | --- | --- | --- | --- |
+```python
+import pandas as pd   # hf:// paths need huggingface_hub installed
+
+meshes = pd.read_csv("{base}/atlas.csv")         # one row per mesh
+segments = pd.read_csv("{base}/segments.csv")    # one row per segment
+scrolls = pd.read_csv("{base}/scrolls.csv")      # one row per scroll
+
+# the ten largest clean segments
+print(segments[segments.clean == True].nlargest(10, "area_cm2")[["scroll", "segment", "area_cm2", "voxel_um"]])
+```
+
+```python
+from datasets import load_dataset
+
+meshes = load_dataset("{DATASET}", split="train")                # config "default"
+segments = load_dataset("{DATASET}", "segments", split="train")
+```
+
+```python
+import polars as pl
+
+pl.read_csv("{base}/scrolls.csv").sort("area_cm2", descending=True)
+```
+
+```sql
+-- DuckDB
+SELECT scroll, count(*) AS segments, round(sum(area_cm2), 1) AS cm2
+FROM '{base}/segments.csv' GROUP BY scroll ORDER BY cm2 DESC;
+```
+
+Each mesh's `url` is its folder on the open-data bucket (x.tif, y.tif, z.tif and meta.json), so a row leads straight
+to the mesh. The same numbers on the command line come from [ChaseHendrick/Scrolls](https://github.com/ChaseHendrick/Scrolls):
+`python -m kit atlas show PHerc0139 --top 5`.
+
+## What is in it
+
+| File | Rows | What |
+| --- | --- | --- |
+| `atlas.csv` (config `default`) | one per mesh | every column below |
+| `atlas.jsonl` | one per mesh | the same rows as JSON lines; `prize_lists` is a list there |
+| `segments.csv` (config `segments`) | one per segment | the segment's finest-voxel measured top-level mesh, with mesh and volume counts |
+| `scrolls.csv` (config `scrolls`) | one per scroll | counts, traced area, largest and median segment, voxel sizes |
+| `summary.json` | | the per-scroll counts of the table below, build time and kit commit |
+| `lens/NAME.slg.gz` | one per mesh of a scroll on no prize list | a small preview grid of the mesh, read by the Segment Lens viewer (format below) |
+| `assets/*.png` | | the figures on this page |
+
+| Scroll | Segments | Meshes | Measured | Clean | Area, cm2 (each segment once) | Largest segment, cm2 | Prize lists (kit snapshot) |
+| --- | --- | --- | --- | --- | --- | --- | --- |
 {chr(10).join(rows)}
 
-## What the numbers mean
+A segment often has several meshes: one per volume it was mapped to (different voxel sizes or scan energies), plus
+any intermediate meshes the publisher kept. Area per scroll counts each segment once, from its finest-voxel
+top-level mesh, the same mesh `segments.csv` uses.
+{fig("by_scroll")}
+## Columns
 
-- **area_cm2**: two triangles per complete grid cell, in voxels squared, times the voxel size squared. The voxel
-  size comes from the folder name (`-N.NNNum.tifxyz`), else from the volume's metadata, else from the scroll's only
-  volume (`voxel_um_from` says which); without one the area is empty. **meta_area_ratio** is our area over the
-  `area_vx2` VC3D wrote into `meta.json`, where there is one.
-- **edge_p5, edge_p50, edge_p95**: every grid edge's 3D length over the step `meta.json`'s `scale` promises (1.0 is
-  exact); **within_10pct** and **within_25pct** are the shares of edges that close; **median_abs_log** is the median
-  of the absolute log of that ratio; **cell_area_p50** is cell area over the promised area; **angle_p5/p50/p95** is
-  the angle between the two grid directions, in degrees (90 is square).
-- **holes_nodes**: missing nodes not joined to the grid's border through missing nodes (holes inside the sheet).
-  **folds_nodes**: nodes of neighboring cells whose normals turn by more than 90 degrees. **stretched_nodes**: nodes
-  on an edge more than 1.5 times too long or too short. Each also in mm2. **clean** is true when all three are 0.
-- **kind** is `mesh` for a top-level mesh folder and the subfolder name (such as `intermediate`) otherwise. Area per
-  scroll in the table counts each segment once, from its finest-voxel top-level mesh.
-- **lens**: for scrolls on no prize list, the file in `lens/` with a small preview grid used by the Segment Lens
-  viewer (format in `docs/tools/atlas.md`). Scrolls on a prize list get numbers only.
-- **fingerprint** comes from the ETags and sizes of x.tif, y.tif and z.tif; a refresh measures a mesh again only when
-  it changes.
+`atlas.csv` and `atlas.jsonl`, in file order. Columns added after the first release are appended at the end, so
+code that reads by position keeps working. Empty means not known or not measured.
 
-These numbers describe the grid, not the papyrus. A clean mesh can still jump from one sheet to the next; nothing
-here looks at the CT or judges ink, and none of it is an official villa or prize check.
+| Column | Type | Unit | Meaning |
+| --- | --- | --- | --- |
+{cols}
+
+`segments.csv` has `scroll`, `segment`, `meshes` (rows of the segment), `volumes` (distinct volumes), `best_mesh` (the
+`id` of the mesh it stands for) and that mesh's `{"`, `".join(c for c in SEGMENT_COLUMNS[5:] if c != "prize_lists")}`;
+`prize_lists` there and in `scrolls.csv` is empty when none. `scrolls.csv` has `{"`, `".join(SCROLL_COLUMNS)}`:
+`clean_meshes` counts every measured mesh, `clean_segments` the segments whose standing mesh is clean, and
+`median_within_10pct` is over top-level meshes.
+{fig("quality")}
+### Lens files
+
+`lens/NAME.slg.gz` (NAME is the first 16 hex digits of the SHA-256 of the row's `id`) is gzip over: the 4 bytes
+`SLG1`; uint16 `h`, `w`, `k` (little-endian); six float32, `lo` x, y, z then `hi` x, y, z; three planes of h x w
+uint16 (x, y and z of every k-th node, `lo + q / 65534 * (hi - lo)`, 65535 for a missing node); then h x w uint8
+flags, the OR over the k x k block each node stands for (1 hole, 2 fold, 4 stretched). `k` makes the longest side at
+most 256.
+
+```python
+import gzip, struct
+import numpy as np
+import pandas as pd
+from huggingface_hub import hf_hub_download
+
+def read_lens(path):
+    raw = gzip.open(path).read()
+    assert raw[:4] == b"SLG1"
+    h, w, k = struct.unpack("<HHH", raw[4:10])
+    lo, hi = np.array(struct.unpack("<6f", raw[10:34])).reshape(2, 3)
+    q = np.frombuffer(raw, "<u2", 3 * h * w, 34).reshape(3, h, w)
+    flags = np.frombuffer(raw, np.uint8, h * w, 34 + 6 * h * w).reshape(h, w)
+    xyz = lo + np.moveaxis(q, 0, -1) / 65534.0 * np.where(hi > lo, hi - lo, 1.0)
+    xyz[q[0] == 65535] = np.nan
+    return xyz, flags, k          # positions in voxels, (h, w, 3); flags (h, w); stride k
+
+row = pd.read_csv("{base}/atlas.csv").dropna(subset=["lens"]).iloc[0]
+xyz, flags, k = read_lens(hf_hub_download("{DATASET}", "lens/" + row.lens, repo_type="dataset"))
+```
+
+## How it was made
+
+1. **List.** Read the bucket's `metadata.json` and list `SCROLL/segments/` for every scroll; every folder under a
+   segment's `mesh/` (up to three levels down) that holds `x.tif`, `y.tif` and `z.tif` is one row.
+2. **Voxel size.** From the folder name (`-N.NNNum.tifxyz`), else the volume's metadata, else the scroll's only
+   volume; `voxel_um_from` says which.
+3. **Measure.** Fetch the three files, run the checks of `kit tifxyz` (`info`, `stretch`, `check`, default settings;
+   a test requires the same numbers), and delete the copy. Meshes over 12 million nodes are measured in bands of
+   1,024 rows, each cell and edge in exactly one band, with the same counts as the whole grid; their percentiles come
+   from every k-th value, at most 2 million kept.
+4. **Previews.** For scrolls on no prize list in kit's dated snapshot of https://scrollprize.org/prizes, write a
+   preview grid to `lens/`. Scrolls on a prize list get numbers only.
+5. **Refresh.** Each row keeps a `fingerprint` of its files' ETags and sizes; the daily Job measures a mesh again
+   only when that changes, when its row has an error or a missing preview, or when a newer column was added.
+
+The code is `kit/atlas.py` in [ChaseHendrick/Scrolls](https://github.com/ChaseHendrick/Scrolls) (tool page
+`docs/tools/atlas.md`, tests `tests/test_atlas.py`); the Job is `scripts/atlas/hf_atlas.py`, run on a Hugging Face
+`cpu-upgrade` machine from the repository's public `main`.
+
+## Limits
+
+- The numbers describe the grid, not the papyrus. A clean mesh can still jump from one sheet to the next: nothing
+  here looks at the CT, detects sheet switches or judges ink, and none of it is an official villa or prize check.
+- `extent_*_mm` is the axis-aligned bounding box of the filled nodes in scan coordinates. A rolled sheet fills
+  only part of its box, so the box is not the size of the flattened papyrus; `area_cm2` is.
+- Area counts complete grid cells only, so a mesh with many holes reads a little small. Without a known voxel size
+  the area and extents are empty.
+- Meshes of one segment on different volumes, and intermediate meshes, are separate rows: sum `segments.csv`, or
+  filter `kind == "mesh"` and pick one volume, to avoid counting a segment twice.
+- Prize lists come from a dated snapshot in kit, not the live prize page.
 
 ## License and credit
 
-The meshes are Vesuvius Challenge open data, CC BY-NC 4.0; these derived numbers and preview grids carry the same
-license. Credit: Vesuvius Challenge open data, CC BY-NC 4.0. The code that makes them is Apache-2.0.
+The meshes are Vesuvius Challenge open data, CC BY-NC 4.0 (non-commercial); these derived numbers and preview grids
+carry the same license. Credit: Vesuvius Challenge open data, CC BY-NC 4.0. The segments are those the Vesuvius
+Challenge publishes on its open-data bucket; this dataset only measures them. The code that builds the atlas is
+Apache-2.0.
+
+## Citation
+
+```bibtex
+@misc{{sharpmeow2026segmentatlas,
+  author       = {{SharpMeow}},
+  title        = {{Vesuvius Segment Atlas}},
+  year         = {{2026}},
+  howpublished = {{\\url{{{_find.HUB}/datasets/{DATASET}}}}},
+  note         = {{Hugging Face dataset, rebuilt daily from the Vesuvius Challenge open data}}
+}}
+```
+
+## Changelog
+
+{changes}
+
+## Related
+
+{related}
 """
 
 
