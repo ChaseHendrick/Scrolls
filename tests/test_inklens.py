@@ -19,6 +19,24 @@ SPACE = ROOT / "spaces" / "ink-lens"
 if str(SPACE) not in sys.path:
     sys.path.insert(0, str(SPACE))
 
+
+def space_module(name, sub=""):
+    """This Space's NAME.py (or tools/NAME.py) under its own module name. Every Space has an app.py and several a
+    tools/deploy.py, so a bare `import app` in one test process can get another Space's module (26 Nov 2026: four
+    ink-lens tests failed only in the full suite, on the AFV Space's app)."""
+    import importlib.util
+    key = f"inklens_space_{sub}_{name}" if sub else f"inklens_space_{name}"
+    if key not in sys.modules:
+        spec = importlib.util.spec_from_file_location(key, SPACE / sub / f"{name}.py")
+        mod = importlib.util.module_from_spec(spec)
+        sys.modules[key] = mod
+        try:
+            spec.loader.exec_module(mod)
+        except BaseException:
+            del sys.modules[key]
+            raise
+    return sys.modules[key]
+
 try:
     import numpy as np
 except ImportError:  # pragma: no cover
@@ -711,7 +729,7 @@ class Space(unittest.TestCase):
             inklens.sample_box(data["samples"][0], 1024)
 
     def test_app_reads_only_a_plain_npz(self):
-        import app
+        app = space_module("app")
         with tempfile.TemporaryDirectory() as d:
             vol, _ = synthetic_volume(256)
             good = Path(d) / "a.npz"
@@ -735,7 +753,7 @@ class Space(unittest.TestCase):
 
     def test_app_keeps_readers_off_cuda_at_startup_on_zerogpu(self):
         # The live Space failed this way on 24 Oct 2026: a .to("cuda") in the loading thread, outside spaces.GPU
-        import app
+        app = space_module("app")
         seen = []
 
         class Stub:
@@ -757,8 +775,7 @@ class Space(unittest.TestCase):
                      "python_version:", "sdk_version:", "mcp-server"):
             self.assertIn(line, head)
         self.assertIn("model output, not a reading", card.lower())
-        sys.path.insert(0, str(SPACE / "tools"))
-        import deploy
+        deploy = space_module("deploy", "tools")
         files = deploy.space_files()
         for name in ("app.py", "engine.py", "gate.py", "inklens.py", "vc3dout.py", "volio.py", "kit/auc.py"):
             self.assertIn(name, files)
@@ -769,13 +786,12 @@ class Space(unittest.TestCase):
     def test_one_scroll_bar(self):
         # user decision, 27 October 2026: the page scrolls as a whole and nothing inside it keeps a scroll bar of its own
         import re
-        import app
+        app = space_module("app")
         frag = (SPACE / "onescroll.html").read_text()
         self.assertIn("<!-- space-onescroll:start -->", frag)
         self.assertEqual(app.HEAD, frag)                         # launch(head=HEAD) carries the fragment
         self.assertIn("head=HEAD", (SPACE / "app.py").read_text())
-        sys.path.insert(0, str(SPACE / "tools"))
-        import deploy
+        deploy = space_module("deploy", "tools")
         self.assertIn("onescroll.html", deploy.space_files())
         # gradio's JSON box is 500 px high by default and scrolls inside the page once a record is longer
         boxes = re.findall(r"gr\.JSON\(label=[^)]*\)", (SPACE / "app.py").read_text())
@@ -786,8 +802,7 @@ class Space(unittest.TestCase):
     def test_bundled_kit_imports_only_bundled_modules(self):
         # The live Space failed this way on 27 Oct 2026: kit/fetch.py imports kit.s3retry, which was not uploaded
         import re
-        sys.path.insert(0, str(SPACE / "tools"))
-        import deploy
+        deploy = space_module("deploy", "tools")
         bundled = set(deploy.KIT_MODULES)
         for m in bundled:
             src = (ROOT / "kit" / f"{m}.py").read_text()
@@ -798,7 +813,7 @@ class Space(unittest.TestCase):
 
     def test_api_records_hold_no_path_keys(self):
         # gradio_client downloads any JSON dict holding "path" as a file; a weight's repo path made it fail
-        import app
+        app = space_module("app")
         rec = app.api_json({"models": [{"weights": {"path": "a/b.pth", "sha256": "x"}}], "path": 1})
         self.assertEqual(rec, {"models": [{"weights": {"file": "a/b.pth", "sha256": "x"}}], "file": 1})
         self.assertNotIn('"path"', json.dumps(app.list_models()))
