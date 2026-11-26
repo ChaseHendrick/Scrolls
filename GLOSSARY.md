@@ -388,6 +388,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 ## R
 
+**R343-v1**: The default real reference of SRS-1: six fixed axial slices of the public PHerc0343P scan (level-2 z 1460 to 1660), resampled to 9.362 µm, 211 windows of 128 px with published digests ([standard](docs/standards/sim-realism.md#the-r343-v1-reference)).
+
 **Reader v2**: A community fine-tune of `ink_9um` by Domenico Russo. It is AutoPipeline's default ink reader.
 
 **readout set, plumbing set**: The two kinds of `code-sha256` block in a preregistration. Readout files (scoring code, labels, thresholds) change only by a dated amendment; plumbing files (container image, installs, logging) may change by a dated deviation line with the new hash (`kit freeze prereg`, [page](docs/tools/freeze.md)).
@@ -481,6 +483,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 **stackcheck**: `kit stackcheck`, which checks a stack of consecutive tifxyz segments of one scroll against its umbilicus from geometry alone.
 
 **stop score (fiber tracer)**: An opt-in early stop for villa's beam fiber tracer, proposed in villa #2377: the trace ends before a step where a weighted sum of fiber presence, direction agreement and a stronger fiber just to the side is above zero ([page](docs/tools/fiber-stop-score.md)).
+
+**SRS-1 (Sim Realism Standard, version 1)**: A fixed way to rate how real simulated CT tiles look: three fresh critics on grouped folds, planted and control gates, the fixed simcritic pass bar, a sample-size rule and a checkable JSON record, scored by `python -m kit.simscore` ([standard](docs/standards/sim-realism.md)).
 
 **STREAM triad**: The memory-bandwidth benchmark a = b + s x c over arrays far larger than the caches; [`kit.cpudiag`](docs/tools/cpudiag.md) runs a STREAM-like version to find where adding processes stops adding bandwidth.
 
