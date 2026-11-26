@@ -147,7 +147,7 @@ One row per module, script folder and docs area. [AGENTS.md](../AGENTS.md) holds
 | `docs/prereg/` | Access-required pointer; private target rules belong in Scrolls-private |
 | `docs/contrib/` | Public contribution notes and an access-required private submission pointer |
 | `docs/logs/` | Dated research notes (not claims) |
-| `docs/manuscripts/` | Paper drafts with their data and number checks; `compute-limits/` is shelved, not released |
+| `docs/manuscripts/` | Paper drafts with their data and number checks; `finite-window-axis/` is a mathematics note with its check script; `compute-limits/` is shelved, not released |
 | `docs/STANDARDS.md` | The standards every measurement here follows (controls, preregistration, AUC, tracing, speed and cost, data splits, prize criteria), each set beside the community's practice with dated sources |
 | `docs/state-of-play.md`, `docs/prizes.md` | What has been read and tried; prize terms |
 | `docs/mac.md` | Apple Silicon guide: commands, how to watch a run, measured timings |
