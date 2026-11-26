@@ -102,7 +102,8 @@ Checker: `ink-compare` fails a comparison across windows or an interval that rea
 
 Fix the readout rule (threshold and its source, control, decision, data) in a committed file before any map of the
 test data exists, and change it only by a dated amendment at its end ([`STANDARDS.md`](STANDARDS.md#1-rules-every-measurement-follows)).
-A held-out set read once is spent: report the result, pass or fail.
+A held-out set read once is spent: report the result, pass or fail. The full procedure, with the freeze, the independent review pin and the count of arms tried, is the
+[frozen-test protocol](standards/frozen-test.md).
 
 Checker: `prereg-order` reads git history. It fails a result committed before its preregistration or a
 preregistration that lost lines after the result, warns on lines only added (check they are a dated amendment)
