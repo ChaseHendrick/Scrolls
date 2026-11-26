@@ -8,7 +8,7 @@ Checks a Hugging Face dataset, or a folder about to become one, against the scro
 | Status | Experimental |
 | Kind | kit module |
 | Area | Records and provenance |
-| Run | `python -m kit.datacard check DIR_OR_OWNER/NAME [--revision R] [--max-download-mb N] [--json]`; `python -m kit.datacard sums DIR [--write]`; `python -m kit.datacard template OUT [--synthetic]`; `from kit import datacard` |
+| Run | `python -m kit.datacard check DIR_OR_OWNER/NAME [--revision R] [--overlay DIR] [--max-download-mb N] [--json]`; `python -m kit.datacard sums DIR_OR_OWNER/NAME [--overlay DIR] [--write]`; `python -m kit.datacard template OUT [--synthetic]`; `from kit import datacard` |
 | Code | `kit/datacard.py`, `tests/test_datacard.py` |
 | Tests | `tests/test_datacard.py` |
 | Needs | Python 3.10 or newer, standard library only |
@@ -103,14 +103,18 @@ Claim label: Sourced fact for the reference results (the command's own output, 2
 | `target` | required | A local dataset folder, or `OWNER/NAME` of a public Hugging Face dataset |
 | `--revision R` | `main` | Branch, tag or commit of a Hub dataset |
 | `--max-download-mb N` | `20` | Download budget in MB for hashing small non-LFS Hub files |
+| `--overlay DIR` | none | Check a Hub dataset as it will be after uploading DIR's files over it (DIR's files win) |
 | `--json` | off | One JSON record instead of lines |
 
 ### `python -m kit.datacard sums`
 
 | Option | Default | Meaning |
 | --- | --- | --- |
-| `folder` | required | The folder to list |
-| `--write` | off | Write `FOLDER/SHA256SUMS` instead of printing |
+| `folder` | required | A local folder, or `OWNER/NAME` of a public Hugging Face dataset |
+| `--revision R` | `main` | Branch, tag or commit of a Hub dataset |
+| `--overlay DIR` | none | A Hub dataset with DIR's files uploaded over it |
+| `--max-download-mb N` | `2000` | Download budget for non-LFS Hub files; a file past it stops the command, so no sums file leaves a file out |
+| `--write` | off | Write `SHA256SUMS` into the folder, or into the `--overlay` folder, instead of printing |
 
 ### `python -m kit.datacard template`
 
@@ -133,9 +137,10 @@ Claim label: Sourced fact for the reference results (the command's own output, 2
 | `reading_claims(text)` | `[sentence]` | | Sentences saying letters or text were found or read, with no negation |
 | `Folder(root)` | source | `InputError` | A local dataset folder |
 | `HubDataset(repo, revision='main', opener=None)` | source | `InputError` | A public Hub dataset; `opener` replaces `urllib.request.urlopen` in tests |
-| `source_for(target, revision='main', opener=None)` | `Folder` or `HubDataset` | `InputError` | A folder when the path exists, else `OWNER/NAME` |
+| `source_for(target, revision='main', opener=None, overlay=None)` | `Folder`, `HubDataset` or `Overlay` | `InputError` | A folder when the path exists, else `OWNER/NAME`, with `overlay` on top |
 | `check(src, max_download_mb=20.0, workers=8)` | record (see Outputs) | `InputError` | Every rule; `workers` threads hash and download |
-| `make_sums(root)` | text | `InputError` | `SHA256SUMS` for a folder |
+| `make_sums(root, max_download_mb=2000.0, workers=8)` | text | `InputError` | `SHA256SUMS` for a folder, Hub dataset or overlay; refuses when any file cannot be hashed |
+| `Overlay(base, folder)` | source | `InputError` | A Hub dataset with a local folder's files uploaded over it |
 | `template(synthetic=False)` | `(README text, provenance dict)` | | Skeletons |
 | `main(argv=None)` | exit code | | The command line |
 
@@ -180,6 +185,9 @@ Lines on stdout (verdict, then FAIL, WARN and PASS findings, then counts), or wi
 | `seed...is neither an integer nor a range A-B` | A seed string like `"abc"` | Use integers or `A-B` |
 | `not an object` | `provenance.json` parses but is a list or a value | Make it one JSON object |
 | `...: dataset or revision not found` | No such public dataset or revision | Check the id; a private dataset needs a local check |
+| `N file(s) could not be hashed (such as ...); raise --max-download-mb` | `sums` on a Hub dataset ran past its download budget | Raise `--max-download-mb`; sums are never written with a file left out |
+| `--overlay is for a Hugging Face dataset, not a folder` | `--overlay` was given with a local folder target | Copy the new files into the folder instead |
+| `--write needs a local folder or --overlay DIR` | `sums OWNER/NAME --write` with nowhere to write | Add `--overlay DIR`, or print without `--write` |
 | `sums.unverified` warning | Small files past `--max-download-mb` | Raise the budget, or check a local copy |
 
 ## How it works
@@ -201,11 +209,11 @@ Lines on stdout (verdict, then FAIL, WARN and PASS findings, then counts), or wi
 ## Cost and time
 
 Free. 22 s for the 1,570 files of SharpMeow/scrollsim-tiles over the Hub (26 November 2026, cloud container); a
-local check is bound by disk speed, one read per file. The 31 tests run in under 0.1 s.
+local check is bound by disk speed, one read per file. The 33 tests run in under 0.2 s.
 
 ## For agents
 
-- **Command:** `python -m kit.datacard check DIR --json` before any dataset upload; `python -m kit.datacard check OWNER/NAME --json` after it.
+- **Command:** `python -m kit.datacard check DIR --json` before any dataset upload (for a change to an existing Hub dataset: stage the new files in DIR, `sums OWNER/NAME --overlay DIR --write`, then `check OWNER/NAME --overlay DIR`); `python -m kit.datacard check OWNER/NAME --json` after it.
 - **Parse:** `verdict`, `fails`, and the `findings` with level `fail`; `counts.unverified` above 0 means some hashes were not checked.
 - **Rerun:** safe; `check` writes nothing.
 - **Success:** exit 0 and `verdict` `PASS`, with `counts.unverified` 0 for a release check.
@@ -215,13 +223,13 @@ local check is bound by disk speed, one read per file. The 31 tests run in under
 
 ## Tests
 
-`python -m unittest tests.test_datacard -v`: the template passes; one planted fault per rule fails it; parsing of
-front matter, sums lines, seed ranges and headings; the Hub source with a fake server. Not covered: live Hub calls
+`python -m unittest tests.test_datacard -v` (33 tests): the template passes; one planted fault per rule fails it; parsing of
+front matter, sums lines, seed ranges and headings; the Hub source, Hub sums and the overlay with a fake server. Not covered: live Hub calls
 (the reference table was produced by hand on 26 November 2026).
 
 ## History
 
-- 2026-11-26: first version with standard 0.1 (`3865a21`).
+- 2026-11-26: first version with standard 0.1 (`3865a21`); Hub `sums` and `--overlay`, used to bring the four reference datasets up to the standard ([#391](https://github.com/ChaseHendrick/Scrolls/pull/391)).
 
 ## Related
 

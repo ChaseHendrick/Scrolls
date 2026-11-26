@@ -12,7 +12,8 @@ Every rule can fail: a planted bad card fails each one in tests/test_datacard.py
     python -m kit.datacard check DIR                       # a local folder; hashes every listed file
     python -m kit.datacard check OWNER/NAME [--revision R] # a Hugging Face dataset, read only; LFS files are checked
                                                            # against the Hub's own SHA-256, small files downloaded
-    python -m kit.datacard sums DIR [--write]              # print (or write) SHA256SUMS for a folder
+    python -m kit.datacard check OWNER/NAME --overlay DIR  # the Hub dataset as it will be after uploading DIR
+    python -m kit.datacard sums DIR|OWNER/NAME [--overlay DIR] [--write]   # print (or write) SHA256SUMS
     python -m kit.datacard template OUT_DIR [--synthetic]  # write a skeleton README.md and provenance.json
     ... [--json]                                           # one JSON record instead of lines
 
@@ -279,12 +280,36 @@ class HubDataset:
         return (hashlib.sha256(data).hexdigest(), "hashed") if data is not None else (None, "missing")
 
 
-def source_for(target, revision="main", opener=None):
+class Overlay:
+    """A Hub dataset as it will be once the files of a local folder are uploaded over it: the folder's files win,
+    the rest come from the Hub. Lets a card, provenance.json and SHA256SUMS be checked before the upload."""
+
+    def __init__(self, base, folder):
+        self.base, self.top = base, Folder(folder)
+        self.name = f"{base.name} + {self.top.name}"
+
+    def read(self, rel):
+        text = self.top.read(rel)
+        return text if text is not None else self.base.read(rel)
+
+    def files(self):
+        return sorted(set(self.base.files()) | set(self.top.files()))
+
+    def digest(self, rel, budget):
+        if (self.top.root / rel).is_file():
+            return self.top.digest(rel, budget)
+        return self.base.digest(rel, budget)
+
+
+def source_for(target, revision="main", opener=None, overlay=None):
     if Path(target).is_dir():
+        if overlay:
+            raise InputError("--overlay is for a Hugging Face dataset, not a folder")
         return Folder(target)
     if Path(target).exists():
         raise InputError(f"{target}: give the dataset folder, not a file")
-    return HubDataset(target, revision, opener)
+    hub = HubDataset(target, revision, opener)
+    return Overlay(hub, overlay) if overlay else hub
 
 
 # ------------------------------------------------------------------ the check
@@ -521,10 +546,19 @@ def _check_provenance(prov, lic, body, card, add):
 
 # ------------------------------------------------------------------ sums and template
 
-def make_sums(root):
-    """SHA256SUMS text for every file under root except the exempt ones, sorted, paths without './'."""
-    src = Folder(root)
-    return "".join(f"{sha256_file(src.root / p)}  {p}\n" for p in src.files() if p not in EXEMPT)
+def make_sums(root, max_download_mb=2000.0, workers=8):
+    """SHA256SUMS text for every file of a folder, Hub dataset or overlay except the exempt ones, sorted, paths
+    without './'. A Hub file's digest is the Hub's LFS SHA-256 or the hash of its download; raises InputError when
+    a file cannot be hashed within the download budget, so a sums file never leaves a file out."""
+    src = root if hasattr(root, "digest") else Folder(root)
+    paths = [p for p in src.files() if p not in EXEMPT]
+    budget = [int(max_download_mb * 1e6)]
+    with ThreadPoolExecutor(max_workers=workers) as pool:
+        got = list(pool.map(lambda p: src.digest(p, budget), paths))
+    short = [p for p, (d, _) in zip(paths, got) if d is None]
+    if short:
+        raise InputError(f"{len(short)} file(s) could not be hashed (such as {short[0]}); raise --max-download-mb")
+    return "".join(f"{d}  {p}\n" for p, (d, _) in zip(paths, got))
 
 
 def template(synthetic=False):
@@ -632,10 +666,16 @@ def main(argv=None):
     p.add_argument("--revision", default="main", help="branch, tag or commit of a Hugging Face dataset")
     p.add_argument("--max-download-mb", type=float, default=20.0,
                    help="download budget for hashing small non-LFS files of a Hub dataset (default 20)")
+    p.add_argument("--overlay", metavar="DIR", help="check a Hub dataset as it will be after uploading DIR's files")
     p.add_argument("--json", action="store_true")
-    p = sub.add_parser("sums", help="print SHA256SUMS for a folder (every file but README.md and .gitattributes)")
-    p.add_argument("folder")
-    p.add_argument("--write", action="store_true", help="write FOLDER/SHA256SUMS")
+    p = sub.add_parser("sums", help="print SHA256SUMS for a folder or Hub dataset (every file but README.md, "
+                                    "SHA256SUMS and .gitattributes)")
+    p.add_argument("folder", help="a local folder, or OWNER/NAME of a Hugging Face dataset")
+    p.add_argument("--revision", default="main", help="branch, tag or commit of a Hub dataset")
+    p.add_argument("--overlay", metavar="DIR", help="a Hub dataset with DIR's files uploaded over it")
+    p.add_argument("--max-download-mb", type=float, default=2000.0,
+                   help="download budget for hashing non-LFS Hub files (default 2000)")
+    p.add_argument("--write", action="store_true", help="write SHA256SUMS into the folder (or the --overlay folder)")
     p = sub.add_parser("template", help="write a skeleton README.md and provenance.json")
     p.add_argument("out")
     p.add_argument("--synthetic", action="store_true", help="a synthetic dataset: seeds instead of scans")
@@ -643,14 +683,18 @@ def main(argv=None):
 
     try:
         if a.cmd == "check":
-            rec = check(source_for(a.target, a.revision), a.max_download_mb)
+            rec = check(source_for(a.target, a.revision, overlay=a.overlay), a.max_download_mb)
             print(json.dumps(rec, indent=1)) if a.json else _print(rec)
             return EXIT_FAIL if rec["fails"] else EXIT_OK
         if a.cmd == "sums":
-            text = make_sums(a.folder)
+            src = source_for(a.folder, a.revision, overlay=a.overlay)
+            text = make_sums(src, a.max_download_mb)
             if a.write:
-                (Path(a.folder) / SUMS).write_text(text, encoding="utf-8")
-                print(f"wrote {Path(a.folder) / SUMS}: {text.count(chr(10))} files")
+                where = Path(a.overlay) if a.overlay else src.root if isinstance(src, Folder) else None
+                if where is None:
+                    raise InputError("--write needs a local folder or --overlay DIR")
+                (where / SUMS).write_text(text, encoding="utf-8")
+                print(f"wrote {where / SUMS}: {text.count(chr(10))} files")
             else:
                 sys.stdout.write(text)
             return EXIT_OK

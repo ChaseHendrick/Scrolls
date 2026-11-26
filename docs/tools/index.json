@@ -667,7 +667,7 @@
     "Needs": "Python 3.10 or newer, numpy and tifffile (imagecodecs for the LZW-compressed meshes, about a fifth of them); scipy when installed; matplotlib for the card's figures (skipped without it). `huggingface_hub` only for `scripts/atlas/hf_atlas.py`",
     "Runs on": "Any CPU, but the whole bucket is large: 908 meshes, 69.4 GB of x, y and z files (listed 24 Oct 2026), 50.6 GB of them PHerc. Paris 4's. Per mesh on a 4-core cloud container (24 Oct 2026, download included): 1.2 to 1.5 s at 9.362 um, 7.6 to 8.4 s at 2.4 um, 23.5 s at 1.129 um. The largest mesh (about 116 million nodes) needs about 3 GB of memory, so the daily build runs as a Hugging Face Job on `cpu-upgrade` (8 vCPU, 32 GB)",
     "Network": "`vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` (metadata.json, ListObjectsV2 listings, each mesh's four files); `show` reads the published `atlas.jsonl` from `huggingface.co` unless `--atlas` names a file",
-    "Writes": "`build`: OUT/`atlas.jsonl`, `atlas.csv`, `segments.csv`, `scrolls.csv`, `summary.json`, `README.md`, `assets/*.png` (with matplotlib) and, with `--lens`, `lens/*.slg.gz`; each mesh is fetched into a temporary folder that is deleted after it is measured. `show`: nothing. `hf_atlas.py job`: the public dataset",
+    "Writes": "`build`: OUT/`atlas.jsonl`, `atlas.csv`, `segments.csv`, `scrolls.csv`, `summary.json`, `README.md`, `provenance.json`, `assets/*.png` (with matplotlib) and, with `--lens`, `lens/*.slg.gz`; each mesh is fetched into a temporary folder that is deleted after it is measured. `show`: nothing. `hf_atlas.py job`: the public dataset, with `SHA256SUMS` written last over every file but the card (`atlas.seal`)",
     "License": "Code Apache-2.0; the dataset's numbers and preview grids CC BY-NC 4.0, as the meshes they come from (Vesuvius Challenge open data, CC BY-NC 4.0)",
     "Go-ahead": "Not needed for `build` and `show` (public data, local files). The dataset is public, published after the leak check (AGENTS.md rule 8; Chase asked for it on 24 Oct 2026)",
     "Released": "Public `main` from the change that adds it (24 Oct 2026)",
@@ -756,13 +756,13 @@
     {
      "name": "History",
      "start_line": 238,
-     "end_line": 241,
+     "end_line": 242,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 242,
-     "end_line": 245,
+     "start_line": 243,
+     "end_line": 246,
      "applicable": true
     }
    ]
@@ -3118,8 +3118,8 @@
    ],
    "area": "Records and provenance",
    "commands": [
-    "python -m kit.datacard check DIR_OR_OWNER/NAME [--revision R] [--max-download-mb N] [--json]",
-    "python -m kit.datacard sums DIR [--write]",
+    "python -m kit.datacard check DIR_OR_OWNER/NAME [--revision R] [--overlay DIR] [--max-download-mb N] [--json]",
+    "python -m kit.datacard sums DIR_OR_OWNER/NAME [--overlay DIR] [--write]",
     "python -m kit.datacard template OUT [--synthetic]"
    ],
    "imports": [
@@ -3152,7 +3152,7 @@
     "Status": "Experimental",
     "Kind": "kit module",
     "Area": "Records and provenance",
-    "Run": "`python -m kit.datacard check DIR_OR_OWNER/NAME [--revision R] [--max-download-mb N] [--json]`; `python -m kit.datacard sums DIR [--write]`; `python -m kit.datacard template OUT [--synthetic]`; `from kit import datacard`",
+    "Run": "`python -m kit.datacard check DIR_OR_OWNER/NAME [--revision R] [--overlay DIR] [--max-download-mb N] [--json]`; `python -m kit.datacard sums DIR_OR_OWNER/NAME [--overlay DIR] [--write]`; `python -m kit.datacard template OUT [--synthetic]`; `from kit import datacard`",
     "Code": "`kit/datacard.py`, `tests/test_datacard.py`",
     "Tests": "`tests/test_datacard.py`",
     "Needs": "Python 3.10 or newer, standard library only",
@@ -3192,67 +3192,67 @@
     {
      "name": "Commands and options",
      "start_line": 97,
-     "end_line": 121,
+     "end_line": 125,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 122,
-     "end_line": 141,
+     "start_line": 126,
+     "end_line": 146,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 142,
-     "end_line": 147,
+     "start_line": 147,
+     "end_line": 152,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 148,
-     "end_line": 169,
+     "start_line": 153,
+     "end_line": 174,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 170,
-     "end_line": 184,
+     "start_line": 175,
+     "end_line": 192,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 185,
-     "end_line": 200,
+     "start_line": 193,
+     "end_line": 208,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 201,
-     "end_line": 205,
+     "start_line": 209,
+     "end_line": 213,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 206,
-     "end_line": 215,
+     "start_line": 214,
+     "end_line": 223,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 216,
-     "end_line": 221,
+     "start_line": 224,
+     "end_line": 229,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 222,
-     "end_line": 225,
+     "start_line": 230,
+     "end_line": 233,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 226,
-     "end_line": 230,
+     "start_line": 234,
+     "end_line": 238,
      "applicable": true
     }
    ]

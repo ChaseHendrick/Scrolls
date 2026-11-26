@@ -87,6 +87,13 @@ surfaces = pd.read_csv(base + "index/surfaces.csv")
 maps = pd.read_csv(base + "index/maps.csv")
 ```
 
+Check a full download against `SHA256SUMS` (every file but this card):
+
+```bash
+hf download SharpMeow/first-letters-ink-atlas --repo-type dataset --local-dir first-letters-ink-atlas
+cd first-letters-ink-atlas && sha256sum -c SHA256SUMS
+```
+
 From an agent: the Space's MCP server is `https://sharpmeow-ink-atlas.hf.space/gradio_api/mcp/` (six tools:
 `atlas_summary`, `list_scrolls`, `list_surfaces`, `surface_info`, `get_map` for a whole map or a crop, and
 `compare_models`); from Python,
@@ -109,6 +116,8 @@ From an agent: the Space's MCP server is `https://sharpmeow-ink-atlas.hf.space/g
 | `surfaces/metadata.jsonl` | one row per surface, joined to its preview (the `surfaces` config) |
 | `index/maps.csv`, `index/surfaces.csv` | the same two tables as spreadsheets |
 | `assets/` | the pictures on this card |
+| `provenance.json` | sources, code commit, caveats and the spent list, machine-readable ([standard](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/standards/dataset-card.md)) |
+| `SHA256SUMS` | the SHA-256 of every file but this card |
 
 `MODEL` is one of `ink_9um-s42`, `ink_9um-s43`, `reader-v2`, `reader-v3`, `dense-native`, `d9v2`, `hecate-9.6`.
 `SURFACE_ID` is `kbh-` plus the mesh's name in the source survey (`SCROLL_X_Y_Z`, its seed point in scan voxels).
@@ -226,6 +235,21 @@ Limits:
 - **One render per surface.** Each map depends on the mesh's placement on the sheet; a different trace of the same
   sheet can change every map.
 
+## Spent seeds and truth
+
+What this release has used up, so that a later test on it is not called blind or held out:
+
+- **Released model output.** Every map of the seven models on these 32 surfaces is public. A later read of these
+  surfaces with these models is not blind, and a new model compared here meets surfaces whose maps from other models
+  are already public.
+- **Testing, PHerc0343.** The release rule was checked on the seven PHerc0343 reference surfaces: it had to flag the
+  mesh behind the First Letters prize awarded on 8 October 2026, and it did.
+- **Held back.** Surfaces of each scroll that the release rule did not let out are not in this release;
+  `atlas.json` counts them per scroll.
+
+No ink labels were used and no random seed defines the data. `provenance.json` holds the same list, in the format of
+the [scroll dataset card standard](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/standards/dataset-card.md).
+
 ## License and credit
 
 - CT scans: [Vesuvius Challenge open data](https://scrollprize.org/data), CC BY-NC 4.0.
@@ -263,6 +287,9 @@ Please also credit the Vesuvius Challenge open data, ketchupbyheinz's meshes and
 
 ## Changelog
 
+- **2026-11-26** (later): the card follows the [scroll dataset card standard 0.1](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/standards/dataset-card.md): new
+  `SHA256SUMS` (every file but this card) and `provenance.json`, a Spent seeds and truth section and a download check
+  in Quick start. No other file was added, moved or changed.
 - **2026-11-26.** Dataset Viewer tables: `metadata.jsonl` (one row per picture) and a `surfaces` config with
   previews, plus `index/*.csv`. New card with schema, decoding and loading guides, and two new pictures. No file was
   moved, renamed or changed. `load_dataset` now returns the 1,408 pictures under `surfaces/` with metadata columns

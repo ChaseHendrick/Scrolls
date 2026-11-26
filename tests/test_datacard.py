@@ -249,6 +249,29 @@ class Hub(unittest.TestCase):
         self.assertEqual(rec["counts"]["verified"], 1)
         self.assertIn("sums.unverified", _rules(rec, "warn"))
 
+    def test_hub_sums_from_lfs_digest_and_downloads(self):
+        text = dc.make_sums(dc.HubDataset("o/n", opener=self.opener))
+        self.assertIn(f"{self.big_sha}  data/big.bin", text)
+        self.assertNotIn("README.md", text)
+        with self.assertRaises(dc.InputError):    # a sums file never leaves a file out
+            dc.make_sums(dc.HubDataset("o/n", opener=self.opener), max_download_mb=0)
+
+    def test_overlay_checks_the_upload_before_it_happens(self):
+        import hashlib
+        with tempfile.TemporaryDirectory() as d:
+            # a new provenance.json in the overlay changes its hash: the Hub's SHA256SUMS no longer matches
+            prov = json.loads(self.files["provenance.json"])
+            prov["version"] = "1.0.1"
+            Path(d, "provenance.json").write_text(json.dumps(prov))
+            src = dc.Overlay(dc.HubDataset("o/n", opener=self.opener), d)
+            self.assertIn("sums.match", _rules(dc.check(src)))
+            # new sums over the overlay fix it, and the overlay's own files are the ones hashed
+            Path(d, "SHA256SUMS").write_text(dc.make_sums(src))
+            rec = dc.check(src)
+            self.assertEqual(rec["verdict"], "PASS", _rules(rec))
+            self.assertIn(hashlib.sha256(Path(d, "provenance.json").read_bytes()).hexdigest(),
+                          Path(d, "SHA256SUMS").read_text())
+
 
 if __name__ == "__main__":
     unittest.main()
