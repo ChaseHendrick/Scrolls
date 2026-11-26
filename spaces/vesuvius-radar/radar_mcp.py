@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import json
 import time
+import urllib.parse
 
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse, Response
@@ -27,14 +28,15 @@ def bind(app_module):
 
 router = APIRouter()
 VERSIONS = ("2025-06-18", "2025-03-26", "2024-11-05")
-SERVER = {"name": "vesuvius-radar", "title": "Vesuvius Radar", "version": "1.2.2"}
+SERVER = {"name": "vesuvius-radar", "title": "Vesuvius Radar", "version": "2.0.0"}
 INSTRUCTIONS = (
     "Vesuvius Radar keeps collecting new work that could help read the Herculaneum scrolls (the Vesuvius Challenge): "
     "papers from arXiv and journals, GitHub repositories with ScrollPrize/villa pull requests, issues and releases, "
     "Hugging Face models, datasets, Spaces and daily papers, Zenodo records, PyPI versions of the libraries the work "
-    "uses, the Challenge blog and news searches. Every item is scored 0 to 100 (60 or more is high) by a small model fitted to blind "
+    "uses, OpenAlex scholarly works (including works citing the field's founding papers), the Challenge blog and YouTube "
+    "channel, and news searches. Every item is scored 0 to 100 (60 or more is high) by a small model fitted to blind "
     "ratings, which reads keyword matches, a sentence-embedding model's sense of meaning, source and popularity; the "
-    "item lists its keyword and meaning scores and the terms that matched. Start with briefing "
+    "item lists its keyword and meaning scores and the terms that matched. Start with weekly_digest, top_picks, briefing "
     "or search_items over a lookback (1m to 30d, default 1d). Views: research, team, builders, all. Scores are a "
     "triage aid, not judgment: read the item before acting on it."
 )
@@ -94,6 +96,22 @@ TOOLS = [
          "since": SINCE, "view": VIEW,
          "per_topic": {"type": "integer", "minimum": 1, "maximum": 10, "default": 3},
          "min_score": {"type": "integer", "minimum": 0, "maximum": 100, "default": 35}}},
+     "annotations": {"readOnlyHint": True}},
+    {"name": "weekly_digest",
+     "title": "One week against the week before",
+     "description": "One ISO week (Monday 00:00 UTC to Monday): counts of new items scored medium or high against the "
+                    "week before, topics that got busier or quieter, the ten best items, and lists of papers, code, "
+                    "data and models, villa merges, and posts. Set markdown to also get it as Markdown.",
+     "inputSchema": {"type": "object", "properties": {
+         "week": {"type": "string", "default": "this", "description": "2026-W48, this or last (inside the 30 days kept)"},
+         "view": VIEW, "by": BY,
+         "markdown": {"type": "boolean", "default": False}}},
+     "annotations": {"readOnlyHint": True}},
+    {"name": "top_picks",
+     "title": "Best of each kind of work",
+     "description": "For a window and view, the best paper, piece of code, dataset or model, and community item (score "
+                    "40 or more), each with a link to its own shareable page.",
+     "inputSchema": {"type": "object", "properties": {"since": SINCE, "view": VIEW, "by": BY}},
      "annotations": {"readOnlyHint": True}},
     {"name": "overview",
      "title": "Counts for a window",
@@ -179,6 +197,19 @@ def t_briefing(a):
     return core.briefing(_filters(a, 35), int(a.get("per_topic", 3))), False
 
 
+def t_weekly_digest(a):
+    d = core.week(a.get("view") or "all", a.get("week") or "this", a.get("by") or "date")
+    if a.get("markdown"):
+        d["markdown"] = core.digest.week_markdown(d, core.PUBLIC_URL)
+    return d, False
+
+
+def t_top_picks(a):
+    f = _filters(a, 0)
+    return {"since": scanner.iso(f.start), "picks": [{**p, "page": f"{core.PUBLIC_URL}/item?id=" + urllib.parse.quote(p["id"], safe="")}
+                                                     for p in core.picks(f)]}, False
+
+
 def t_overview(a):
     o = core.overview(_filters(a, 0))
     o.pop("timeline", None)  # the page draws it; an agent rarely needs a few hundred bins
@@ -213,7 +244,7 @@ def t_get_settings(a):
 
 
 HANDLERS = {"search_items": t_search_items, "get_item": t_get_item, "find_similar": t_find_similar,
-            "briefing": t_briefing, "overview": t_overview, "source_status": t_source_status, "check_now": t_check_now,
+            "briefing": t_briefing, "weekly_digest": t_weekly_digest, "top_picks": t_top_picks, "overview": t_overview, "source_status": t_source_status, "check_now": t_check_now,
             "list_views": t_list_views, "get_settings": t_get_settings}
 
 

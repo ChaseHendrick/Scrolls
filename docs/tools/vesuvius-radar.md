@@ -1,6 +1,6 @@
 # vesuvius-radar: new papers, code, models and data for the Herculaneum scrolls, scored and searchable
 
-A Hugging Face Space that collects new papers, repositories, models, datasets, package versions and posts from public sources around the clock, scores each for relevance to reading the Herculaneum scrolls, and serves them as a page, a JSON API, CSV, RSS and an MCP server.
+A Hugging Face Space that collects new papers, code, models, data, posts and videos around the clock, scores each for relevance to reading the Herculaneum scrolls, and serves a page with a weekly digest, a JSON API, CSV, RSS and an MCP server.
 
 | Field | Value |
 | --- | --- |
@@ -9,16 +9,16 @@ A Hugging Face Space that collects new papers, repositories, models, datasets, p
 | Kind | app |
 | Area | Viewers and apps |
 | Run | [huggingface.co/spaces/SharpMeow/vesuvius-radar](https://huggingface.co/spaces/SharpMeow/vesuvius-radar) (page); `https://sharpmeow-vesuvius-radar.hf.space/api/items?since=1d` (JSON); `/mcp` (MCP, Streamable HTTP); locally `uvicorn app:app --port 7860` in `spaces/vesuvius-radar`; `python scanner.py --days 3 --out scan.json` (one scan, no server); in the page, `window.vesuviusRadar` |
-| Code | `spaces/vesuvius-radar/app.py`, `spaces/vesuvius-radar/scanner.py`, `spaces/vesuvius-radar/radar_mcp.py`, `spaces/vesuvius-radar/radar.json`, `spaces/vesuvius-radar/index.html`, `spaces/vesuvius-radar/static/app.js`, `spaces/vesuvius-radar/static/style.css`, `spaces/vesuvius-radar/connect.json` |
+| Code | `spaces/vesuvius-radar/app.py`, `spaces/vesuvius-radar/scanner.py`, `spaces/vesuvius-radar/digest.py` (weekly digest, top picks, item pages), `spaces/vesuvius-radar/radar_mcp.py`, `spaces/vesuvius-radar/radar.json`, `spaces/vesuvius-radar/index.html`, `spaces/vesuvius-radar/static/app.js`, `spaces/vesuvius-radar/static/style.css`, `spaces/vesuvius-radar/connect.json` |
 | Tests | `tests/test_vesuvius_radar.py` (scoring, lookbacks, views, filters, API, CSV, RSS, MCP, the vector cache, and that no key or private material is in the Space's files); `python -m kit spaceconnect check` checks its Connect panel |
 | Needs | A browser, or any HTTP client. To run it yourself: Python 3.10+, `fastapi` 0.115.6, `uvicorn` 0.34.0, `fastembed` 0.9.1 and `numpy` (`requirements.txt`); the model BAAI/bge-small-en-v1.5 (MIT, about 130 MB) downloads on first use |
 | Runs on | A free Hugging Face CPU Space (2 vCPU, 16 GB); no GPU and no GPU quota. The page and API answer at once; see Cost and time for the collector |
-| Network | `rss.arxiv.org`, `arxiv.org`, `export.arxiv.org` (papers), `api.github.com` (repositories, ScrollPrize/villa), `huggingface.co` (models, datasets, Spaces, daily papers, the embedding model), `pypi.org`, `zenodo.org`, `api.crossref.org`, `scrollprize.substack.com` (the Challenge blog), `news.google.com`, `www.bing.com` and `hnrss.org` (news searches, since 30 Oct 2026); all read logged out |
+| Network | `rss.arxiv.org`, `arxiv.org`, `export.arxiv.org` (papers), `api.github.com` (repositories, ScrollPrize/villa), `huggingface.co` (models, datasets, Spaces, daily papers, the embedding model), `pypi.org`, `zenodo.org`, `api.crossref.org`, `api.openalex.org` (scholarly works and citations, since 2.0.0), `scrollprize.substack.com` (the Challenge blog), `www.youtube.com` (the Challenge's channel feed, since 2.0.0), `news.google.com`, `www.bing.com` and `hnrss.org` (news searches, since 30 Oct 2026); all read logged out |
 | Writes | In the Space: `/data/radar` with persistent storage, else `/tmp/radar` (`store.json`, `vectors.npz`); `RADAR_DATA` moves it. `scanner.py --out` writes the file you name |
 | Go-ahead | Not needed to use. Making the Space public was Chase's yes (29 Oct 2026); later redeploys from merged `main` fall under the standing yes (rule 8) |
 | Released | Public on Hugging Face since 2026-10-29; README "Released tools" entry `vesuvius-radar` |
 | License | Code Apache 2.0; item titles, summaries and links belong to their sources |
-| Checked | 2026-10-30 against commit `04abb3b` |
+| Checked | 2026-11-26 against commit `d11402c` (version 2.0.0, local run on a copy of the live store) |
 
 ## What it does
 
@@ -79,11 +79,15 @@ Claim label: Model output (relevance scores, topics by meaning and similar items
 | `GET /api/counts` | How many items each standard lookback holds, for the same filters |
 | `GET /api/overview` | The counts behind the charts |
 | `GET /api/briefing` | The strongest items per topic (`per_topic`, default 3; score 35 or more unless `min_score` is set) |
+| `GET /api/picks` | Top picks: the best paper, code, data or model, and community item (score 40 or more) for the same filters |
+| `GET /api/week` | One ISO week (`week`: `2026-W48`, `this` or `last`; `view`; `by`) against the week before: `totals` and `last_week` (new items scored medium or high, high, papers, code, data, villa merges, new repositories, contributors), `topics` with `change`, `top` (ten best active items) and `lists` |
+| `GET /week.md`, `/week.xml` | One week as Markdown, ready to paste; the finished weeks as RSS, one entry each |
+| `GET /item?id=ID` | One item as a standalone page with Open Graph tags, so a pasted link shows a preview; 404 once the item leaves the 30 days kept |
 | `GET /api/sources` | Each source's state, last and next check, notes and recent runs |
 | `POST /api/check` | Check every source now: 200, or 409 while a check runs, or 429 with `retry_after` within 300 s of the last |
 | `GET /api/views`, `/api/config` | The reader views' rules; sources, keywords, weights and anchor sentences |
 | `GET /api/export.csv`, `/feed.xml` | The window as CSV, or as RSS (default 7 days, score 60 or more) |
-| `POST /mcp` | MCP over Streamable HTTP: `search_items`, `get_item`, `find_similar`, `briefing`, `overview`, `source_status`, `check_now`, `list_views`, `get_settings` |
+| `POST /mcp` | MCP over Streamable HTTP: `search_items`, `get_item`, `find_similar`, `weekly_digest`, `top_picks`, `briefing`, `overview`, `source_status`, `check_now`, `list_views`, `get_settings` |
 
 | Filter | Default | Meaning |
 | --- | --- | --- |
@@ -162,6 +166,11 @@ Each item: `id` (source and its own id), `source`, `kind`, `title`, `url`, `date
 | `lookback must be above zero` | `since` was 0 or negative | Use a positive lookback such as `15m` |
 | `lookback '...' is not like 15m, 6h, 1d or an ISO time` | `since` was not a number with m, h, d or w, nor an ISO time | Use `1m` to `30d` or an ISO time |
 | `by must be date (published or updated) or found (first seen by the radar)` | Another value of `by` | Use `date` or `found` |
+| `by must be date or found`, HTTP 400 on `/api/week`, `/week.md` or `/api/picks` | Another value of `by` | Use `date` or `found` |
+| `week 2026-W40 is older than the 30 days the radar keeps` | `week=` named a week that ended before the store's window | Ask for `this`, `last` or a week inside the last 30 days |
+| `week 2026-W52 has not started` | `week=` named a future week | Ask for `this`, `last` or a past week |
+| `week 'X' is not like 2026-W48, this or last` | `week=` was not an ISO week name | Use `this`, `last` or a name like `2026-W48` |
+| `week 'X' does not exist` | `week=` named a week number the year does not have, such as W53 in a 52-week year | Use a week the year has |
 | GitHub `partial` with `network error (IncompleteRead)` | A villa listing was cut off three times in a row; the repository search results of the same check are still kept | Nothing: the next check reads it again |
 | News and blogs `partial` with `skipped, the answer was not RSS` or `HTTP ...` | A news search answered with a web page or an error (Bing News sometimes does); the other feeds of the check are kept | Nothing: the next check reads it again |
 | GitHub `partial` with `HTTP 403 (rate limited)` | GitHub allows few logged-out calls per hour from one address | Nothing: the next check catches up; unchanged listings come from the ETag cache |
@@ -185,17 +194,18 @@ Free: a CPU Space (cpu-basic), no paid compute. The first collection after a sta
 
 ## For agents
 
-- **Command:** `curl -s "https://sharpmeow-vesuvius-radar.hf.space/api/items?since=1d&min_score=35&compact=true"`, or the MCP tool `search_items`.
+- **Command:** `curl -s "https://sharpmeow-vesuvius-radar.hf.space/api/items?since=1d&min_score=35&compact=true"`, or the MCP tool `search_items`; for a week, `curl -s "https://sharpmeow-vesuvius-radar.hf.space/api/week?week=last"` or `weekly_digest`.
 - **Parse:** `matched` and `items[].{score,band,title,url,source,topics}`; `/api/sources` for whether each source is current.
 - **Rerun:** safe; reads only. `POST /api/check` starts a check for everyone, at most once in 5 minutes.
 - **Success:** HTTP 200 and `matched` present.
 - **Not a pass:** a source in state `partial` or `error` means its items may be missing; a high score is relevance, not quality.
 - **Go-ahead:** Nothing.
 - **Never:** present a score as a judgment of a paper, or copy item text without its source link.
+- **Deploy:** upload `spaces/vesuvius-radar/` from merged `main` to the Space without deleting other files. The social card `static/og.jpg` and the Space thumbnail `static/og-vesuvius.jpg` live only on the Space (binaries stay out of Git, as with Unroll's `og.jpg`); they are screenshots of the page's own hero art at 1200 x 630, made with Playwright, and a redeploy leaves them in place.
 
 ## Tests
 
-`python -m unittest tests.test_vesuvius_radar -v`. Covers the scorer and its breakdown, text cleaning and unsafe links, lookbacks from 1 minute to 30 days, the `found` window, views, filters and sorting, overview and briefing, CSV and RSS, merging, the check cooldown, the MCP server, the shared embedding text and the vector cache, the villa watch's latest-update credit against a faked GitHub (the commenter and what they said, the opener kept, an approval found by the bounded lookup and remembered, an old comment never credited for a newer update), the comment-to-text cleaning, and the public-safety scan of the Space's files. It does not fetch any source or load the model.
+`python -m unittest tests.test_vesuvius_radar -v`. Covers the scorer and its breakdown, text cleaning and unsafe links, lookbacks from 1 minute to 30 days, the `found` window, views, filters and sorting, overview and briefing, CSV and RSS, merging, the check cooldown, the MCP server, the shared embedding text and the vector cache, the villa watch's latest-update credit against a faked GitHub (the commenter and what they said, the opener kept, an approval found by the bounded lookup and remembered, an old comment never credited for a newer update), the comment-to-text cleaning, the weekly digest (ISO weeks, counts by creation time, low scores kept out of the comparison, Markdown), top picks, the escaped item page and its 404, that every 1.x address still answers, the OpenAlex rows (abstracts, DOI keys, the citation lookup) and the YouTube Atom feed against fakes, and the public-safety scan of the Space's files. It does not fetch any source or load the model.
 
 ## History
 
@@ -206,6 +216,7 @@ Free: a CPU Space (cpu-basic), no paid compute. The first collection after a sta
 - 2026-10-30: version 1.2.0 ([PR #305](https://github.com/ChaseHendrick/Scrolls/pull/305)). More sources: the blog source became News and blogs, which also reads news searches (Google News for the Challenge and the Herculaneum scrolls, Bing News for "herculaneum scrolls" and "vesuvius challenge", Hacker News for both). Unlike the blog's own posts, a news story has no base points and goes through the scorer like any listing (kind `news`, `who` the outlet, `feed` the search); a story found by several searches is kept once, Bing's click-counter link is replaced by the article's, and a feed that fails is a note while the others count. GitHub also searches `org:ScrollPrize`, which finds the organizers' repositories the keyword searches missed. A first read from a cloud container on 30 Oct kept 10 of 17 listings from the last 30 days, the blog post included, in about 5 s.
 - 2026-10-30: version 1.2.1 ([PR #306](https://github.com/ChaseHendrick/Scrolls/pull/306)). Fixes from a review of 1.2.0's news searches: a Hacker News story's discussion is a Discussion link (the card read "NaN comments", since `comments` is a count on GitHub cards; items gain `discussion_url`); the learned score treats a news story as a source of its own instead of giving it the weight it learned from the Challenge blog's own posts, which lifted press stories by about 16 raw points; the Challenge team view keeps the blog's posts but not news stories; a story found by several searches is kept as the copy that links the article itself and has a description (Google's links are redirects with no text); and stories in any script keep their own ids (titles in Chinese, for example, all became one).
 - 2026-10-31: version 1.2.2 ([PR #310](https://github.com/ChaseHendrick/Scrolls/pull/310)). Chase asked for the license placeholder to read in words and for the Spaces to remember a reader's theme: GitHub's `NOASSERTION` shows as "Other license" (Hub `other` and `unknown` in words too, the raw value kept in the tooltip and the API), and with no saved theme the page follows Hugging Face's own theme (`?__theme=`) before the system, so the theme holds on Safari too, which forgets a framed page's storage after the session. The Auto button shows as chosen when it is the choice, whatever theme it shows.
+- 2026-11-26: version 2.0.0 ([PR #387](https://github.com/ChaseHendrick/Scrolls/pull/387); deployed on Chase's yes). A This week tab: each ISO week against the week before, with counts of new items scored medium or high (by creation time, so a week's count does not drain as items get updated, and without arXiv's hundreds of low-scored papers), the topics that got busier or quieter, the ten best active items and lists of papers, code, data and models, villa merges, posts and videos; also as `/api/week`, `/week.md`, `/week.xml` and the MCP tool `weekly_digest`. Top picks above the charts (`/api/picks`, `top_picks`). Every item has its own page, `/item?id=`, with link-preview tags (Share page). Journals also read OpenAlex: works matching the scroll queries, and works citing three founding papers (Seales et al. 2016, Parker et al. 2019, Mocella et al. 2015), marked "cites the field"; a work Crossref also lists stays one row. News and blogs became News, blogs and videos and reads the Challenge's YouTube channel feed. A social card and a Space thumbnail (`static/og.jpg`, `static/og-vesuvius.jpg`, kept on the Space only); the Space card was rewritten. With the collector off, the page loads the saved vectors before warming them, as the collector does. A first OpenAlex and YouTube read from a cloud container on 26 Nov kept 3 OpenAlex works not in Crossref, one citing a founding paper, in about 8 s.
 
 ## Related
 
