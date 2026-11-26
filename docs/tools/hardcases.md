@@ -175,7 +175,7 @@ Measured 24 Nov 2026 in a 4-core cloud container: 0.15 to 0.38 s per 256 px tile
 
 ## History
 
-- 2026-11-26: version 1.1: `realism()` and `dense()` render bounds, default tiles unchanged; fitted with [simreal](simreal.md).
+- 2026-11-26: version 1.1: `realism()` and `dense()` render bounds, default tiles unchanged; fitted with [simreal](simreal.md). ([#382](https://github.com/ChaseHendrick/Scrolls/pull/382))
 - 2026-11-25: released in the Scrolls kit on base `4536292`: the hard cases of Synthetic-Slices v0.2 rebuilt as 3D fields, with spiral centers and a zone map.
 
 ## Related

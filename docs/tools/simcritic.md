@@ -161,7 +161,7 @@ What gives it away (post-hoc, Interpretation): fitting the feature critic on one
 
 ## History
 
-- 2026-11-26: released in the Scrolls kit: held-apart judge, planted checks, control, attribution views, partial results through `sink`.
+- 2026-11-26: released in the Scrolls kit: held-apart judge, planted checks, control, attribution views, partial results through `sink`. ([#382](https://github.com/ChaseHendrick/Scrolls/pull/382))
 
 ## Related
 

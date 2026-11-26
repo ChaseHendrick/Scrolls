@@ -167,7 +167,7 @@ PHerc0343P (a public fragment scan on no prize list), 25 Nov 2026, gray values o
 
 ## History
 
-- 2026-11-26: released in the Scrolls kit with the `343p` preset.
+- 2026-11-26: released in the Scrolls kit with the `343p` preset. ([#382](https://github.com/ChaseHendrick/Scrolls/pull/382))
 
 ## Related
 
