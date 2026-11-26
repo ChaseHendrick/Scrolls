@@ -122,3 +122,4 @@ SRS-1 is frozen as written here once merged. Any change to a setting, gate, bar,
 ## History
 
 - 2026-11-26: draft SRS-1, reference scorer `kit.simscore`, null calibration preregistered ([`prereg`](../prereg/2026-11-26-srs1-null-calibration.md)) and run ([evidence](../evidence/srs1-calibration-1126/README.md)).
+- 2026-11-26: SRS-2 proposed, not in force: the same critics and settings with a stratified permutation p-value over whole units in place of the fixed bar ([`kit.simperm`](../tools/simperm.md)); its null calibration is preregistered ([`prereg`](../prereg/2026-11-26-srs2-null-calibration.md)) and waits for an independent review before it runs. SRS-1 records are not rescored.

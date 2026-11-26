@@ -486,6 +486,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **SRS-1 (Sim Realism Standard, version 1)**: A fixed way to rate how real simulated CT tiles look: three fresh critics on grouped folds, planted and control gates, the fixed simcritic pass bar, a sample-size rule and a checkable JSON record, scored by `python -m kit.simscore` ([standard](docs/standards/sim-realism.md)).
 
+**SRS-2 (draft)**: The proposed next Sim Realism Standard: SRS-1's critics cross-fitted on whole units (reference slices and same-size runs of simulated tiles), with a stratified permutation p-value in place of the fixed bar, so a perfect simulator fails about alpha of the time; not in force until its preregistered calibration passes review (`python -m kit.simperm`, [page](docs/tools/simperm.md)).
+
 **STREAM triad**: The memory-bandwidth benchmark a = b + s x c over arrays far larger than the caches; [`kit.cpudiag`](docs/tools/cpudiag.md) runs a STREAM-like version to find where adding processes stops adding bandwidth.
 
 **StrokeNet**: A small learned score in this repository for how much a window of an ink map looks like lines of text (`kit strokenet`), with rotation and IAAFT controls ([model card](docs/strokenet.md)).
