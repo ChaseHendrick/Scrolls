@@ -164,6 +164,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **frozen-feature probe (linear probe)**: A test of a pretrained backbone in which the backbone is not trained at all: only a linear (logistic) head on its features is fitted. Cheap enough for a CPU, and a fair first check of whether a big model helps a small task.
 
+**frozen-test protocol**: The community spec in [`docs/standards/frozen-test.md`](docs/standards/frozen-test.md) for claims others can trust: preregister, freeze, pin an independent review before launch, a reviewer who is never the author, spent seeds and truth kept out of tests, and the arms tried reported (Draft 0.1, 26 Nov 2026).
+
 ## G
 
 **gap letter accuracy**: In the Greek gap restoration benchmark (`python -m kit.greekfill`, [page](docs/tools/greekfill.md)), the share of hidden letters a model puts back in the right place, counted position by position, so a reply of the wrong length loses the letters it misplaces.
@@ -467,6 +469,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 **SMT (simultaneous multithreading)**: Two hardware threads sharing one physical core; a 32 vCPU cloud machine can be 16 cores, so a process past the 16th shares a core with another.
 
 **Space (Hugging Face Space)**: A small web app hosted on Hugging Face.
+
+**spent (site)**: A scroll, segment, region, synthetic seed or label set that any earlier test, tuning step, selection, bar setting, training run or viewing has read. It can carry development results only, never a held-out claim ([frozen-test protocol](docs/standards/frozen-test.md#rule-5-keep-spent-seeds-and-truth-out-of-tests)).
 
 **spiral fit**: Fitting one deformed spiral to the whole rolled papyrus of a scroll.
 

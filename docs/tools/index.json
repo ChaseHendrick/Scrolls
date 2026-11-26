@@ -667,7 +667,7 @@
     "Needs": "Python 3.10 or newer, numpy and tifffile (imagecodecs for the LZW-compressed meshes, about a fifth of them); scipy when installed; matplotlib for the card's figures (skipped without it). `huggingface_hub` only for `scripts/atlas/hf_atlas.py`",
     "Runs on": "Any CPU, but the whole bucket is large: 908 meshes, 69.4 GB of x, y and z files (listed 24 Oct 2026), 50.6 GB of them PHerc. Paris 4's. Per mesh on a 4-core cloud container (24 Oct 2026, download included): 1.2 to 1.5 s at 9.362 um, 7.6 to 8.4 s at 2.4 um, 23.5 s at 1.129 um. The largest mesh (about 116 million nodes) needs about 3 GB of memory, so the daily build runs as a Hugging Face Job on `cpu-upgrade` (8 vCPU, 32 GB)",
     "Network": "`vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` (metadata.json, ListObjectsV2 listings, each mesh's four files); `show` reads the published `atlas.jsonl` from `huggingface.co` unless `--atlas` names a file",
-    "Writes": "`build`: OUT/`atlas.jsonl`, `atlas.csv`, `segments.csv`, `scrolls.csv`, `summary.json`, `README.md`, `assets/*.png` (with matplotlib) and, with `--lens`, `lens/*.slg.gz`; each mesh is fetched into a temporary folder that is deleted after it is measured. `show`: nothing. `hf_atlas.py job`: the public dataset",
+    "Writes": "`build`: OUT/`atlas.jsonl`, `atlas.csv`, `segments.csv`, `scrolls.csv`, `summary.json`, `README.md`, `provenance.json`, `assets/*.png` (with matplotlib) and, with `--lens`, `lens/*.slg.gz`; each mesh is fetched into a temporary folder that is deleted after it is measured. `show`: nothing. `hf_atlas.py job`: the public dataset, with `SHA256SUMS` written last over every file but the card (`atlas.seal`)",
     "License": "Code Apache-2.0; the dataset's numbers and preview grids CC BY-NC 4.0, as the meshes they come from (Vesuvius Challenge open data, CC BY-NC 4.0)",
     "Go-ahead": "Not needed for `build` and `show` (public data, local files). The dataset is public, published after the leak check (AGENTS.md rule 8; Chase asked for it on 24 Oct 2026)",
     "Released": "Public `main` from the change that adds it (24 Oct 2026)",
@@ -756,13 +756,13 @@
     {
      "name": "History",
      "start_line": 238,
-     "end_line": 241,
+     "end_line": 242,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 242,
-     "end_line": 245,
+     "start_line": 243,
+     "end_line": 246,
      "applicable": true
     }
    ]
@@ -3103,6 +3103,156 @@
      "name": "Related",
      "start_line": 204,
      "end_line": 210,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "datacard",
+   "name": "datacard",
+   "tagline": "check a scroll dataset's card, checksums, provenance and spent list",
+   "summary": "Checks a Hugging Face dataset, or a folder about to become one, against the scroll dataset card standard: per-file SHA-256 sums, a provenance record with sources, licenses and code commit, caveats, and a list of the seeds and truth the release has used up.",
+   "status": "Experimental",
+   "kind": [
+    "kit module"
+   ],
+   "area": "Records and provenance",
+   "commands": [
+    "python -m kit.datacard check DIR_OR_OWNER/NAME [--revision R] [--overlay DIR] [--max-download-mb N] [--json]",
+    "python -m kit.datacard sums DIR_OR_OWNER/NAME [--overlay DIR] [--write]",
+    "python -m kit.datacard template OUT [--synthetic]"
+   ],
+   "imports": [
+    "from kit import datacard"
+   ],
+   "code": [
+    {
+     "path": "kit/datacard.py",
+     "symbols": []
+    },
+    {
+     "path": "tests/test_datacard.py",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_datacard.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed to check. Uploading a card or dataset that it passes still needs the owner's yes for each upload"
+   },
+   "checked": {
+    "date": "2026-11-26",
+    "commit": "95d731b"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`datacard`",
+    "Status": "Experimental",
+    "Kind": "kit module",
+    "Area": "Records and provenance",
+    "Run": "`python -m kit.datacard check DIR_OR_OWNER/NAME [--revision R] [--overlay DIR] [--max-download-mb N] [--json]`; `python -m kit.datacard sums DIR_OR_OWNER/NAME [--overlay DIR] [--write]`; `python -m kit.datacard template OUT [--synthetic]`; `from kit import datacard`",
+    "Code": "`kit/datacard.py`, `tests/test_datacard.py`",
+    "Tests": "`tests/test_datacard.py`",
+    "Needs": "Python 3.10 or newer, standard library only",
+    "Runs on": "Any CPU. A Hub check of SharpMeow/scrollsim-tiles (1,570 listed files, 1.8 GB) took 22 s with `--max-download-mb 200`, cloud container, 26 November 2026; a local check reads every listed file once",
+    "Network": "For `OWNER/NAME` only: huggingface.co (the repository tree API and file downloads, no token). None for a folder",
+    "Writes": "`check`: nothing. `sums --write`: `DIR/SHA256SUMS`. `template`: `OUT/README.md` and `OUT/provenance.json`, never over an existing file",
+    "Go-ahead": "Not needed to check. Uploading a card or dataset that it passes still needs the owner's yes for each upload",
+    "Released": "Public `main` from the PR that adds this page (2026-11-26)",
+    "Checked": "2026-11-26 against commit `95d731b`"
+   },
+   "page": "docs/tools/datacard.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 22,
+     "end_line": 41,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 42,
+     "end_line": 53,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 54,
+     "end_line": 77,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 78,
+     "end_line": 96,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 97,
+     "end_line": 125,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 126,
+     "end_line": 146,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 147,
+     "end_line": 152,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 153,
+     "end_line": 174,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 175,
+     "end_line": 192,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 193,
+     "end_line": 208,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 209,
+     "end_line": 213,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 214,
+     "end_line": 223,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 224,
+     "end_line": 229,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 230,
+     "end_line": 233,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 234,
+     "end_line": 238,
      "applicable": true
     }
    ]
@@ -21017,7 +21167,7 @@
    "id": "vesuvius-radar",
    "name": "vesuvius-radar",
    "tagline": "new papers, code, models and data for the Herculaneum scrolls, scored and searchable",
-   "summary": "A Hugging Face Space that collects new papers, repositories, models, datasets, package versions and posts from public sources around the clock, scores each for relevance to reading the Herculaneum scrolls, and serves them as a page, a JSON API, CSV, RSS and an MCP server.",
+   "summary": "A Hugging Face Space that collects new papers, code, models, data, posts and videos around the clock, scores each for relevance to reading the Herculaneum scrolls, and serves a page with a weekly digest, a JSON API, CSV, RSS and an MCP server.",
    "status": "Current",
    "kind": [
     "app"
@@ -21039,6 +21189,10 @@
     },
     {
      "path": "spaces/vesuvius-radar/scanner.py",
+     "symbols": []
+    },
+    {
+     "path": "spaces/vesuvius-radar/digest.py",
      "symbols": []
     },
     {
@@ -21074,8 +21228,8 @@
     "text": "Not needed to use. Making the Space public was Chase's yes (29 Oct 2026); later redeploys from merged `main` fall under the standing yes (rule 8)"
    },
    "checked": {
-    "date": "2026-10-30",
-    "commit": "04abb3b"
+    "date": "2026-11-26",
+    "commit": "d11402c"
    },
    "license": "Code Apache 2.0; item titles, summaries and links belong to their sources",
    "fields": {
@@ -21084,16 +21238,16 @@
     "Kind": "app",
     "Area": "Viewers and apps",
     "Run": "[huggingface.co/spaces/SharpMeow/vesuvius-radar](https://huggingface.co/spaces/SharpMeow/vesuvius-radar) (page); `https://sharpmeow-vesuvius-radar.hf.space/api/items?since=1d` (JSON); `/mcp` (MCP, Streamable HTTP); locally `uvicorn app:app --port 7860` in `spaces/vesuvius-radar`; `python scanner.py --days 3 --out scan.json` (one scan, no server); in the page, `window.vesuviusRadar`",
-    "Code": "`spaces/vesuvius-radar/app.py`, `spaces/vesuvius-radar/scanner.py`, `spaces/vesuvius-radar/radar_mcp.py`, `spaces/vesuvius-radar/radar.json`, `spaces/vesuvius-radar/index.html`, `spaces/vesuvius-radar/static/app.js`, `spaces/vesuvius-radar/static/style.css`, `spaces/vesuvius-radar/connect.json`",
+    "Code": "`spaces/vesuvius-radar/app.py`, `spaces/vesuvius-radar/scanner.py`, `spaces/vesuvius-radar/digest.py` (weekly digest, top picks, item pages), `spaces/vesuvius-radar/radar_mcp.py`, `spaces/vesuvius-radar/radar.json`, `spaces/vesuvius-radar/index.html`, `spaces/vesuvius-radar/static/app.js`, `spaces/vesuvius-radar/static/style.css`, `spaces/vesuvius-radar/connect.json`",
     "Tests": "`tests/test_vesuvius_radar.py` (scoring, lookbacks, views, filters, API, CSV, RSS, MCP, the vector cache, and that no key or private material is in the Space's files); `python -m kit spaceconnect check` checks its Connect panel",
     "Needs": "A browser, or any HTTP client. To run it yourself: Python 3.10+, `fastapi` 0.115.6, `uvicorn` 0.34.0, `fastembed` 0.9.1 and `numpy` (`requirements.txt`); the model BAAI/bge-small-en-v1.5 (MIT, about 130 MB) downloads on first use",
     "Runs on": "A free Hugging Face CPU Space (2 vCPU, 16 GB); no GPU and no GPU quota. The page and API answer at once; see Cost and time for the collector",
-    "Network": "`rss.arxiv.org`, `arxiv.org`, `export.arxiv.org` (papers), `api.github.com` (repositories, ScrollPrize/villa), `huggingface.co` (models, datasets, Spaces, daily papers, the embedding model), `pypi.org`, `zenodo.org`, `api.crossref.org`, `scrollprize.substack.com` (the Challenge blog), `news.google.com`, `www.bing.com` and `hnrss.org` (news searches, since 30 Oct 2026); all read logged out",
+    "Network": "`rss.arxiv.org`, `arxiv.org`, `export.arxiv.org` (papers), `api.github.com` (repositories, ScrollPrize/villa), `huggingface.co` (models, datasets, Spaces, daily papers, the embedding model), `pypi.org`, `zenodo.org`, `api.crossref.org`, `api.openalex.org` (scholarly works and citations, since 2.0.0), `scrollprize.substack.com` (the Challenge blog), `www.youtube.com` (the Challenge's channel feed, since 2.0.0), `news.google.com`, `www.bing.com` and `hnrss.org` (news searches, since 30 Oct 2026); all read logged out",
     "Writes": "In the Space: `/data/radar` with persistent storage, else `/tmp/radar` (`store.json`, `vectors.npz`); `RADAR_DATA` moves it. `scanner.py --out` writes the file you name",
     "Go-ahead": "Not needed to use. Making the Space public was Chase's yes (29 Oct 2026); later redeploys from merged `main` fall under the standing yes (rule 8)",
     "Released": "Public on Hugging Face since 2026-10-29; README \"Released tools\" entry `vesuvius-radar`",
     "License": "Code Apache 2.0; item titles, summaries and links belong to their sources",
-    "Checked": "2026-10-30 against commit `04abb3b`"
+    "Checked": "2026-11-26 against commit `d11402c` (version 2.0.0, local run on a copy of the live store)"
    },
    "page": "docs/tools/vesuvius-radar.md",
    "sections": [
@@ -21124,67 +21278,67 @@
     {
      "name": "Commands and options",
      "start_line": 67,
-     "end_line": 137,
+     "end_line": 141,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 138,
-     "end_line": 149,
-     "applicable": true
-    },
-    {
-     "name": "Inputs",
-     "start_line": 150,
+     "start_line": 142,
      "end_line": 153,
      "applicable": true
     },
     {
-     "name": "Outputs",
+     "name": "Inputs",
      "start_line": 154,
      "end_line": 157,
      "applicable": true
     },
     {
-     "name": "Failure modes",
+     "name": "Outputs",
      "start_line": 158,
-     "end_line": 171,
+     "end_line": 161,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 162,
+     "end_line": 182,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 172,
-     "end_line": 181,
+     "start_line": 183,
+     "end_line": 192,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 182,
-     "end_line": 185,
+     "start_line": 193,
+     "end_line": 196,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 186,
-     "end_line": 195,
+     "start_line": 197,
+     "end_line": 207,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 196,
-     "end_line": 199,
+     "start_line": 208,
+     "end_line": 211,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 200,
-     "end_line": 209,
+     "start_line": 212,
+     "end_line": 222,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 210,
-     "end_line": 213,
+     "start_line": 223,
+     "end_line": 226,
      "applicable": true
     }
    ]

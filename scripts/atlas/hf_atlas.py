@@ -53,6 +53,7 @@ def job(out="/tmp/atlas", workers=6, repo=DATASET):
     stale = [p for p in (out / "lens").glob("*.slg.gz") if p.name not in keep] if (out / "lens").is_dir() else []
     for p in stale:
         p.unlink()
+    atlas.seal(out)                     # SHA256SUMS last, over exactly the files uploaded
     msg = (f"Refresh: {summary['meshes']} meshes of {summary['segments']} segments, {summary['errors']} not "
            f"measured (kit {summary['kit_commit']}, {round(time.time() - t0)} s)")
     api.upload_folder(folder_path=str(out), repo_id=repo, repo_type="dataset", commit_message=msg,

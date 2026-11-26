@@ -279,6 +279,20 @@ class TestTablesAndCard(unittest.TestCase):
             header = (Path(d) / "atlas.csv").read_text().splitlines()[0].split(",")
             self.assertEqual(tuple(header), atlas.COLUMNS)
 
+    def test_a_sealed_build_passes_the_dataset_card_standard(self):
+        from kit import datacard
+        with tempfile.TemporaryDirectory() as d:
+            s = atlas.write(d, self.ROWS, figures=False)
+            s["kit_commit"] = s.get("kit_commit") or "d85062b"       # a checkout without git still names a commit
+            (Path(d) / "provenance.json").write_text(json.dumps(atlas.provenance(s)))
+            (Path(d) / "lens").mkdir()
+            (Path(d) / "lens" / "a.slg.gz").write_bytes(b"grid")
+            self.assertEqual(atlas.seal(d), 7)      # 4 tables, summary, provenance and the preview
+            rec = datacard.check(datacard.Folder(d))
+            self.assertEqual(rec["verdict"], "PASS", [f for f in rec["findings"] if f["level"] == "fail"])
+            (Path(d) / "lens" / "b.slg.gz").write_bytes(b"new")          # a file added after sealing is caught
+            self.assertEqual(datacard.check(datacard.Folder(d))["verdict"], "FAIL")
+
     @unittest.skipIf(np is None, "needs numpy")
     def test_the_cards_lens_reader_matches_kit(self):
         text = atlas.card(atlas.summarize(self.ROWS))

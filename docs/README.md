@@ -39,7 +39,6 @@ Updated 18 October 2026.
 | Agent rules and standing decisions | [`../AGENTS.md`](../AGENTS.md) | [`AI-AGENTS.md`](AI-AGENTS.md) (full rulebook, public writing guide) |
 | Repository map, one row per module and script | [`MAP.md`](MAP.md) | The top-level map in [`../AGENTS.md`](../AGENTS.md) |
 | How we measure (controls, AUC, tracing, splits, cost) beside the community's practice | [`STANDARDS.md`](STANDARDS.md) | [`QUALITY.md`](QUALITY.md) (what each kind of claim needs), [`TESTING.md`](TESTING.md) |
-| Community standards anyone can apply (SRS-1: how real simulated scroll CT looks, with a fixed bar and reference scorer; 26 Nov 2026) | [`standards/README.md`](standards/README.md) | [`standards/sim-realism.md`](standards/sim-realism.md), [`tools/simscore.md`](tools/simscore.md), [`tools/simcritic.md`](tools/simcritic.md) |
 | Research integrity for Vesuvius claims: the rules with real cases, the `kit integrity` checker and the `vesuvius-integrity` Claude skill (23 Oct 2026) | [`integrity.md`](integrity.md) | [`tools/integrity.md`](tools/integrity.md), [`STANDARDS.md`](STANDARDS.md) |
 | Claim labels (Sourced fact, Model output, ...) | [`NOVELTY.md`](NOVELTY.md) | |
 | What pictures and clips public Git may hold: the public media rule (no model output, no prize-eligible scrolls, at most 1920 px and 4 MB, a sidecar each) | [`media/README.md`](media/README.md) | [`assets/README.md`](assets/README.md); the AGENTS.md standing decision and [`DECISIONS.md`](DECISIONS.md) row of 18 October 2026 |
@@ -48,6 +47,7 @@ Updated 18 October 2026.
 | CLI and output conventions | [`UI-UX.md`](UI-UX.md) | |
 | Recurring checks every agent runs at session start, and the daily workflow (prize page, release list, AutoPipeline watcher, handoff size and age, repository tests) | [`routines.json`](routines.json), run by `python3 -m kit routines run --due` | [`AI-AGENTS.md`](AI-AGENTS.md#session-start-repository-routines), [`../.github/workflows/routines.yml`](../.github/workflows/routines.yml) |
 | How every tool is documented: the tool-page standard, its fields and sections, and what the checker checks | [`TOOL-DOCS.md`](TOOL-DOCS.md) | [`../templates/tool-doc.md`](../templates/tool-doc.md); AGENTS.md rule 16 |
+| Community standards: formats anyone can follow and check, such as the scroll dataset card (SHA256SUMS, provenance, license, caveats, spent seeds and truth), the frozen-test protocol (preregister, freeze, independent review pin, reviewer never the author, spent data kept out, arms tried reported) and the Sim Realism Standard SRS-1 (how real simulated scroll CT looks, fixed bar, reference scorer) | [`standards/README.md`](standards/README.md) | [`standards/dataset-card.md`](standards/dataset-card.md), [`tools/datacard.md`](tools/datacard.md), [`standards/frozen-test.md`](standards/frozen-test.md), [`../templates/frozen-test.md`](../templates/frozen-test.md), [`standards/sim-realism.md`](standards/sim-realism.md), [`tools/simscore.md`](tools/simscore.md) |
 
 ## Tools and how to run things
 
