@@ -220,6 +220,7 @@ Free: a CPU Space with no GPU. Times are in Runs on. The server's memory is domi
 - 2026-10-27: one page scroll bar: the head carries `onescroll.html` (written by `python -m kit spaceconnect render`, [spaceconnect](spaceconnect.md)), so the page scrolls as a whole, and `tools/deploy.py` uploads it; the gallery on The atlas grows to show every surface instead of scrolling inside the page (Gradio caps a gallery at 55% of the window), and on a phone the Compare models table drops its bars and fits the screen instead of scrolling sideways; American spelling in the page, its API docstrings and code (the color helpers in `atlasdata` are now `LAYER_COLOR`, `color` and `mark(color_=)`). The published dataset's `meta.json` keeps the British spelling of its center-only windows key, and the page still reads that key.
 - 2026-10-27: color: ember maps by default, a color per model in Compare and the tables, colored header and cards (`ef7e9ba`).
 - 2026-10-27: first version: page, API, MCP server, Connect panel (`5d25489`).
+- 2026-11-26: the dataset card gains Dataset Viewer tables built from the published files only (`spaces/ink-atlas/dataset/build_index.py`: `metadata.jsonl` one row per picture, a `surfaces` config with previews, `index/*.csv`), two card pictures (`card_visuals.py`), a new card (`spaces/ink-atlas/dataset/README.md`) and a guarded uploader (`publish.py`, adds or replaces only those files); tests `tests/test_ink_atlas_dataset.py`. Nothing in the dataset moved, so this Space reads it unchanged.
 
 ## Related
 
