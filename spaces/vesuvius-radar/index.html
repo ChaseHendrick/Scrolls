@@ -5,8 +5,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Vesuvius Radar</title>
 <meta name="description" content="New papers, code, models and data that could help read the Herculaneum scrolls, collected from public sources around the clock and scored for relevance. Open JSON API, RSS and MCP server; no login.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Vesuvius Radar">
+<meta property="og:title" content="Vesuvius Radar: new work on the Herculaneum scrolls">
+<meta property="og:description" content="New papers, code, models and data that could help read the Herculaneum scrolls, collected around the clock and scored for relevance. Weekly digest, JSON API, RSS and an MCP server.">
+<meta property="og:url" content="https://sharpmeow-vesuvius-radar.hf.space/">
+<meta property="og:image" content="https://sharpmeow-vesuvius-radar.hf.space/static/og.jpg">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Vesuvius Radar: a radar sweep over Mount Vesuvius and the bay, with the week's counts">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://sharpmeow-vesuvius-radar.hf.space/static/og.jpg">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='14' fill='%231c5cab'/%3E%3Ccircle cx='16' cy='16' r='9' fill='none' stroke='%23fff' stroke-opacity='.5' stroke-width='1.5'/%3E%3Cpath d='M16 16 L16 3 A13 13 0 0 1 28 12 Z' fill='%23fff' fill-opacity='.8'/%3E%3Ccircle cx='21' cy='10' r='2' fill='%23eb6834'/%3E%3C/svg%3E">
 <link rel="alternate" type="application/rss+xml" title="Vesuvius Radar: last week, score 60 or more" href="feed.xml">
+<link rel="alternate" type="application/rss+xml" title="Vesuvius Radar weekly digest" href="week.xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet">
@@ -119,6 +130,7 @@
     <div class="hero-stats" id="heroStats" aria-live="polite"></div>
     <div class="cta">
       <a class="btn primary" href="#main" data-go="radar">See the last day</a>
+      <a class="btn" href="#week" data-go="week">This week</a>
       <a class="btn" href="#briefing" data-go="briefing">Read the briefing</a>
       <a class="btn" href="#connect" data-go="connect">API and MCP</a>
       <a class="btn" href="#how" data-go="how">How it works</a>
@@ -161,6 +173,7 @@
 
 <nav class="tabs" role="tablist" aria-label="Views">
   <button role="tab" aria-selected="true" data-tab="radar" id="tab-radar">Radar</button>
+  <button role="tab" aria-selected="false" data-tab="week" id="tab-week">This week</button>
   <button role="tab" aria-selected="false" data-tab="briefing" id="tab-briefing">Briefing</button>
   <button role="tab" aria-selected="false" data-tab="sources" id="tab-sources">Sources</button>
   <button role="tab" aria-selected="false" data-tab="connect" id="tab-connect">API and MCP</button>
@@ -170,6 +183,11 @@
 <!-- ============================================================ RADAR -->
 <main class="panel" data-panel="radar" role="tabpanel" aria-labelledby="tab-radar" id="main">
   <section class="kpis" id="kpis" aria-label="Totals for this window"></section>
+
+  <section class="picks" id="picks" aria-label="Top picks for this window" hidden>
+    <div class="picks-head"><h2>Top picks</h2><p>The best paper, code, data or model, and community item in this window and view.</p></div>
+    <div class="picks-grid" id="picksGrid"></div>
+  </section>
 
   <section class="charts" aria-label="Charts">
     <figure class="card chart wide">
@@ -243,6 +261,38 @@
   <nav class="pager" id="pager" aria-label="Pages of items"></nav>
 </main>
 
+<!-- ============================================================ THIS WEEK -->
+<section class="panel" data-panel="week" role="tabpanel" aria-labelledby="tab-week" hidden>
+  <div class="card week-head">
+    <div>
+      <div class="eyebrow" id="weekWhen"></div>
+      <h2 id="weekTitle">This week</h2>
+      <p id="weekAbout">What was new in the scroll work each week, against the week before: counts, the topics that got busier, the best items, and lists by what you can use. It follows the reader view above.</p>
+    </div>
+    <div class="week-ctl">
+      <span class="select-wrap"><select id="weekPick" aria-label="Week"></select></span>
+      <div class="week-btns">
+        <button class="btn" type="button" id="weekCopy" title="Copy this week as Markdown, ready to paste into a forum or chat">Copy as Markdown</button>
+        <a class="btn ghost" id="weekMd" href="week.md" target="_blank" rel="noopener">Markdown</a>
+        <a class="btn ghost" id="weekRss" href="week.xml" target="_blank" rel="noopener">Weekly RSS</a>
+      </div>
+    </div>
+  </div>
+  <div class="week-tiles" id="weekTiles"></div>
+  <div class="week-grid">
+    <figure class="card chart">
+      <figcaption><div><h2>Topics, against the week before</h2><p>New items scored medium or high per topic. The bar is this week; the tick is the week before.</p></div></figcaption>
+      <div class="week-topics" id="weekTopics"></div>
+    </figure>
+    <section class="card week-top">
+      <h2>The week's best</h2>
+      <ol id="weekTop" class="week-list"></ol>
+    </section>
+  </div>
+  <div class="week-lists" id="weekLists"></div>
+  <p class="note" id="weekNote">Counts compare items new in each week (opened, created or published then), scored medium or high; the best items and the lists take everything active in the week. Scores are a triage aid, not a judgment.</p>
+</section>
+
 <!-- ============================================================ BRIEFING -->
 <section class="panel" data-panel="briefing" role="tabpanel" aria-labelledby="tab-briefing" hidden>
   <div class="card brief-head">
@@ -300,18 +350,22 @@
 <h2>Connect your tool</h2>
 <p>Everything this page shows is open JSON, CSV and RSS over HTTPS, and the whole radar is also an MCP server, so a script, a spreadsheet, a feed reader or an agent can use it. No key, no login and no GPU quota: anyone can call it, logged in or not.</p>
 <div class="scc-src" id="connect-mcp"><h3>MCP server for agents</h3>
-<p class="scc-meta">Item titles, summaries and links belong to their sources (arXiv, GitHub, Hugging Face, PyPI, Zenodo, Crossref, the Vesuvius Challenge blog, and news outlets found through Google News, Bing News and Hacker News); the radar&#x27;s code is Apache 2.0 · Streamable HTTP, no session, JSON replies, no key. Nine tools: search_items (by words or by meaning), get_item, find_similar, briefing, overview, source_status, check_now, list_views, get_settings.</p>
+<p class="scc-meta">Item titles, summaries and links belong to their sources (arXiv, GitHub, Hugging Face, PyPI, Zenodo, Crossref, OpenAlex, the Vesuvius Challenge blog and YouTube channel, and news outlets found through Google News, Bing News and Hacker News); the radar&#x27;s code is Apache 2.0 · Streamable HTTP, no session, JSON replies, no key. Eleven tools: search_items (by words or by meaning), get_item, find_similar, weekly_digest, top_picks, briefing, overview, source_status, check_now, list_views, get_settings.</p>
 <div class="scc-url"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>https://sharpmeow-vesuvius-radar.hf.space/mcp</code></pre></div>
 <details><summary>Links and embed<span class="scc-b ok">tested 2026-10-24</span></summary>
 <div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>MCP endpoint (Streamable HTTP, POST): https://sharpmeow-vesuvius-radar.hf.space/mcp</code></pre></div></details>
 </div>
 <div class="scc-src" id="connect-api"><h3>JSON API, CSV and RSS</h3>
-<p class="scc-meta">Item titles, summaries and links belong to their sources; the radar&#x27;s code is Apache 2.0 · since takes 1m up to 30d (default 1d); view takes all, research, team or builders. The same filters work on items, overview, briefing, export.csv and feed.xml. The OpenAPI page lists every parameter.</p>
+<p class="scc-meta">Item titles, summaries and links belong to their sources; the radar&#x27;s code is Apache 2.0 · since takes 1m up to 30d (default 1d); view takes all, research, team or builders. The same filters work on items, overview, picks, briefing, export.csv and feed.xml; week takes an ISO week (2026-W48), this or last. The OpenAPI page lists every parameter.</p>
 <div class="scc-url"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>https://sharpmeow-vesuvius-radar.hf.space/api/items?since=1d</code></pre></div>
 <details><summary>Links and embed<span class="scc-b ok">tested 2026-10-24</span></summary>
 <div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>Items from the last day (JSON): https://sharpmeow-vesuvius-radar.hf.space/api/items?since=1d
 Papers and methods from the last week, score 35 or more (JSON): https://sharpmeow-vesuvius-radar.hf.space/api/items?since=7d&amp;view=research&amp;min_score=35
 Search by meaning (JSON): https://sharpmeow-vesuvius-radar.hf.space/api/items?since=30d&amp;q=ink+detection+in+x-ray+ct&amp;by_meaning=true
+This week against the week before (JSON): https://sharpmeow-vesuvius-radar.hf.space/api/week?week=this
+Last week as Markdown, ready to paste: https://sharpmeow-vesuvius-radar.hf.space/week.md?week=last
+Weekly digest RSS, one entry per finished week: https://sharpmeow-vesuvius-radar.hf.space/week.xml
+Top picks: best paper, code, data and community item (JSON): https://sharpmeow-vesuvius-radar.hf.space/api/picks?since=7d
 The strongest items per topic (JSON): https://sharpmeow-vesuvius-radar.hf.space/api/briefing?since=7d
 Counts behind the charts (JSON): https://sharpmeow-vesuvius-radar.hf.space/api/overview?since=1d
 The collector: each source&#x27;s last and next check (JSON): https://sharpmeow-vesuvius-radar.hf.space/api/sources
@@ -321,7 +375,7 @@ Reader views and their rules (JSON): https://sharpmeow-vesuvius-radar.hf.space/a
 Sources, keywords, weights and anchor sentences (JSON): https://sharpmeow-vesuvius-radar.hf.space/api/config
 OpenAPI page with every parameter: https://sharpmeow-vesuvius-radar.hf.space/docs</code></pre></div></details>
 </div>
-<footer>Machine-readable: <a href="https://huggingface.co/spaces/SharpMeow/vesuvius-radar/blob/main/connect.json" target="_blank" rel="noopener">connect.json</a> and <a href="https://huggingface.co/spaces/SharpMeow/vesuvius-radar/blob/main/CONNECT.md" target="_blank" rel="noopener">CONNECT.md</a>. Checked 2026-10-29. "Tested" means the snippet ran against this public data on that date. Scan data keeps its own license (the Vesuvius Challenge open data is CC BY-NC 4.0).</footer></section>
+<footer>Machine-readable: <a href="https://huggingface.co/spaces/SharpMeow/vesuvius-radar/blob/main/connect.json" target="_blank" rel="noopener">connect.json</a> and <a href="https://huggingface.co/spaces/SharpMeow/vesuvius-radar/blob/main/CONNECT.md" target="_blank" rel="noopener">CONNECT.md</a>. Checked 2026-11-26. "Tested" means the snippet ran against this public data on that date. Scan data keeps its own license (the Vesuvius Challenge open data is CC BY-NC 4.0).</footer></section>
 <!-- space-connect:end -->
   </div>
   <div class="connect-grid">
@@ -393,6 +447,8 @@ hits = get("/api/items", since="30d", q="tracing papyrus fibers", by_meaning="tr
         <li><b>The Challenge team</b> sees what the community shipped and said about the scrolls: villa pull requests, issues and releases, new repositories, Hugging Face uploads, Zenodo records and blog posts.</li>
         <li><b>Contributors</b> see what they can use today: repositories, releases, models, datasets, Spaces, package versions and papers that link their code.</li>
       </ul>
+      <h2>Weekly digest and sharing</h2>
+      <p>The <b>This week</b> tab compares each ISO week (Monday to Monday, UTC) with the week before: new items scored medium or high, the topics that got busier or quieter, the ten best items, and lists of papers, code, data and models, villa merges, posts and videos. It is also <a href="week.md">Markdown</a> to paste into a forum or chat, and a <a href="week.xml">weekly RSS feed</a>. Every item has its own page (Share page) whose link shows a preview in chats and posts.</p>
       <h2>What the collector reads</h2>
       <p>Only public pages and APIs, logged out, on a schedule per source (the Sources tab shows when each last ran). It keeps 30 days, so changing the lookback is instant.</p>
       <ul id="howSources"></ul>

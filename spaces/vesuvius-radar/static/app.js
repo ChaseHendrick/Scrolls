@@ -4,7 +4,7 @@
   "use strict";
 
   const SRC = ["arxiv", "github", "hf", "pypi", "zenodo", "journals", "blog"];
-  const SRC_LABEL = { arxiv: "arXiv", github: "GitHub", hf: "Hugging Face", pypi: "PyPI", zenodo: "Zenodo", journals: "Journals", blog: "News and blogs" };
+  const SRC_LABEL = { arxiv: "arXiv", github: "GitHub", hf: "Hugging Face", pypi: "PyPI", zenodo: "Zenodo", journals: "Journals", blog: "News, blogs and videos" };
   const SHORT = { arxiv: "arXiv", github: "GitHub", hf: "HF", pypi: "PyPI", zenodo: "Zenodo", journals: "Journals", blog: "News" };
   const BANDS = ["high", "medium", "low"];
   const BAND_LABEL = { high: "High", medium: "Medium", low: "Low" };
@@ -14,7 +14,8 @@
   // who with its first name replaced by the person's name (who_name), co-authors and other posters kept
   const byline = (i) => (i.who_name ? [i.who_name].concat(i.who.split(",").slice(1).map((s) => s.trim())).join(", ") : i.who);
   const KIND = { paper: "paper", repo: "repository", pr: "pull request", issue: "issue", release: "release", model: "model",
-    dataset: "dataset", space: "Space", "daily-paper": "daily paper", package: "package version", post: "blog post", news: "news story" };
+    dataset: "dataset", space: "Space", "daily-paper": "daily paper", package: "package version", post: "blog post", news: "news story", video: "video",
+    "journal article": "journal article", "book chapter": "book chapter", "posted content": "preprint", publication: "publication" };
   const LOOKBACKS = [["1m", "1 min"], ["5m", "5 min"], ["15m", "15 min"], ["30m", "30 min"], ["1h", "1 hour"], ["3h", "3 hours"],
     ["6h", "6 hours"], ["12h", "12 hours"], ["1d", "1 day"], ["2d", "2 days"], ["3d", "3 days"], ["7d", "7 days"], ["14d", "14 days"], ["30d", "30 days"]];
   const VIEW_ICON = {
@@ -187,8 +188,77 @@
     S.items = items.body.items; S.page = 0; S.byMeaning = items.body.by_meaning;
     renderAll();
     if (!$("[data-panel=briefing]").hidden) loadBriefing();
+    if (!$("[data-panel=week]").hidden) loadWeek().catch(fail);
     renderLinks();
+    loadPicks(my).catch(() => { $("#picks").hidden = true; });
   }
+
+  /* ------------------------------------------------------------ top picks */
+  const GROUP_ICON = {
+    paper: VIEW_ICON.research, code: VIEW_ICON.builders, community: VIEW_ICON.team,
+    data: '<svg viewBox="0 0 20 20"><ellipse cx="10" cy="5.5" rx="6" ry="2.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M4 5.5v9c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-9M4 10c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>',
+  };
+  // Pull request bodies often carry Markdown; a short card shows it as plain words.
+  const plain = (t) => String(t || "").replace(/\*\*|__|`/g, "").replace(/\[([^\]]+)\]\([^)]*\)/g, "$1").replace(/^#+\s*/gm, "");
+  async function loadPicks(my) {
+    const { body } = await getJSON("api/picks?" + viewParams());
+    if (my !== seq) return;
+    const picks = body.picks || [];
+    $("#picks").hidden = !picks.length;
+    $("#picksGrid").innerHTML = picks.map((i) => `<article class="card pick" data-id="${esc(i.id)}">
+      <div class="pick-top"><span class="pick-label">${GROUP_ICON[i.group] || ""}${esc(i.label)}</span>${ring(i)}</div>
+      <h3><a href="${esc(safe(i.url))}" target="_blank" rel="noopener">${esc(clip(i.title, 110))}</a></h3>
+      <div class="pick-meta"><span class="srcl"><i class="dot s-${esc(i.source)}"></i>${esc(SRC_LABEL[i.source] || i.source)}</span> · ${esc(KIND[i.kind] || i.kind)} · ${esc(ago(i.date))}${i.who ? " · " + esc(clip(i.who_name || i.who.split(",")[0], 40)) : ""}</div>
+      ${i.summary ? `<p>${esc(plain(i.summary))}</p>` : ""}
+      <a class="pick-share" href="item?id=${encodeURIComponent(i.id)}" target="_blank" rel="noopener">Share page</a>
+    </article>`).join("");
+  }
+
+  /* ------------------------------------------------------------ this week */
+  const WK = { week: "this", md: "" };
+  const delta = (n, m) => (n === m ? `<span class="dl same">same as the week before</span>` : `<span class="dl ${n > m ? "up" : "down"}">${n > m ? "▲" : "▼"} ${fmtN(Math.abs(n - m))} from ${fmtN(m)}</span>`);
+  function weekSpan(d) {
+    const a = D(d.start), b = new Date(D(d.end).getTime() - 86400000);
+    return `${dm(a)} to ${dm(b)} ${b.getUTCFullYear()}`;
+  }
+  async function loadWeek() {
+    const p = new URLSearchParams({ week: WK.week, view: S.f.view });
+    const [{ body: d }, md] = await Promise.all([getJSON("api/week?" + p), fetch("week.md?" + p).then((r) => r.text()).catch(() => "")]);
+    WK.md = md;
+    $("#weekPick").innerHTML = (d.weeks || [d.week]).map((w, k) => `<option value="${esc(w)}"${w === d.week ? " selected" : ""}>${k === 0 ? "This week" : k === 1 ? "Last week" : "Week"} (${esc(w)})</option>`).join("");
+    $("#weekWhen").textContent = `${d.week} · ${weekSpan(d)}${d.complete ? "" : " · in progress, through " + stamp(d.through)}`;
+    $("#weekTitle").textContent = `${d.complete ? "The week" : "This week so far"} for ${d.label}`;
+    $("#weekMd").href = "week.md?" + p; $("#weekRss").href = "week.xml?view=" + encodeURIComponent(S.f.view);
+    const t = d.totals, l = d.last_week;
+    const tiles = [
+      [t.relevant, "new items scored medium or high", delta(t.relevant, l.relevant)],
+      [t.high, "of them high", delta(t.high, l.high)],
+      [t.code, "pieces of code", delta(t.code, l.code)],
+      [t.data, "datasets and models", delta(t.data, l.data)],
+      [t.villa_merged, "villa pull requests merged", delta(t.villa_merged, l.villa_merged)],
+      [t.new_repos, "new repositories", delta(t.new_repos, l.new_repos)],
+    ];
+    $("#weekTiles").innerHTML = tiles.map(([n, lab, dl]) => `<div class="card kpi"><span class="v">${fmtN(n)}</span><span class="l">${esc(lab)}</span>${dl}</div>`).join("");
+    const rows = (d.topics || []).filter((r) => r.this || r.last).sort((a, b) => b.this - a.this || b.change - a.change);
+    const mx = Math.max(1, ...rows.map((r) => Math.max(r.this, r.last)));
+    $("#weekTopics").innerHTML = rows.length ? rows.map((r) => `<div class="wt-row" data-tip="${esc(`<b>${esc(r.topic)}</b>` + row("var(--b-high)", "This week", r.this) + row("var(--muted)", "Week before", r.last))}">
+      <span class="wt-name">${esc(r.topic)}</span>
+      <span class="wt-bar"><i style="width:${(100 * r.this / mx).toFixed(1)}%"></i><b style="left:${(100 * r.last / mx).toFixed(1)}%"></b></span>
+      <span class="wt-n">${fmtN(r.this)}<em class="${r.change > 0 ? "up" : r.change < 0 ? "down" : ""}">${r.change > 0 ? "+" : ""}${r.change}</em></span></div>`).join("")
+      : `<div class="emptybox"><b>No new items scored medium or high yet.</b></div>`;
+    const li = (i) => `<li><span class="sc ${i.band === "high" ? "high" : ""}">${i.score}</span><div><a href="${esc(safe(i.url))}" target="_blank" rel="noopener">${esc(i.title)}</a>
+      <span class="m"><span class="srcl"><i class="dot s-${esc(i.source)}"></i>${esc(SRC_LABEL[i.source] || i.source)}</span> · ${esc(KIND[i.kind] || i.kind)} · ${esc(dm(D(i.date)))}${i.who ? " · " + esc(clip(i.who_name || i.who.split(",")[0], 40)) : ""} · <a href="item?id=${encodeURIComponent(i.id)}" target="_blank" rel="noopener">share</a></span></div></li>`;
+    $("#weekTop").innerHTML = (d.top || []).map(li).join("") || `<li class="empty">Nothing yet this week.</li>`;
+    $("#weekLists").innerHTML = (d.lists || []).map((g) => `<section class="card week-group"><h3>${esc(g.title)}<span>${fmtN(g.items.length)}</span></h3><ol class="week-list">${g.items.map(li).join("")}</ol></section>`).join("");
+    $("#weekNote").textContent = "Counts compare items new in each week (opened, created or published then), scored medium or high; the best items and the lists take everything active in the week." +
+      (d.previous_partial ? " The week before is only partly inside the 30 days the radar keeps, so its counts run low." : "") + " Scores are a triage aid, not a judgment.";
+  }
+  $("#weekPick").addEventListener("change", (e) => { WK.week = e.target.value; loadWeek().catch(fail); });
+  $("#weekCopy").addEventListener("click", (e) => {
+    const b = e.currentTarget;
+    (navigator.clipboard && WK.md ? navigator.clipboard.writeText(WK.md) : Promise.reject()).then(() => { b.textContent = "Copied"; setTimeout(() => (b.textContent = "Copy as Markdown"), 1500); })
+      .catch(() => window.open($("#weekMd").href, "_blank"));
+  });
   async function goPage(n) {
     const pages = Math.max(1, Math.ceil(S.matched / S.per));
     n = Math.max(0, Math.min(pages - 1, n));
@@ -607,6 +677,8 @@
     const byMeaning = new Set(i.topics_by_meaning || []);
     const links = [
       `<a href="${esc(safe(i.url))}" target="_blank" rel="noopener">Open</a>`,
+      `<a href="item?id=${encodeURIComponent(i.id)}" target="_blank" rel="noopener" title="This item on its own page, with a link preview for chats and posts">Share page</a>`,
+      i.cites_field ? `<span class="badge soft" title="Cites a founding paper of the field (OpenAlex)">cites the field</span>` : "",
       i.pdf ? `<a href="${esc(safe(i.pdf))}" target="_blank" rel="noopener">PDF</a>` : "",
       i.hf_url ? `<a href="${esc(safe(i.hf_url))}" target="_blank" rel="noopener">Hugging Face papers</a>` : "",
       i.doi_url ? `<a href="${esc(safe(i.doi_url))}" target="_blank" rel="noopener">DOI</a>` : "",
@@ -751,8 +823,9 @@
     hf: (c) => [`Models, datasets and Spaces matching ${c.search.join(", ")}`, `Everything by ${c.authors.join(", ")}`, "Daily papers, merged with their arXiv rows"],
     pypi: (c) => [`New versions of ${Object.keys(c.packages).length} packages: ${Object.keys(c.packages).join(", ")}`, "Pre-releases score 10 lower"],
     zenodo: (c) => [`Records matching ${c.queries.join("; ")}`, "Datasets, software, preprints and articles"],
-    journals: (c) => [`Crossref works created in the window matching ${c.queries.join("; ")}`, "Journal articles, chapters, proceedings and posted content"],
-    blog: (c) => [`The feeds of ${[...new Set(c.feeds.map((f) => f.name || f[0]))].join(", ")}`, "News searches go through the scorer like any listing, and a story found twice is kept once"],
+    journals: (c) => [`Crossref works created in the window matching ${c.queries.join("; ")}`, "Journal articles, chapters, proceedings and posted content"]
+      .concat(c.openalex ? [`OpenAlex works matching ${c.openalex.queries.join("; ")}`, `OpenAlex works that cite the field's founding papers (${c.openalex.cites.length} DOIs), marked "cites the field"`] : []),
+    blog: (c) => [`The feeds of ${[...new Set(c.feeds.map((f) => f.name || f[0]))].join(", ")}`, "Every post and video of the Challenge's own blog and YouTube channel counts", "News searches go through the scorer like any listing, and a story found twice is kept once"],
   };
   function renderSources() {
     const b = S.src;
@@ -803,6 +876,7 @@
     $$(".tabs button").forEach((b) => b.setAttribute("aria-selected", String(b.dataset.tab === name)));
     $$(".panel").forEach((p) => (p.hidden = p.dataset.panel !== name));
     if (name === "briefing") loadBriefing().catch(fail);
+    if (name === "week") loadWeek().catch(fail);
     if (name === "sources") renderSources();
     if (name === "connect") renderLinks();
     try { history.replaceState(null, "", location.pathname + location.search + "#" + name); } catch (e) { /* sandboxed */ }
@@ -1049,7 +1123,8 @@
   /* ------------------------------------------------------------ start */
   const startTab = (location.hash || "#radar").slice(1);
   renderViews(); renderLookback();
-  selectTab(["radar", "briefing", "sources", "connect", "how"].includes(startTab) ? startTab : "radar");
+  WK.week = new URLSearchParams(location.search).get("week") || "this";
+  selectTab(["radar", "week", "briefing", "sources", "connect", "how"].includes(startTab) ? startTab : "radar");
   loadConfig().catch(() => { /* the page still works without it */ });
   drawScene();
   load().catch(fail);
