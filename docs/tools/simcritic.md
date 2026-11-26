@@ -162,7 +162,7 @@ What gives it away (post-hoc, Interpretation): fitting the feature critic on one
 ## History
 
 - 2026-11-26: released in the Scrolls kit: held-apart judge, planted checks, control, attribution views, partial results through `sink`. ([#382](https://github.com/ChaseHendrick/Scrolls/pull/382))
-- 2026-11-26: `verdict` returns FAIL with `gap_to_bar` None when the control has no worst AUC (it raised a TypeError); bars unchanged and inclusive. ([#387](https://github.com/ChaseHendrick/Scrolls/pull/387))
+- 2026-11-26: `verdict` returns FAIL with `gap_to_bar` None when the control has no worst AUC (it raised a TypeError); bars unchanged and inclusive. ([#390](https://github.com/ChaseHendrick/Scrolls/pull/390))
 
 ## Related
 
