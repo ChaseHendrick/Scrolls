@@ -20870,7 +20870,7 @@
    "id": "vesuvius-radar",
    "name": "vesuvius-radar",
    "tagline": "new papers, code, models and data for the Herculaneum scrolls, scored and searchable",
-   "summary": "A Hugging Face Space that collects new papers, repositories, models, datasets, package versions and posts from public sources around the clock, scores each for relevance to reading the Herculaneum scrolls, and serves them as a page, a JSON API, CSV, RSS and an MCP server.",
+   "summary": "A Hugging Face Space that collects new papers, code, models, data, posts and videos around the clock, scores each for relevance to reading the Herculaneum scrolls, and serves a page with a weekly digest, a JSON API, CSV, RSS and an MCP server.",
    "status": "Current",
    "kind": [
     "app"
@@ -20892,6 +20892,10 @@
     },
     {
      "path": "spaces/vesuvius-radar/scanner.py",
+     "symbols": []
+    },
+    {
+     "path": "spaces/vesuvius-radar/digest.py",
      "symbols": []
     },
     {
@@ -20927,8 +20931,8 @@
     "text": "Not needed to use. Making the Space public was Chase's yes (29 Oct 2026); later redeploys from merged `main` fall under the standing yes (rule 8)"
    },
    "checked": {
-    "date": "2026-10-30",
-    "commit": "04abb3b"
+    "date": "2026-11-26",
+    "commit": "d11402c"
    },
    "license": "Code Apache 2.0; item titles, summaries and links belong to their sources",
    "fields": {
@@ -20937,16 +20941,16 @@
     "Kind": "app",
     "Area": "Viewers and apps",
     "Run": "[huggingface.co/spaces/SharpMeow/vesuvius-radar](https://huggingface.co/spaces/SharpMeow/vesuvius-radar) (page); `https://sharpmeow-vesuvius-radar.hf.space/api/items?since=1d` (JSON); `/mcp` (MCP, Streamable HTTP); locally `uvicorn app:app --port 7860` in `spaces/vesuvius-radar`; `python scanner.py --days 3 --out scan.json` (one scan, no server); in the page, `window.vesuviusRadar`",
-    "Code": "`spaces/vesuvius-radar/app.py`, `spaces/vesuvius-radar/scanner.py`, `spaces/vesuvius-radar/radar_mcp.py`, `spaces/vesuvius-radar/radar.json`, `spaces/vesuvius-radar/index.html`, `spaces/vesuvius-radar/static/app.js`, `spaces/vesuvius-radar/static/style.css`, `spaces/vesuvius-radar/connect.json`",
+    "Code": "`spaces/vesuvius-radar/app.py`, `spaces/vesuvius-radar/scanner.py`, `spaces/vesuvius-radar/digest.py` (weekly digest, top picks, item pages), `spaces/vesuvius-radar/radar_mcp.py`, `spaces/vesuvius-radar/radar.json`, `spaces/vesuvius-radar/index.html`, `spaces/vesuvius-radar/static/app.js`, `spaces/vesuvius-radar/static/style.css`, `spaces/vesuvius-radar/connect.json`",
     "Tests": "`tests/test_vesuvius_radar.py` (scoring, lookbacks, views, filters, API, CSV, RSS, MCP, the vector cache, and that no key or private material is in the Space's files); `python -m kit spaceconnect check` checks its Connect panel",
     "Needs": "A browser, or any HTTP client. To run it yourself: Python 3.10+, `fastapi` 0.115.6, `uvicorn` 0.34.0, `fastembed` 0.9.1 and `numpy` (`requirements.txt`); the model BAAI/bge-small-en-v1.5 (MIT, about 130 MB) downloads on first use",
     "Runs on": "A free Hugging Face CPU Space (2 vCPU, 16 GB); no GPU and no GPU quota. The page and API answer at once; see Cost and time for the collector",
-    "Network": "`rss.arxiv.org`, `arxiv.org`, `export.arxiv.org` (papers), `api.github.com` (repositories, ScrollPrize/villa), `huggingface.co` (models, datasets, Spaces, daily papers, the embedding model), `pypi.org`, `zenodo.org`, `api.crossref.org`, `scrollprize.substack.com` (the Challenge blog), `news.google.com`, `www.bing.com` and `hnrss.org` (news searches, since 30 Oct 2026); all read logged out",
+    "Network": "`rss.arxiv.org`, `arxiv.org`, `export.arxiv.org` (papers), `api.github.com` (repositories, ScrollPrize/villa), `huggingface.co` (models, datasets, Spaces, daily papers, the embedding model), `pypi.org`, `zenodo.org`, `api.crossref.org`, `api.openalex.org` (scholarly works and citations, since 2.0.0), `scrollprize.substack.com` (the Challenge blog), `www.youtube.com` (the Challenge's channel feed, since 2.0.0), `news.google.com`, `www.bing.com` and `hnrss.org` (news searches, since 30 Oct 2026); all read logged out",
     "Writes": "In the Space: `/data/radar` with persistent storage, else `/tmp/radar` (`store.json`, `vectors.npz`); `RADAR_DATA` moves it. `scanner.py --out` writes the file you name",
     "Go-ahead": "Not needed to use. Making the Space public was Chase's yes (29 Oct 2026); later redeploys from merged `main` fall under the standing yes (rule 8)",
     "Released": "Public on Hugging Face since 2026-10-29; README \"Released tools\" entry `vesuvius-radar`",
     "License": "Code Apache 2.0; item titles, summaries and links belong to their sources",
-    "Checked": "2026-10-30 against commit `04abb3b`"
+    "Checked": "2026-11-26 against commit `d11402c` (version 2.0.0, local run on a copy of the live store)"
    },
    "page": "docs/tools/vesuvius-radar.md",
    "sections": [
@@ -20977,67 +20981,67 @@
     {
      "name": "Commands and options",
      "start_line": 67,
-     "end_line": 137,
+     "end_line": 141,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 138,
-     "end_line": 149,
-     "applicable": true
-    },
-    {
-     "name": "Inputs",
-     "start_line": 150,
+     "start_line": 142,
      "end_line": 153,
      "applicable": true
     },
     {
-     "name": "Outputs",
+     "name": "Inputs",
      "start_line": 154,
      "end_line": 157,
      "applicable": true
     },
     {
-     "name": "Failure modes",
+     "name": "Outputs",
      "start_line": 158,
-     "end_line": 171,
+     "end_line": 161,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 162,
+     "end_line": 180,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 172,
-     "end_line": 181,
+     "start_line": 181,
+     "end_line": 190,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 182,
-     "end_line": 185,
+     "start_line": 191,
+     "end_line": 194,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 186,
-     "end_line": 195,
+     "start_line": 195,
+     "end_line": 205,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 196,
-     "end_line": 199,
-     "applicable": true
-    },
-    {
-     "name": "History",
-     "start_line": 200,
+     "start_line": 206,
      "end_line": 209,
      "applicable": true
     },
     {
-     "name": "Related",
+     "name": "History",
      "start_line": 210,
-     "end_line": 213,
+     "end_line": 220,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 221,
+     "end_line": 224,
      "applicable": true
     }
    ]
