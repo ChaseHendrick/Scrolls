@@ -16553,7 +16553,7 @@
     "Tests": "`tests/test_simscore.py`",
     "Needs": "Python 3.10 or newer, numpy, scipy, torch (CPU or CUDA) and scikit-image for the critics (as [simcritic](simcritic.md)); `check` needs only the standard library; a reference npz (R343-v1 from `reference`, or your own slices) and an npz of at least 240 simulated tiles of 256 px or more",
     "Runs on": "CPU or GPU. `reference`: 14 s; a `--smoke --steps 2` score: 25 s; `calibrate`: 290 s (all in a 4-core cloud container, 26 Nov 2026). A full score: about 5 hours on one CPU worker at simcritic's 25 Nov rate (not timed end to end); a GPU is faster",
-    "Network": "`reference` only: `vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` (PHerc0343P CT) and `huggingface.co` (the organizers' public surface labels, for the grey-value scale); the rest is offline",
+    "Network": "`reference` only: `vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` (PHerc0343P CT) and `huggingface.co` (the organizers' public surface labels, for the gray-value scale); the rest is offline",
     "Writes": "`reference`: the npz named; `score`: the record named by `--out`; `calibrate`: the JSON named by `--out`; `check`: nothing",
     "Go-ahead": "Not needed to run; publishing a record is the scorer's owner's choice",
     "Released": "Not yet: draft PR, waiting for the owner's yes",

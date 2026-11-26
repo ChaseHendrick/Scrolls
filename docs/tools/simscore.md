@@ -13,7 +13,7 @@ Reference scorer of SRS-1: runs the released simcritic judge with every setting 
 | Tests | `tests/test_simscore.py` |
 | Needs | Python 3.10 or newer, numpy, scipy, torch (CPU or CUDA) and scikit-image for the critics (as [simcritic](simcritic.md)); `check` needs only the standard library; a reference npz (R343-v1 from `reference`, or your own slices) and an npz of at least 240 simulated tiles of 256 px or more |
 | Runs on | CPU or GPU. `reference`: 14 s; a `--smoke --steps 2` score: 25 s; `calibrate`: 290 s (all in a 4-core cloud container, 26 Nov 2026). A full score: about 5 hours on one CPU worker at simcritic's 25 Nov rate (not timed end to end); a GPU is faster |
-| Network | `reference` only: `vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` (PHerc0343P CT) and `huggingface.co` (the organizers' public surface labels, for the grey-value scale); the rest is offline |
+| Network | `reference` only: `vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` (PHerc0343P CT) and `huggingface.co` (the organizers' public surface labels, for the gray-value scale); the rest is offline |
 | Writes | `reference`: the npz named; `score`: the record named by `--out`; `calibrate`: the JSON named by `--out`; `check`: nothing |
 | Go-ahead | Not needed to run; publishing a record is the scorer's owner's choice |
 | Released | Not yet: draft PR, waiting for the owner's yes |
@@ -27,7 +27,7 @@ It turns the result into a status. PASS and FAIL come from simcritic's fixed bar
 
 The record holds every AUC, the window digests, the scorer's file digests, the generator, the attempt count and a SHA-256 over the record. `check` recomputes the gates, verdict and status from those numbers, so a reader can test a published record without a GPU.
 
-A PASS would mean no SRS-1 critic told the set from that reference: Model output, not proof that the set is real. It scores grey values only.
+A PASS would mean no SRS-1 critic told the set from that reference: Model output, not proof that the set is real. It scores gray values only.
 
 ## When to use it
 
@@ -139,7 +139,7 @@ Constants: `STANDARD`, `SETTINGS`, `MIN_GROUPS` (6), `MIN_SIM_TILES` (240), `MIN
 
 ## Inputs
 
-- Reference npz: `ct`, a stack (N, H, W) or object array of 2D float slices (any grey scale; each window is rescaled), optional `cover` (bool, same shapes; windows need 0.98 cover), optional `name` and `id`. At least 6 slices. Even and odd mean position in file order.
+- Reference npz: `ct`, a stack (N, H, W) or object array of 2D float slices (any gray scale; each window is rescaled), optional `cover` (bool, same shapes; windows need 0.98 cover), optional `name` and `id`. At least 6 slices. Even and odd mean position in file order.
 - Set npz: 2D tiles under `--key`, uint8 or float, at least 256 px a side; the first 240 are used.
 
 ## Outputs

@@ -21,8 +21,8 @@ the generator and how many sets its authors scored before this one (`attempts`, 
 recomputes the gates, the verdict and the status from the numbers in a record and fails on any mismatch.
 
 A PASS means no SRS-1 critic separated the set from that reference: Model output, not proof that the set is real.
-Grey values only; no labels are scored. The R343 reference reads public PHerc0343P CT and uses the organizers'
-public surface labels only to set the grey-value normalization.
+Gray values only; no labels are scored. The R343 reference reads public PHerc0343P CT and uses the organizers'
+public surface labels only to set the gray-value normalization.
 """
 import argparse
 import hashlib

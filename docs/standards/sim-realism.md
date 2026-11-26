@@ -16,7 +16,7 @@ The method is a classifier two-sample test (Sourced fact: Lopez-Paz and Oquab, [
 
 A scoring follows these steps in order. A failed gate makes the record VOID; a VOID record is never reported as a PASS or a FAIL.
 
-1. **Reference.** Real CT slices as 2D grey-value arrays, at least 6 (`MIN_GROUPS`), each with an optional cover mask. Slices are numbered in their listed order; even and odd mean that number. The default reference is R343-v1 (below). A team may use its own scan with the same protocol; its records are comparable only with records on the same reference.
+1. **Reference.** Real CT slices as 2D gray-value arrays, at least 6 (`MIN_GROUPS`), each with an optional cover mask. Slices are numbered in their listed order; even and odd mean that number. The default reference is R343-v1 (below). A team may use its own scan with the same protocol; its records are comparable only with records on the same reference.
 2. **Fit half.** A generator may be fitted or tuned to the even slices (declared in `trained_on`). It must never be fitted or tuned to the odd slices; the scorer refuses odd slices listed as trained on.
 3. **Set.** At least 240 simulated tiles (`MIN_SIM_TILES`) of at least 256 px a side, the first 240 in the order the generator wrote them, with the generator's name, version and seeds recorded. Fixing the seeds before scoring and taking the first tiles rules out picking the best-looking ones.
 4. **Windows.** Non-overlapping 128 px windows on a grid (`WIN`), each scaled to its own 1st to 99th percentile; reference windows need cover of at least 0.98. Context windows: 256 px, 2x2 mean-pooled to 128.
@@ -42,7 +42,7 @@ Six axial slices of PHerc0343P, a public fragment scan on no prize list, read fr
 | Field | Value |
 | --- | --- |
 | CT | `https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0343P/volumes/20260304131111-2.215um-0.4m-111keV-masked.zarr`, level 2 (8.86 µm) |
-| Labels (normalization only) | the organizers' public surface labels, `scrollprize/datasets` bucket, `surfaces/2um_032726/2.215um_0.4m_111keV_PHerc0343P_surface.zarr`, level 2: only used to pick the voxels whose 0.5 and 99.5 percentiles set the grey-value scale |
+| Labels (normalization only) | the organizers' public surface labels, `scrollprize/datasets` bucket, `surfaces/2um_032726/2.215um_0.4m_111keV_PHerc0343P_surface.zarr`, level 2: only used to pick the voxels whose 0.5 and 99.5 percentiles set the gray-value scale |
 | Slices | level-2 z 1460, 1500, 1540, 1580, 1620, 1660 |
 | Box | y 1006 to 1663, x 1148 to 2605 (level-2 voxels) |
 | Resampling | to 9.362 µm, linear; clipped to -0.5 to 1.5; cover where the resampled value is above -0.43 |
@@ -113,7 +113,7 @@ The tiles npz holds a stack of 2D arrays under `--key`. A full score runs 11 CNN
 - One reference scan. A set that passes on R343-v1 may fail on another scan; a cross-scan realism claim needs records on several references, each under this protocol.
 - A critic outside SRS-1 may still separate a set that passes. The standard measures, it does not prove.
 - The calibration uses the feature critic on synthetic stand-ins (see its limits); the worst of three critics spreads wider.
-- Grey values of 2D windows only: 3D structure, labels and downstream use (does a model trained on the set transfer?) are not scored. A transfer test belongs beside a realism record, not inside it.
+- Gray values of 2D windows only: 3D structure, labels and downstream use (does a model trained on the set transfer?) are not scored. A transfer test belongs beside a realism record, not inside it.
 
 ## Changes
 
