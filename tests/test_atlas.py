@@ -213,6 +213,7 @@ class TestSurveyAndBuild(unittest.TestCase):
         self.assertEqual([r["id"] for r in atlas.show(rows, None, kind=None, top=1)], ["c"])
         self.assertIn("no meshes match", atlas.format_show([], 4))
 
+    @unittest.skipIf(np is None, "needs numpy")
     def test_bounding_box_and_extents(self):
         xyz = _sheet()
         nums, _ = atlas.measure(_seg(xyz, um=2.0))
