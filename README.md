@@ -96,7 +96,7 @@ Command-line tools, benchmarks and script folders that run from a clone of this 
 | [Relative winding consistency check](docs/tools/windconsistency.md) | Passes relative winding counts only when every one is an integer and all of them can hold at once. |
 | [Relative windings in a box](docs/tools/windlabel-box.md) | Grows chains of sheet crossings around a point and writes villa's relative_windings.json for a spiral fit, with a VC3D plugin. |
 | [Scroll center (umbilicus) finder and coverage polish](docs/tools/umbilicus.md) | Finds a scroll's winding center line (umbilicus) in its CT scan with two small U-Nets and writes umbilicus.json for VC3D. |
-| [ScrollSim Hard Cases: exact 3D layouts of the hard parts of papyrus CT](docs/tools/hardcases.md) | Exact 3D layouts of folds, contact, crushing, delamination, cracks, edges and spiral centers, with a zone map and CT render, as tiles or blocks. |
+| [ScrollSim Hard Cases: exact 3D layouts of the hard parts of papyrus CT](docs/tools/hardcases.md) | Exact 3D layouts of folds, contact, crushing, cracks, edges and spiral centers, with a zone map and a CT render you can fit to a real scan. |
 | [ScrollSim v2: a full-scale synthetic scroll](docs/tools/scrollsim2.md) | Renders a synthetic scroll of 100 plus windings block by block, with a CT scan model, optional ink, realism statistics and exact winding and surface truth. |
 | [Segment Atlas](docs/tools/atlas.md) | Measures published segment meshes with the same geometry checks and builds a searchable table. |
 | [Segment stack check](docs/tools/stackcheck.md) | Checks a stack of consecutive tifxyz segments against the umbilicus from geometry alone: winding order, spacing, gaps and overlaps. |
@@ -122,7 +122,7 @@ Command-line tools, benchmarks and script folders that run from a clone of this 
 </details>
 
 <details>
-<summary><b>Scoring and controls</b> (13)</summary>
+<summary><b>Scoring and controls</b> (14)</summary>
 
 | Tool | What it does |
 | --- | --- |
@@ -136,6 +136,7 @@ Command-line tools, benchmarks and script folders that run from a clone of this 
 | [Letter-scale ink score](docs/tools/hpscore.md) | Compares an ink map with published labels after removing broad brightness changes, with displaced-label and reverse-depth controls. |
 | [Research integrity checks for Vesuvius claims](docs/tools/integrity.md) | Checks a claim before it goes out: controls on the same pixels, held-out status, number sources, preregistration and wording. |
 | [Seam-aware winding switches](docs/tools/seamswitch.md) | Counts how often a spiral fit puts touching vertices of one traced sheet on different windings, allowing for the fit's seam. |
+| [simcritic: a held-apart judge of how real simulated CT looks](docs/tools/simcritic.md) | Fresh critics try to tell real CT from simulated tiles, with a real-against-real control and views that show what gives the simulation away. |
 | [StrokeNet text-likeness score](docs/tools/strokenet.md) | Scores how much a window of an ink map looks like lines of text, with rotation and IAAFT controls, using only NumPy. |
 | [Synthetic map controls](docs/tools/phantom.md) | Creates known-answer synthetic inputs for checking ink-map scoring and controls. |
 | [Text-row pattern score](docs/tools/rowscore.md) | Measures repeating bands in forward and reverse ink maps as a triage aid, without interpreting text. |
