@@ -90,6 +90,12 @@ class PublishGuard(unittest.TestCase):
             got = [r for r, _, _ in publish.plan(t, {"README.md", "assets/gallery.jpg"})]
             self.assertEqual(len(got), 5)
 
+    def test_allows_card_standard_files_and_replacing_them(self):
+        with tempfile.TemporaryDirectory() as t:
+            self.stage(t, ["provenance.json", "SHA256SUMS"])
+            got = [r for r, _, _ in publish.plan(t, {"provenance.json", "SHA256SUMS"})]
+            self.assertEqual(got, ["SHA256SUMS", "provenance.json"])
+
     def test_refuses_maps_and_overwrites(self):
         for rels, existing in ((["surfaces/PHerc0000/x/maps/m/c+0_s1_forward.png"], set()),
                                (["atlas.json"], {"atlas.json"}),
