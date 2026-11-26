@@ -122,7 +122,7 @@ Command-line tools, benchmarks and script folders that run from a clone of this 
 </details>
 
 <details>
-<summary><b>Scoring and controls</b> (14)</summary>
+<summary><b>Scoring and controls</b> (15)</summary>
 
 | Tool | What it does |
 | --- | --- |
@@ -137,6 +137,7 @@ Command-line tools, benchmarks and script folders that run from a clone of this 
 | [Research integrity checks for Vesuvius claims](docs/tools/integrity.md) | Checks a claim before it goes out: controls on the same pixels, held-out status, number sources, preregistration and wording. |
 | [Seam-aware winding switches](docs/tools/seamswitch.md) | Counts how often a spiral fit puts touching vertices of one traced sheet on different windings, allowing for the fit's seam. |
 | [simcritic: a held-apart judge of how real simulated CT looks](docs/tools/simcritic.md) | Fresh critics try to tell real CT from simulated tiles, with a real-against-real control and views that show what gives the simulation away. |
+| [simscore: score simulated CT under the Sim Realism Standard (SRS-1)](docs/tools/simscore.md) | A fixed, checkable way to rate how real a set of simulated scroll CT tiles looks against a public reference, with a calibrated pass bar. |
 | [StrokeNet text-likeness score](docs/tools/strokenet.md) | Scores how much a window of an ink map looks like lines of text, with rotation and IAAFT controls, using only NumPy. |
 | [Synthetic map controls](docs/tools/phantom.md) | Creates known-answer synthetic inputs for checking ink-map scoring and controls. |
 | [Text-row pattern score](docs/tools/rowscore.md) | Measures repeating bands in forward and reverse ink maps as a triage aid, without interpreting text. |
