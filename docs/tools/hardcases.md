@@ -27,6 +27,8 @@ Kinds (`KINDS`): plain, spiral (flattened spiral with its center in or near the 
 
 Beside the labels it writes a hard-case zone map (`ZONES`: fold, contact, delamination, crack, crushed, edge, center bits), so a detector or tracer can be scored per hard case. The physics render draws two plies per sheet, a fiber texture, gap debris, the crushed look, inclusions and debris, point spread, a phase-contrast rim, white, ramp and correlated noise and slow gain, all randomized per tile.
 
+Version 1.1 (26 Nov 2026) adds two context managers that change the render's draw bounds without changing anything else: `realism(sd=, psf=, ply_w=, rim=, gap=, pitch=)` sets the noise level, point spread, ply width, phase rim, gap fill and a sheet-spacing factor, and `dense(fill=, core=)` sets how much of each gap a sheet fills and how bright the core between its plies is. With no bounds set the tiles are the version 1.0 tiles bit for bit (tested). [simreal](simreal.md) measures real CT from its grey values and fits these bounds; [simcritic](simcritic.md) judges how real the result looks.
+
 It is a simulator. A score on its tiles is model output on synthetic data and says nothing about a real scroll.
 
 ## When to use it
@@ -34,6 +36,7 @@ It is a simulator. A score on its tiles is model output on synthetic data and sa
 - To make training or test tiles with exact sheet lines and instance ids for a sheet detector or a tracer.
 - To make a 3D block of one hard case with exact labels (`volume`).
 - To score a method per hard case on synthetic data, with the zone map.
+- To render tiles closer to one scan's look, with bounds from [simreal](simreal.md) (`tiles(..., dense_look=simreal.PRESETS["343p"])`).
 
 Do not use it:
 
@@ -109,7 +112,9 @@ No options. Prints the kinds, recipe, extras and scale as JSON.
 | `raster(lay, plane='z', origin=(0, 0, 0), shape=(256, 256), eps=0.25)` | dict of arrays | `SimError` (plane) | plane `z` (axial), `y` (side, z by x) or `vol`; keys `sheet`, `lines`, `q`, `air`, `crack`, `opening`, `crushed`, `zone`, `levels`, `thick` |
 | `render(r, seed, crushed=0, inclusions=False, debris=False)` | uint8 array | | physics CT of a raster, 2D or 3D |
 | `tile(seed, k, size=256, recipe=None, side=0.3, extras=None)` | dict | `SimError` after 20 failed draws | one tile with Synthetic-Slices fields |
-| `tiles(n, seed, size=256, recipe=None, side=0.3, k0=0, progress=None)` | shard dict | `SimError` | deterministic in (seed, k) |
+| `tiles(n, seed, size=256, recipe=None, side=0.3, k0=0, progress=None, dense_look=None)` | shard dict | `SimError` | deterministic in (seed, k); DENSE_LOOK, a dict of `fill`, `core` and any `REAL_KEYS` bounds, draws the tiles inside `dense()` and `realism()` |
+| `realism(**bounds)` | context manager | `SimError` (unknown setting, bounds out of range) | (lo, hi) draw bounds for `sd`, `psf`, `ply_w`, `rim`, `gap` and a `pitch` factor (`REAL_KEYS` holds the defaults); none set gives the default tiles bit for bit; setting `pitch`, even to (1, 1), takes one extra draw and so changes later draws |
+| `dense(fill=None, core=None)` | context manager | `SimError` (bounds) | sheet thickness as a fraction of the nearest gap (`FILL`) and ply core brightness (`CORE`); none gives the default tiles |
 | `volume(kind, seed, shape=(64, 256, 256), extras=None)` | (layout, raster, ct) | `SimError` | |
 | `line_separation(lines)` | float | | smallest distance between lines of different ids |
 | `Wave(rng, scale, n=8, zscale=None)` | callable field | | smooth random field of unit variance |
@@ -142,6 +147,9 @@ None but the arguments. The grid is 9.362 um per voxel (`VOXEL_UM`, Synthetic-Sl
 | `tile...: no valid layout after 20 tries` | every draw had too few lines or lines closer than 3 px | change the seed, the size or the recipe |
 | `kit hardcases: ...` | any refusal below, printed with exit 2 | read the rest of the line |
 | `layout has fewer than two sheets`, `sheet levels are not increasing` | a broken custom recipe or a bug | report it with the seed |
+| `realism: unknown setting 'x' (known: [...])` | a `realism()` bound outside `REAL_KEYS` | use `sd`, `psf`, `ply_w`, `rim`, `gap` or `pitch` |
+| `realism: sd bounds (0.5, 0.1) out of range` | a `realism()` bound with lo above hi, or outside 0 to 50 | pass (lo, hi) with lo at most hi |
+| `fill bounds (0.9, 1.2) out of range` | a `dense()` bound outside 0 to 1 (fill) or 0 to 2 (core), or lo above hi | pass (lo, hi) inside the range |
 
 ## How it works
 
@@ -163,13 +171,16 @@ Measured 24 Nov 2026 in a 4-core cloud container: 0.15 to 0.38 s per 256 px tile
 
 ## Tests
 
-`python -m unittest tests.test_hardcases` (14 tests, 4 s): layouts, block independence, determinism, folds, cracks, edges, delamination, contact, level maps, shards, render. Not covered: realism of the render.
+`python -m unittest tests.test_hardcases` (16 tests, about 5 s): layouts, block independence, determinism, folds, cracks, edges, delamination, contact, level maps, shards, render, and `dense()` (default tiles unchanged, denser sheets fill more, bounds checked). `tests.test_simreal` checks `realism()` (default tiles unchanged, bounds take effect, the pitch factor spreads sheets, bad bounds refused). Not covered: realism of the render; [simcritic](simcritic.md) measures that.
 
 ## History
 
+- 2026-11-26: version 1.1: `realism()` and `dense()` render bounds, default tiles unchanged; fitted with [simreal](simreal.md).
 - 2026-11-25: released in the Scrolls kit on base `4536292`: the hard cases of Synthetic-Slices v0.2 rebuilt as 3D fields, with spiral centers and a zone map.
 
 ## Related
 
 - [scrollsim2](scrollsim2.md): the full-scale rolled scroll
+- [simreal](simreal.md): measures real CT and fits the render bounds
+- [simcritic](simcritic.md): judges how real the tiles look
 - [Synthetic-Slices v0.2](https://github.com/vincentl065/Synthetic-Slices) (vincentl065, MIT): the 2D generator these hard cases come from

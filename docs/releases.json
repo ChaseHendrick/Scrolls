@@ -114,7 +114,7 @@
       "line": "Command-line tools, benchmarks and script folders that run from a clone of this repository.",
       "area": "Releases and repository",
       "page": "docs/tools/cli.md",
-      "released": "2026-11-25",
+      "released": "2026-11-26",
       "summary": "Command-line tools, benchmarks and script folders that run from a clone of this repository. Each line gives the tool's release date, its weights where it has them, one command to start with, its tool page and its evidence; each page lists the tool's own needs. Their outputs are model output or geometry measurements for a person to check, not readings.",
       "commands": [
         "git clone --depth 1 https://github.com/ChaseHendrick/Scrolls.git",
@@ -843,14 +843,26 @@
         {
           "id": "hardcases",
           "name": "ScrollSim Hard Cases: exact 3D layouts of the hard parts of papyrus CT",
-          "line": "Exact 3D layouts of folds, contact, crushing, delamination, cracks, edges and spiral centers, with a zone map and CT render, as tiles or blocks.",
+          "line": "Exact 3D layouts of folds, contact, crushing, cracks, edges and spiral centers, with a zone map and a CT render you can fit to a real scan.",
           "area": "Surfaces and tracing",
-          "released": "2026-11-25",
-          "version": "1.0",
-          "summary": "Rebuilds the 2D hard cases of Synthetic-Slices v0.2 (vincentl065, MIT) as continuous 3D fields: hairpins, U folds, tight bends, accordions, crushed mush, delamination, cracks, frayed outer edges, contact patches and flattened spiral centers, which the 2D generator lacks. Any block, slice direction or grid gives the same sheets, every sheet keeps one id round a fold, and a zone map marks each hard case so a detector or tracer can be scored per case. Writes training tiles in the Synthetic-Slices shard format or 3D blocks. Synthetic data: scores on it say nothing about real CT.",
+          "released": "2026-11-26",
+          "version": "1.1",
+          "summary": "Rebuilds the 2D hard cases of Synthetic-Slices v0.2 (vincentl065, MIT) as continuous 3D fields (hairpins, U folds, bends, accordions, crushed mush, delamination, cracks, frayed edges, contact, flattened spiral centers), with one id per sheet round a fold and a zone map per hard case; writes Synthetic-Slices shards or 3D blocks. Version 1.1 adds render bounds (noise, point spread, ply width, rim, gap fill, spacing, sheet fill), default tiles unchanged bit for bit, and kit.simreal, which measures a scan's grey values and fits those bounds, with a linear realism test and kit.ctmatch histogram matching. Fitted bounds barely help: on PHerc0343P the linear test still tells fitted tiles from real CT at AUC 1.000. Synthetic data: scores on it say nothing about real CT.",
           "command": "python -m kit hardcases tiles OUT.npz --n 2000 --seed 1",
           "page": "docs/tools/hardcases.md",
-          "evidence": "[tests](tests/test_hardcases.py)"
+          "evidence": "[tests](tests/test_hardcases.py), [simreal](docs/tools/simreal.md)"
+        },
+        {
+          "id": "simcritic",
+          "name": "simcritic: a held-apart judge of how real simulated CT looks",
+          "line": "Fresh critics try to tell real CT from simulated tiles, with a real-against-real control and views that show what gives the simulation away.",
+          "area": "Scoring and controls",
+          "released": "2026-11-26",
+          "version": "1.0",
+          "summary": "Fits three fresh critics on every call (a 46-feature logistic, a CNN and a context CNN), never saved, on folds grouped by whole real slice and whole simulated tile, and refuses real slices a generator trained on, so it cannot be tuned against. A set passes only if even the worst critic sits near a real-against-real control; planted cases show it can pass and fail; attribution views (histogram, spectrum, phase, scale, ridge geometry) say what separates the sets. On PHerc0343P (Model output, development use) every ScrollSim set tried still fails, at worst-critic AUC 0.971 to 1.000 against a control of 0.473; fine-scale spectrum and grain orientation give the simulation away. Grey values only, no labels.",
+          "command": "python3 -c \"from kit import simcritic; help(simcritic.judge)\"",
+          "page": "docs/tools/simcritic.md",
+          "evidence": "[results and checks](docs/tools/simcritic.md#results)"
         },
         {
           "id": "accelbench",
