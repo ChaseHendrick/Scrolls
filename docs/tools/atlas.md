@@ -9,16 +9,16 @@
 | Kind | kit command, kit module, script, data |
 | Area | Surfaces and tracing |
 | Run | `python -m kit atlas build`, `python -m kit atlas show`, `python -m kit.atlas`, `from kit import atlas`, `python scripts/atlas/hf_atlas.py` |
-| Code | `kit/atlas.py`, `kit/cli.py` (`build_parser`), `scripts/atlas/hf_atlas.py` |
+| Code | `kit/atlas.py`, `kit/atlasfig.py` (the card's figures), `kit/cli.py` (`build_parser`), `scripts/atlas/hf_atlas.py` |
 | Tests | `tests/test_atlas.py` |
-| Needs | Python 3.10 or newer, numpy and tifffile (imagecodecs for the LZW-compressed meshes, about a fifth of them); scipy when installed. `huggingface_hub` only for `scripts/atlas/hf_atlas.py` |
+| Needs | Python 3.10 or newer, numpy and tifffile (imagecodecs for the LZW-compressed meshes, about a fifth of them); scipy when installed; matplotlib for the card's figures (skipped without it). `huggingface_hub` only for `scripts/atlas/hf_atlas.py` |
 | Runs on | Any CPU, but the whole bucket is large: 908 meshes, 69.4 GB of x, y and z files (listed 24 Oct 2026), 50.6 GB of them PHerc. Paris 4's. Per mesh on a 4-core cloud container (24 Oct 2026, download included): 1.2 to 1.5 s at 9.362 um, 7.6 to 8.4 s at 2.4 um, 23.5 s at 1.129 um. The largest mesh (about 116 million nodes) needs about 3 GB of memory, so the daily build runs as a Hugging Face Job on `cpu-upgrade` (8 vCPU, 32 GB) |
 | Network | `vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` (metadata.json, ListObjectsV2 listings, each mesh's four files); `show` reads the published `atlas.jsonl` from `huggingface.co` unless `--atlas` names a file |
-| Writes | `build`: OUT/`atlas.jsonl`, `atlas.csv`, `summary.json`, `README.md` and, with `--lens`, `lens/*.slg.gz`; each mesh is fetched into a temporary folder that is deleted after it is measured. `show`: nothing. `hf_atlas.py job`: the public dataset |
+| Writes | `build`: OUT/`atlas.jsonl`, `atlas.csv`, `segments.csv`, `scrolls.csv`, `summary.json`, `README.md`, `assets/*.png` (with matplotlib) and, with `--lens`, `lens/*.slg.gz`; each mesh is fetched into a temporary folder that is deleted after it is measured. `show`: nothing. `hf_atlas.py job`: the public dataset |
 | License | Code Apache-2.0; the dataset's numbers and preview grids CC BY-NC 4.0, as the meshes they come from (Vesuvius Challenge open data, CC BY-NC 4.0) |
 | Go-ahead | Not needed for `build` and `show` (public data, local files). The dataset is public, published after the leak check (AGENTS.md rule 8; Chase asked for it on 24 Oct 2026) |
 | Released | Public `main` from the change that adds it (24 Oct 2026) |
-| Checked | 2026-10-24 against commit `cc03099` |
+| Checked | 2026-11-26 against commit `51a17e6` |
 
 ## What it does
 
@@ -28,7 +28,9 @@ Anyone can open one segment with `kit tifxyz`, but nobody could compare them: wh
 
 The numbers are exactly those of `kit tifxyz info`, `stretch` and `check` with default settings; a test compares them. Meshes over 12 million nodes are measured in bands of 1,024 rows (each cell and edge in exactly one band, flags read with one row of each neighbor), which gives the same counts as the whole grid; their percentiles come from every k-th value, k chosen so at most 2 million values are kept.
 
-`--previous` makes a refresh cheap: a mesh is measured again only when the ETag or size of one of its three files changed, or its row has an error, or its Lens preview is missing.
+`--previous` makes a refresh cheap: a mesh is measured again only when the ETag or size of one of its three files changed, or its row has an error, or its Lens preview is missing, or its row predates a column in `NEWER` (so a new column fills every row on the next refresh, once).
+
+Beside the mesh table, `build` writes `segments.csv` (one row per segment, from its finest-voxel measured top-level mesh, the mesh the per-scroll area counts) and `scrolls.csv` (one row per scroll), the configs `segments` and `scrolls` of the dataset, and three figures in `assets/` drawn by `kit/atlasfig.py` from the rows and Lens grids of scrolls on no prize list only: `hero.png` (twelve preview grids, shaded by surface direction, flags painted on), `by_scroll.png` (traced area and clean share) and `quality.png` (isometry and flagged area). The card (`card()`) documents every column from `COLUMN_DOCS`, which a test keeps in step with `COLUMNS`.
 
 `--lens` also writes, for scrolls on no prize list, a small preview grid per mesh that the Segment Lens viewer reads. Scrolls on a prize list get numbers only, never a preview (the public media rule, [docs/media/README.md](../media/README.md)).
 
@@ -61,7 +63,11 @@ On 24 Oct 2026 a local `build --scroll PHerc0139 --limit 8 --lens` measured 6 of
 - **Bands change nothing.** A test measures one grid whole and in bands of 7 rows and requires every number and mask to match; the same test shows that bands without the overlap row would lose cells, so the comparison can fail.
 - **Planted defects are counted.** A planted hole of 30 nodes reads 30; a shifted patch reads stretched; the same sheet without them reads clean.
 - **Previews only where allowed.** A test builds a fake bucket with one scroll on no prize list and one on a list: only the first gets a Lens file. Another reads kit's snapshot and requires PHerc1447 and PHerc. Paris 4 to be on a list and PHerc0139 not.
-- **Refresh measures only what changed.** A test rebuilds with nothing changed (nothing measured), with one ETag changed (that mesh only), and with a preview file deleted (that mesh only).
+- **Refresh measures only what changed.** A test rebuilds with nothing changed (nothing measured), with one ETag changed (that mesh only), with a preview file deleted (that mesh only), and from rows written before the extent columns existed (every mesh, once).
+- **Extents are exact.** A test reads the bounding box and the extents in mm of a planted sheet; without a voxel size the extents are empty. On 26 Nov 2026 two published meshes (PHerc0343P 20250511003658 at 8.64 um, PHerc0139 w025 at 9.362 um) measured again gave every published number unchanged, plus extents of 15.73 x 5.38 x 26.48 mm and 21.59 x 20.00 x 62.58 mm.
+- **Tables add up.** Tests check the mesh a segment row stands for (finest voxel, top level, measured), the per-scroll counts, largest and median segment, and that the card documents every column and links a figure only when it was drawn.
+- **The card's code runs.** A test runs the card's standalone Lens reader against `read_lens`; the pandas, polars, DuckDB and `datasets` snippets were run against the published files on 26 Nov 2026.
+- **Figures stay off prize-list scrolls.** A test builds rows for PHerc0139 and PHerc1447 and requires the hero to draw only PHerc0139.
 
 Claim label: Sourced fact, for the measurements of public meshes; Interpretation, for any reading of them.
 
@@ -139,14 +145,16 @@ usage: python -m kit atlas show [-h] [--atlas ATLAS]
 | `measure_row(row, lens_dir=None, workdir=None)` | the row with its numbers, or with `error` | nothing | Fetch, measure, delete |
 | `read_atlas(src, get=...)` | [row] | `OSError`, `ValueError` | Path or URL |
 | `build(out_dir, scrolls=None, previous=None, workers=None, lens=False, limit=None, get=..., progress=print, measure_fn=measure_row, workdir=None)` | the summary dict | as `survey` | Prints `PROGRESS i/N` lines |
-| `write(out, rows)` | the summary dict | `OSError` | The four files |
-| `card(summary)` | the dataset card text | nothing | |
+| `write(out, rows, figures=True)` | the summary dict (`figures`: the figures drawn) | `OSError` | Every file; a figure error is recorded in `figure_error`, never raised |
+| `segment_rows(rows)`, `scroll_rows(rows, segs=None)` | [row] | nothing | `SEGMENT_COLUMNS`, `SCROLL_COLUMNS` |
+| `card(summary, segs=None)` | the dataset card text | nothing | Links only the figures in `summary["figures"]` |
+| `atlasfig.write_all(out, rows, segs)` | [figure names] | `ImportError` without matplotlib | `hero`, `by_scroll`, `quality` in OUT/`assets/` |
 | `summarize(rows)` | dict | nothing | Per scroll: segments, meshes, measured, errors, clean, area |
 | `show(rows, scroll=None, sort="area_cm2", top=None, kind="mesh")` | [row] | nothing | |
 | `format_show(rows, total)` | the printed text | nothing | |
 | `build_parser(p)`, `cmd_atlas(args)`, `main(argv=None)` | parser, exit code | nothing | |
 
-Constants: `DATASET`, `ATLAS_URL`, `SCHEMA` (`segment-atlas/1`), `BAND_ROWS` (1,024), `BAND_NODES` (12 million), `SAMPLE_CAP` (2 million), `LENS_SIDE` (256), `LENS_MAGIC`, `TIFF_LIMIT`, `COLUMNS`, `SORTS`.
+Constants: `DATASET`, `ATLAS_URL`, `SCHEMA` (`segment-atlas/1`), `BAND_ROWS` (1,024), `BAND_NODES` (12 million), `SAMPLE_CAP` (2 million), `LENS_SIDE` (256), `LENS_MAGIC`, `TIFF_LIMIT`, `COLUMNS`, `NEWER`, `COLUMN_DOCS`, `SEGMENT_COLUMNS`, `SCROLL_COLUMNS`, `CHANGELOG`, `RELATED`, `SORTS`.
 
 ## Inputs
 
@@ -167,11 +175,13 @@ The open-data bucket's `metadata.json` and its `SCROLL/segments/SEGMENT/mesh/` f
 | `cell_area_p50`, `angle_p5`, `angle_p50`, `angle_p95` | cell area over the promised area; grid angle in degrees |
 | `holes_nodes`, `holes_mm2`, `folds_nodes`, `folds_mm2`, `stretched_nodes`, `stretched_mm2`, `clean` | `kit tifxyz check`'s flags |
 | `z_min`, `z_max` | height range in voxels |
+| `x_min`, `x_max`, `y_min`, `y_max` | the rest of the bounding box of the filled nodes, in voxels (added 26 Nov 2026, at the end of the row) |
+| `extent_x_mm`, `extent_y_mm`, `extent_z_mm` | that box's sides in mm (voxels times the voxel size); empty without a voxel size. Not the papyrus size: a rolled sheet fills only part of its box |
 | `bytes`, `banded`, `seconds`, `error`, `measured_at` | the x, y and z file sizes, whether bands were used, time, any error, when |
 | `lens` | the preview file in `lens/`, or empty |
 | `fingerprint`, `last_modified` | from the three files' ETags and sizes; the newest modification time |
 
-`summary.json`: `schema`, `built`, `kit_commit`, `bucket`, `meshes`, `segments`, `errors`, and `scrolls` (per scroll: `segments`, `meshes`, `measured`, `errors`, `clean`, `area_cm2` counting each segment once from its finest-voxel top-level mesh, `prize_lists`). `README.md` is the dataset card.
+`summary.json`: `schema`, `built`, `kit_commit`, `bucket`, `meshes`, `segments`, `errors`, and `scrolls` (per scroll: `segments`, `meshes`, `measured`, `errors`, `clean`, `area_cm2` counting each segment once from its finest-voxel top-level mesh, `prize_lists`). `summary.json` also lists `figures`. `segments.csv` and `scrolls.csv` are described in the dataset card. `README.md` is the dataset card.
 
 ### Lens files
 

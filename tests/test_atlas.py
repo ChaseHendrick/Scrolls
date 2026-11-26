@@ -196,6 +196,13 @@ class TestSurveyAndBuild(unittest.TestCase):
             atlas.build(d, previous=Path(d) / "atlas.jsonl", get=FakeBucket(etag="new"), workers=1, lens=True,
                         measure_fn=fake_measure, progress=lambda m: None)
             self.assertEqual(len(calls), 1)                              # its preview went missing: made again
+            calls.clear()
+            lines = (Path(d) / "atlas.jsonl").read_text().splitlines()
+            old = [{k: v for k, v in json.loads(x).items() if k not in atlas.NEWER} for x in lines]
+            (Path(d) / "old.jsonl").write_text("".join(json.dumps(r) + "\n" for r in old))
+            atlas.build(d, previous=Path(d) / "old.jsonl", get=FakeBucket(etag="new"), workers=1, lens=True,
+                        measure_fn=fake_measure, progress=lambda m: None)
+            self.assertEqual(len(calls), 2)                              # rows from before a new column: once more
 
     def test_show_sorts_and_filters(self):
         rows = [{"id": "a", "scroll": "S", "segment": "a", "kind": "mesh", "area_cm2": 1.0},
@@ -205,6 +212,120 @@ class TestSurveyAndBuild(unittest.TestCase):
         self.assertEqual([r["id"] for r in atlas.show(rows, "s")], ["b", "a", "d"])
         self.assertEqual([r["id"] for r in atlas.show(rows, None, kind=None, top=1)], ["c"])
         self.assertIn("no meshes match", atlas.format_show([], 4))
+
+    def test_bounding_box_and_extents(self):
+        xyz = _sheet()
+        nums, _ = atlas.measure(_seg(xyz, um=2.0))
+        self.assertEqual((nums["x_min"], nums["x_max"]), (1000.0, 1000.0 + 79 * 20))
+        self.assertEqual((nums["y_min"], nums["y_max"]), (2000.0, 2000.0 + 59 * 20))
+        self.assertAlmostEqual(nums["extent_x_mm"], 79 * 20 * 2.0 / 1000, places=2)
+        self.assertAlmostEqual(nums["extent_y_mm"], 59 * 20 * 2.0 / 1000, places=2)
+        z = xyz[..., 2]
+        self.assertAlmostEqual(nums["extent_z_mm"], (z.max() - z.min()) * 2.0 / 1000, places=2)
+        nums, _ = atlas.measure(_seg(xyz, um=None))
+        self.assertIsNone(nums["extent_x_mm"])                       # no voxel size: no physical extent
+        self.assertEqual(nums["x_min"], 1000.0)
+
+
+class TestTablesAndCard(unittest.TestCase):
+    ROWS = [
+        {"id": "S/a/a-on-1-8.0um.tifxyz", "scroll": "S", "segment": "a", "kind": "mesh", "volume": "1", "voxel_um": 8.0,
+         "grid_h": 3, "area_cm2": 10.0, "clean": False, "within_10pct": 0.9, "prize_lists": []},
+        {"id": "S/a/a-on-2-2.0um.tifxyz", "scroll": "S", "segment": "a", "kind": "mesh", "volume": "2", "voxel_um": 2.0,
+         "grid_h": 3, "area_cm2": 10.5, "clean": True, "within_10pct": 0.99, "extent_x_mm": 4.0, "prize_lists": []},
+        {"id": "S/a/intermediate/x", "scroll": "S", "segment": "a", "kind": "intermediate", "grid_h": 3,
+         "area_cm2": None, "clean": True, "prize_lists": []},
+        {"id": "S/b/b-on-1-8.0um.tifxyz", "scroll": "S", "segment": "b", "kind": "mesh", "volume": "1", "voxel_um": 8.0,
+         "grid_h": 3, "area_cm2": 3.0, "clean": False, "within_10pct": 0.5, "prize_lists": []},
+        {"id": "T/c/c", "scroll": "T", "segment": "c", "kind": "mesh", "error": "VerifyError: x", "prize_lists": ["p1", "p2"]},
+    ]
+
+    def test_segments_use_the_finest_voxel_top_level_mesh(self):
+        segs = {g["segment"]: g for g in atlas.segment_rows(self.ROWS)}
+        self.assertEqual(segs["a"]["best_mesh"], "S/a/a-on-2-2.0um.tifxyz")
+        self.assertEqual((segs["a"]["meshes"], segs["a"]["volumes"], segs["a"]["area_cm2"]), (3, 2, 10.5))
+        self.assertEqual(segs["a"]["extent_x_mm"], 4.0)
+        self.assertIsNone(segs["c"]["best_mesh"])                       # nothing measured: counts only
+        self.assertEqual(segs["c"]["prize_lists"], "p1;p2")
+
+    def test_scroll_rows_add_up(self):
+        rows = {r["scroll"]: r for r in atlas.scroll_rows(self.ROWS)}
+        s = rows["S"]
+        self.assertEqual((s["segments"], s["meshes"], s["clean_meshes"], s["clean_segments"]), (2, 4, 2, 1))
+        self.assertEqual((s["area_cm2"], s["largest_segment_cm2"], s["median_segment_cm2"]), (13.5, 10.5, 6.75))
+        self.assertEqual(s["voxel_sizes_um"], "2;8")
+        self.assertEqual((rows["T"]["errors"], rows["T"]["prize_lists"]), (1, "p1;p2"))
+
+    def test_every_column_is_documented_and_new_columns_come_last(self):
+        self.assertEqual(set(atlas.COLUMN_DOCS), set(atlas.COLUMNS))
+        self.assertEqual(atlas.COLUMNS[:43][-1], "measured_at")         # first-release positions never move
+        for c in atlas.NEWER:
+            self.assertGreater(atlas.COLUMNS.index(c), 42)
+
+    def test_write_makes_the_tables_and_a_card_that_lists_them(self):
+        with tempfile.TemporaryDirectory() as d:
+            s = atlas.write(d, self.ROWS, figures=False)
+            for f in ("atlas.csv", "atlas.jsonl", "segments.csv", "scrolls.csv", "summary.json", "README.md"):
+                self.assertTrue((Path(d) / f).is_file(), f)
+            text = (Path(d) / "README.md").read_text()
+            self.assertEqual(s["figures"], [])
+            self.assertNotIn("assets/hero.png", text)                    # no figure drawn: none linked
+            for name in ("config_name: default", "config_name: segments", "config_name: scrolls", "path: atlas.csv"):
+                self.assertIn(name, text)
+            for c in atlas.COLUMNS:
+                self.assertIn(f"`{c}`", text)
+            self.assertFalse(set(text) & {"\u2014", "\u2013"})
+            header = (Path(d) / "atlas.csv").read_text().splitlines()[0].split(",")
+            self.assertEqual(tuple(header), atlas.COLUMNS)
+
+    @unittest.skipIf(np is None, "needs numpy")
+    def test_the_cards_lens_reader_matches_kit(self):
+        text = atlas.card(atlas.summarize(self.ROWS))
+        block = text.split("def read_lens(path):", 1)[1].split("\n\nrow = ", 1)[0]
+        ns = {}
+        exec("import gzip, struct\nimport numpy as np\ndef read_lens(path):" + block, ns)
+        xyz = _sheet(30, 40)
+        xyz[5:8, 5:9] = -1
+        seg = _seg(xyz)
+        nums, m = atlas.measure(seg)
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d) / "x.slg.gz"
+            p.write_bytes(atlas.lens_grid(seg, m, side=16))
+            got, flags, k = ns["read_lens"](p)
+            _, _, k2, _, _, want, flags2 = atlas.read_lens(p.read_bytes())
+        self.assertEqual(k, k2)
+        self.assertTrue(np.array_equal(np.isnan(got), np.isnan(want)))
+        self.assertTrue(np.allclose(got[~np.isnan(got)], want[~np.isnan(want)]))
+        self.assertTrue(np.array_equal(flags, flags2))
+
+
+try:
+    import matplotlib  # noqa: F401
+except ImportError:  # pragma: no cover
+    matplotlib = None
+
+
+@unittest.skipIf(np is None or matplotlib is None, "needs numpy and matplotlib")
+class TestFigures(unittest.TestCase):
+    def test_figures_draw_only_scrolls_on_no_prize_list(self):
+        from kit import atlasfig
+        with tempfile.TemporaryDirectory() as d:
+            lens = Path(d) / "lens"
+            lens.mkdir()
+            rows = []
+            for i, (scroll, lists) in enumerate((("PHerc0139", []), ("PHerc1447", ["grand-prize-2027"]))):
+                seg = _seg(_sheet(40, 50))
+                nums, m = atlas.measure(seg)
+                row = {"id": f"{scroll}/s{i}/m", "scroll": scroll, "segment": f"s{i}", "kind": "mesh",
+                       "voxel_um": 2.0, "prize_lists": lists, **nums}
+                row["lens"] = atlas.lens_name(row)
+                (lens / row["lens"]).write_bytes(atlas.lens_grid(seg, m))
+                rows.append(row)
+            self.assertEqual([r["scroll"] for r in atlasfig.pick_hero(rows, lens)], ["PHerc0139"])
+            made = atlasfig.write_all(d, rows, atlas.segment_rows(rows))
+            self.assertEqual(made, ["hero", "by_scroll", "quality"])
+            for name in made:
+                self.assertGreater((Path(d) / "assets" / f"{name}.png").stat().st_size, 1000)
 
 
 if __name__ == "__main__":
