@@ -140,6 +140,7 @@ One row per module, script folder and docs area. [AGENTS.md](../AGENTS.md) holds
 | `scripts/soup.py` | Weight average of checkpoints from ONE run (Nieuwlaar's soup42_last4, bit-identical); refuses mixed seeds |
 | `scripts/false404/fault_relay.py` | Local relay in front of the open-data bucket that replays S3's false 404 on chosen chunk keys, for villa #2058 and its proposed fix #2060, closed unmerged 30 Oct 2026 ([log](logs/2026-10-12-upstream-reports.md)); standard library |
 | `scripts/v8in_run.py` | v8in inference wrapper with opt-in fp16 on MPS; logs `tiles=N done in Ns` |
+| `scripts/ci/testshard.py`, `tests/test_ci_testshard.py` | Splits the unit suite into N shards for the CI's parallel `verify-shard` jobs: modules, or classes of the slow modules in `SPLIT`, packed longest first from measured seconds; every loaded test lands in exactly one shard ([workbench-package](tools/workbench-package.md#the-ci-workflow-githubworkflowscheckyml)) |
 | `scripts/experiments/` | Saved scripts, logs and scores of past public-data jobs (2026-10-07 cloud jobs, lanes, tricks); records, keep their wording |
 | `docs/compute/` | Modal pricing, rates, job assumptions, the public Modal ledger and run specs (hard rule 11) |
 | `docs/evidence/` | Frozen evidence archives with hashes; do not edit |

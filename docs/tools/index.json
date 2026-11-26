@@ -22304,6 +22304,10 @@
      "symbols": []
     },
     {
+     "path": "scripts/ci/testshard.py",
+     "symbols": []
+    },
+    {
      "path": "CITATION.cff",
      "symbols": []
     },
@@ -22329,7 +22333,8 @@
     }
    ],
    "tests": [
-    "tests/test_packaging.py"
+    "tests/test_packaging.py",
+    "tests/test_ci_testshard.py"
    ],
    "go_ahead": {
     "needed": false,
@@ -22346,8 +22351,8 @@
     "Kind": "package, workflow",
     "Area": "Releases and repository",
     "Run": "`python -m pip install \"scrolls-workbench[reader] @ git+https://github.com/ChaseHendrick/Scrolls\"`, then `scrolls-workbench`, `scrolls-letterread`, `scrolls-letterlines`, `scrolls-letterdemo`, `scrolls-start`, `import kit`",
-    "Code": "`pyproject.toml`, `.github/workflows/check.yml`, `CITATION.cff`, `CHANGELOG.md`, `kit/__init__.py`, `kit/cli.py` (`workbench_main`, `letterread_main`, `letterlines_main`, `letterdemo_main`, `start_main`, `_console`, `CONSOLE_SCRIPTS`)",
-    "Tests": "`tests/test_packaging.py`",
+    "Code": "`pyproject.toml`, `.github/workflows/check.yml`, `scripts/ci/testshard.py`, `CITATION.cff`, `CHANGELOG.md`, `kit/__init__.py`, `kit/cli.py` (`workbench_main`, `letterread_main`, `letterlines_main`, `letterdemo_main`, `start_main`, `_console`, `CONSOLE_SCRIPTS`)",
+    "Tests": "`tests/test_packaging.py`, `tests/test_ci_testshard.py`",
     "Needs": "Python 3.10 or newer (`requires-python = \">=3.10\"`); pip with network access to fetch `setuptools>=77` for the build. The core needs no other package; the extras add numpy, pillow, tifffile, imagecodecs, zarr 3 (Python 3.11 or newer only) and scipy",
     "Runs on": "Linux, macOS and Windows (the CI's reader job runs all three). Installing with no extras from a local copy took about 6 s (measured 2026-10-16, cloud container, Python 3.13)",
     "Network": "The install fetches `setuptools>=77` and the chosen extras from PyPI, and clones GitHub for a `git+https` URL. The letter reader's commands download the released weights from GitHub. The CI runs on GitHub-hosted runners",
@@ -22387,67 +22392,67 @@
     {
      "name": "Commands and options",
      "start_line": 83,
-     "end_line": 125,
+     "end_line": 135,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 126,
-     "end_line": 134,
+     "start_line": 136,
+     "end_line": 144,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 135,
-     "end_line": 143,
-     "applicable": true
-    },
-    {
-     "name": "Outputs",
-     "start_line": 144,
+     "start_line": 145,
      "end_line": 153,
      "applicable": true
     },
     {
-     "name": "Failure modes",
+     "name": "Outputs",
      "start_line": 154,
-     "end_line": 168,
+     "end_line": 163,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 164,
+     "end_line": 182,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 169,
-     "end_line": 175,
-     "applicable": true
-    },
-    {
-     "name": "Cost and time",
-     "start_line": 176,
-     "end_line": 179,
-     "applicable": true
-    },
-    {
-     "name": "For agents",
-     "start_line": 180,
+     "start_line": 183,
      "end_line": 189,
      "applicable": true
     },
     {
-     "name": "Tests",
+     "name": "Cost and time",
      "start_line": 190,
-     "end_line": 197,
+     "end_line": 193,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 194,
+     "end_line": 203,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 204,
+     "end_line": 211,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 198,
-     "end_line": 207,
+     "start_line": 212,
+     "end_line": 221,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 208,
-     "end_line": 214,
+     "start_line": 222,
+     "end_line": 228,
      "applicable": true
     }
    ]
