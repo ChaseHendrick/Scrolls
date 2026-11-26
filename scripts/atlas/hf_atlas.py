@@ -31,7 +31,7 @@ IMAGE = "python:3.12"
 FLAVOR = "cpu-upgrade"
 CRON = "17 6 * * *"        # daily, 06:17 UTC
 NAME = "segment-atlas"
-PIP = "numpy tifffile imagecodecs scipy huggingface_hub"
+PIP = "numpy tifffile imagecodecs scipy matplotlib huggingface_hub"
 
 
 def job(out="/tmp/atlas", workers=6, repo=DATASET):
