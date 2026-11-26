@@ -11,7 +11,7 @@ Asks fresh critics, never used in training, to tell real CT windows from simulat
 | Run | None (library): `from kit import simcritic` |
 | Code | `kit/simcritic.py` |
 | Tests | `tests/test_simcritic.py` |
-| Needs | Python 3.10 or newer, numpy, scipy, torch (CPU or CUDA) for the CNN critics, scikit-image for the ridge view; real CT grey values and simulated tiles as 2D arrays; no labels |
+| Needs | Python 3.10 or newer, numpy, scipy, torch (CPU or CUDA) for the CNN critics, scikit-image for the ridge view; real CT gray values and simulated tiles as 2D arrays; no labels |
 | Runs on | CPU for the feature critic and small checks (planted checks, 2 critics at 400 steps: about 12 minutes in a 4-core cloud container, 25 Nov 2026); a full judge of several sets with every view is best split over many CPU workers or run on a GPU |
 | Network | None |
 | Writes | Nothing (it returns dicts; `dumps` gives JSON text) |
@@ -25,9 +25,9 @@ Simulated CT ([scrollsim2](scrollsim2.md), [hardcases](hardcases.md)) comes with
 
 The judge is kept apart from any generator. A generator that trains a discriminator, or tunes presets against its own test, lowers that test's AUC by construction (Goodhart). So the judge refits every critic from scratch on each call, saves no weights, splits by whole real slices and whole simulated tiles (overlapping windows cannot leak between training and scoring), and refuses real slices the generator trained on (`trained_on`). Its verdict uses the **worst** critic (the highest AUC), so a set passes only when no critic separates it.
 
-**Attribution views** say what gives the simulation away. Both sets pass through the same transform before the CNN critic: `marginal` (every window ranked to a uniform grey histogram), `whiten` (also every window's Fourier amplitude set to the pooled mean, keeping phase: edges and geometry), `phaserand` (each window's own amplitude, random phase), `low` (Gaussian sigma 3), `high` (minus Gaussian sigma 1.5), `ridge` (a label-free bright-ridge map: sheet geometry). An AUC that stays high under a view means that view's content still separates the sets.
+**Attribution views** say what gives the simulation away. Both sets pass through the same transform before the CNN critic: `marginal` (every window ranked to a uniform gray histogram), `whiten` (also every window's Fourier amplitude set to the pooled mean, keeping phase: edges and geometry), `phaserand` (each window's own amplitude, random phase), `low` (Gaussian sigma 3), `high` (minus Gaussian sigma 1.5), `ridge` (a label-free bright-ridge map: sheet geometry). An AUC that stays high under a view means that view's content still separates the sets.
 
-It reads grey values only, no labels. Its output is a realism measure, not a proof of realism: a critic it does not include may still separate the sets.
+It reads gray values only, no labels. Its output is a realism measure, not a proof of realism: a critic it does not include may still separate the sets.
 
 ## When to use it
 
@@ -98,7 +98,7 @@ None: it is a library. `judge` takes `critics` (any of `CRITICS`: `feat`, `cnn`,
 
 ## Inputs
 
-- Real: 2D float arrays of CT grey values (any size), with an optional cover mask per array; one group id per array.
+- Real: 2D float arrays of CT gray values (any size), with an optional cover mask per array; one group id per array.
 - Simulated: 2D arrays (uint8 or float) of tiles; one group per tile.
 - Windows are 128 px (`WIN`), scaled to their own 1st to 99th percentiles (`unit`). Context windows are 256 px, 2x2 mean-pooled to 128 (`half`).
 
@@ -123,7 +123,7 @@ None: it is a library. `judge` takes `critics` (any of `CRITICS`: `feat`, `cnn`,
 
 1. Windows on a non-overlapping grid, each scaled to its 1st to 99th percentiles.
 2. Grouped folds (`folds_of`): whole groups dealt to 3 folds by seed; each fold trains a fresh critic on the others.
-3. Critics: `feat` (46 features: 17 grey quantiles, 12 radial log power bands, 9 gradient magnitude quantiles, structure-tensor coherence quartiles at sigma 2 and 5, ridge density and run length; class-balanced L2 logistic); `cnn` (seven 3x3 conv layers, width 24 to 96, LeakyReLU 0.2, dropout 0.3, AdamW 1e-3, 800 steps of 32, random rotations and flips, test-time mean over the 8 symmetries); `cnn_half` (the same on context windows).
+3. Critics: `feat` (46 features: 17 gray quantiles, 12 radial log power bands, 9 gradient magnitude quantiles, structure-tensor coherence quartiles at sigma 2 and 5, ridge density and run length; class-balanced L2 logistic); `cnn` (seven 3x3 conv layers, width 24 to 96, LeakyReLU 0.2, dropout 0.3, AdamW 1e-3, 800 steps of 32, random rotations and flips, test-time mean over the 8 symmetries); `cnn_half` (the same on context windows).
 4. AUC per fold, mean over folds and seeds 0 and 1; worst over critics.
 5. Views run the CNN critic on transformed windows of both sets.
 
@@ -133,7 +133,7 @@ CPU (4-core cloud container, 25 Nov 2026): features 0.19 s a window; planted che
 
 ## Results
 
-PHerc0343P (a public fragment scan on no prize list), 25 Nov 2026, development use. Real windows: grey values of six slices (z 1460 to 1660); the generator's training slices refused. The pass rule (above) was fixed in a preregistration before the judge ran. Model output:
+PHerc0343P (a public fragment scan on no prize list), 25 Nov 2026, development use. Real windows: gray values of six slices (z 1460 to 1660); the generator's training slices refused. The pass rule (above) was fixed in a preregistration before the judge ran. Model output:
 
 | Set | Worst-critic AUC | Verdict |
 | --- | --- | --- |
@@ -166,4 +166,4 @@ What gives it away (post-hoc, Interpretation): fitting the feature critic on one
 ## Related
 
 - [scrollsim2](scrollsim2.md) and [hardcases](hardcases.md): the simulators whose tiles it judges.
-- [simreal](simreal.md): grey-value statistics, a linear realism test and the render fit.
+- [simreal](simreal.md): gray-value statistics, a linear realism test and the render fit.

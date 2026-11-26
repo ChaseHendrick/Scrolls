@@ -1,6 +1,6 @@
 # simreal: measure how real CT looks and fit the Hard Cases render to it
 
-Grey-value statistics of real CT windows (brightness, noise, grain, sheet width, pitch, contrast), a linear realism test that can fail, and a fit of [hardcases](hardcases.md) render bounds to a scan; with ctmatch, a training augmentation that matches a tile's histogram and noise to real CT.
+Gray-value statistics of real CT windows (brightness, noise, grain, sheet width, pitch, contrast), a linear realism test that can fail, and a fit of [hardcases](hardcases.md) render bounds to a scan; with ctmatch, a training augmentation that matches a tile's histogram and noise to real CT.
 
 | Field | Value |
 | --- | --- |
@@ -21,14 +21,14 @@ Grey-value statistics of real CT windows (brightness, noise, grain, sheet width,
 
 ## What it does
 
-Simulated tiles can look unlike real CT in ways a detector notices: noisier, thinner sheets, a different grey histogram. simreal turns "looks like" into numbers, from the real CT's grey values only, never a label:
+Simulated tiles can look unlike real CT in ways a detector notices: noisier, thinner sheets, a different gray histogram. simreal turns "looks like" into numbers, from the real CT's gray values only, never a label:
 
 - `window_stats(w)`: for one 2D window, the bright fraction (share above its Otsu threshold), noise level and noise grain (from ctmatch), and three ridge statistics from the window's own bright ridges (scikit-image Sato, kept where it is a local maximum across the ridge and above its own 80th percentile): `width`, the median best Hessian scale at ridge pixels; `pitch`, twice the median distance from ridge-free midlines to the nearest ridge; `contrast`, ridge pixels' mean minus mid-gap pixels' mean.
 - `measure` and `measure_tiles`: those statistics over many windows of real slices or of tiles, summarized by quartiles; `distance` compares two summaries in units of the real spread.
 - `fit`: renders Hard Cases tiles under each point of a grid of render bounds (`hardcases.realism` and `hardcases.dense`) and ranks the points by distance to the real summary.
-- `features` and `realism_auc`: 35 features per window (17 grey quantiles, 12 log power bands, the six statistics) and a 5-fold L2 logistic regression whose cross-validated ROC AUC says whether a linear classifier can tell real windows from tiles. Two draws of one source score near 0.5, so the test can fail (tested). `random_point` and `search` run a random or local search of render bounds that lowers it.
+- `features` and `realism_auc`: 35 features per window (17 gray quantiles, 12 log power bands, the six statistics) and a 5-fold L2 logistic regression whose cross-validated ROC AUC says whether a linear classifier can tell real windows from tiles. Two draws of one source score near 0.5, so the test can fail (tested). `random_point` and `search` run a random or local search of render bounds that lowers it.
 
-ctmatch is the training-side partner: `reference(slices)` stores, for many real 256 px windows, 257 grey quantiles, bright fraction, noise and grain; `apply(x, ref)` gives each synthetic tile, with probability P, a blur and added noise that bring its grain and noise to a reference window's, then a rank-preserving quantile map onto that window's histogram. Lines never move; only grey values change.
+ctmatch is the training-side partner: `reference(slices)` stores, for many real 256 px windows, 257 gray quantiles, bright fraction, noise and grain; `apply(x, ref)` gives each synthetic tile, with probability P, a blur and added noise that bring its grain and noise to a reference window's, then a rank-preserving quantile map onto that window's histogram. Lines never move; only gray values change.
 
 These are training-data settings and realism measures. They say nothing about what a scan contains.
 
@@ -149,7 +149,7 @@ Every window is scaled to its own 1st to 99th percentiles. Ridge pixels come fro
 
 ## Results
 
-PHerc0343P (a public fragment scan on no prize list), 25 Nov 2026, grey values only, development use. Default Hard Cases tiles against real windows: linear realism AUC 0.999. The `343p` preset was picked by a search scored on 120 windows of the scan; on those same windows it scores 0.986, which is selection-biased, and on other windows of the scan its tiles still score 1.000 (0.995 after ctmatch's histogram match). The render knobs alone do not make tiles indistinguishable from real CT; [simcritic](simcritic.md) has the stronger judge's results. Model output.
+PHerc0343P (a public fragment scan on no prize list), 25 Nov 2026, gray values only, development use. Default Hard Cases tiles against real windows: linear realism AUC 0.999. The `343p` preset was picked by a search scored on 120 windows of the scan; on those same windows it scores 0.986, which is selection-biased, and on other windows of the scan its tiles still score 1.000 (0.995 after ctmatch's histogram match). The render knobs alone do not make tiles indistinguishable from real CT; [simcritic](simcritic.md) has the stronger judge's results. Model output.
 
 ## For agents
 

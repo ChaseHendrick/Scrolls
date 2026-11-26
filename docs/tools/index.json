@@ -16238,7 +16238,7 @@
     "Run": "None (library): `from kit import simcritic`",
     "Code": "`kit/simcritic.py`",
     "Tests": "`tests/test_simcritic.py`",
-    "Needs": "Python 3.10 or newer, numpy, scipy, torch (CPU or CUDA) for the CNN critics, scikit-image for the ridge view; real CT grey values and simulated tiles as 2D arrays; no labels",
+    "Needs": "Python 3.10 or newer, numpy, scipy, torch (CPU or CUDA) for the CNN critics, scikit-image for the ridge view; real CT gray values and simulated tiles as 2D arrays; no labels",
     "Runs on": "CPU for the feature critic and small checks (planted checks, 2 critics at 400 steps: about 12 minutes in a 4-core cloud container, 25 Nov 2026); a full judge of several sets with every view is best split over many CPU workers or run on a GPU",
     "Network": "None",
     "Writes": "Nothing (it returns dicts; `dumps` gives JSON text)",
@@ -16350,7 +16350,7 @@
    "id": "simreal",
    "name": "simreal",
    "tagline": "measure how real CT looks and fit the Hard Cases render to it",
-   "summary": "Grey-value statistics of real CT windows (brightness, noise, grain, sheet width, pitch, contrast), a linear realism test that can fail, and a fit of [hardcases](hardcases.md) render bounds to a scan; with ctmatch, a training augmentation that matches a tile's histogram and noise to real CT.",
+   "summary": "Gray-value statistics of real CT windows (brightness, noise, grain, sheet width, pitch, contrast), a linear realism test that can fail, and a fit of [hardcases](hardcases.md) render bounds to a scan; with ctmatch, a training augmentation that matches a tile's histogram and noise to real CT.",
    "status": "Experimental",
    "kind": [
     "kit module"
