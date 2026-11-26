@@ -16657,6 +16657,153 @@
    ]
   },
   {
+   "id": "simscore",
+   "name": "simscore",
+   "tagline": "score simulated CT under the Sim Realism Standard",
+   "summary": "Reference scorer of SRS-1: runs the released simcritic judge with every setting fixed, gates it on planted checks and a real-against-real control, applies the fixed bar and the calibrated sample-size rule, and writes a JSON record anyone can check.",
+   "status": "Experimental",
+   "kind": [
+    "kit entry point"
+   ],
+   "area": "Scoring and controls",
+   "commands": [
+    "python -m kit.simscore reference",
+    "score",
+    "check",
+    "calibrate"
+   ],
+   "imports": [
+    "from kit import simscore"
+   ],
+   "code": [
+    {
+     "path": "kit/simscore.py",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_simscore.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed to run; publishing a record is the scorer's owner's choice"
+   },
+   "checked": {
+    "date": "2026-11-26",
+    "commit": "51e816f"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`simscore`",
+    "Status": "Experimental",
+    "Kind": "kit entry point",
+    "Area": "Scoring and controls",
+    "Run": "`python -m kit.simscore reference`, `score`, `check`, `calibrate`; `from kit import simscore`",
+    "Code": "`kit/simscore.py`",
+    "Tests": "`tests/test_simscore.py`",
+    "Needs": "Python 3.10 or newer, numpy, scipy, torch (CPU or CUDA) and scikit-image for the critics (as [simcritic](simcritic.md)); `check` needs only the standard library; a reference npz (R343-v1 from `reference`, or your own slices) and an npz of at least 240 simulated tiles of 256 px or more",
+    "Runs on": "CPU or GPU. `reference`: 14 s; a `--smoke --steps 2` score: 25 s; `calibrate`: 290 s (all in a 4-core cloud container, 26 Nov 2026). A full score: about 5 hours on one CPU worker at simcritic's 25 Nov rate (not timed end to end); a GPU is faster",
+    "Network": "`reference` only: `vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` (PHerc0343P CT) and `huggingface.co` (the organizers' public surface labels, for the gray-value scale); the rest is offline",
+    "Writes": "`reference`: the npz named; `score`: the record named by `--out`; `calibrate`: the JSON named by `--out`; `check`: nothing",
+    "Go-ahead": "Not needed to run; publishing a record is the scorer's owner's choice",
+    "Released": "Not yet: draft PR, waiting for the owner's yes",
+    "Checked": "2026-11-26 against commit `51e816f`"
+   },
+   "page": "docs/tools/simscore.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 22,
+     "end_line": 31,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 32,
+     "end_line": 43,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 44,
+     "end_line": 61,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 62,
+     "end_line": 72,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 73,
+     "end_line": 116,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 117,
+     "end_line": 139,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 140,
+     "end_line": 144,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 145,
+     "end_line": 154,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 155,
+     "end_line": 168,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 169,
+     "end_line": 178,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 179,
+     "end_line": 182,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 183,
+     "end_line": 192,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 193,
+     "end_line": 196,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 197,
+     "end_line": 200,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 201,
+     "end_line": 205,
+     "applicable": true
+    }
+   ]
+  },
+  {
    "id": "slicechains",
    "name": "slicechains",
    "tagline": "tell a scroll's winding direction from its surface prediction",
