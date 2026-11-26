@@ -142,5 +142,18 @@ class SimCriticTest(unittest.TestCase):
         self.assertEqual(len(r["per_fold"]), 2)
 
 
+class VerdictBarsTest(unittest.TestCase):
+    """The verdict rule alone: no numpy needed, so it runs everywhere."""
+
+    def test_bars_are_inclusive_and_missing_control_fails(self):
+        from kit.simcritic import verdict as v
+        self.assertEqual(v({"worst": 0.5}, {"worst": 0.25}, margin=0.25)["verdict"], "PASS")  # at control + margin
+        self.assertEqual(v({"worst": 0.5}, {"worst": 0.25}, margin=0.125)["verdict"], "FAIL")
+        self.assertEqual(v({"worst": 0.5}, {"worst": 0.5}, margin=0.25, ceiling=0.5)["verdict"], "PASS")  # at ceiling
+        self.assertEqual(v({"worst": 0.5}, {"worst": 0.5}, margin=0.25, ceiling=0.25)["verdict"], "FAIL")
+        r = v({"worst": 0.5}, {"worst": None})
+        self.assertEqual((r["verdict"], r["gap_to_bar"]), ("FAIL", None))
+        self.assertEqual(v({"worst": None}, {"worst": 0.5})["verdict"], "FAIL")
+
 if __name__ == "__main__":
     unittest.main()
