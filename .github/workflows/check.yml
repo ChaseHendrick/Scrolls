@@ -96,9 +96,30 @@ jobs:
           scrolls-letterdemo --out letterdemo
           scrolls-letterread letterdemo/demo-page.png --weights letters-v2-ccby --letter-px 32 --quiet --no-orientation
 
-  verify:
+  verify-shard:
+    # The whole suite with every extra (the map tools and the reader), split into 6 parallel shards by
+    # scripts/ci/testshard.py so the slow scrollsim2 render tests no longer set the wall time of every PR. The
+    # `verify` job below is the required check; it passes only when every shard and the experiment tests pass.
     runs-on: ubuntu-latest
-    # the scrollsim2 render tests run here (numpy, scipy and zarr installed): about 10 minutes of the job
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4, 5, 6]
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
+          cache: pip
+          cache-dependency-path: pyproject.toml
+      - name: Install the package with every extra (the map tools and the reader)
+        run: python -m pip install ".[all]"
+      - name: Unit tests including kit verify, one shard
+        run: python scripts/ci/testshard.py --shard ${{ matrix.shard }} --of 6
+
+  verify-experiments:
+    runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v5
@@ -109,8 +130,6 @@ jobs:
           cache-dependency-path: pyproject.toml
       - name: Install the package with every extra (the map tools and the reader)
         run: python -m pip install ".[all]"
-      - name: Unit tests including kit verify
-        run: python -m unittest discover -s tests -v
       - name: Experiment regression tests
         run: |
           python - <<'PYTHON'
@@ -125,3 +144,17 @@ jobs:
               subprocess.run([sys.executable, "-m", "unittest", "discover",
                               "-s", str(directory), "-p", "test_*.py", "-v"], check=True)
           PYTHON
+
+  verify:
+    # The required check named in main's ruleset: keep this job's name. It fails unless every verify shard and the
+    # experiment tests succeeded (a skipped or cancelled shard fails it too).
+    if: always()
+    needs: [verify-shard, verify-experiments]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Every verify shard and the experiment tests passed
+        run: |
+          echo "verify-shard: ${{ needs.verify-shard.result }}, verify-experiments: ${{ needs.verify-experiments.result }}"
+          test "${{ needs.verify-shard.result }}" = success
+          test "${{ needs.verify-experiments.result }}" = success
