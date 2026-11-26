@@ -372,7 +372,7 @@ def verdict(result, control, margin=0.05, ceiling=0.60):
     w, c = result["worst"], control["worst"]
     ok = w is not None and c is not None and w <= c + margin and w <= ceiling
     return {"verdict": "PASS" if ok else "FAIL", "worst": w, "control_worst": c, "margin": margin, "ceiling": ceiling,
-            "gap_to_bar": None if w is None else round(w - min(c + margin, ceiling), 4)}
+            "gap_to_bar": None if w is None or c is None else round(w - min(c + margin, ceiling), 4)}
 
 
 def planted(real, real_groups, critics=("feat", "cnn"), steps=600, device="cpu", seed=0, progress=print):
