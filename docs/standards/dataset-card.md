@@ -182,7 +182,11 @@ Every card failed `provenance.present` (no `provenance.json`) and `section.spent
 Changelog, and the two atlases lack `SHA256SUMS`. The two `SHA256SUMS` files matched every file they list, checked
 against the Hub's LFS digests and by download (scrollsim-tiles in 22 s with `--max-download-mb 200`).
 
-Bringing the four cards up to the standard is a separate change to public datasets and waits for the owner's yes.
+The same day, on the owner's yes, each was brought up to the standard: a `provenance.json`, a Spent seeds and truth
+section, a changelog entry and a `SHA256SUMS` that leaves the card out, staged and checked with
+`python -m kit.datacard check SharpMeow/NAME --overlay STAGE` before upload (all four PASS, every listed hash checked).
+The Segment Atlas writes these files on every daily build (`kit/atlas.py`); the ink atlas's card source is
+`spaces/ink-atlas/dataset/`. The table above is the state before that change, kept as the record.
 
 ## Changelog
 
