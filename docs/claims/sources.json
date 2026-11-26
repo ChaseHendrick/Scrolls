@@ -7,16 +7,7 @@
  ],
  "blocks": {
   "a-threshold-taken-from-a-training-segment-misses": {
-   "line": 291,
-   "sources": {
-    "docs/logs/2026-10-07-novel-checks.md": "70f187a1369af27628991282748b347b4960ec8a10f4ecc243b6082f71e07f59"
-   },
-   "reasons": {
-    "96%": "derived: at most 3.7 % of labeled ink reaches the cut-off, so about 96 % misses it"
-   }
-  },
-  "a-threshold-taken-from-a-training-segment-misses-2": {
-   "line": 24,
+   "line": 41,
    "sources": {
     "docs/logs/2026-10-07-novel-checks.md": "70f187a1369af27628991282748b347b4960ec8a10f4ecc243b6082f71e07f59"
    },
@@ -26,16 +17,7 @@
    }
   },
   "a-traced-surface-s-render-comes-out-turned": {
-   "line": 278,
-   "sources": {
-    "docs/logs/2026-10-14-upright-before-ink.md": "c018dc14037ad502a8bbb058167d7cb63527868546be0f21b4089538418ff8de"
-   },
-   "reasons": {
-    "49": "derived: the source's 49.3 degrees, rounded"
-   }
-  },
-  "a-traced-surface-s-render-comes-out-turned-2": {
-   "line": 18,
+   "line": 31,
    "sources": {
     "docs/logs/2026-10-14-upright-before-ink.md": "c018dc14037ad502a8bbb058167d7cb63527868546be0f21b4089538418ff8de"
    },
@@ -53,12 +35,6 @@
     "70": "external: villa issue #2058 and pull request #2060 state that the new tests fail 70 checks on unchanged code"
    }
   },
-  "a-transient-s3-404-becomes-a-permanent-hole": {
-   "line": 287,
-   "sources": {
-    "docs/logs/2026-10-12-upstream-reports.md": "57f81a96d5871d496ef9d88b97192cc53d5a99f383f5bf97e4e7e69f0bebe5f2"
-   }
-  },
   "against-the-1-129-m-scan-alone-the": {
    "line": 163,
    "sources": {
@@ -67,25 +43,12 @@
    "doc": "docs/pipeline-october-2026.md"
   },
   "averaging-depth-windows-matches-the-best-window-chosen": {
-   "line": 292,
-   "sources": {
-    "docs/logs/2026-10-07-novel-checks.md": "70f187a1369af27628991282748b347b4960ec8a10f4ecc243b6082f71e07f59",
-    "docs/logs/2026-10-07-overlap-and-baseline.md": "4c4e5150fcabef2e452c8e6a0b9c0badaabb87c0179a4baee1e62af2e4866dae"
-   }
-  },
-  "averaging-depth-windows-matches-the-best-window-chosen-2": {
-   "line": 25,
+   "line": 42,
    "sources": {
     "docs/logs/2026-10-07-novel-checks.md": "70f187a1369af27628991282748b347b4960ec8a10f4ecc243b6082f71e07f59",
     "docs/logs/2026-10-07-overlap-and-baseline.md": "4c4e5150fcabef2e452c8e6a0b9c0badaabb87c0179a4baee1e62af2e4866dae"
    },
    "doc": "docs/FINDINGS.md"
-  },
-  "center-finder": {
-   "line": 280,
-   "sources": {
-    "docs/tools/umbilicus.md": "93f4282582098663eb38df8cff29c729a53943788f08605cd4857beefa3bfbe2"
-   }
   },
   "chart-mean-distance-gained-toward-a-finer-scan": {
    "line": 136,
@@ -107,13 +70,7 @@
    "doc": "docs/pipeline-october-2026.md"
   },
   "cross-trace-agreement-suggests-a-label-free-triage": {
-   "line": 297,
-   "sources": {
-    "docs/logs/2026-10-07-overlap-and-baseline.md": "4c4e5150fcabef2e452c8e6a0b9c0badaabb87c0179a4baee1e62af2e4866dae"
-   }
-  },
-  "cross-trace-agreement-suggests-a-label-free-triage-2": {
-   "line": 30,
+   "line": 47,
    "sources": {
     "docs/logs/2026-10-07-overlap-and-baseline.md": "4c4e5150fcabef2e452c8e6a0b9c0badaabb87c0179a4baee1e62af2e4866dae"
    },
@@ -188,12 +145,6 @@
     "docs/logs/2026-10-07-overlap-and-baseline.md": "4c4e5150fcabef2e452c8e6a0b9c0badaabb87c0179a4baee1e62af2e4866dae"
    }
   },
-  "inkfilter-s-face-mix": {
-   "line": 282,
-   "sources": {
-    "docs/tools/inkfilter.md": "1becfd018648ec2700dc350da91e6fb62d1d04d77c2675ed18890d7410f98aa0"
-   }
-  },
   "inkfilter-s-fixed-face-mix-filter-scored-above": {
    "line": 11,
    "sources": {
@@ -202,14 +153,7 @@
    "doc": "docs/FINDINGS.md"
   },
   "labelsnap-moved-published-surface-labels-closer-to-the": {
-   "line": 264,
-   "sources": {
-    "docs/results.json": "c690346f0a963306577884c5e793e9006de3fac94ce62987b49ebb6ec3b85630",
-    "docs/tools/snapped-labels.md": "3369d672268fb54e79d37f1c1bdf4bbb39ca96560361b7762855be0d31d65116"
-   }
-  },
-  "labelsnap-moved-published-surface-labels-closer-to-the-2": {
-   "line": 15,
+   "line": 16,
    "sources": {
     "docs/results.json": "c690346f0a963306577884c5e793e9006de3fac94ce62987b49ebb6ec3b85630",
     "docs/tools/snapped-labels.md": "3369d672268fb54e79d37f1c1bdf4bbb39ca96560361b7762855be0d31d65116"
@@ -257,12 +201,6 @@
    "doc": "docs/pipeline-october-2026.md"
   },
   "our-letter-classifier-trained-on-hell-char-only": {
-   "line": 348,
-   "sources": {
-    "docs/prereg/2026-10-24-letter-reader-icdar-h2h.md": "1ec13488674df4cc5b987ed1dc9f81b9c1d2f7347bb61b6790eedb769bc4a4c3"
-   }
-  },
-  "our-letter-classifier-trained-on-hell-char-only-2": {
    "line": 14,
    "sources": {
     "docs/prereg/2026-10-24-letter-reader-icdar-h2h.md": "1ec13488674df4cc5b987ed1dc9f81b9c1d2f7347bb61b6790eedb769bc4a4c3"
@@ -278,12 +216,6 @@
    }
   },
   "parting-a-contact-classifier-on-base-dinovol-features": {
-   "line": 267,
-   "sources": {
-    "docs/logs/2026-10-29-parting-fragment-contact.md": "43f809fbb25dcb0bf3defa37e9df8fe7ccf127b01d87653892a2d96580746443"
-   }
-  },
-  "parting-a-contact-classifier-on-base-dinovol-features-2": {
    "line": 17,
    "sources": {
     "docs/logs/2026-10-29-parting-fragment-contact.md": "43f809fbb25dcb0bf3defa37e9df8fe7ccf127b01d87653892a2d96580746443"
@@ -297,12 +229,6 @@
    },
    "doc": "docs/pipeline-october-2026.md"
   },
-  "pherc0841-has-3-4-cm-of-supervision-so": {
-   "line": 300,
-   "sources": {
-    "docs/logs/2026-10-07-overlap-and-baseline.md": "4c4e5150fcabef2e452c8e6a0b9c0badaabb87c0179a4baee1e62af2e4866dae"
-   }
-  },
   "pherc0841-has-limited-supervision-and-reported-aucs-need": {
    "line": 296,
    "sources": {
@@ -311,12 +237,6 @@
    "reasons": {
     "0.008": "derived: half the source's 95 % interval 0.962 to 0.979 on w00",
     "0.038": "derived: half the source's 95 % interval 0.829 to 0.905 on ag405"
-   }
-  },
-  "pherc1667-s-1-129-um-renders-appear-misplaced": {
-   "line": 303,
-   "sources": {
-    "docs/logs/2026-10-07-mesh-hypothesis.md": "d49f2c468e588c32f187e78122e329a32399daddf956bbba6e6281887c7b951c"
    }
   },
   "pherc1667-s-published-1-129-um-renders-appear": {
@@ -328,14 +248,14 @@
     "216": "count: nine control segments of 24 tiles each (H5 in the source)"
    }
   },
-  "raw-ct-brightness-alone-carries-almost-no-ink": {
-   "line": 294,
+  "pressed-sheets-can-fool-a-tracer": {
+   "line": 277,
    "sources": {
-    "docs/logs/2026-10-07-overlap-and-baseline.md": "4c4e5150fcabef2e452c8e6a0b9c0badaabb87c0179a4baee1e62af2e4866dae"
+    "docs/tools/sheethug.md": "ff91478732838e7a1e919f51af40b9eca51a8ff57f0d2220b9dc78b297f3bb87"
    }
   },
-  "raw-ct-brightness-alone-carries-almost-no-ink-2": {
-   "line": 27,
+  "raw-ct-brightness-alone-carries-almost-no-ink": {
+   "line": 44,
    "sources": {
     "docs/logs/2026-10-07-overlap-and-baseline.md": "4c4e5150fcabef2e452c8e6a0b9c0badaabb87c0179a4baee1e62af2e4866dae"
    },
@@ -351,19 +271,7 @@
     "0.1": "context: the version AutoPipeline 0.1.11"
    }
   },
-  "ringleader-labeled-every-m7-sheet-pixel-of-held": {
-   "line": 273,
-   "sources": {
-    "docs/tools/ringleader.md": "2f6e55973f4479596e95c2e04d9d2132531eb97002a9a8766be8e5dd5bcd96ce"
-   }
-  },
   "ringleader-s-ladders-made-villa-s-spiral-fit": {
-   "line": 283,
-   "sources": {
-    "docs/tools/ringleader.md": "2f6e55973f4479596e95c2e04d9d2132531eb97002a9a8766be8e5dd5bcd96ce"
-   }
-  },
-  "ringleader-s-ladders-made-villa-s-spiral-fit-2": {
    "line": 24,
    "sources": {
     "docs/tools/ringleader.md": "2f6e55973f4479596e95c2e04d9d2132531eb97002a9a8766be8e5dd5bcd96ce"
@@ -378,16 +286,7 @@
    "doc": "docs/FINDINGS.md"
   },
   "scoring-a-crop-needs-an-edge-margin": {
-   "line": 294,
-   "sources": {
-    "r:results/17": "64ac48e4b3922c7949f57c6f8d27f337af43e6589513e0ce98f143650fbc2a4d",
-    "r:results/20": "28b65202be97bd0c8fed11ee9e6df61ec04356077266e276cb7325eca6dae1c4",
-    "r:results/9": "f6fe128229d885f25c6e17256054260bad76f3976b6b854427fe39c148408851",
-    "r:results/26": "510df9ad8e32d8b380ba9b545d80f5d210da9746cb8610420ebe0ad93e831e3a"
-   }
-  },
-  "scoring-a-crop-needs-an-edge-margin-2": {
-   "line": 23,
+   "line": 40,
    "sources": {
     "r:results/17": "64ac48e4b3922c7949f57c6f8d27f337af43e6589513e0ce98f143650fbc2a4d",
     "r:results/20": "28b65202be97bd0c8fed11ee9e6df61ec04356077266e276cb7325eca6dae1c4",
@@ -401,13 +300,6 @@
    }
   },
   "slicechains-called-the-winding-direction-of-9-of": {
-   "line": 285,
-   "sources": {
-    "r:slicechains_checks/0": "6779aa2bdcbdd787315f63611eb2808e7bf63e1ea8b9239c2db9b7226571e15b",
-    "docs/tools/slicechains.md": "067b3e0e546b2e4a8998357a6daecd1e4624a8a29d05305545ae40e418fbb9b4"
-   }
-  },
-  "slicechains-called-the-winding-direction-of-9-of-2": {
    "line": 25,
    "sources": {
     "r:slicechains_checks/0": "6779aa2bdcbdd787315f63611eb2808e7bf63e1ea8b9239c2db9b7226571e15b",
@@ -416,13 +308,6 @@
    "doc": "docs/FINDINGS.md"
   },
   "sqrecipe-on-pherc0332-a-finer-dls-scan-brought": {
-   "line": 276,
-   "sources": {
-    "r:sqrecipe_checks/0": "5f8b1360665421c1a273e151498ce9f470969cddcf1b59a099fefd6f11f9c781",
-    "docs/tools/sqrecipe.md": "90e2aa14bf01b85aae3cc6b282127b36b510afc1991008fd6c1c2b585289d6d7"
-   }
-  },
-  "sqrecipe-on-pherc0332-a-finer-dls-scan-brought-2": {
    "line": 19,
    "sources": {
     "r:sqrecipe_checks/0": "5f8b1360665421c1a273e151498ce9f470969cddcf1b59a099fefd6f11f9c781",
@@ -448,25 +333,18 @@
    },
    "doc": "docs/FINDINGS.md"
   },
-  "strokenet-s-two-density-score-with-no-network": {
-   "line": 283,
-   "sources": {
-    "docs/strokenet.md": "a976c280205ae6d40b2b625faf95b404749c9092e97aee68e067c0a74532fa81",
-    "r:strokenet_checks/2": "c90c7e31ff047146b3b082e8390158fe42d0c42d68d48624ebfbf7bc1a3d4f30"
-   }
-  },
-  "strokenet-tells-text-from-the-same-text-turned": {
-   "line": 284,
-   "sources": {
-    "docs/strokenet.md": "a976c280205ae6d40b2b625faf95b404749c9092e97aee68e067c0a74532fa81"
-   }
-  },
   "strokenet-told-text-from-the-same-text-turned": {
    "line": 10,
    "sources": {
     "docs/strokenet.md": "a976c280205ae6d40b2b625faf95b404749c9092e97aee68e067c0a74532fa81"
    },
    "doc": "docs/FINDINGS.md"
+  },
+  "surface-placement-depends-on-the-scroll": {
+   "line": 278,
+   "sources": {
+    "docs/tools/labelsnap.md": "260bb777f0f31cd34a0b177ed4c48f144b7a2b7a1d79ffed15c60680340b5e60"
+   }
   },
   "synthetic-demo-made-up-ct-and-surface-the": {
    "line": 132,
@@ -503,13 +381,6 @@
    "doc": "docs/pipeline-october-2026.md"
   },
   "three-hosted-text-models-restored-hidden-greek-letters": {
-   "line": 285,
-   "sources": {
-    "r:text_restoration_checks/0": "f030bf477aa0ff96c846459374e1e2be222ea20bdbf975a55c5bc6a70e9497df",
-    "docs/prereg/2026-10-22-greek-restoration.md": "b4d7e24f5e10699fec2894126f3afd161ea913da771fff2c48a495e75dfd47a3"
-   }
-  },
-  "three-hosted-text-models-restored-hidden-greek-letters-2": {
    "line": 13,
    "sources": {
     "docs/prereg/2026-10-22-greek-restoration.md": "b4d7e24f5e10699fec2894126f3afd161ea913da771fff2c48a495e75dfd47a3",
@@ -541,13 +412,6 @@
    "doc": "docs/pipeline-october-2026.md"
   },
   "villa-s-flow-gradient-smoothing-cut-its-spiral": {
-   "line": 277,
-   "sources": {
-    "r:spiral_smoothing_checks/0": "a6b1e315d3209e1ba6c49ce172fab29796480aaa1a6d76f26cf015b273cf401d",
-    "r:spiral_smoothing_checks/1": "5da3cd0b2cdeb00192a75eaf06f0315d3a0b84916e7d8db0c365b4776fb6a1e7"
-   }
-  },
-  "villa-s-flow-gradient-smoothing-cut-its-spiral-2": {
    "line": 20,
    "sources": {
     "r:spiral_smoothing_checks/0": "a6b1e315d3209e1ba6c49ce172fab29796480aaa1a6d76f26cf015b273cf401d",
@@ -555,21 +419,15 @@
    },
    "doc": "docs/FINDINGS.md"
   },
-  "villa-s-released-sheet-tracer-does-not-record-2": {
-   "line": 31,
+  "villa-s-released-sheet-tracer-does-not-record": {
+   "line": 35,
    "sources": {
     "r:villa_sheet_tracer_checks/0": "db3a03d8e0960fcd3262c60679288679f795b1f9d09c8f3e34d481df51d9b14d"
    },
    "doc": "docs/FINDINGS.md"
   },
   "villa-s-tracer-did-not-hold-an-explicit": {
-   "line": 283,
-   "sources": {
-    "docs/logs/2026-10-12-upstream-reports.md": "57f81a96d5871d496ef9d88b97192cc53d5a99f383f5bf97e4e7e69f0bebe5f2"
-   }
-  },
-  "villa-s-tracer-did-not-hold-an-explicit-2": {
-   "line": 17,
+   "line": 30,
    "sources": {
     "docs/logs/2026-10-12-upstream-reports.md": "57f81a96d5871d496ef9d88b97192cc53d5a99f383f5bf97e4e7e69f0bebe5f2"
    },
@@ -583,12 +441,6 @@
    "doc": "docs/pipeline-october-2026.md"
   },
   "windlabel-box-s-automatic-relative-windings-passed-a": {
-   "line": 263,
-   "sources": {
-    "docs/tools/windlabel-box.md": "33a0b04a5781d069518f5f158573a4e0117abd05f9da8afd54f773a2554c284f"
-   }
-  },
-  "windlabel-box-s-automatic-relative-windings-passed-a-2": {
    "line": 15,
    "sources": {
     "docs/tools/windlabel-box.md": "33a0b04a5781d069518f5f158573a4e0117abd05f9da8afd54f773a2554c284f"
