@@ -221,7 +221,7 @@ front matter, sums lines, seed ranges and headings; the Hub source with a fake s
 
 ## History
 
-- 2026-11-26: first version with standard 0.1 (this PR).
+- 2026-11-26: first version with standard 0.1 (`3865a21`).
 
 ## Related
 
