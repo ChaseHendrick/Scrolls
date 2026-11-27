@@ -250,7 +250,7 @@ PHerc0343P (a public fragment scan on no prize list), 27 Nov 2026, development u
 
 ## History
 
-- 2026-11-27: released in the Scrolls kit: the generator with spectrum, grain and high-band terms, residual steering, edit and score hooks, fine-tuning, a command line from reference slices to realized tiles, and a self-contained line keep.
+- 2026-11-27: released in the Scrolls kit: the generator with spectrum, grain and high-band terms, residual steering, edit and score hooks, fine-tuning, a command line from reference slices to realized tiles, and a self-contained line keep. ([#401](https://github.com/ChaseHendrick/Scrolls/pull/401))
 
 ## Related
 
