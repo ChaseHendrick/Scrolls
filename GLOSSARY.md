@@ -472,6 +472,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **sidecar (media sidecar)**: The JSON file next to a picture or clip, `NAME.json`, recording its media label, alt text, caption, license, sizes and SHA-256, inputs, and the command and scripts that made it (schema `scrolls-media/1`; [`docs/tools/media.md`](docs/tools/media.md)).
 
+**simgan**: `python -m kit.simgan`: a small GAN that repaints ScrollSim Hard Cases tiles with a texture learned from real CT gray values, keeping sheets in place so the exact labels hold; a development tool that has not passed the realism bar ([page](docs/tools/simgan.md)).
+
 **SMT (simultaneous multithreading)**: Two hardware threads sharing one physical core; a 32 vCPU cloud machine can be 16 cores, so a process past the 16th shares a core with another.
 
 **Space (Hugging Face Space)**: A small web app hosted on Hugging Face.
