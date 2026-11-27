@@ -112,6 +112,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **d9v2**: A community fine-tune of `ink_9um`, usable as a drop-in `ink_9um` checkpoint.
 
+**defectbench**: `python -m kit.defectbench`, a development bench of synthetic meshes with planted sheet switches, rough tracing, folds and bridges and the known answer for every vertex, for scoring mesh repairs and sheet-switch alarms before any real column is spent; a bench score is never a result on a scroll ([page](docs/tools/defectbench.md)).
+
 **depth shuffle**: A control volume in which the layers of a surface volume are put in a random order (`kit shuffle`, `kit layers --shuffle SEED`). Real ink signal should not survive it.
 
 **derived cover (review pin)**: A GO that still covers a pull request's head although its own patch changed, because every commit after the pin is a merge of the base branch, each file's own change is the same by content, and each merge equals an automatic merge of its parents (`kit reviewpin`, [page](docs/tools/freeze.md)).
@@ -157,6 +159,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 **fp16 (half precision)**: Storing and computing numbers with 16 bits instead of the usual 32 (fp32). It can make GPU inference faster at a small cost in accuracy. `V8IN_FP16=1` turns it on for v8in on MPS, where it is kept only if the crop check still passes and it is faster.
 
 **fragment**: A detached piece of papyrus, often with visible ink, used as ground truth for ink models.
+
+**framecheck**: `python -m kit.framecheck`, a numpy port of gpchain's frame check (MIT): a render is in frame when its two middle layers match the CT sampled at the mesh's own positions (Pearson r at least 0.95) and its empty pixels lie only in villa's unrendered edge band ([page](docs/tools/framecheck.md)).
 
 **freeze (hash freeze)**: A registry entry that fixes the sha256 of every file a run executes at the commit that froze its preregistration. It is live until the run's evidence is collected, then spent; a live freeze's files must not change, and the run refuses to load a repository file the freeze does not list (`kit freeze`, [page](docs/tools/freeze.md)).
 
@@ -391,6 +395,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 **R343-v1**: The default real reference of SRS-1: six fixed axial slices of the public PHerc0343P scan (level-2 z 1460 to 1660), resampled to 9.362 µm, 211 windows of 128 px with published digests ([standard](docs/standards/sim-realism.md#the-r343-v1-reference)).
 
 **Reader v2**: A community fine-tune of `ink_9um` by Domenico Russo. It is AutoPipeline's default ink reader.
+
+**readerseen**: `python -m kit.readerseen`, Reader V3's published training list resolved to public segment ids, with a check that says whether a scroll or segment is TRAINED, SELECTED, SAME-SCROLL, SAME-ROLL or FRESH-BY-LIST for Reader V3, Reader v2 and their fine-tunes ([page](docs/tools/readerseen.md)).
 
 **readout set, plumbing set**: The two kinds of `code-sha256` block in a preregistration. Readout files (scoring code, labels, thresholds) change only by a dated amendment; plumbing files (container image, installs, logging) may change by a dated deviation line with the new hash (`kit freeze prereg`, [page](docs/tools/freeze.md)).
 
