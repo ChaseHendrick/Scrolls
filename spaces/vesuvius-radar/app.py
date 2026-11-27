@@ -153,6 +153,8 @@ def load_store():
         with LOCK:
             STORE.update({k: best.get(k, STORE[k]) for k in STORE})
             STORE.setdefault("state", {})
+            for i in STORE["items"].values():  # items stored before a scoring change get it too
+                scanner.apply_scroll_floor(CFG, i)
     prune()
 
 

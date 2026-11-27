@@ -390,12 +390,48 @@ def finish(items: list[dict], scorer: Scorer, sem: Semantic | None, progress=Non
         if head and head.ready:
             i["score"] = max(0, min(100, head.score(i, v)))
             i["learned"] = "full" if v is not None else "meta"
+            apply_scroll_floor(scorer.cfg, i)
         else:
             i["score"] = rule
             if capped:
                 i["capped"] = capped
         i["band"] = scorer.band(i["score"])
     return items
+
+
+def scroll_floor(cfg: dict, item: dict) -> int:
+    """The least final score for an item that names the scrolls specifically (a term in cfg["scroll_floor"]["specific"]
+    among its matched terms), that the meaning model reads as scroll work (semantic at least min_semantic) and that
+    comes from a source of written works (cfg["scroll_floor"]["sources"]: papers, articles, news): the mean
+    of the learned score and the rule score. 0 when the item does not qualify. The learned head was fitted to a window
+    with few such papers, so alone it ranks a paper on the Herculaneum scrolls by its source (arXiv, journals) and puts
+    it below minor villa pull requests; this floor only raises scores, never lowers them."""
+    fc = cfg.get("scroll_floor")
+    if not fc or (item.get("semantic") or 0) < fc["min_semantic"] or item.get("source") not in fc["sources"]:
+        return 0
+    if not set(fc["specific"]) & set(item.get("matched") or []):
+        return 0
+    return int(round((item.get("score", 0) + item.get("rule", item.get("keyword", 0))) / 2))
+
+
+LIFTED = "it names the scrolls and the meaning model reads it as scroll work, so the rule score counts half"
+
+
+def apply_scroll_floor(cfg: dict, item: dict) -> dict:
+    """Apply scroll_floor to an item the learned head scored. Idempotent, so the Space can apply it again to stored items
+    when it starts: the head's own score is kept in `learned_score` and `lifted` says why the shown score is higher.
+    Sets the band. Items without a learned score are left alone. Returns the item."""
+    if not item.get("learned"):
+        return item
+    base = item.pop("learned_score", item.get("score", 0))
+    item.pop("lifted", None)
+    item["score"] = base
+    lift = min(100, scroll_floor(cfg, item))
+    if lift > base:
+        item["learned_score"], item["score"], item["lifted"] = base, lift, LIFTED
+    b = cfg["bands"]
+    item["band"] = "high" if item["score"] >= b["high"] else "medium" if item["score"] >= b["medium"] else "low"
+    return item
 
 
 def embed_text(cfg: dict, title: str, summary: str) -> str:
