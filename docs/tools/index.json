@@ -816,7 +816,7 @@
     "Needs": "Python 3.10 or later, numpy, pyarrow and huggingface_hub (the last two only for `build`)",
     "Runs on": "Any CPU. On 27 Nov 2026 a 4-core cloud container read all 18 shards (8.6 GB) and measured 3,412 patches in 253 s; one shard on disk at a time",
     "Network": "`huggingface.co` (the dataset's 18 parquet shards, 8.6 GB in all, one at a time)",
-    "Writes": "OUT/`atlas15k.csv`, OUT/`atlas15k.jsonl`, OUT/`atlas15k-scrolls.json`; each shard goes to a temporary folder (or `--workdir`) that is deleted once read",
+    "Writes": "OUT/`atlas-15k.csv`, OUT/`atlas-15k.jsonl`, OUT/`atlas-15k-scrolls.json`; each shard goes to a temporary folder (or `--workdir`) that is deleted once read",
     "Go-ahead": "Not needed for `build` (public data, local files). Publishing the table to the Segment Atlas dataset is an upload and needs Chase's yes on its content (AGENTS.md rule 8)",
     "Released": "Public `main` once merged",
     "Checked": "2026-11-27 against commit `5f7edb7`"
@@ -2168,67 +2168,67 @@
     {
      "name": "Commands and options",
      "start_line": 85,
-     "end_line": 217,
+     "end_line": 218,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 218,
-     "end_line": 246,
+     "start_line": 219,
+     "end_line": 247,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 247,
-     "end_line": 250,
+     "start_line": 248,
+     "end_line": 251,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 251,
-     "end_line": 261,
+     "start_line": 252,
+     "end_line": 262,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 262,
-     "end_line": 275,
+     "start_line": 263,
+     "end_line": 276,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 276,
-     "end_line": 285,
+     "start_line": 277,
+     "end_line": 286,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 286,
-     "end_line": 289,
+     "start_line": 287,
+     "end_line": 290,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 290,
-     "end_line": 299,
+     "start_line": 291,
+     "end_line": 300,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 300,
-     "end_line": 307,
+     "start_line": 301,
+     "end_line": 308,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 308,
-     "end_line": 319,
+     "start_line": 309,
+     "end_line": 320,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 320,
-     "end_line": 326,
+     "start_line": 321,
+     "end_line": 327,
      "applicable": true
     }
    ]

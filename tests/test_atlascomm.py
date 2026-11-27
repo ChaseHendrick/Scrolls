@@ -52,9 +52,9 @@ class RowTest(unittest.TestCase):
         rows = [C.row_of(record(), True), C.row_of(record("PHerc0841"), False)]
         with tempfile.TemporaryDirectory() as d:
             C.write(d, rows)
-            lines = Path(d, "atlas15k.jsonl").read_text().splitlines()
+            lines = Path(d, "atlas-15k.jsonl").read_text().splitlines()
             self.assertEqual([json.loads(x)["scroll"] for x in lines], ["PHerc0009B", "PHerc0841"])
-            head = Path(d, "atlas15k.csv").read_text().splitlines()[0].split(",")
+            head = Path(d, "atlas-15k.csv").read_text().splitlines()[0].split(",")
             self.assertEqual(tuple(head), C.COLUMNS)
         s = C.summary(rows)
         self.assertEqual([(x["scroll"], x["measured"]) for x in s], [("PHerc0009B", 1), ("PHerc0841", 0)])

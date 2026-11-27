@@ -14,7 +14,7 @@ Reads Qual's ATLAS-15k recto surface patches shard by shard and writes one Segme
 | Needs | Python 3.10 or later, numpy, pyarrow and huggingface_hub (the last two only for `build`) |
 | Runs on | Any CPU. On 27 Nov 2026 a 4-core cloud container read all 18 shards (8.6 GB) and measured 3,412 patches in 253 s; one shard on disk at a time |
 | Network | `huggingface.co` (the dataset's 18 parquet shards, 8.6 GB in all, one at a time) |
-| Writes | OUT/`atlas15k.csv`, OUT/`atlas15k.jsonl`, OUT/`atlas15k-scrolls.json`; each shard goes to a temporary folder (or `--workdir`) that is deleted once read |
+| Writes | OUT/`atlas-15k.csv`, OUT/`atlas-15k.jsonl`, OUT/`atlas-15k-scrolls.json`; each shard goes to a temporary folder (or `--workdir`) that is deleted once read |
 | Go-ahead | Not needed for `build` (public data, local files). Publishing the table to the Segment Atlas dataset is an upload and needs Chase's yes on its content (AGENTS.md rule 8) |
 | Released | Public `main` once merged |
 | Checked | 2026-11-27 against commit `5f7edb7` |
@@ -96,7 +96,7 @@ The dataset's parquet rows: `id`, `scroll`, `scan`, `voxel_um`, `size_vx`, `cent
 
 ## Outputs
 
-Columns, in order: `id`, `scroll`, `volume`, `scan`, `voxel_um`, `size_x`, `size_y`, `centre_*`, `box_min_*`, `box_max_*` (voxels), `area_cm2` (the dataset's), `measured`, then for measured rows `grid_h`, `grid_w`, `nodes_filled`, `filled_share`, `area_cm2_measured`, `edge_p5/p50/p95`, `within_10pct`, `within_25pct`, `median_abs_log`, `angle_p5/p50/p95` (degrees), `holes_*`, `folds_*`, `stretched_*` (nodes and mm2), `clean`, `extent_*_mm`, and `error`. The meanings are those of [`kit atlas`](atlas.md). `atlas15k-scrolls.json` holds per scroll patches, area, measured and clean counts.
+Columns, in order: `id`, `scroll`, `volume`, `scan`, `voxel_um`, `size_x`, `size_y`, `centre_*`, `box_min_*`, `box_max_*` (voxels), `area_cm2` (the dataset's), `measured`, then for measured rows `grid_h`, `grid_w`, `nodes_filled`, `filled_share`, `area_cm2_measured`, `edge_p5/p50/p95`, `within_10pct`, `within_25pct`, `median_abs_log`, `angle_p5/p50/p95` (degrees), `holes_*`, `folds_*`, `stretched_*` (nodes and mm2), `clean`, `extent_*_mm`, and `error`. The meanings are those of [`kit atlas`](atlas.md). `atlas-15k-scrolls.json` holds per scroll patches, area, measured and clean counts.
 
 | Exit code | Meaning |
 | --- | --- |
@@ -125,7 +125,7 @@ Any CPU. On 27 Nov 2026 a 4-core cloud container read all 18 shards (8.6 GB) and
 
 ## For agents
 
-- **Command:** `python -m kit atlascomm build OUT --measure SCROLL ...`; read `OUT/atlas15k.jsonl`
+- **Command:** `python -m kit atlascomm build OUT --measure SCROLL ...`; read `OUT/atlas-15k.jsonl`
 - **Parse:** one JSON row per patch; `measured`, `error` and the number columns
 - **Rerun:** safe; it overwrites the three output files
 - **Success:** exit 0 and `N rows (M measured)` with M the patch count of the measured scrolls

@@ -4,8 +4,8 @@
 
 ATLAS-15k (Qual, 27 Nov 2026, https://huggingface.co/datasets/Qualzz20/ATLAS-15k, CC BY-NC 4.0) holds 14,678 recto
 surface patches on 28 open-data scrolls: per patch an id, the scan, voxel size, bounding box, area, and x, y, z node
-grids 2 voxels apart (-1 where empty). `build` reads its parquet shards one at a time and writes OUT/atlas15k.csv
-and OUT/atlas15k.jsonl, one row per patch: the dataset's own metadata for every patch and, for the scrolls named by
+grids 2 voxels apart (-1 where empty). `build` reads its parquet shards one at a time and writes OUT/atlas-15k.csv
+and OUT/atlas-15k.jsonl, one row per patch: the dataset's own metadata for every patch and, for the scrolls named by
 --measure, the Segment Atlas numbers of kit.atlas.measure (area, isometry, holes, folds, stretched nodes, extents) on
 the patch grid. Rows of other scrolls carry the metadata only, with `measured` false. Each shard is deleted once
 read, so the disk holds one shard (about 480 MB) at a time.
@@ -82,10 +82,10 @@ def write(out_dir, rows):
     import csv
     out = Path(out_dir)
     out.mkdir(parents=True, exist_ok=True)
-    with open(out / "atlas15k.jsonl", "w") as f:
+    with open(out / "atlas-15k.jsonl", "w") as f:
         for r in rows:
             f.write(json.dumps(r) + "\n")
-    with open(out / "atlas15k.csv", "w", newline="") as f:
+    with open(out / "atlas-15k.csv", "w", newline="") as f:
         w = csv.DictWriter(f, fieldnames=COLUMNS)
         w.writeheader()
         for r in rows:
@@ -110,7 +110,7 @@ def build(out_dir, measure=(), limit=None, shards=None, revision=REVISION, workd
     measure = set(measure)
     rows, t0 = [], time.time()
     for i in (shards if shards is not None else range(SHARDS)):
-        tmp = tempfile.mkdtemp(prefix="atlas15k-", dir=workdir)
+        tmp = tempfile.mkdtemp(prefix="atlas-15k-", dir=workdir)
         try:
             path = hf_hub_download(DATASET, f"data/train-{i:05d}-of-{SHARDS:05d}.parquet", repo_type="dataset",
                                    revision=revision, cache_dir=tmp)
@@ -129,7 +129,7 @@ def build(out_dir, measure=(), limit=None, shards=None, revision=REVISION, workd
             break
     write(out_dir, rows)
     s = summary(rows)
-    Path(out_dir, "atlas15k-scrolls.json").write_text(json.dumps({"dataset": DATASET, "revision": revision,
+    Path(out_dir, "atlas-15k-scrolls.json").write_text(json.dumps({"dataset": DATASET, "revision": revision,
                                                                    "license": "CC BY-NC 4.0", "scrolls": s},
                                                                   indent=1) + "\n")
     return rows
