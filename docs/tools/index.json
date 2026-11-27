@@ -3294,7 +3294,10 @@
     "needed": false,
     "text": "Not needed"
    },
-   "checked": null,
+   "checked": {
+    "date": "2026-11-27",
+    "commit": "8b97285"
+   },
    "license": null,
    "fields": {
     "Id": "`defectbench`",
@@ -3310,7 +3313,7 @@
     "Writes": "`make`: OUT/manifest.json and OUT/TRACK/CASE-sSEED/ (x.tif, y.tif, z.tif, meta.json, truth.npz, defects.json; mini adds pred.zarr and umbilicus.json); `baseline`: DIR/TRACK/CASE-sSEED.npy or DIR/TRACK/CASE-sSEED/ tifxyz; `score --out-file`: one JSON file",
     "Go-ahead": "Not needed",
     "Released": "Not yet",
-    "Checked": "2026-11-27"
+    "Checked": "2026-11-27 against commit `8b97285`"
    },
    "page": "docs/tools/defectbench.md",
    "sections": [
@@ -3335,12 +3338,12 @@
     {
      "name": "Checks and controls",
      "start_line": 86,
-     "end_line": 100,
+     "end_line": 106,
      "applicable": true
     },
     {
      "name": "Result so far (Model output, synthetic data only)",
-     "start_line": 101,
+     "start_line": 107,
      "end_line": 130,
      "applicable": true
     },
@@ -3371,43 +3374,43 @@
     {
      "name": "Failure modes",
      "start_line": 287,
-     "end_line": 300,
+     "end_line": 302,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 301,
-     "end_line": 317,
+     "start_line": 303,
+     "end_line": 319,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 318,
-     "end_line": 322,
+     "start_line": 320,
+     "end_line": 324,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 323,
-     "end_line": 336,
+     "start_line": 325,
+     "end_line": 338,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 337,
-     "end_line": 343,
+     "start_line": 339,
+     "end_line": 345,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 344,
-     "end_line": 348,
+     "start_line": 346,
+     "end_line": 350,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 349,
-     "end_line": 352,
+     "start_line": 351,
+     "end_line": 354,
      "applicable": true
     }
    ]

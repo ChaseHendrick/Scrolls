@@ -17,7 +17,7 @@ Builds synthetic tifxyz meshes with planted sheet switches, rough tracing, folds
 | Writes | `make`: OUT/manifest.json and OUT/TRACK/CASE-sSEED/ (x.tif, y.tif, z.tif, meta.json, truth.npz, defects.json; mini adds pred.zarr and umbilicus.json); `baseline`: DIR/TRACK/CASE-sSEED.npy or DIR/TRACK/CASE-sSEED/ tifxyz; `score --out-file`: one JSON file |
 | Go-ahead | Not needed |
 | Released | Not yet |
-| Checked | 2026-11-27 |
+| Checked | 2026-11-27 against commit `8b97285` |
 
 ## What it does
 
@@ -345,7 +345,7 @@ clean vertices and not under gap vertices. Not covered: any real mesh, flattenin
 
 ## History
 
-- 2026-11-27: first public version, 13 cases on two tracks, with the none, all, oracle, wjump, identity, oracle and
+- 2026-11-27: first public version (`8b97285`), 13 cases on two tracks, with the none, all, oracle, wjump, identity, oracle and
   taubin5g baselines.
 
 ## Related
