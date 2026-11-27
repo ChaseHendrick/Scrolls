@@ -81,12 +81,13 @@ Command-line tools, benchmarks and script folders that run from a clone of this 
 </details>
 
 <details>
-<summary><b>Surfaces and tracing</b> (21)</summary>
+<summary><b>Surfaces and tracing</b> (22)</summary>
 
 | Tool | What it does |
 | --- | --- |
 | [Autocrop: good regions of a spiral fit](docs/tools/autocrop.md) | Keeps the regions of a villa spiral fit most likely on the right winding and writes them as relative windings, with controls. |
 | [Bounded surface correction (experimental)](docs/tools/surfacefix.md) | Suggests bounded surface shifts using agreement between maps from two traces and keeps only shifts that pass its controls. |
+| [defectbench: synthetic meshes with planted defects and known answers](docs/tools/defectbench.md) | Scores mesh repairs and sheet-switch alarms on meshes whose defects are known. |
 | [freshmap: where a scroll's papyrus is still untraced](docs/tools/freshmap.md) | Maps a scroll's untraced m7 papyrus by band, angle and radius, ranks targets and checks new meshes against it. |
 | [Label snap on a finer registered scan](docs/tools/finesnap.md) | Snaps a label traced on a coarse scan onto the recto face seen in a finer, per-site registered scan of the same scroll. |
 | [Label snap onto the recto face](docs/tools/labelsnap.md) | Moves a tifxyz surface label along its normals onto the recto face of its papyrus band, with an abstain mask and VC3D review points. |
@@ -122,7 +123,7 @@ Command-line tools, benchmarks and script folders that run from a clone of this 
 </details>
 
 <details>
-<summary><b>Scoring and controls</b> (15)</summary>
+<summary><b>Scoring and controls</b> (17)</summary>
 
 | Tool | What it does |
 | --- | --- |
@@ -130,10 +131,12 @@ Command-line tools, benchmarks and script folders that run from a clone of this 
 | [Controlled benchmark gate](docs/tools/gate.md) | Checks recorded benchmark scores against the declared pass rules and required controls. |
 | [Controlled ink AUC scoring](docs/tools/auc.md) | Scores an ink map against labeled ink and background with a reverse-depth control; kit.aucreport adds curves, AP, tiles and a shifted-label null. |
 | [finite: refuse speeds, scores and maps taken from NaN or Inf output](docs/tools/finite.md) | Refuses any speed, score or map taken from model output that holds NaN or Inf, and flags fp16 sums that would overflow. |
+| [framecheck: is a render in the frame of its mesh and its CT](docs/tools/framecheck.md) | Catches renders made in the wrong frame: wrong scan, voxel size, shift or swapped render. |
 | [Ink map agreement check](docs/tools/verify.md) | Checks whether two ink maps of the same input agree while requiring a deliberately different control to fail. |
 | [Ink map self-check (neighbor-sheet test)](docs/tools/sheetcheck.md) | Checks without labels whether an ink map reads the traced sheet, comparing it with the same model one and two sheets away. |
 | [Ink offset diagnostic (AUC against surface offsets along the normal)](docs/tools/offsetdiag.md) | Measures how much an ink model's AUC changes when a segment's surface moves along its normal, and tests a lasagna sheet-center snap against same-size controls. |
 | [Letter-scale ink score](docs/tools/hpscore.md) | Compares an ink map with published labels after removing broad brightness changes, with displaced-label and reverse-depth controls. |
+| [readerseen: every public surface Reader V3 trained on, and a site check](docs/tools/readerseen.md) | Says whether a site is in Reader V3's published training data, by public segment id. |
 | [Research integrity checks for Vesuvius claims](docs/tools/integrity.md) | Checks a claim before it goes out: controls on the same pixels, held-out status, number sources, preregistration and wording. |
 | [Seam-aware winding switches](docs/tools/seamswitch.md) | Counts how often a spiral fit puts touching vertices of one traced sheet on different windings, allowing for the fit's seam. |
 | [simcritic: a held-apart judge of how real simulated CT looks](docs/tools/simcritic.md) | Fresh critics try to tell real CT from simulated tiles, with a real-against-real control and views that show what gives the simulation away. |

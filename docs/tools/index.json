@@ -3258,6 +3258,164 @@
    ]
   },
   {
+   "id": "defectbench",
+   "name": "defectbench",
+   "tagline": "a dev bench of meshes with planted defects and known answers",
+   "summary": "Builds synthetic tifxyz meshes with planted sheet switches, rough tracing, folds and bridges, sized like spiral-fit columns of public PHerc0343, with per-vertex truth, and scores switch alarms and mesh repairs on them.",
+   "status": "Experimental",
+   "kind": [
+    "kit module"
+   ],
+   "area": "Surfaces and tracing",
+   "commands": [
+    "python3 -m kit.defectbench cases",
+    "make",
+    "check",
+    "baseline",
+    "score"
+   ],
+   "imports": [
+    "from kit import defectbench"
+   ],
+   "code": [
+    {
+     "path": "kit/defectbench.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/stagereg_ext_defectbench.py",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_defectbench.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed"
+   },
+   "checked": {
+    "date": "2026-11-27",
+    "commit": "8b97285"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`defectbench`",
+    "Status": "Experimental",
+    "Kind": "kit module",
+    "Area": "Surfaces and tracing",
+    "Run": "`python3 -m kit.defectbench cases`, `make`, `check`, `baseline`, `score`; `from kit import defectbench`",
+    "Code": "`kit/defectbench.py`, `kit/stagereg_ext_defectbench.py`",
+    "Tests": "`tests/test_defectbench.py`",
+    "Needs": "Python 3.9 or newer, numpy, scipy, tifffile; zarr 3 and numcodecs for the mini track's prediction. No scan data, villa, VC3D or GPU.",
+    "Runs on": "CPU anywhere. `make --seeds 3` (78 cases, both tracks) took 1 min 43 s and 168 MB; `check` 1 s; one baseline plus its score about 1 min (measured 2026-11-27, 4-core cloud container)",
+    "Network": "None",
+    "Writes": "`make`: OUT/manifest.json and OUT/TRACK/CASE-sSEED/ (x.tif, y.tif, z.tif, meta.json, truth.npz, defects.json; mini adds pred.zarr and umbilicus.json); `baseline`: DIR/TRACK/CASE-sSEED.npy or DIR/TRACK/CASE-sSEED/ tifxyz; `score --out-file`: one JSON file",
+    "Go-ahead": "Not needed",
+    "Released": "Not yet",
+    "Checked": "2026-11-27 against commit `8b97285`"
+   },
+   "page": "docs/tools/defectbench.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 22,
+     "end_line": 52,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 53,
+     "end_line": 69,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 70,
+     "end_line": 85,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 86,
+     "end_line": 106,
+     "applicable": true
+    },
+    {
+     "name": "Result so far (Model output, synthetic data only)",
+     "start_line": 107,
+     "end_line": 130,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 131,
+     "end_line": 208,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 209,
+     "end_line": 241,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 242,
+     "end_line": 251,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 252,
+     "end_line": 286,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 287,
+     "end_line": 302,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 303,
+     "end_line": 319,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 320,
+     "end_line": 324,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 325,
+     "end_line": 338,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 339,
+     "end_line": 345,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 346,
+     "end_line": 350,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 351,
+     "end_line": 354,
+     "applicable": true
+    }
+   ]
+  },
+  {
    "id": "dinovol-embeddings",
    "name": "dinovol-embeddings",
    "tagline": "precomputed dinovol features of the whole PHerc0841 scan, readable by URL",
@@ -5569,6 +5727,149 @@
      "name": "Related",
      "start_line": 169,
      "end_line": 171,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "framecheck",
+   "name": "framecheck",
+   "tagline": "is a render in the frame of its mesh and its CT",
+   "summary": "Checks that a rendered surface volume matches the CT sampled at its own mesh positions (Pearson r of at least 0.95) and that its empty pixels lie only in villa's unrendered edge band: gpchain's frame check, ported to numpy.",
+   "status": "Experimental",
+   "kind": [
+    "kit module"
+   ],
+   "area": "Scoring and controls",
+   "commands": [
+    "python -m kit.framecheck PIECE LAYERS --volume VOLUME [--window 768] [--json]"
+   ],
+   "imports": [],
+   "code": [
+    {
+     "path": "kit/framecheck.py",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_framecheck.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed: it reads only, and launches and sends nothing"
+   },
+   "checked": {
+    "date": "2026-11-27",
+    "commit": "de415de"
+   },
+   "license": "Apache 2.0 (this repository). The rule comes from gpchain (MIT)",
+   "fields": {
+    "Id": "`framecheck`",
+    "Status": "Experimental",
+    "Kind": "kit module",
+    "Area": "Scoring and controls",
+    "Run": "`python -m kit.framecheck PIECE LAYERS --volume VOLUME [--window 768] [--json]`",
+    "Code": "`kit/framecheck.py`",
+    "Tests": "`tests/test_framecheck.py`",
+    "Needs": "Python 3.9 or later, numpy; tifffile to read the tifxyz quickly (else kit's own TIFF reader in `kit/vc3d_io.py`); zarr to read a `layers.zarr` render (a `.npy` stack needs nothing more); numcodecs for compressed CT chunks (zlib and gzip need nothing). No villa, no VC3D, no GPU",
+    "Runs on": "Any CPU. One 28 by 2,640 by 3,340 render of public PHerc0343, 100,000 pixels, chunks already local: 3.7 s; a 768 px window read 71 chunks against 464 for the whole render (cloud container, 4 cores, 27 Nov 2026). Over the network the whole render's 411 chunks (0.82 GB) took about 2 min 20 s",
+    "Network": "The CT volume's host, for the chunks under the sampled pixels (the open-data bucket for an open-data URL or key); none for a local folder",
+    "Writes": "Nothing, unless `--out FILE` (the result JSON)",
+    "Go-ahead": "Not needed: it reads only, and launches and sends nothing",
+    "Released": "Not yet (planned with the November 2026 Progress Prize entry)",
+    "License": "Apache 2.0 (this repository). The rule comes from gpchain (MIT)",
+    "Checked": "2026-11-27 against commit `de415de`"
+   },
+   "page": "docs/tools/framecheck.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 23,
+     "end_line": 30,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 31,
+     "end_line": 40,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 41,
+     "end_line": 54,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 55,
+     "end_line": 64,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 65,
+     "end_line": 93,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 94,
+     "end_line": 114,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 115,
+     "end_line": 120,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 121,
+     "end_line": 141,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 142,
+     "end_line": 167,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 168,
+     "end_line": 177,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 178,
+     "end_line": 181,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 182,
+     "end_line": 191,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 192,
+     "end_line": 195,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 196,
+     "end_line": 199,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 200,
+     "end_line": 203,
      "applicable": true
     }
    ]
@@ -13200,6 +13501,160 @@
      "name": "Related",
      "start_line": 184,
      "end_line": 187,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "readerseen",
+   "name": "readerseen",
+   "tagline": "which public surfaces Reader V3 trained on, and whether a site is fresh for it",
+   "summary": "Resolves Reader V3's published training list (99 keys) to 91 public segments on 8 scrolls, adds the units its author scored before release, and checks any scroll and segment: TRAINED, SELECTED, SAME-SCROLL, SAME-ROLL or FRESH-BY-LIST.",
+   "status": "Current",
+   "kind": [
+    "kit module",
+    "data"
+   ],
+   "area": "Scoring and controls",
+   "commands": [
+    "python -m kit.readerseen check --reader READER --scroll SCROLL [--segment NAME ...] [--json]",
+    "python -m kit.readerseen list",
+    "python -m kit.readerseen readers",
+    "python -m kit.readerseen verify",
+    "python -m kit.readerseen build"
+   ],
+   "imports": [],
+   "code": [
+    {
+     "path": "kit/readerseen.py",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_readerseen.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed"
+   },
+   "checked": {
+    "date": "2026-11-27",
+    "commit": "999a4ad"
+   },
+   "license": "Code: Apache 2.0 (this repository's). The pinned copies keep their own terms: Reader V3's and Reader v2's `train_config.json` come from their authors' repositories (Reader V3 is MIT); the ink_9um README is the organizers' (`scrollprize/datasets` bucket)",
+   "fields": {
+    "Id": "`readerseen`",
+    "Status": "Current",
+    "Kind": "kit module,data",
+    "Area": "Scoring and controls",
+    "Run": "`python -m kit.readerseen check --reader READER --scroll SCROLL [--segment NAME ...] [--json]`, `python -m kit.readerseen list`, `python -m kit.readerseen readers`, `python -m kit.readerseen verify`, `python -m kit.readerseen build`",
+    "Code": "`kit/readerseen.py`",
+    "Tests": "`tests/test_readerseen.py`",
+    "Needs": "Python 3.10 or newer, standard library only. The three pinned source copies in `docs/evidence/readerseen/` for `build` and `verify`",
+    "Runs on": "Any CPU; under 0.1 s for a check (measured 2026-11-27, 4-core cloud container, including Python start-up)",
+    "Network": "None. The source files were fetched once on 2026-11-27 and are pinned by sha256",
+    "Writes": "`check`, `list`, `readers`, `verify`: nothing (prints only). `build`: `kit/data/readerseen.json` (or `--out`), replacing it",
+    "Go-ahead": "Not needed",
+    "Released": "Not yet (pending public merge)",
+    "License": "Code: Apache 2.0 (this repository's). The pinned copies keep their own terms: Reader V3's and Reader v2's `train_config.json` come from their authors' repositories (Reader V3 is MIT); the ink_9um README is the organizers' (`scrollprize/datasets` bucket)",
+    "Checked": "2026-11-27 against commit `999a4ad`"
+   },
+   "page": "docs/tools/readerseen.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 23,
+     "end_line": 32,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 33,
+     "end_line": 43,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 44,
+     "end_line": 59,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 60,
+     "end_line": 67,
+     "applicable": true
+    },
+    {
+     "name": "Verdicts",
+     "start_line": 68,
+     "end_line": 81,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 82,
+     "end_line": 117,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 118,
+     "end_line": 127,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 128,
+     "end_line": 131,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 132,
+     "end_line": 144,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 145,
+     "end_line": 153,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 154,
+     "end_line": 157,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 158,
+     "end_line": 161,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 162,
+     "end_line": 171,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 172,
+     "end_line": 175,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 176,
+     "end_line": 179,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 180,
+     "end_line": 182,
      "applicable": true
     }
    ]

@@ -1030,6 +1030,42 @@
           "evidence": "[checks and controls](docs/tools/freshmap.md#checks-and-controls), `tests/test_freshmap.py`",
           "line": "Maps a scroll's untraced m7 papyrus by band, angle and radius, ranks targets and checks new meshes against it.",
           "area": "Surfaces and tracing"
+        },
+        {
+          "id": "readerseen",
+          "name": "readerseen: every public surface Reader V3 trained on, and a site check",
+          "released": "2026-11-27",
+          "version": "1.0",
+          "summary": "Resolves Reader V3's published training list (99 keys, the same as Reader v2's) to 91 public segments on 8 scrolls, with the organizers' ink_9um annotation names mapped to public segment ids (organizer pherc0139-w029 is public w045), and checks a scroll or segment for a reader: TRAINED, SELECTED, SAME-SCROLL, SAME-ROLL or FRESH-BY-LIST. Built from three published files pinned by sha256; reads no label, CT or map. Fresh by list is not a geometric certificate.",
+          "command": "python -m kit.readerseen check --reader reader-v3 --scroll PHerc0139 --segment w045",
+          "page": "docs/tools/readerseen.md",
+          "evidence": "[checks and controls](docs/tools/readerseen.md#checks-and-controls), `tests/test_readerseen.py`",
+          "line": "Says whether a site is in Reader V3's published training data, by public segment id.",
+          "area": "Scoring and controls"
+        },
+        {
+          "id": "framecheck",
+          "name": "framecheck: is a render in the frame of its mesh and its CT",
+          "released": "2026-11-27",
+          "version": "1.0",
+          "summary": "A numpy port of gpchain's frame check (jo-tud/vesuvius-gpchain, MIT): passes a rendered surface volume when its middle layers match the CT sampled at the mesh's own positions (Pearson r at least 0.95) and its empty pixels lie only in villa's unrendered edge band. On a villa spiral-fit piece of public PHerc0343 the correct pair gave r 0.9988, and four planted frame errors (wrong voxel size, one-cell shift, another piece's render, flipped render) gave 0.05 to 0.43. It does not check that a mesh stays on one sheet.",
+          "command": "python -m kit.framecheck PIECE.tifxyz RENDER/layers.zarr --volume VOLUME --window 768",
+          "page": "docs/tools/framecheck.md",
+          "evidence": "[checks and controls](docs/tools/framecheck.md#checks-and-controls), `tests/test_framecheck.py`",
+          "line": "Catches renders made in the wrong frame: wrong scan, voxel size, shift or swapped render.",
+          "area": "Scoring and controls"
+        },
+        {
+          "id": "defectbench",
+          "name": "defectbench: synthetic meshes with planted defects and known answers",
+          "released": "2026-11-27",
+          "version": "1.0",
+          "summary": "Thirteen cases, three seeds each, of synthetic tifxyz meshes on kit planted's spiral sheets with planted sheet switches, rough tracing, folds, bridges and holes, and the true winding and position of every vertex, with check, baseline and score commands for mesh repairs and switch alarms. Every score has controls that must fail and an oracle that must score perfectly. Synthetic only: a bench score is never a result on a scroll.",
+          "command": "python -m kit.defectbench make bench --seeds 3",
+          "page": "docs/tools/defectbench.md",
+          "evidence": "[checks and controls](docs/tools/defectbench.md#checks-and-controls), `tests/test_defectbench.py`",
+          "line": "Scores mesh repairs and sheet-switch alarms on meshes whose defects are known.",
+          "area": "Surfaces and tracing"
         }
       ],
       "where": "main"
