@@ -18,7 +18,7 @@ Resolves Reader V3's published training list (99 keys) to 91 public segments on 
 | Go-ahead | Not needed |
 | Released | Not yet (pending public merge) |
 | License | Code: Apache 2.0 (this repository's). The pinned copies keep their own terms: Reader V3's and Reader v2's `train_config.json` come from their authors' repositories (Reader V3 is MIT); the ink_9um README is the organizers' (`scrollprize/datasets` bucket) |
-| Checked | 2026-11-27 |
+| Checked | 2026-11-27 against commit `999a4ad` |
 
 ## What it does
 
@@ -175,7 +175,7 @@ Free; under 0.1 s on any CPU.
 
 ## History
 
-- 2026-11-27: first public version: Reader V3's training list, Reader v2's lineage, the ink_9um name table and the author's suite.
+- 2026-11-27: first public version (`999a4ad`): Reader V3's training list, Reader v2's lineage, the ink_9um name table and the author's suite.
 
 ## Related
 
