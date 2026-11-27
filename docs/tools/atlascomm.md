@@ -139,7 +139,7 @@ Any CPU. On 27 Nov 2026 a 4-core cloud container read all 18 shards (8.6 GB) and
 
 ## History
 
-- 2026-11-27: new. The ATLAS-15k patch table for the Segment Atlas.
+- 2026-11-27: new. The ATLAS-15k patch table for the Segment Atlas (`80930b7`).
 
 ## Related
 
