@@ -394,6 +394,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **Reader v2**: A community fine-tune of `ink_9um` by Domenico Russo. It is AutoPipeline's default ink reader.
 
+**readerseen**: `python -m kit.readerseen`, Reader V3's published training list resolved to public segment ids, with a check that says whether a scroll or segment is TRAINED, SELECTED, SAME-SCROLL, SAME-ROLL or FRESH-BY-LIST for Reader V3, Reader v2 and their fine-tunes ([page](docs/tools/readerseen.md)).
+
 **readout set, plumbing set**: The two kinds of `code-sha256` block in a preregistration. Readout files (scoring code, labels, thresholds) change only by a dated amendment; plumbing files (container image, installs, logging) may change by a dated deviation line with the new hash (`kit freeze prereg`, [page](docs/tools/freeze.md)).
 
 **recto**: The written inner side of a roll, where the fibers run horizontally.

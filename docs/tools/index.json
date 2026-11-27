@@ -13348,6 +13348,157 @@
    ]
   },
   {
+   "id": "readerseen",
+   "name": "readerseen",
+   "tagline": "which public surfaces Reader V3 trained on, and whether a site is fresh for it",
+   "summary": "Resolves Reader V3's published training list (99 keys) to 91 public segments on 8 scrolls, adds the units its author scored before release, and checks any scroll and segment: TRAINED, SELECTED, SAME-SCROLL, SAME-ROLL or FRESH-BY-LIST.",
+   "status": "Current",
+   "kind": [
+    "kit module",
+    "data"
+   ],
+   "area": "Scoring and controls",
+   "commands": [
+    "python -m kit.readerseen check --reader READER --scroll SCROLL [--segment NAME ...] [--json]",
+    "python -m kit.readerseen list",
+    "python -m kit.readerseen readers",
+    "python -m kit.readerseen verify",
+    "python -m kit.readerseen build"
+   ],
+   "imports": [],
+   "code": [
+    {
+     "path": "kit/readerseen.py",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_readerseen.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed"
+   },
+   "checked": null,
+   "license": "Code: Apache 2.0 (this repository's). The pinned copies keep their own terms: Reader V3's and Reader v2's `train_config.json` come from their authors' repositories (Reader V3 is MIT); the ink_9um README is the organizers' (`scrollprize/datasets` bucket)",
+   "fields": {
+    "Id": "`readerseen`",
+    "Status": "Current",
+    "Kind": "kit module,data",
+    "Area": "Scoring and controls",
+    "Run": "`python -m kit.readerseen check --reader READER --scroll SCROLL [--segment NAME ...] [--json]`, `python -m kit.readerseen list`, `python -m kit.readerseen readers`, `python -m kit.readerseen verify`, `python -m kit.readerseen build`",
+    "Code": "`kit/readerseen.py`",
+    "Tests": "`tests/test_readerseen.py`",
+    "Needs": "Python 3.10 or newer, standard library only. The three pinned source copies in `docs/evidence/readerseen/` for `build` and `verify`",
+    "Runs on": "Any CPU; under 0.1 s for a check (measured 2026-11-27, 4-core cloud container, including Python start-up)",
+    "Network": "None. The source files were fetched once on 2026-11-27 and are pinned by sha256",
+    "Writes": "`check`, `list`, `readers`, `verify`: nothing (prints only). `build`: `kit/data/readerseen.json` (or `--out`), replacing it",
+    "Go-ahead": "Not needed",
+    "Released": "Not yet (pending public merge)",
+    "License": "Code: Apache 2.0 (this repository's). The pinned copies keep their own terms: Reader V3's and Reader v2's `train_config.json` come from their authors' repositories (Reader V3 is MIT); the ink_9um README is the organizers' (`scrollprize/datasets` bucket)",
+    "Checked": "2026-11-27"
+   },
+   "page": "docs/tools/readerseen.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 23,
+     "end_line": 32,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 33,
+     "end_line": 43,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 44,
+     "end_line": 59,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 60,
+     "end_line": 67,
+     "applicable": true
+    },
+    {
+     "name": "Verdicts",
+     "start_line": 68,
+     "end_line": 81,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 82,
+     "end_line": 117,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 118,
+     "end_line": 127,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 128,
+     "end_line": 131,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 132,
+     "end_line": 144,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 145,
+     "end_line": 153,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 154,
+     "end_line": 157,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 158,
+     "end_line": 161,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 162,
+     "end_line": 171,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 172,
+     "end_line": 175,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 176,
+     "end_line": 179,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 180,
+     "end_line": 182,
+     "applicable": true
+    }
+   ]
+  },
+  {
    "id": "releases",
    "name": "releases",
    "tagline": "keep the README's Released tools section in step with the release list",

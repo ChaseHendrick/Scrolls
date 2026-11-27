@@ -1,0 +1,3182 @@
+{
+ "schema": "readerseen/1",
+ "about": "Every surface Reader V3 trained on, resolved to public segment ids, with the units its author scored before release; built by `python -m kit.readerseen build` from the pinned files in docs/evidence/readerseen/ (metadata only: no label, CT, preview, mesh or map). Never edit by hand; `python -m kit.readerseen verify` rebuilds it and fails on drift.",
+ "sources": {
+  "reader_v3_config": {
+   "file": "reader-v3-train_config.json",
+   "url": "https://raw.githubusercontent.com/DomRusso2/reader-v3/4a9f1c633d2f30d9b522922ec1cb52c082013183/train_config.json",
+   "sha256": "2d71d6d54cc975e4ab25c0c8a789bde5ab18879eaf9f2095e849526b29e10661",
+   "read": "2026-11-27",
+   "label": "Sourced fact for the file; Community report that it is what was trained"
+  },
+  "reader_v2_config": {
+   "file": "reader-v2-train_config.json",
+   "url": "https://huggingface.co/domenicor046/reader-v2/resolve/72633d8aa6d40e9e737ccea4c9928fbc624dab45/train_config.json",
+   "sha256": "a69e9cf23263d4b17a85f05501333408f923f67f65b6f4ebc6c4539ceb1e81ec",
+   "read": "2026-11-27",
+   "label": "Sourced fact for the file; Community report that it is what was trained"
+  },
+  "ink9um_readme": {
+   "file": "ink_9um-README.md",
+   "url": "https://huggingface.co/buckets/scrollprize/datasets/resolve/ink_9um/README.md",
+   "sha256": "c9a88ff970594fcef3788eb588bb75dbbd0e6436f4812f89074e26c0d9fef7a5",
+   "read": "2026-11-27",
+   "label": "Sourced fact"
+  }
+ },
+ "lineage": [
+  {
+   "reader": "ink_9um",
+   "trained_on": "its README's 24 aligned and 5 native label sets",
+   "label": "Sourced fact"
+  },
+  {
+   "reader": "reader-v2",
+   "init": "data/train_116k/ckpt_012000.pth",
+   "description": "Hybrid local-3D-stem / 2D U-Net on the aligned 21-slice corpus: 17-of-21 jittered Z window, fixed scroll-prior batch sampling, robust-MAD normalization, smoothed BCE + Dice. Fill in out_dir and the datasets block for your data layout; the full corpus contract (29 representations across 4 scrolls) is aligned21_fixed_scroll_prior.json.",
+   "keys": 99,
+   "label": "Sourced fact for the file"
+  },
+  {
+   "reader": "reader-v3",
+   "init": "data/v2ctx_v2_256_long256/train/ckpt_030000.pth",
+   "description": "Reader V3: Reader v2 continued on 256 px tiles (30k it), then on 384 px tiles (20k it, this config), batch 10, same data + labels.",
+   "keys": 99,
+   "same_keys_as_reader_v2": true,
+   "label": "Sourced fact for the file"
+  }
+ ],
+ "ink_9um_sets_all_in_reader_v3": true,
+ "readers": {
+  "reader-v3": {
+   "aliases": [
+    "reader-v3",
+    "readerv3",
+    "rv3",
+    "reader v3",
+    "v3-base",
+    "v3base",
+    "plain-reader-v3"
+   ],
+   "weights": "reader-v3",
+   "derived": false,
+   "note": "DomRusso2/reader-v3 (MIT); weights domenicor046/reader-v3"
+  },
+  "reader-v2": {
+   "aliases": [
+    "reader-v2",
+    "readerv2",
+    "rv2",
+    "reader v2"
+   ],
+   "weights": "reader-v2",
+   "derived": false,
+   "note": "domenicor046/reader-v2; the same 99 training keys as Reader V3 (its train_config.json). The selection rows are Reader V3's author suite and are listed for Reader V3 only"
+  },
+  "argus-v2": {
+   "aliases": [
+    "argus-v2",
+    "argusv2"
+   ],
+   "weights": "argus-v2",
+   "derived": true,
+   "note": "Reader V3 fine-tuned by ruiconte on native 8 to 9 um scans (ruiconte/argus-v2); its own fine-tune segments are not in this registry"
+  },
+  "reader-pu": {
+   "aliases": [
+    "reader-pu",
+    "scribble-pu",
+    "scribblepu"
+   ],
+   "weights": "reader-pu",
+   "derived": true,
+   "note": "Reader V3 retuned by Domenico Russo with ScribblePU positive-unlabelled training (domenicor046/scribble-pu); the segments of its retuning are not in this registry"
+  }
+ },
+ "counts": {
+  "keys": 99,
+  "public_segments": 91,
+  "representations": 99,
+  "per_scroll": {
+   "PHerc0009B": {
+    "public_segments": 14,
+    "representations": 14
+   },
+   "PHerc0139": {
+    "public_segments": 26,
+    "representations": 34
+   },
+   "PHerc0172": {
+    "public_segments": 4,
+    "representations": 4
+   },
+   "PHerc0343P": {
+    "public_segments": 6,
+    "representations": 6
+   },
+   "PHerc0500P2": {
+    "public_segments": 18,
+    "representations": 18
+   },
+   "PHerc0814": {
+    "public_segments": 9,
+    "representations": 9
+   },
+   "PHerc1667": {
+    "public_segments": 6,
+    "representations": 6
+   },
+   "PHercParis4": {
+    "public_segments": 8,
+    "representations": 8
+   }
+  }
+ },
+ "surfaces": [
+  {
+   "scroll": "PHerc0009B",
+   "public_segment": "20250510172804",
+   "names": [
+    "20250510172804"
+   ],
+   "physical_keys": [
+    "0009B:20250510172804"
+   ],
+   "blocks": [
+    {
+     "dataset": 7,
+     "segments_path": "data/p009b/labels",
+     "source_family": "native_8p64_116kev",
+     "labels": "human",
+     "volume": "data/p009b/20250510172804/sv864.zarr",
+     "mapping": "the key is the public segment's 14-digit stamp",
+     "in_reader_v2": true,
+     "in_ink_9um": false
+    }
+   ],
+   "labels": [
+    "human"
+   ],
+   "readers": [
+    "argus-v2",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHerc0009B",
+   "public_segment": "20250511200236",
+   "names": [
+    "20250511200236"
+   ],
+   "physical_keys": [
+    "0009B:20250511200236"
+   ],
+   "blocks": [
+    {
+     "dataset": 7,
+     "segments_path": "data/p009b/labels",
+     "source_family": "native_8p64_116kev",
+     "labels": "human",
+     "volume": "data/p009b/20250511200236/sv864.zarr",
+     "mapping": "the key is the public segment's 14-digit stamp",
+     "in_reader_v2": true,
+     "in_ink_9um": false
+    }
+   ],
+   "labels": [
+    "human"
+   ],
+   "readers": [
+    "argus-v2",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHerc0009B",
+   "public_segment": "20250919064353",
+   "names": [
+    "20250919064353"
+   ],
+   "physical_keys": [
+    "0009B:20250919064353"
+   ],
+   "blocks": [
+    {
+     "dataset": 7,
+     "segments_path": "data/p009b/labels",
+     "source_family": "native_8p64_116kev",
+     "labels": "human",
+     "volume": "data/p009b/20250919064353/sv864.zarr",
+     "mapping": "the key is the public segment's 14-digit stamp",
+     "in_reader_v2": true,
+     "in_ink_9um": false
+    }
+   ],
+   "labels": [
+    "human"
+   ],
+   "readers": [
+    "argus-v2",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHerc0009B",
+   "public_segment": "20250919123506",
+   "names": [
+    "20250919123506"
+   ],
+   "physical_keys": [
+    "0009B:20250919123506"
+   ],
+   "blocks": [
+    {
+     "dataset": 7,
+     "segments_path": "data/p009b/labels",
+     "source_family": "native_8p64_116kev",
+     "labels": "human",
+     "volume": "data/p009b/20250919123506/sv864.zarr",
+     "mapping": "the key is the public segment's 14-digit stamp",
+     "in_reader_v2": true,
+     "in_ink_9um": false
+    }
+   ],
+   "labels": [
+    "human"
+   ],
+   "readers": [
+    "argus-v2",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHerc0009B",
+   "public_segment": "20250919124722",
+   "names": [
+    "20250919124722"
+   ],
+   "physical_keys": [
+    "0009B:20250919124722"
+   ],
+   "blocks": [
+    {
+     "dataset": 7,
+     "segments_path": "data/p009b/labels",
+     "source_family": "native_8p64_116kev",
+     "labels": "human",
+     "volume": "data/p009b/20250919124722/sv864.zarr",
+     "mapping": "the key is the public segment's 14-digit stamp",
+     "in_reader_v2": true,
+     "in_ink_9um": false
+    }
+   ],
+   "labels": [
+    "human"
+   ],
+   "readers": [
+    "argus-v2",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHerc0009B",
+   "public_segment": "20250919124917",
+   "names": [
+    "20250919124917"
+   ],
+   "physical_keys": [
+    "0009B:20250919124917"
+   ],
+   "blocks": [
+    {
+     "dataset": 7,
+     "segments_path": "data/p009b/labels",
+     "source_family": "native_8p64_116kev",
+     "labels": "human",
+     "volume": "data/p009b/20250919124917/sv864.zarr",
+     "mapping": "the key is the public segment's 14-digit stamp",
+     "in_reader_v2": true,
+     "in_ink_9um": false
+    }
+   ],
+   "labels": [
+    "human"
+   ],
+   "readers": [
+    "argus-v2",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHerc0009B",
+   "public_segment": "20250919125302",
+   "names": [
+    "20250919125302"
+   ],
+   "physical_keys": [
+    "0009B:20250919125302"
+   ],
+   "blocks": [
+    {
+     "dataset": 7,
+     "segments_path": "data/p009b/labels",
+     "source_family": "native_8p64_116kev",
+     "labels": "human",
+     "volume": "data/p009b/20250919125302/sv864.zarr",
+     "mapping": "the key is the public segment's 14-digit stamp",
+     "in_reader_v2": true,
+     "in_ink_9um": false
+    }
+   ],
+   "labels": [
+    "human"
+   ],
+   "readers": [
+    "argus-v2",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHerc0009B",
+   "public_segment": "20250919125605",
+   "names": [
+    "20250919125605"
+   ],
+   "physical_keys": [
+    "0009B:20250919125605"
+   ],
+   "blocks": [
+    {
+     "dataset": 7,
+     "segments_path": "data/p009b/labels",
+     "source_family": "native_8p64_116kev",
+     "labels": "human",
+     "volume": "data/p009b/20250919125605/sv864.zarr",
+     "mapping": "the key is the public segment's 14-digit stamp",
+     "in_reader_v2": true,
+     "in_ink_9um": false
+    }
+   ],
+   "labels": [
+    "human"
+   ],
+   "readers": [
+    "argus-v2",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHerc0009B",
+   "public_segment": "20250919130642",
+   "names": [
+    "20250919130642"
+   ],
+   "physical_keys": [
+    "0009B:20250919130642"
+   ],
+   "blocks": [
+    {
+     "dataset": 7,
+     "segments_path": "data/p009b/labels",
+     "source_family": "native_8p64_116kev",
+     "labels": "human",
+     "volume": "data/p009b/20250919130642/sv864.zarr",
+     "mapping": "the key is the public segment's 14-digit stamp",
+     "in_reader_v2": true,
+     "in_ink_9um": false
+    }
+   ],
+   "labels": [
+    "human"
+   ],
+   "readers": [
+    "argus-v2",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHerc0009B",
+   "public_segment": "20250919131352",
+   "names": [
+    "20250919131352"
+   ],
+   "physical_keys": [
+    "0009B:20250919131352"
+   ],
+   "blocks": [
+    {
+     "dataset": 7,
+     "segments_path": "data/p009b/labels",
+     "source_family": "native_8p64_116kev",
+     "labels": "human",
+     "volume": "data/p009b/20250919131352/sv864.zarr",
+     "mapping": "the key is the public segment's 14-digit stamp",
+     "in_reader_v2": true,
+     "in_ink_9um": false
+    }
+   ],
+   "labels": [
+    "human"
+   ],
+   "readers": [
+    "argus-v2",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHerc0009B",
+   "public_segment": "20250919131642",
+   "names": [
+    "20250919131642"
+   ],
+   "physical_keys": [
+    "0009B:20250919131642"
+   ],
+   "blocks": [
+    {
+     "dataset": 7,
+     "segments_path": "data/p009b/labels",
+     "source_family": "native_8p64_116kev",
+     "labels": "human",
+     "volume": "data/p009b/20250919131642/sv864.zarr",
+     "mapping": "the key is the public segment's 14-digit stamp",
+     "in_reader_v2": true,
+     "in_ink_9um": false
+    }
+   ],
+   "labels": [
+    "human"
+   ],
+   "readers": [
+    "argus-v2",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHerc0009B",
+   "public_segment": "20250919132115",
+   "names": [
+    "20250919132115"
+   ],
+   "physical_keys": [
+    "0009B:20250919132115"
+   ],
+   "blocks": [
+    {
+     "dataset": 7,
+     "segments_path": "data/p009b/labels",
+     "source_family": "native_8p64_116kev",
+     "labels": "human",
+     "volume": "data/p009b/20250919132115/sv864.zarr",
+     "mapping": "the key is the public segment's 14-digit stamp",
+     "in_reader_v2": true,
+     "in_ink_9um": false
+    }
+   ],
+   "labels": [
+    "human"
+   ],
+   "readers": [
+    "argus-v2",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHerc0009B",
+   "public_segment": "20250919135433",
+   "names": [
+    "20250919135433"
+   ],
+   "physical_keys": [
+    "0009B:20250919135433"
+   ],
+   "blocks": [
+    {
+     "dataset": 7,
+     "segments_path": "data/p009b/labels",
+     "source_family": "native_8p64_116kev",
+     "labels": "human",
+     "volume": "data/p009b/20250919135433/sv864.zarr",
+     "mapping": "the key is the public segment's 14-digit stamp",
+     "in_reader_v2": true,
+     "in_ink_9um": false
+    }
+   ],
+   "labels": [
+    "human"
+   ],
+   "readers": [
+    "argus-v2",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHerc0009B",
+   "public_segment": "20250919135915",
+   "names": [
+    "20250919135915"
+   ],
+   "physical_keys": [
+    "0009B:20250919135915"
+   ],
+   "blocks": [
+    {
+     "dataset": 7,
+     "segments_path": "data/p009b/labels",
+     "source_family": "native_8p64_116kev",
+     "labels": "human",
+     "volume": "data/p009b/20250919135915/sv864.zarr",
+     "mapping": "the key is the public segment's 14-digit stamp",
+     "in_reader_v2": true,
+     "in_ink_9um": false
+    }
+   ],
+   "labels": [
+    "human"
+   ],
+   "readers": [
+    "argus-v2",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHerc0139",
+   "public_segment": "20250108000000-w025_2025010863",
+   "names": [
+    "20250108000000-w025_2025010863"
+   ],
+   "physical_keys": [
+    "0139:20250108000000-w025_2025010863"
+   ],
+   "blocks": [
+    {
+     "dataset": 8,
+     "segments_path": "data/v2/0139/labels",
+     "source_family": "native_v2_0139",
+     "labels": "human",
+     "volume": "data/v2/0139/20250108000000-w025_2025010863/sv.zarr",
+     "mapping": "the key is the public segment id",
+     "in_reader_v2": true,
+     "in_ink_9um": false
+    }
+   ],
+   "labels": [
+    "human"
+   ],
+   "readers": [
+    "argus-v2",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHerc0139",
+   "public_segment": "20250108000001-w026_2025010854",
+   "names": [
+    "20250108000001-w026_2025010854"
+   ],
+   "physical_keys": [
+    "0139:20250108000001-w026_2025010854"
+   ],
+   "blocks": [
+    {
+     "dataset": 8,
+     "segments_path": "data/v2/0139/labels",
+     "source_family": "native_v2_0139",
+     "labels": "human",
+     "volume": "data/v2/0139/20250108000001-w026_2025010854/sv.zarr",
+     "mapping": "the key is the public segment id",
+     "in_reader_v2": true,
+     "in_ink_9um": false
+    }
+   ],
+   "labels": [
+    "human"
+   ],
+   "readers": [
+    "argus-v2",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHerc0139",
+   "public_segment": "20250108000002-w027_2025010845",
+   "names": [
+    "20250108000002-w027_2025010845"
+   ],
+   "physical_keys": [
+    "0139:20250108000002-w027_2025010845"
+   ],
+   "blocks": [
+    {
+     "dataset": 8,
+     "segments_path": "data/v2/0139/labels",
+     "source_family": "native_v2_0139",
+     "labels": "human",
+     "volume": "data/v2/0139/20250108000002-w027_2025010845/sv.zarr",
+     "mapping": "the key is the public segment id",
+     "in_reader_v2": true,
+     "in_ink_9um": false
+    }
+   ],
+   "labels": [
+    "human"
+   ],
+   "readers": [
+    "argus-v2",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHerc0139",
+   "public_segment": "20250108000003-w028_2025010836",
+   "names": [
+    "20250108000003-w028_2025010836"
+   ],
+   "physical_keys": [
+    "0139:20250108000003-w028_2025010836"
+   ],
+   "blocks": [
+    {
+     "dataset": 8,
+     "segments_path": "data/v2/0139/labels",
+     "source_family": "native_v2_0139",
+     "labels": "human",
+     "volume": "data/v2/0139/20250108000003-w028_2025010836/sv.zarr",
+     "mapping": "the key is the public segment id",
+     "in_reader_v2": true,
+     "in_ink_9um": false
+    }
+   ],
+   "labels": [
+    "human"
+   ],
+   "readers": [
+    "argus-v2",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHerc0139",
+   "public_segment": "20250108000004-w029_2025010827",
+   "names": [
+    "pherc0139-w016"
+   ],
+   "physical_keys": [
+    "0139:w016"
+   ],
+   "blocks": [
+    {
+     "dataset": 0,
+     "segments_path": "data/ink9um/labels/aligned-scrollprizeorg-21slices",
+     "source_family": "public_2p4_level2_zmean4",
+     "labels": "human",
+     "volume": "data/ink9um/volumes_w016/w016_9um_iso.zarr",
+     "mapping": "ink_9um README source-volume table",
+     "in_reader_v2": true,
+     "in_ink_9um": true
+    }
+   ],
+   "labels": [
+    "human"
+   ],
+   "readers": [
+    "argus-v2",
+    "ink_9um",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHerc0139",
+   "public_segment": "20250108000005-w030_2025010818",
+   "names": [
+    "pherc0139-w017",
+    "20250108000005-w030_2025010818"
+   ],
+   "physical_keys": [
+    "0139:w017",
+    "0139:20250108000005-w030_2025010818"
+   ],
+   "blocks": [
+    {
+     "dataset": 1,
+     "segments_path": "data/pseudo/aligned-scrollprizeorg-21slices",
+     "source_family": "public_2p4_level2_zmean4",
+     "labels": "pseudo",
+     "volume": "data/teacher/w017_iso9.zarr",
+     "mapping": "ink_9um README source-volume table (Interpretation: the pseudo folder copies ink_9um's aligned naming)",
+     "in_reader_v2": true,
+     "in_ink_9um": false
+    },
+    {
+     "dataset": 8,
+     "segments_path": "data/v2/0139/labels",
+     "source_family": "native_v2_0139",
+     "labels": "human",
+     "volume": "data/v2/0139/20250108000005-w030_2025010818/sv.zarr",
+     "mapping": "the key is the public segment id",
+     "in_reader_v2": true,
+     "in_ink_9um": false
+    }
+   ],
+   "labels": [
+    "human",
+    "pseudo"
+   ],
+   "readers": [
+    "argus-v2",
+    "ink_9um",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHerc0139",
+   "public_segment": "20250223000000-w059_2025022312",
+   "names": [
+    "20250223000000-w059_2025022312"
+   ],
+   "physical_keys": [
+    "0139:20250223000000-w059_2025022312"
+   ],
+   "blocks": [
+    {
+     "dataset": 8,
+     "segments_path": "data/v2/0139/labels",
+     "source_family": "native_v2_0139",
+     "labels": "human",
+     "volume": "data/v2/0139/20250223000000-w059_2025022312/sv.zarr",
+     "mapping": "the key is the public segment id",
+     "in_reader_v2": true,
+     "in_ink_9um": false
+    }
+   ],
+   "labels": [
+    "human"
+   ],
+   "readers": [
+    "argus-v2",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHerc0139",
+   "public_segment": "20250831000000-w040_2025083102",
+   "names": [
+    "pherc0139-w040",
+    "w040"
+   ],
+   "physical_keys": [
+    "0139:w040"
+   ],
+   "blocks": [
+    {
+     "dataset": 0,
+     "segments_path": "data/ink9um/labels/aligned-scrollprizeorg-21slices",
+     "source_family": "public_2p4_level2_zmean4",
+     "labels": "human",
+     "volume": "data/corpus/pherc0139-w040_iso9.zarr",
+     "mapping": "ink_9um README source-volume table",
+     "in_reader_v2": true,
+     "in_ink_9um": true
+    },
+    {
+     "dataset": 6,
+     "segments_path": "data/ink9um/labels/native9-scrollprizeorg-21slices",
+     "source_family": "native_9p362_level0",
+     "labels": "human",
+     "volume": "data/ink9um/volumes/9.362um-1.2m-113keV-volume-20250728140407.zarr",
+     "mapping": "ink_9um README source-volume table",
+     "in_reader_v2": true,
+     "in_ink_9um": true
+    }
+   ],
+   "labels": [
+    "human"
+   ],
+   "readers": [
+    "argus-v2",
+    "ink_9um",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHerc0139",
+   "public_segment": "20251226000000-w055_2025122611",
+   "names": [
+    "20251226000000-w055_2025122611"
+   ],
+   "physical_keys": [
+    "0139:20251226000000-w055_2025122611"
+   ],
+   "blocks": [
+    {
+     "dataset": 8,
+     "segments_path": "data/v2/0139/labels",
+     "source_family": "native_v2_0139",
+     "labels": "human",
+     "volume": "data/v2/0139/20251226000000-w055_2025122611/sv.zarr",
+     "mapping": "the key is the public segment id",
+     "in_reader_v2": true,
+     "in_ink_9um": false
+    }
+   ],
+   "labels": [
+    "human"
+   ],
+   "readers": [
+    "argus-v2",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHerc0139",
+   "public_segment": "20260108000000-w041_2026010816",
+   "names": [
+    "pherc0139-w041",
+    "w041"
+   ],
+   "physical_keys": [
+    "0139:w041"
+   ],
+   "blocks": [
+    {
+     "dataset": 0,
+     "segments_path": "data/ink9um/labels/aligned-scrollprizeorg-21slices",
+     "source_family": "public_2p4_level2_zmean4",
+     "labels": "human",
+     "volume": "data/corpus/pherc0139-w041_iso9.zarr",
+     "mapping": "ink_9um README source-volume table",
+     "in_reader_v2": true,
+     "in_ink_9um": true
+    },
+    {
+     "dataset": 6,
+     "segments_path": "data/ink9um/labels/native9-scrollprizeorg-21slices",
+     "source_family": "native_9p362_level0",
+     "labels": "human",
+     "volume": "data/corpus/native9/w041.zarr",
+     "mapping": "ink_9um README source-volume table",
+     "in_reader_v2": true,
+     "in_ink_9um": true
+    }
+   ],
+   "labels": [
+    "human"
+   ],
+   "readers": [
+    "argus-v2",
+    "ink_9um",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHerc0139",
+   "public_segment": "20260112000000-w043_2026011217",
+   "names": [
+    "pherc0139-w043",
+    "20260112000000-w043_2026011217"
+   ],
+   "physical_keys": [
+    "0139:w043",
+    "0139:20260112000000-w043_2026011217"
+   ],
+   "blocks": [
+    {
+     "dataset": 0,
+     "segments_path": "data/ink9um/labels/aligned-scrollprizeorg-21slices",
+     "source_family": "public_2p4_level2_zmean4",
+     "labels": "human",
+     "volume": "data/corpus/pherc0139-w043_iso9.zarr",
+     "mapping": "ink_9um README source-volume table",
+     "in_reader_v2": true,
+     "in_ink_9um": true
+    },
+    {
+     "dataset": 8,
+     "segments_path": "data/v2/0139/labels",
+     "source_family": "native_v2_0139",
+     "labels": "human",
+     "volume": "data/v2/0139/20260112000000-w043_2026011217/sv.zarr",
+     "mapping": "the key is the public segment id",
+     "in_reader_v2": true,
+     "in_ink_9um": false
+    }
+   ],
+   "labels": [
+    "human"
+   ],
+   "readers": [
+    "argus-v2",
+    "ink_9um",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHerc0139",
+   "public_segment": "20260115000000-w044_2026011522",
+   "names": [
+    "pherc0139-w028",
+    "w044"
+   ],
+   "physical_keys": [
+    "0139:w028",
+    "0139:w044"
+   ],
+   "blocks": [
+    {
+     "dataset": 1,
+     "segments_path": "data/pseudo/aligned-scrollprizeorg-21slices",
+     "source_family": "public_2p4_level2_zmean4",
+     "labels": "pseudo",
+     "volume": "data/teacher/w028_iso9.zarr",
+     "mapping": "ink_9um README source-volume table (Interpretation: the pseudo folder copies ink_9um's aligned naming)",
+     "in_reader_v2": true,
+     "in_ink_9um": false
+    },
+    {
+     "dataset": 6,
+     "segments_path": "data/ink9um/labels/native9-scrollprizeorg-21slices",
+     "source_family": "native_9p362_level0",
+     "labels": "human",
+     "volume": "data/corpus/native9/w044.zarr",
+     "mapping": "ink_9um README source-volume table",
+     "in_reader_v2": true,
+     "in_ink_9um": true
+    }
+   ],
+   "labels": [
+    "human",
+    "pseudo"
+   ],
+   "readers": [
+    "argus-v2",
+    "ink_9um",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHerc0139",
+   "public_segment": "20260115000001-w056_2026011514",
+   "names": [
+    "20260115000001-w056_2026011514"
+   ],
+   "physical_keys": [
+    "0139:20260115000001-w056_2026011514"
+   ],
+   "blocks": [
+    {
+     "dataset": 8,
+     "segments_path": "data/v2/0139/labels",
+     "source_family": "native_v2_0139",
+     "labels": "human",
+     "volume": "data/v2/0139/20260115000001-w056_2026011514/sv.zarr",
+     "mapping": "the key is the public segment id",
+     "in_reader_v2": true,
+     "in_ink_9um": false
+    }
+   ],
+   "labels": [
+    "human"
+   ],
+   "readers": [
+    "argus-v2",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHerc0139",
+   "public_segment": "20260126000000-w045_2026012619",
+   "names": [
+    "pherc0139-w029",
+    "20260126000000-w045_2026012619"
+   ],
+   "physical_keys": [
+    "0139:w029",
+    "0139:20260126000000-w045_2026012619"
+   ],
+   "blocks": [
+    {
+     "dataset": 1,
+     "segments_path": "data/pseudo/aligned-scrollprizeorg-21slices",
+     "source_family": "public_2p4_level2_zmean4",
+     "labels": "pseudo",
+     "volume": "data/teacher/w029_0139_iso9.zarr",
+     "mapping": "ink_9um README source-volume table (Interpretation: the pseudo folder copies ink_9um's aligned naming)",
+     "in_reader_v2": true,
+     "in_ink_9um": false
+    },
+    {
+     "dataset": 8,
+     "segments_path": "data/v2/0139/labels",
+     "source_family": "native_v2_0139",
+     "labels": "human",
+     "volume": "data/v2/0139/20260126000000-w045_2026012619/sv.zarr",
+     "mapping": "the key is the public segment id",
+     "in_reader_v2": true,
+     "in_ink_9um": false
+    }
+   ],
+   "labels": [
+    "human",
+    "pseudo"
+   ],
+   "readers": [
+    "argus-v2",
+    "ink_9um",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHerc0139",
+   "public_segment": "20260127000000-w057_2026012713",
+   "names": [
+    "20260127000000-w057_2026012713"
+   ],
+   "physical_keys": [
+    "0139:20260127000000-w057_2026012713"
+   ],
+   "blocks": [
+    {
+     "dataset": 8,
+     "segments_path": "data/v2/0139/labels",
+     "source_family": "native_v2_0139",
+     "labels": "human",
+     "volume": "data/v2/0139/20260127000000-w057_2026012713/sv.zarr",
+     "mapping": "the key is the public segment id",
+     "in_reader_v2": true,
+     "in_ink_9um": false
+    }
+   ],
+   "labels": [
+    "human"
+   ],
+   "readers": [
+    "argus-v2",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHerc0139",
+   "public_segment": "20260130000000-w031_2026013019",
+   "names": [
+    "20260130000000-w031_2026013019"
+   ],
+   "physical_keys": [
+    "0139:20260130000000-w031_2026013019"
+   ],
+   "blocks": [
+    {
+     "dataset": 8,
+     "segments_path": "data/v2/0139/labels",
+     "source_family": "native_v2_0139",
+     "labels": "human",
+     "volume": "data/v2/0139/20260130000000-w031_2026013019/sv.zarr",
+     "mapping": "the key is the public segment id",
+     "in_reader_v2": true,
+     "in_ink_9um": false
+    }
+   ],
+   "labels": [
+    "human"
+   ],
+   "readers": [
+    "argus-v2",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHerc0139",
+   "public_segment": "20260203000000-w032_2026020303",
+   "names": [
+    "20260203000000-w032_2026020303"
+   ],
+   "physical_keys": [
+    "0139:20260203000000-w032_2026020303"
+   ],
+   "blocks": [
+    {
+     "dataset": 8,
+     "segments_path": "data/v2/0139/labels",
+     "source_family": "native_v2_0139",
+     "labels": "human",
+     "volume": "data/v2/0139/20260203000000-w032_2026020303/sv.zarr",
+     "mapping": "the key is the public segment id",
+     "in_reader_v2": true,
+     "in_ink_9um": false
+    }
+   ],
+   "labels": [
+    "human"
+   ],
+   "readers": [
+    "argus-v2",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHerc0139",
+   "public_segment": "20260206000000-w042_2026020613",
+   "names": [
+    "20260206000000-w042_2026020613"
+   ],
+   "physical_keys": [
+    "0139:20260206000000-w042_2026020613"
+   ],
+   "blocks": [
+    {
+     "dataset": 8,
+     "segments_path": "data/v2/0139/labels",
+     "source_family": "native_v2_0139",
+     "labels": "human",
+     "volume": "data/v2/0139/20260206000000-w042_2026020613/sv.zarr",
+     "mapping": "the key is the public segment id",
+     "in_reader_v2": true,
+     "in_ink_9um": false
+    }
+   ],
+   "labels": [
+    "human"
+   ],
+   "readers": [
+    "argus-v2",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHerc0139",
+   "public_segment": "20260206000002-w054_2026020617",
+   "names": [
+    "20260206000002-w054_2026020617"
+   ],
+   "physical_keys": [
+    "0139:20260206000002-w054_2026020617"
+   ],
+   "blocks": [
+    {
+     "dataset": 8,
+     "segments_path": "data/v2/0139/labels",
+     "source_family": "native_v2_0139",
+     "labels": "human",
+     "volume": "data/v2/0139/20260206000002-w054_2026020617/sv.zarr",
+     "mapping": "the key is the public segment id",
+     "in_reader_v2": true,
+     "in_ink_9um": false
+    }
+   ],
+   "labels": [
+    "human"
+   ],
+   "readers": [
+    "argus-v2",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHerc0139",
+   "public_segment": "20260210000000-w058_2026021020",
+   "names": [
+    "20260210000000-w058_2026021020"
+   ],
+   "physical_keys": [
+    "0139:20260210000000-w058_2026021020"
+   ],
+   "blocks": [
+    {
+     "dataset": 8,
+     "segments_path": "data/v2/0139/labels",
+     "source_family": "native_v2_0139",
+     "labels": "human",
+     "volume": "data/v2/0139/20260210000000-w058_2026021020/sv.zarr",
+     "mapping": "the key is the public segment id",
+     "in_reader_v2": true,
+     "in_ink_9um": false
+    }
+   ],
+   "labels": [
+    "human"
+   ],
+   "readers": [
+    "argus-v2",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHerc0139",
+   "public_segment": "20260219000000-w033_2026021913",
+   "names": [
+    "20260219000000-w033_2026021913"
+   ],
+   "physical_keys": [
+    "0139:20260219000000-w033_2026021913"
+   ],
+   "blocks": [
+    {
+     "dataset": 8,
+     "segments_path": "data/v2/0139/labels",
+     "source_family": "native_v2_0139",
+     "labels": "human",
+     "volume": "data/v2/0139/20260219000000-w033_2026021913/sv.zarr",
+     "mapping": "the key is the public segment id",
+     "in_reader_v2": true,
+     "in_ink_9um": false
+    }
+   ],
+   "labels": [
+    "human"
+   ],
+   "readers": [
+    "argus-v2",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHerc0139",
+   "public_segment": "20260219000001-w048_2026021912",
+   "names": [
+    "20260219000001-w048_2026021912"
+   ],
+   "physical_keys": [
+    "0139:20260219000001-w048_2026021912"
+   ],
+   "blocks": [
+    {
+     "dataset": 8,
+     "segments_path": "data/v2/0139/labels",
+     "source_family": "native_v2_0139",
+     "labels": "human",
+     "volume": "data/v2/0139/20260219000001-w048_2026021912/sv.zarr",
+     "mapping": "the key is the public segment id",
+     "in_reader_v2": true,
+     "in_ink_9um": false
+    }
+   ],
+   "labels": [
+    "human"
+   ],
+   "readers": [
+    "argus-v2",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHerc0139",
+   "public_segment": "20260227000000-w052_2026022705",
+   "names": [
+    "20260227000000-w052_2026022705"
+   ],
+   "physical_keys": [
+    "0139:20260227000000-w052_2026022705"
+   ],
+   "blocks": [
+    {
+     "dataset": 8,
+     "segments_path": "data/v2/0139/labels",
+     "source_family": "native_v2_0139",
+     "labels": "human",
+     "volume": "data/v2/0139/20260227000000-w052_2026022705/sv.zarr",
+     "mapping": "the key is the public segment id",
+     "in_reader_v2": true,
+     "in_ink_9um": false
+    }
+   ],
+   "labels": [
+    "human"
+   ],
+   "readers": [
+    "argus-v2",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHerc0139",
+   "public_segment": "20260302000000-w039_2026030210",
+   "names": [
+    "pherc0139-w039",
+    "w039"
+   ],
+   "physical_keys": [
+    "0139:w039"
+   ],
+   "blocks": [
+    {
+     "dataset": 0,
+     "segments_path": "data/ink9um/labels/aligned-scrollprizeorg-21slices",
+     "source_family": "public_2p4_level2_zmean4",
+     "labels": "human",
+     "volume": "data/corpus/pherc0139-w039_iso9.zarr",
+     "mapping": "ink_9um README source-volume table",
+     "in_reader_v2": true,
+     "in_ink_9um": true
+    },
+    {
+     "dataset": 6,
+     "segments_path": "data/ink9um/labels/native9-scrollprizeorg-21slices",
+     "source_family": "native_9p362_level0",
+     "labels": "human",
+     "volume": "data/corpus/native9/w039.zarr",
+     "mapping": "ink_9um README source-volume table",
+     "in_reader_v2": true,
+     "in_ink_9um": true
+    }
+   ],
+   "labels": [
+    "human"
+   ],
+   "readers": [
+    "argus-v2",
+    "ink_9um",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHerc0139",
+   "public_segment": "20260302000001-w050_2026030220",
+   "names": [
+    "20260302000001-w050_2026030220"
+   ],
+   "physical_keys": [
+    "0139:20260302000001-w050_2026030220"
+   ],
+   "blocks": [
+    {
+     "dataset": 8,
+     "segments_path": "data/v2/0139/labels",
+     "source_family": "native_v2_0139",
+     "labels": "human",
+     "volume": "data/v2/0139/20260302000001-w050_2026030220/sv.zarr",
+     "mapping": "the key is the public segment id",
+     "in_reader_v2": true,
+     "in_ink_9um": false
+    }
+   ],
+   "labels": [
+    "human"
+   ],
+   "readers": [
+    "argus-v2",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHerc0139",
+   "public_segment": "20260317000000-w035_2026031718",
+   "names": [
+    "pherc0139-w035",
+    "w035"
+   ],
+   "physical_keys": [
+    "0139:w035"
+   ],
+   "blocks": [
+    {
+     "dataset": 0,
+     "segments_path": "data/ink9um/labels/aligned-scrollprizeorg-21slices",
+     "source_family": "public_2p4_level2_zmean4",
+     "labels": "human",
+     "volume": "data/corpus/pherc0139-w035_iso9.zarr",
+     "mapping": "ink_9um README source-volume table",
+     "in_reader_v2": true,
+     "in_ink_9um": true
+    },
+    {
+     "dataset": 6,
+     "segments_path": "data/ink9um/labels/native9-scrollprizeorg-21slices",
+     "source_family": "native_9p362_level0",
+     "labels": "human",
+     "volume": "data/corpus/native9/w035.zarr",
+     "mapping": "ink_9um README source-volume table",
+     "in_reader_v2": true,
+     "in_ink_9um": true
+    }
+   ],
+   "labels": [
+    "human"
+   ],
+   "readers": [
+    "argus-v2",
+    "ink_9um",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHerc0172",
+   "public_segment": "20250917143559-w062_20250917143559205_fl",
+   "names": [
+    "20250917143559-w062_20250917143559205_fl"
+   ],
+   "physical_keys": [
+    "0172:20250917143559-w062_20250917143559205_fl"
+   ],
+   "blocks": [
+    {
+     "dataset": 12,
+     "segments_path": "data/v2/0172/labels",
+     "source_family": "native_v2_0172",
+     "labels": "human",
+     "volume": "data/v2/0172/20250917143559-w062_20250917143559205_fl/sv.zarr",
+     "mapping": "the key is the public segment id",
+     "in_reader_v2": true,
+     "in_ink_9um": false
+    }
+   ],
+   "labels": [
+    "human"
+   ],
+   "readers": [
+    "argus-v2",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHerc0172",
+   "public_segment": "20250926112011-w078_20250926112011918_fl",
+   "names": [
+    "20250926112011-w078_20250926112011918_fl"
+   ],
+   "physical_keys": [
+    "0172:20250926112011-w078_20250926112011918_fl"
+   ],
+   "blocks": [
+    {
+     "dataset": 12,
+     "segments_path": "data/v2/0172/labels",
+     "source_family": "native_v2_0172",
+     "labels": "human",
+     "volume": "data/v2/0172/20250926112011-w078_20250926112011918_fl/sv.zarr",
+     "mapping": "the key is the public segment id",
+     "in_reader_v2": true,
+     "in_ink_9um": false
+    }
+   ],
+   "labels": [
+    "human"
+   ],
+   "readers": [
+    "argus-v2",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHerc0172",
+   "public_segment": "20250926113336-w079_20250926113336891_fl",
+   "names": [
+    "20250926113336-w079_20250926113336891_fl"
+   ],
+   "physical_keys": [
+    "0172:20250926113336-w079_20250926113336891_fl"
+   ],
+   "blocks": [
+    {
+     "dataset": 12,
+     "segments_path": "data/v2/0172/labels",
+     "source_family": "native_v2_0172",
+     "labels": "human",
+     "volume": "data/v2/0172/20250926113336-w079_20250926113336891_fl/sv.zarr",
+     "mapping": "the key is the public segment id",
+     "in_reader_v2": true,
+     "in_ink_9um": false
+    }
+   ],
+   "labels": [
+    "human"
+   ],
+   "readers": [
+    "argus-v2",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHerc0172",
+   "public_segment": "20250926114310-w080_20250926114310705_fl",
+   "names": [
+    "20250926114310-w080_20250926114310705_fl"
+   ],
+   "physical_keys": [
+    "0172:20250926114310-w080_20250926114310705_fl"
+   ],
+   "blocks": [
+    {
+     "dataset": 12,
+     "segments_path": "data/v2/0172/labels",
+     "source_family": "native_v2_0172",
+     "labels": "human",
+     "volume": "data/v2/0172/20250926114310-w080_20250926114310705_fl/sv.zarr",
+     "mapping": "the key is the public segment id",
+     "in_reader_v2": true,
+     "in_ink_9um": false
+    }
+   ],
+   "labels": [
+    "human"
+   ],
+   "readers": [
+    "argus-v2",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHerc0343P",
+   "public_segment": "20250511003658-tifxyz",
+   "names": [
+    "20250511003658-tifxyz"
+   ],
+   "physical_keys": [
+    "0343P:20250511003658-tifxyz"
+   ],
+   "blocks": [
+    {
+     "dataset": 11,
+     "segments_path": "data/v2/0343P/labels",
+     "source_family": "native_v2_0343P",
+     "labels": "human",
+     "volume": "data/v2/0343P/20250511003658-tifxyz/sv.zarr",
+     "mapping": "the key is the public segment id",
+     "in_reader_v2": true,
+     "in_ink_9um": false
+    }
+   ],
+   "labels": [
+    "human"
+   ],
+   "readers": [
+    "argus-v2",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHerc0343P",
+   "public_segment": "20250902170435--5_b2",
+   "names": [
+    "20250902170435--5_b2"
+   ],
+   "physical_keys": [
+    "0343P:20250902170435--5_b2"
+   ],
+   "blocks": [
+    {
+     "dataset": 11,
+     "segments_path": "data/v2/0343P/labels",
+     "source_family": "native_v2_0343P",
+     "labels": "human",
+     "volume": "data/v2/0343P/20250902170435--5_b2/sv.zarr",
+     "mapping": "the key is the public segment id",
+     "in_reader_v2": true,
+     "in_ink_9um": false
+    }
+   ],
+   "labels": [
+    "human"
+   ],
+   "readers": [
+    "argus-v2",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHerc0343P",
+   "public_segment": "20250902170441--4_b2",
+   "names": [
+    "20250902170441--4_b2"
+   ],
+   "physical_keys": [
+    "0343P:20250902170441--4_b2"
+   ],
+   "blocks": [
+    {
+     "dataset": 11,
+     "segments_path": "data/v2/0343P/labels",
+     "source_family": "native_v2_0343P",
+     "labels": "human",
+     "volume": "data/v2/0343P/20250902170441--4_b2/sv.zarr",
+     "mapping": "the key is the public segment id",
+     "in_reader_v2": true,
+     "in_ink_9um": false
+    }
+   ],
+   "labels": [
+    "human"
+   ],
+   "readers": [
+    "argus-v2",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHerc0343P",
+   "public_segment": "20250902170447--3_b2",
+   "names": [
+    "20250902170447--3_b2"
+   ],
+   "physical_keys": [
+    "0343P:20250902170447--3_b2"
+   ],
+   "blocks": [
+    {
+     "dataset": 11,
+     "segments_path": "data/v2/0343P/labels",
+     "source_family": "native_v2_0343P",
+     "labels": "human",
+     "volume": "data/v2/0343P/20250902170447--3_b2/sv.zarr",
+     "mapping": "the key is the public segment id",
+     "in_reader_v2": true,
+     "in_ink_9um": false
+    }
+   ],
+   "labels": [
+    "human"
+   ],
+   "readers": [
+    "argus-v2",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHerc0343P",
+   "public_segment": "20250902171202--2_b2",
+   "names": [
+    "20250902171202--2_b2"
+   ],
+   "physical_keys": [
+    "0343P:20250902171202--2_b2"
+   ],
+   "blocks": [
+    {
+     "dataset": 11,
+     "segments_path": "data/v2/0343P/labels",
+     "source_family": "native_v2_0343P",
+     "labels": "human",
+     "volume": "data/v2/0343P/20250902171202--2_b2/sv.zarr",
+     "mapping": "the key is the public segment id",
+     "in_reader_v2": true,
+     "in_ink_9um": false
+    }
+   ],
+   "labels": [
+    "human"
+   ],
+   "readers": [
+    "argus-v2",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHerc0343P",
+   "public_segment": "20250902171204--1_b2",
+   "names": [
+    "20250902171204--1_b2"
+   ],
+   "physical_keys": [
+    "0343P:20250902171204--1_b2"
+   ],
+   "blocks": [
+    {
+     "dataset": 11,
+     "segments_path": "data/v2/0343P/labels",
+     "source_family": "native_v2_0343P",
+     "labels": "human",
+     "volume": "data/v2/0343P/20250902171204--1_b2/sv.zarr",
+     "mapping": "the key is the public segment id",
+     "in_reader_v2": true,
+     "in_ink_9um": false
+    }
+   ],
+   "labels": [
+    "human"
+   ],
+   "readers": [
+    "argus-v2",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHerc0500P2",
+   "public_segment": "20250609204953-z_dbg_gen_00612",
+   "names": [
+    "20250609204953-z_dbg_gen_00612"
+   ],
+   "physical_keys": [
+    "0500P2:20250609204953-z_dbg_gen_00612"
+   ],
+   "blocks": [
+    {
+     "dataset": 10,
+     "segments_path": "data/v2/0500P2/labels",
+     "source_family": "native_v2_0500P2",
+     "labels": "human",
+     "volume": "data/v2/0500P2/20250609204953-z_dbg_gen_00612/sv.zarr",
+     "mapping": "the key is the public segment id",
+     "in_reader_v2": true,
+     "in_ink_9um": false
+    }
+   ],
+   "labels": [
+    "human"
+   ],
+   "readers": [
+    "argus-v2",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHerc0500P2",
+   "public_segment": "20250611132918-z_dbg_gen_00302_inp_hr",
+   "names": [
+    "20250611132918-z_dbg_gen_00302_inp_hr"
+   ],
+   "physical_keys": [
+    "0500P2:20250611132918-z_dbg_gen_00302_inp_hr"
+   ],
+   "blocks": [
+    {
+     "dataset": 10,
+     "segments_path": "data/v2/0500P2/labels",
+     "source_family": "native_v2_0500P2",
+     "labels": "human",
+     "volume": "data/v2/0500P2/20250611132918-z_dbg_gen_00302_inp_hr/sv.zarr",
+     "mapping": "the key is the public segment id",
+     "in_reader_v2": true,
+     "in_ink_9um": false
+    }
+   ],
+   "labels": [
+    "human"
+   ],
+   "readers": [
+    "argus-v2",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHerc0500P2",
+   "public_segment": "20250611133823-z_dbg_gen_00130_inp_hr",
+   "names": [
+    "20250611133823-z_dbg_gen_00130_inp_hr"
+   ],
+   "physical_keys": [
+    "0500P2:20250611133823-z_dbg_gen_00130_inp_hr"
+   ],
+   "blocks": [
+    {
+     "dataset": 10,
+     "segments_path": "data/v2/0500P2/labels",
+     "source_family": "native_v2_0500P2",
+     "labels": "human",
+     "volume": "data/v2/0500P2/20250611133823-z_dbg_gen_00130_inp_hr/sv.zarr",
+     "mapping": "the key is the public segment id",
+     "in_reader_v2": true,
+     "in_ink_9um": false
+    }
+   ],
+   "labels": [
+    "human"
+   ],
+   "readers": [
+    "argus-v2",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHerc0500P2",
+   "public_segment": "20250611134135-z_dbg_gen_00331_inp_hr",
+   "names": [
+    "20250611134135-z_dbg_gen_00331_inp_hr"
+   ],
+   "physical_keys": [
+    "0500P2:20250611134135-z_dbg_gen_00331_inp_hr"
+   ],
+   "blocks": [
+    {
+     "dataset": 10,
+     "segments_path": "data/v2/0500P2/labels",
+     "source_family": "native_v2_0500P2",
+     "labels": "human",
+     "volume": "data/v2/0500P2/20250611134135-z_dbg_gen_00331_inp_hr/sv.zarr",
+     "mapping": "the key is the public segment id",
+     "in_reader_v2": true,
+     "in_ink_9um": false
+    }
+   ],
+   "labels": [
+    "human"
+   ],
+   "readers": [
+    "argus-v2",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHerc0500P2",
+   "public_segment": "20250611153340-z_dbg_gen_00275",
+   "names": [
+    "20250611153340-z_dbg_gen_00275"
+   ],
+   "physical_keys": [
+    "0500P2:20250611153340-z_dbg_gen_00275"
+   ],
+   "blocks": [
+    {
+     "dataset": 10,
+     "segments_path": "data/v2/0500P2/labels",
+     "source_family": "native_v2_0500P2",
+     "labels": "human",
+     "volume": "data/v2/0500P2/20250611153340-z_dbg_gen_00275/sv.zarr",
+     "mapping": "the key is the public segment id",
+     "in_reader_v2": true,
+     "in_ink_9um": false
+    }
+   ],
+   "labels": [
+    "human"
+   ],
+   "readers": [
+    "argus-v2",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHerc0500P2",
+   "public_segment": "20250611153346-z_dbg_gen_00286_inp_hr",
+   "names": [
+    "20250611153346-z_dbg_gen_00286_inp_hr"
+   ],
+   "physical_keys": [
+    "0500P2:20250611153346-z_dbg_gen_00286_inp_hr"
+   ],
+   "blocks": [
+    {
+     "dataset": 10,
+     "segments_path": "data/v2/0500P2/labels",
+     "source_family": "native_v2_0500P2",
+     "labels": "human",
+     "volume": "data/v2/0500P2/20250611153346-z_dbg_gen_00286_inp_hr/sv.zarr",
+     "mapping": "the key is the public segment id",
+     "in_reader_v2": true,
+     "in_ink_9um": false
+    }
+   ],
+   "labels": [
+    "human"
+   ],
+   "readers": [
+    "argus-v2",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHerc0500P2",
+   "public_segment": "20250611153347-z_dbg_gen_00105_inp_hr",
+   "names": [
+    "20250611153347-z_dbg_gen_00105_inp_hr"
+   ],
+   "physical_keys": [
+    "0500P2:20250611153347-z_dbg_gen_00105_inp_hr"
+   ],
+   "blocks": [
+    {
+     "dataset": 10,
+     "segments_path": "data/v2/0500P2/labels",
+     "source_family": "native_v2_0500P2",
+     "labels": "human",
+     "volume": "data/v2/0500P2/20250611153347-z_dbg_gen_00105_inp_hr/sv.zarr",
+     "mapping": "the key is the public segment id",
+     "in_reader_v2": true,
+     "in_ink_9um": false
+    }
+   ],
+   "labels": [
+    "human"
+   ],
+   "readers": [
+    "argus-v2",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHerc0500P2",
+   "public_segment": "20250611154256-z_dbg_gen_00354_inp_hr",
+   "names": [
+    "20250611154256-z_dbg_gen_00354_inp_hr"
+   ],
+   "physical_keys": [
+    "0500P2:20250611154256-z_dbg_gen_00354_inp_hr"
+   ],
+   "blocks": [
+    {
+     "dataset": 10,
+     "segments_path": "data/v2/0500P2/labels",
+     "source_family": "native_v2_0500P2",
+     "labels": "human",
+     "volume": "data/v2/0500P2/20250611154256-z_dbg_gen_00354_inp_hr/sv.zarr",
+     "mapping": "the key is the public segment id",
+     "in_reader_v2": true,
+     "in_ink_9um": false
+    }
+   ],
+   "labels": [
+    "human"
+   ],
+   "readers": [
+    "argus-v2",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHerc0500P2",
+   "public_segment": "20250611161023-z_dbg_gen_00205_inp_hr",
+   "names": [
+    "20250611161023-z_dbg_gen_00205_inp_hr"
+   ],
+   "physical_keys": [
+    "0500P2:20250611161023-z_dbg_gen_00205_inp_hr"
+   ],
+   "blocks": [
+    {
+     "dataset": 10,
+     "segments_path": "data/v2/0500P2/labels",
+     "source_family": "native_v2_0500P2",
+     "labels": "human",
+     "volume": "data/v2/0500P2/20250611161023-z_dbg_gen_00205_inp_hr/sv.zarr",
+     "mapping": "the key is the public segment id",
+     "in_reader_v2": true,
+     "in_ink_9um": false
+    }
+   ],
+   "labels": [
+    "human"
+   ],
+   "readers": [
+    "argus-v2",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHerc0500P2",
+   "public_segment": "20250611161415-z_dbg_gen_00411_inp_hr",
+   "names": [
+    "20250611161415-z_dbg_gen_00411_inp_hr"
+   ],
+   "physical_keys": [
+    "0500P2:20250611161415-z_dbg_gen_00411_inp_hr"
+   ],
+   "blocks": [
+    {
+     "dataset": 10,
+     "segments_path": "data/v2/0500P2/labels",
+     "source_family": "native_v2_0500P2",
+     "labels": "human",
+     "volume": "data/v2/0500P2/20250611161415-z_dbg_gen_00411_inp_hr/sv.zarr",
+     "mapping": "the key is the public segment id",
+     "in_reader_v2": true,
+     "in_ink_9um": false
+    }
+   ],
+   "labels": [
+    "human"
+   ],
+   "readers": [
+    "argus-v2",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHerc0500P2",
+   "public_segment": "20250611170257-z_dbg_gen_00308_inp_hr",
+   "names": [
+    "20250611170257-z_dbg_gen_00308_inp_hr"
+   ],
+   "physical_keys": [
+    "0500P2:20250611170257-z_dbg_gen_00308_inp_hr"
+   ],
+   "blocks": [
+    {
+     "dataset": 10,
+     "segments_path": "data/v2/0500P2/labels",
+     "source_family": "native_v2_0500P2",
+     "labels": "human",
+     "volume": "data/v2/0500P2/20250611170257-z_dbg_gen_00308_inp_hr/sv.zarr",
+     "mapping": "the key is the public segment id",
+     "in_reader_v2": true,
+     "in_ink_9um": false
+    }
+   ],
+   "labels": [
+    "human"
+   ],
+   "readers": [
+    "argus-v2",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHerc0500P2",
+   "public_segment": "20250611171318-z_dbg_gen_00440_inp_hr",
+   "names": [
+    "20250611171318-z_dbg_gen_00440_inp_hr"
+   ],
+   "physical_keys": [
+    "0500P2:20250611171318-z_dbg_gen_00440_inp_hr"
+   ],
+   "blocks": [
+    {
+     "dataset": 10,
+     "segments_path": "data/v2/0500P2/labels",
+     "source_family": "native_v2_0500P2",
+     "labels": "human",
+     "volume": "data/v2/0500P2/20250611171318-z_dbg_gen_00440_inp_hr/sv.zarr",
+     "mapping": "the key is the public segment id",
+     "in_reader_v2": true,
+     "in_ink_9um": false
+    }
+   ],
+   "labels": [
+    "human"
+   ],
+   "readers": [
+    "argus-v2",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHerc0500P2",
+   "public_segment": "20250611171745-z_dbg_gen_00225_inp_hr",
+   "names": [
+    "20250611171745-z_dbg_gen_00225_inp_hr"
+   ],
+   "physical_keys": [
+    "0500P2:20250611171745-z_dbg_gen_00225_inp_hr"
+   ],
+   "blocks": [
+    {
+     "dataset": 10,
+     "segments_path": "data/v2/0500P2/labels",
+     "source_family": "native_v2_0500P2",
+     "labels": "human",
+     "volume": "data/v2/0500P2/20250611171745-z_dbg_gen_00225_inp_hr/sv.zarr",
+     "mapping": "the key is the public segment id",
+     "in_reader_v2": true,
+     "in_ink_9um": false
+    }
+   ],
+   "labels": [
+    "human"
+   ],
+   "readers": [
+    "argus-v2",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHerc0500P2",
+   "public_segment": "20250611172135-z_dbg_gen_00346_inp_hr",
+   "names": [
+    "20250611172135-z_dbg_gen_00346_inp_hr"
+   ],
+   "physical_keys": [
+    "0500P2:20250611172135-z_dbg_gen_00346_inp_hr"
+   ],
+   "blocks": [
+    {
+     "dataset": 10,
+     "segments_path": "data/v2/0500P2/labels",
+     "source_family": "native_v2_0500P2",
+     "labels": "human",
+     "volume": "data/v2/0500P2/20250611172135-z_dbg_gen_00346_inp_hr/sv.zarr",
+     "mapping": "the key is the public segment id",
+     "in_reader_v2": true,
+     "in_ink_9um": false
+    }
+   ],
+   "labels": [
+    "human"
+   ],
+   "readers": [
+    "argus-v2",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHerc0500P2",
+   "public_segment": "20250611173014-z_dbg_gen_00506_inp_hr",
+   "names": [
+    "20250611173014-z_dbg_gen_00506_inp_hr"
+   ],
+   "physical_keys": [
+    "0500P2:20250611173014-z_dbg_gen_00506_inp_hr"
+   ],
+   "blocks": [
+    {
+     "dataset": 10,
+     "segments_path": "data/v2/0500P2/labels",
+     "source_family": "native_v2_0500P2",
+     "labels": "human",
+     "volume": "data/v2/0500P2/20250611173014-z_dbg_gen_00506_inp_hr/sv.zarr",
+     "mapping": "the key is the public segment id",
+     "in_reader_v2": true,
+     "in_ink_9um": false
+    }
+   ],
+   "labels": [
+    "human"
+   ],
+   "readers": [
+    "argus-v2",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHerc0500P2",
+   "public_segment": "20250628074500-500P2_front",
+   "names": [
+    "20250628074500-500P2_front"
+   ],
+   "physical_keys": [
+    "0500P2:20250628074500-500P2_front"
+   ],
+   "blocks": [
+    {
+     "dataset": 10,
+     "segments_path": "data/v2/0500P2/labels",
+     "source_family": "native_v2_0500P2",
+     "labels": "human",
+     "volume": "data/v2/0500P2/20250628074500-500P2_front/sv.zarr",
+     "mapping": "the key is the public segment id",
+     "in_reader_v2": true,
+     "in_ink_9um": false
+    }
+   ],
+   "labels": [
+    "human"
+   ],
+   "readers": [
+    "argus-v2",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHerc0500P2",
+   "public_segment": "20250716055227-z_dbg_gen_00260_inp_hr",
+   "names": [
+    "20250716055227-z_dbg_gen_00260_inp_hr"
+   ],
+   "physical_keys": [
+    "0500P2:20250716055227-z_dbg_gen_00260_inp_hr"
+   ],
+   "blocks": [
+    {
+     "dataset": 10,
+     "segments_path": "data/v2/0500P2/labels",
+     "source_family": "native_v2_0500P2",
+     "labels": "human",
+     "volume": "data/v2/0500P2/20250716055227-z_dbg_gen_00260_inp_hr/sv.zarr",
+     "mapping": "the key is the public segment id",
+     "in_reader_v2": true,
+     "in_ink_9um": false
+    }
+   ],
+   "labels": [
+    "human"
+   ],
+   "readers": [
+    "argus-v2",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHerc0500P2",
+   "public_segment": "20250716055228-z_dbg_gen_00333_inp_hr",
+   "names": [
+    "20250716055228-z_dbg_gen_00333_inp_hr"
+   ],
+   "physical_keys": [
+    "0500P2:20250716055228-z_dbg_gen_00333_inp_hr"
+   ],
+   "blocks": [
+    {
+     "dataset": 10,
+     "segments_path": "data/v2/0500P2/labels",
+     "source_family": "native_v2_0500P2",
+     "labels": "human",
+     "volume": "data/v2/0500P2/20250716055228-z_dbg_gen_00333_inp_hr/sv.zarr",
+     "mapping": "the key is the public segment id",
+     "in_reader_v2": true,
+     "in_ink_9um": false
+    }
+   ],
+   "labels": [
+    "human"
+   ],
+   "readers": [
+    "argus-v2",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHerc0814",
+   "public_segment": "20250925161630-auto_grown_20250925161630",
+   "names": [
+    "20250925161630-auto_grown_20250925161630"
+   ],
+   "physical_keys": [
+    "0814:20250925161630-auto_grown_20250925161630"
+   ],
+   "blocks": [
+    {
+     "dataset": 9,
+     "segments_path": "data/v2/0814/labels",
+     "source_family": "native_v2_0814",
+     "labels": "human",
+     "volume": "data/v2/0814/20250925161630-auto_grown_20250925161630/sv.zarr",
+     "mapping": "the key is the public segment id",
+     "in_reader_v2": true,
+     "in_ink_9um": false
+    }
+   ],
+   "labels": [
+    "human"
+   ],
+   "readers": [
+    "argus-v2",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHerc0814",
+   "public_segment": "20250925182632-auto_grown_20250925182632",
+   "names": [
+    "20250925182632-auto_grown_20250925182632"
+   ],
+   "physical_keys": [
+    "0814:20250925182632-auto_grown_20250925182632"
+   ],
+   "blocks": [
+    {
+     "dataset": 9,
+     "segments_path": "data/v2/0814/labels",
+     "source_family": "native_v2_0814",
+     "labels": "human",
+     "volume": "data/v2/0814/20250925182632-auto_grown_20250925182632/sv.zarr",
+     "mapping": "the key is the public segment id",
+     "in_reader_v2": true,
+     "in_ink_9um": false
+    }
+   ],
+   "labels": [
+    "human"
+   ],
+   "readers": [
+    "argus-v2",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHerc0814",
+   "public_segment": "20250925204843-auto_grown_20250925204843",
+   "names": [
+    "20250925204843-auto_grown_20250925204843"
+   ],
+   "physical_keys": [
+    "0814:20250925204843-auto_grown_20250925204843"
+   ],
+   "blocks": [
+    {
+     "dataset": 9,
+     "segments_path": "data/v2/0814/labels",
+     "source_family": "native_v2_0814",
+     "labels": "human",
+     "volume": "data/v2/0814/20250925204843-auto_grown_20250925204843/sv.zarr",
+     "mapping": "the key is the public segment id",
+     "in_reader_v2": true,
+     "in_ink_9um": false
+    }
+   ],
+   "labels": [
+    "human"
+   ],
+   "readers": [
+    "argus-v2",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHerc0814",
+   "public_segment": "20250925212701-auto_grown_20250925212701",
+   "names": [
+    "20250925212701-auto_grown_20250925212701"
+   ],
+   "physical_keys": [
+    "0814:20250925212701-auto_grown_20250925212701"
+   ],
+   "blocks": [
+    {
+     "dataset": 9,
+     "segments_path": "data/v2/0814/labels",
+     "source_family": "native_v2_0814",
+     "labels": "human",
+     "volume": "data/v2/0814/20250925212701-auto_grown_20250925212701/sv.zarr",
+     "mapping": "the key is the public segment id",
+     "in_reader_v2": true,
+     "in_ink_9um": false
+    }
+   ],
+   "labels": [
+    "human"
+   ],
+   "readers": [
+    "argus-v2",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHerc0814",
+   "public_segment": "20250925222237-auto_grown_20250925222237",
+   "names": [
+    "20250925222237-auto_grown_20250925222237"
+   ],
+   "physical_keys": [
+    "0814:20250925222237-auto_grown_20250925222237"
+   ],
+   "blocks": [
+    {
+     "dataset": 9,
+     "segments_path": "data/v2/0814/labels",
+     "source_family": "native_v2_0814",
+     "labels": "human",
+     "volume": "data/v2/0814/20250925222237-auto_grown_20250925222237/sv.zarr",
+     "mapping": "the key is the public segment id",
+     "in_reader_v2": true,
+     "in_ink_9um": false
+    }
+   ],
+   "labels": [
+    "human"
+   ],
+   "readers": [
+    "argus-v2",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHerc0814",
+   "public_segment": "20250926051122-auto_grown_20250926051122",
+   "names": [
+    "20250926051122-auto_grown_20250926051122"
+   ],
+   "physical_keys": [
+    "0814:20250926051122-auto_grown_20250926051122"
+   ],
+   "blocks": [
+    {
+     "dataset": 9,
+     "segments_path": "data/v2/0814/labels",
+     "source_family": "native_v2_0814",
+     "labels": "human",
+     "volume": "data/v2/0814/20250926051122-auto_grown_20250926051122/sv.zarr",
+     "mapping": "the key is the public segment id",
+     "in_reader_v2": true,
+     "in_ink_9um": false
+    }
+   ],
+   "labels": [
+    "human"
+   ],
+   "readers": [
+    "argus-v2",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHerc0814",
+   "public_segment": "20250926165636-auto_trace_20250926165636",
+   "names": [
+    "20250926165636-auto_trace_20250926165636"
+   ],
+   "physical_keys": [
+    "0814:20250926165636-auto_trace_20250926165636"
+   ],
+   "blocks": [
+    {
+     "dataset": 9,
+     "segments_path": "data/v2/0814/labels",
+     "source_family": "native_v2_0814",
+     "labels": "human",
+     "volume": "data/v2/0814/20250926165636-auto_trace_20250926165636/sv.zarr",
+     "mapping": "the key is the public segment id",
+     "in_reader_v2": true,
+     "in_ink_9um": false
+    }
+   ],
+   "labels": [
+    "human"
+   ],
+   "readers": [
+    "argus-v2",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHerc0814",
+   "public_segment": "20250926203608-auto_grown_20250926203608",
+   "names": [
+    "20250926203608-auto_grown_20250926203608"
+   ],
+   "physical_keys": [
+    "0814:20250926203608-auto_grown_20250926203608"
+   ],
+   "blocks": [
+    {
+     "dataset": 9,
+     "segments_path": "data/v2/0814/labels",
+     "source_family": "native_v2_0814",
+     "labels": "human",
+     "volume": "data/v2/0814/20250926203608-auto_grown_20250926203608/sv.zarr",
+     "mapping": "the key is the public segment id",
+     "in_reader_v2": true,
+     "in_ink_9um": false
+    }
+   ],
+   "labels": [
+    "human"
+   ],
+   "readers": [
+    "argus-v2",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHerc0814",
+   "public_segment": "20260226000000-46527_2um_try2",
+   "names": [
+    "pherc0814-46527"
+   ],
+   "physical_keys": [
+    "0814:46527"
+   ],
+   "blocks": [
+    {
+     "dataset": 5,
+     "segments_path": "data/pseudo/aligned-scrollprizeorg-21slices",
+     "source_family": "public_2p4_level2_zmean4",
+     "labels": "pseudo",
+     "volume": "data/teacher/p0814_iso9.zarr",
+     "mapping": "ink_9um README source-volume table (Interpretation: the pseudo folder copies ink_9um's aligned naming)",
+     "in_reader_v2": true,
+     "in_ink_9um": false
+    }
+   ],
+   "labels": [
+    "pseudo"
+   ],
+   "inherited_human_labels": "ink_9um's human labels of this surface, through Reader v2's initial run",
+   "readers": [
+    "argus-v2",
+    "ink_9um",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHerc1667",
+   "public_segment": "20240304141531-w013_20240304141531_flatboi",
+   "names": [
+    "pherc1667-w013"
+   ],
+   "physical_keys": [
+    "1667:w013"
+   ],
+   "blocks": [
+    {
+     "dataset": 2,
+     "segments_path": "data/ink9um/labels/aligned-scrollprizeorg-21slices",
+     "source_family": "public_2p4_level2_zmean4",
+     "labels": "human",
+     "volume": "data/corpus/pherc1667-w013_iso9.zarr",
+     "mapping": "ink_9um README source-volume table",
+     "in_reader_v2": true,
+     "in_ink_9um": true
+    }
+   ],
+   "labels": [
+    "human"
+   ],
+   "readers": [
+    "argus-v2",
+    "ink_9um",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHerc1667",
+   "public_segment": "20240304144031-w018_20240304144031_flatboi",
+   "names": [
+    "pherc1667-w018"
+   ],
+   "physical_keys": [
+    "1667:w018"
+   ],
+   "blocks": [
+    {
+     "dataset": 2,
+     "segments_path": "data/ink9um/labels/aligned-scrollprizeorg-21slices",
+     "source_family": "public_2p4_level2_zmean4",
+     "labels": "human",
+     "volume": "data/ink9um/volumes_pherc1667-w018/w018_9um_iso.zarr",
+     "mapping": "ink_9um README source-volume table",
+     "in_reader_v2": true,
+     "in_ink_9um": true
+    }
+   ],
+   "labels": [
+    "human"
+   ],
+   "readers": [
+    "argus-v2",
+    "ink_9um",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHerc1667",
+   "public_segment": "20240304161941-w023_20240304161941_flatboi",
+   "names": [
+    "pherc1667-w023"
+   ],
+   "physical_keys": [
+    "1667:w023"
+   ],
+   "blocks": [
+    {
+     "dataset": 2,
+     "segments_path": "data/ink9um/labels/aligned-scrollprizeorg-21slices",
+     "source_family": "public_2p4_level2_zmean4",
+     "labels": "human",
+     "volume": "data/corpus/pherc1667-w023_iso9.zarr",
+     "mapping": "ink_9um README source-volume table",
+     "in_reader_v2": true,
+     "in_ink_9um": true
+    }
+   ],
+   "labels": [
+    "human"
+   ],
+   "readers": [
+    "argus-v2",
+    "ink_9um",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHerc1667",
+   "public_segment": "20251208130119-w028_20251208130119156_flatboi",
+   "names": [
+    "pherc1667-w028"
+   ],
+   "physical_keys": [
+    "1667:w028"
+   ],
+   "blocks": [
+    {
+     "dataset": 3,
+     "segments_path": "data/pseudo/aligned-scrollprizeorg-21slices",
+     "source_family": "public_2p4_level2_zmean4",
+     "labels": "pseudo",
+     "volume": "data/teacher/p1667w028_iso9.zarr",
+     "mapping": "ink_9um README source-volume table (Interpretation: the pseudo folder copies ink_9um's aligned naming)",
+     "in_reader_v2": true,
+     "in_ink_9um": false
+    }
+   ],
+   "labels": [
+    "pseudo"
+   ],
+   "inherited_human_labels": "ink_9um's human labels of this surface, through Reader v2's initial run",
+   "readers": [
+    "argus-v2",
+    "ink_9um",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHerc1667",
+   "public_segment": "20251212185248-w029_20251212185248662_flatboi",
+   "names": [
+    "pherc1667-w029"
+   ],
+   "physical_keys": [
+    "1667:w029"
+   ],
+   "blocks": [
+    {
+     "dataset": 3,
+     "segments_path": "data/pseudo/aligned-scrollprizeorg-21slices",
+     "source_family": "public_2p4_level2_zmean4",
+     "labels": "pseudo",
+     "volume": "data/teacher/p1667w029_iso9.zarr",
+     "mapping": "ink_9um README source-volume table (Interpretation: the pseudo folder copies ink_9um's aligned naming)",
+     "in_reader_v2": true,
+     "in_ink_9um": false
+    }
+   ],
+   "labels": [
+    "pseudo"
+   ],
+   "inherited_human_labels": "ink_9um's human labels of this surface, through Reader v2's initial run",
+   "readers": [
+    "argus-v2",
+    "ink_9um",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHerc1667",
+   "public_segment": "20251223230000-w031_2025122323_flatboi",
+   "names": [
+    "pherc1667-w031"
+   ],
+   "physical_keys": [
+    "1667:w031"
+   ],
+   "blocks": [
+    {
+     "dataset": 2,
+     "segments_path": "data/ink9um/labels/aligned-scrollprizeorg-21slices",
+     "source_family": "public_2p4_level2_zmean4",
+     "labels": "human",
+     "volume": "data/corpus/pherc1667-w031_iso9.zarr",
+     "mapping": "ink_9um README source-volume table",
+     "in_reader_v2": true,
+     "in_ink_9um": true
+    }
+   ],
+   "labels": [
+    "human"
+   ],
+   "readers": [
+    "argus-v2",
+    "ink_9um",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHercParis4",
+   "public_segment": "20230702185753",
+   "names": [
+    "phercparis4-w01"
+   ],
+   "physical_keys": [
+    "Paris4:w01"
+   ],
+   "blocks": [
+    {
+     "dataset": 4,
+     "segments_path": "data/ink9um/labels/aligned-scrollprizeorg-21slices",
+     "source_family": "public_2p4_level2_zmean4",
+     "labels": "human",
+     "volume": "data/corpus/phercparis4-w01_iso9.zarr",
+     "mapping": "ink_9um README source-volume table",
+     "in_reader_v2": true,
+     "in_ink_9um": true
+    }
+   ],
+   "labels": [
+    "human"
+   ],
+   "readers": [
+    "argus-v2",
+    "ink_9um",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHercParis4",
+   "public_segment": "20230929220926",
+   "names": [
+    "phercparis4-w09"
+   ],
+   "physical_keys": [
+    "Paris4:w09"
+   ],
+   "blocks": [
+    {
+     "dataset": 4,
+     "segments_path": "data/ink9um/labels/aligned-scrollprizeorg-21slices",
+     "source_family": "public_2p4_level2_zmean4",
+     "labels": "human",
+     "volume": "data/corpus/phercparis4-w09_iso9.zarr",
+     "mapping": "ink_9um README source-volume table",
+     "in_reader_v2": true,
+     "in_ink_9um": true
+    }
+   ],
+   "labels": [
+    "human"
+   ],
+   "readers": [
+    "argus-v2",
+    "ink_9um",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHercParis4",
+   "public_segment": "20231007101619",
+   "names": [
+    "phercparis4-w07"
+   ],
+   "physical_keys": [
+    "Paris4:w07"
+   ],
+   "blocks": [
+    {
+     "dataset": 4,
+     "segments_path": "data/ink9um/labels/aligned-scrollprizeorg-21slices",
+     "source_family": "public_2p4_level2_zmean4",
+     "labels": "human",
+     "volume": "data/corpus/phercparis4-w07_iso9.zarr",
+     "mapping": "ink_9um README source-volume table",
+     "in_reader_v2": true,
+     "in_ink_9um": true
+    }
+   ],
+   "labels": [
+    "human"
+   ],
+   "readers": [
+    "argus-v2",
+    "ink_9um",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHercParis4",
+   "public_segment": "20231012184424",
+   "names": [
+    "phercparis4-w05"
+   ],
+   "physical_keys": [
+    "Paris4:w05"
+   ],
+   "blocks": [
+    {
+     "dataset": 4,
+     "segments_path": "data/ink9um/labels/aligned-scrollprizeorg-21slices",
+     "source_family": "public_2p4_level2_zmean4",
+     "labels": "human",
+     "volume": "data/corpus/phercparis4-w05_iso9.zarr",
+     "mapping": "ink_9um README source-volume table",
+     "in_reader_v2": true,
+     "in_ink_9um": true
+    }
+   ],
+   "labels": [
+    "human"
+   ],
+   "readers": [
+    "argus-v2",
+    "ink_9um",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHercParis4",
+   "public_segment": "20231016151002",
+   "names": [
+    "phercparis4-w00"
+   ],
+   "physical_keys": [
+    "Paris4:w00"
+   ],
+   "blocks": [
+    {
+     "dataset": 4,
+     "segments_path": "data/ink9um/labels/aligned-scrollprizeorg-21slices",
+     "source_family": "public_2p4_level2_zmean4",
+     "labels": "human",
+     "volume": "data/corpus/phercparis4-w00_iso9.zarr",
+     "mapping": "ink_9um README source-volume table",
+     "in_reader_v2": true,
+     "in_ink_9um": true
+    }
+   ],
+   "labels": [
+    "human"
+   ],
+   "readers": [
+    "argus-v2",
+    "ink_9um",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHercParis4",
+   "public_segment": "20231031143852",
+   "names": [
+    "phercparis4-w02"
+   ],
+   "physical_keys": [
+    "Paris4:w02"
+   ],
+   "blocks": [
+    {
+     "dataset": 4,
+     "segments_path": "data/ink9um/labels/aligned-scrollprizeorg-21slices",
+     "source_family": "public_2p4_level2_zmean4",
+     "labels": "human",
+     "volume": "data/corpus/phercparis4-w02_iso9.zarr",
+     "mapping": "ink_9um README source-volume table",
+     "in_reader_v2": true,
+     "in_ink_9um": true
+    }
+   ],
+   "labels": [
+    "human"
+   ],
+   "readers": [
+    "argus-v2",
+    "ink_9um",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHercParis4",
+   "public_segment": "20231106155351",
+   "names": [
+    "phercparis4-w03"
+   ],
+   "physical_keys": [
+    "Paris4:w03"
+   ],
+   "blocks": [
+    {
+     "dataset": 4,
+     "segments_path": "data/ink9um/labels/aligned-scrollprizeorg-21slices",
+     "source_family": "public_2p4_level2_zmean4",
+     "labels": "human",
+     "volume": "data/corpus/phercparis4-w03_iso9.zarr",
+     "mapping": "ink_9um README source-volume table",
+     "in_reader_v2": true,
+     "in_ink_9um": true
+    }
+   ],
+   "labels": [
+    "human"
+   ],
+   "readers": [
+    "argus-v2",
+    "ink_9um",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  },
+  {
+   "scroll": "PHercParis4",
+   "public_segment": "20231210121321",
+   "names": [
+    "phercparis4-w06"
+   ],
+   "physical_keys": [
+    "Paris4:w06"
+   ],
+   "blocks": [
+    {
+     "dataset": 4,
+     "segments_path": "data/ink9um/labels/aligned-scrollprizeorg-21slices",
+     "source_family": "public_2p4_level2_zmean4",
+     "labels": "human",
+     "volume": "data/corpus/phercparis4-w06_iso9.zarr",
+     "mapping": "ink_9um README source-volume table",
+     "in_reader_v2": true,
+     "in_ink_9um": true
+    }
+   ],
+   "labels": [
+    "human"
+   ],
+   "readers": [
+    "argus-v2",
+    "ink_9um",
+    "reader-pu",
+    "reader-v2",
+    "reader-v3"
+   ]
+  }
+ ],
+ "possible": [
+  {
+   "scroll": "PHerc0139",
+   "public_segment": "w017",
+   "names": [
+    "pherc0139-w017"
+   ],
+   "dataset": 1,
+   "why": "the other reading of pseudo-label name pherc0139-w017: public w017 if the folder used public numbering (Interpretation)"
+  },
+  {
+   "scroll": "PHerc0139",
+   "public_segment": "w028",
+   "names": [
+    "pherc0139-w028"
+   ],
+   "dataset": 1,
+   "why": "the other reading of pseudo-label name pherc0139-w028: public w028 if the folder used public numbering (Interpretation)"
+  },
+  {
+   "scroll": "PHerc0139",
+   "public_segment": "w029",
+   "names": [
+    "pherc0139-w029"
+   ],
+   "dataset": 1,
+   "why": "the other reading of pseudo-label name pherc0139-w029: public w029 if the folder used public numbering (Interpretation)"
+  }
+ ],
+ "aliases": [],
+ "selection": [
+  {
+   "readers": [
+    "reader-v3",
+    "argus-v2",
+    "reader-pu"
+   ],
+   "scroll": "PHerc0841",
+   "segments": [
+    "20260220213127-w00",
+    "w00",
+    "20260220214732-auto_grown_20260220144552896",
+    "ag896",
+    "20260221022814-auto_grown_20260220174252405",
+    "ag405"
+   ],
+   "by": "Reader V3's author: suite rows 0841_w00, 0841_ag1, 0841_ag2 (which of ag896 and ag405 are ag1 and ag2 is not stated, so both are listed)",
+   "source": "https://github.com/DomRusso2/reader-v3/tree/main/results",
+   "label": "Community report"
+  },
+  {
+   "readers": [
+    "reader-v3",
+    "argus-v2",
+    "reader-pu"
+   ],
+   "scroll": "PHerc0009B",
+   "segments": [
+    "20250919125754",
+    "ag487"
+   ],
+   "by": "Reader V3's author: suite row 0009B_125754",
+   "source": "https://github.com/DomRusso2/reader-v3/tree/main/results",
+   "label": "Community report"
+  },
+  {
+   "readers": [
+    "reader-v3",
+    "argus-v2",
+    "reader-pu"
+   ],
+   "scroll": "PHerc1447",
+   "segments": [
+    "w058",
+    "w060",
+    "20251210153304-w058_20251210153304503_flatboi",
+    "20251207123912-w060_20251207123912611_flatboi"
+   ],
+   "by": "Reader V3's author: suite rows w058, w060",
+   "source": "https://github.com/DomRusso2/reader-v3/tree/main/results",
+   "label": "Community report"
+  },
+  {
+   "readers": [
+    "reader-v3",
+    "argus-v2",
+    "reader-pu"
+   ],
+   "scroll": "PHerc0139",
+   "segments": [
+    "20260206000001-w047_2026020613",
+    "w047",
+    "20260220000000-w053_2026022021",
+    "w053"
+   ],
+   "by": "Reader V3's author: suite rows w047 (ink) and w053 (blank papyrus)",
+   "source": "https://github.com/DomRusso2/reader-v3/tree/main/results",
+   "label": "Community report"
+  }
+ ],
+ "same_roll_rule": "another piece of a roll a reader trained on is not called fresh: pieces share the roll's number (PHerc0343P and PHerc0343; Interpretation)",
+ "digest": "e265a3c39d450fc8334ec9a043b73c8c9868d2e7e54fb912057124639a47d7c1"
+}
