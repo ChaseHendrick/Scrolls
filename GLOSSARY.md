@@ -112,6 +112,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **d9v2**: A community fine-tune of `ink_9um`, usable as a drop-in `ink_9um` checkpoint.
 
+**defectbench**: `python -m kit.defectbench`, a development bench of synthetic meshes with planted sheet switches, rough tracing, folds and bridges and the known answer for every vertex, for scoring mesh repairs and sheet-switch alarms before any real column is spent; a bench score is never a result on a scroll ([page](docs/tools/defectbench.md)).
+
 **depth shuffle**: A control volume in which the layers of a surface volume are put in a random order (`kit shuffle`, `kit layers --shuffle SEED`). Real ink signal should not survive it.
 
 **derived cover (review pin)**: A GO that still covers a pull request's head although its own patch changed, because every commit after the pin is a merge of the base branch, each file's own change is the same by content, and each merge equals an automatic merge of its parents (`kit reviewpin`, [page](docs/tools/freeze.md)).

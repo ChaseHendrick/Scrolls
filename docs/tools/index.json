@@ -3258,6 +3258,161 @@
    ]
   },
   {
+   "id": "defectbench",
+   "name": "defectbench",
+   "tagline": "a dev bench of meshes with planted defects and known answers",
+   "summary": "Builds synthetic tifxyz meshes with planted sheet switches, rough tracing, folds and bridges, sized like spiral-fit columns of public PHerc0343, with per-vertex truth, and scores switch alarms and mesh repairs on them.",
+   "status": "Experimental",
+   "kind": [
+    "kit module"
+   ],
+   "area": "Surfaces and tracing",
+   "commands": [
+    "python3 -m kit.defectbench cases",
+    "make",
+    "check",
+    "baseline",
+    "score"
+   ],
+   "imports": [
+    "from kit import defectbench"
+   ],
+   "code": [
+    {
+     "path": "kit/defectbench.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/stagereg_ext_defectbench.py",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_defectbench.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed"
+   },
+   "checked": null,
+   "license": null,
+   "fields": {
+    "Id": "`defectbench`",
+    "Status": "Experimental",
+    "Kind": "kit module",
+    "Area": "Surfaces and tracing",
+    "Run": "`python3 -m kit.defectbench cases`, `make`, `check`, `baseline`, `score`; `from kit import defectbench`",
+    "Code": "`kit/defectbench.py`, `kit/stagereg_ext_defectbench.py`",
+    "Tests": "`tests/test_defectbench.py`",
+    "Needs": "Python 3.9 or newer, numpy, scipy, tifffile; zarr 3 and numcodecs for the mini track's prediction. No scan data, villa, VC3D or GPU.",
+    "Runs on": "CPU anywhere. `make --seeds 3` (78 cases, both tracks) took 1 min 43 s and 168 MB; `check` 1 s; one baseline plus its score about 1 min (measured 2026-11-27, 4-core cloud container)",
+    "Network": "None",
+    "Writes": "`make`: OUT/manifest.json and OUT/TRACK/CASE-sSEED/ (x.tif, y.tif, z.tif, meta.json, truth.npz, defects.json; mini adds pred.zarr and umbilicus.json); `baseline`: DIR/TRACK/CASE-sSEED.npy or DIR/TRACK/CASE-sSEED/ tifxyz; `score --out-file`: one JSON file",
+    "Go-ahead": "Not needed",
+    "Released": "Not yet",
+    "Checked": "2026-11-27"
+   },
+   "page": "docs/tools/defectbench.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 22,
+     "end_line": 52,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 53,
+     "end_line": 69,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 70,
+     "end_line": 85,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 86,
+     "end_line": 100,
+     "applicable": true
+    },
+    {
+     "name": "Result so far (Model output, synthetic data only)",
+     "start_line": 101,
+     "end_line": 130,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 131,
+     "end_line": 208,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 209,
+     "end_line": 241,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 242,
+     "end_line": 251,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 252,
+     "end_line": 286,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 287,
+     "end_line": 300,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 301,
+     "end_line": 317,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 318,
+     "end_line": 322,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 323,
+     "end_line": 336,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 337,
+     "end_line": 343,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 344,
+     "end_line": 348,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 349,
+     "end_line": 352,
+     "applicable": true
+    }
+   ]
+  },
+  {
    "id": "dinovol-embeddings",
    "name": "dinovol-embeddings",
    "tagline": "precomputed dinovol features of the whole PHerc0841 scan, readable by URL",
