@@ -294,7 +294,7 @@ def load(path=None):
     if _REG is None:
         _REG = json.loads(REGISTRY.read_text())
         if _REG.get("schema") != SCHEMA or _REG.get("digest") != digest(_REG):
-            raise SeenError(f"{REGISTRY}: digest out of step; run python3 -m kit readerseen verify")
+            raise SeenError(f"{REGISTRY}: digest out of step; run python -m kit.readerseen build")
     return _REG
 
 
