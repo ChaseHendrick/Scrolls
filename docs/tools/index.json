@@ -768,6 +768,154 @@
    ]
   },
   {
+   "id": "atlascomm",
+   "name": "atlascomm",
+   "tagline": "Segment Atlas numbers for ATLAS-15k's community surface patches",
+   "summary": "Reads Qual's ATLAS-15k recto surface patches shard by shard and writes one Segment Atlas row per patch: the dataset's metadata for every patch and, for the scrolls you name, the same area, isometry, hole, fold and stretch numbers `kit atlas` gives published meshes.",
+   "status": "Current",
+   "kind": [
+    "kit command"
+   ],
+   "area": "Surfaces and tracing",
+   "commands": [
+    "python -m kit atlascomm"
+   ],
+   "imports": [],
+   "code": [
+    {
+     "path": "kit/atlascomm.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/cli.py",
+     "symbols": [
+      "build_parser"
+     ]
+    }
+   ],
+   "tests": [
+    "tests/test_atlascomm.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed for `build` (public data, local files). Publishing the table to the Segment Atlas dataset is an upload and needs Chase's yes on its content (AGENTS.md rule 8)"
+   },
+   "checked": {
+    "date": "2026-11-27",
+    "commit": "5f7edb7"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`atlascomm`",
+    "Status": "Current",
+    "Kind": "kit command",
+    "Area": "Surfaces and tracing",
+    "Run": "`python -m kit atlascomm`",
+    "Code": "`kit/atlascomm.py`, `kit/cli.py` (`build_parser`)",
+    "Tests": "`tests/test_atlascomm.py`",
+    "Needs": "Python 3.10 or later, numpy, pyarrow and huggingface_hub (the last two only for `build`)",
+    "Runs on": "Any CPU. On 27 Nov 2026 a 4-core cloud container read all 18 shards (8.6 GB) and measured 3,412 patches in 253 s; one shard on disk at a time",
+    "Network": "`huggingface.co` (the dataset's 18 parquet shards, 8.6 GB in all, one at a time)",
+    "Writes": "OUT/`atlas15k.csv`, OUT/`atlas15k.jsonl`, OUT/`atlas15k-scrolls.json`; each shard goes to a temporary folder (or `--workdir`) that is deleted once read",
+    "Go-ahead": "Not needed for `build` (public data, local files). Publishing the table to the Segment Atlas dataset is an upload and needs Chase's yes on its content (AGENTS.md rule 8)",
+    "Released": "Public `main` once merged",
+    "Checked": "2026-11-27 against commit `5f7edb7`"
+   },
+   "page": "docs/tools/atlascomm.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 22,
+     "end_line": 29,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 30,
+     "end_line": 38,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 39,
+     "end_line": 46,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 47,
+     "end_line": 57,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 58,
+     "end_line": 77,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 78,
+     "end_line": 92,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 93,
+     "end_line": 96,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 97,
+     "end_line": 106,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 107,
+     "end_line": 114,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 115,
+     "end_line": 121,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 122,
+     "end_line": 125,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 126,
+     "end_line": 135,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 136,
+     "end_line": 139,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 140,
+     "end_line": 143,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 144,
+     "end_line": 147,
+     "applicable": true
+    }
+   ]
+  },
+  {
    "id": "auc",
    "name": "auc",
    "tagline": "score an ink map against a segment's published labels",
