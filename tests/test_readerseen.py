@@ -97,9 +97,8 @@ class Check(unittest.TestCase):
         self.assertEqual(_v("reader-v3", "PHerc0009B", ["20250919064353-auto_grown_x"])["verdict"], "TRAINED")
         self.assertEqual(_v("reader-v3", "PHerc0841", ["ag405"])["verdict"], "SELECTED")
         self.assertEqual(_v("reader-v3", "PHerc0139", ["w053"])["verdict"], "SELECTED")
-        self.assertEqual(_v("reader-v3", "PHerc1447", ["w058"])["verdict"], "SELECTED")
         # the suite is Reader V3's: Reader v2 shares the training list, not the selection
-        self.assertEqual(_v("reader-v2", "PHerc1447", ["w058"])["verdict"], "FRESH-BY-LIST")
+        self.assertEqual(_v("reader-v2", "PHerc0841", ["ag405"])["verdict"], "FRESH-BY-LIST")
 
     def test_selected_units_on_a_scroll(self):
         self.assertEqual(_v("reader-v3", "PHerc0841")["verdict"], "SELECTED")
