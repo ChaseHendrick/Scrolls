@@ -81,16 +81,6 @@
    "weights": "argus-v2",
    "derived": true,
    "note": "Reader V3 fine-tuned by ruiconte on native 8 to 9 um scans (ruiconte/argus-v2); its own fine-tune segments are not in this registry"
-  },
-  "reader-pu": {
-   "aliases": [
-    "reader-pu",
-    "scribble-pu",
-    "scribblepu"
-   ],
-   "weights": "reader-pu",
-   "derived": true,
-   "note": "Reader V3 retuned by Domenico Russo with ScribblePU positive-unlabelled training (domenicor046/scribble-pu); the segments of its retuning are not in this registry"
   }
  },
  "counts": {
@@ -159,7 +149,6 @@
    ],
    "readers": [
     "argus-v2",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -190,7 +179,6 @@
    ],
    "readers": [
     "argus-v2",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -221,7 +209,6 @@
    ],
    "readers": [
     "argus-v2",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -252,7 +239,6 @@
    ],
    "readers": [
     "argus-v2",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -283,7 +269,6 @@
    ],
    "readers": [
     "argus-v2",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -314,7 +299,6 @@
    ],
    "readers": [
     "argus-v2",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -345,7 +329,6 @@
    ],
    "readers": [
     "argus-v2",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -376,7 +359,6 @@
    ],
    "readers": [
     "argus-v2",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -407,7 +389,6 @@
    ],
    "readers": [
     "argus-v2",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -438,7 +419,6 @@
    ],
    "readers": [
     "argus-v2",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -469,7 +449,6 @@
    ],
    "readers": [
     "argus-v2",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -500,7 +479,6 @@
    ],
    "readers": [
     "argus-v2",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -531,7 +509,6 @@
    ],
    "readers": [
     "argus-v2",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -562,7 +539,6 @@
    ],
    "readers": [
     "argus-v2",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -593,7 +569,6 @@
    ],
    "readers": [
     "argus-v2",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -624,7 +599,6 @@
    ],
    "readers": [
     "argus-v2",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -655,7 +629,6 @@
    ],
    "readers": [
     "argus-v2",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -686,7 +659,6 @@
    ],
    "readers": [
     "argus-v2",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -718,7 +690,6 @@
    "readers": [
     "argus-v2",
     "ink_9um",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -763,7 +734,6 @@
    "readers": [
     "argus-v2",
     "ink_9um",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -794,7 +764,6 @@
    ],
    "readers": [
     "argus-v2",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -837,7 +806,6 @@
    "readers": [
     "argus-v2",
     "ink_9um",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -868,7 +836,6 @@
    ],
    "readers": [
     "argus-v2",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -911,7 +878,6 @@
    "readers": [
     "argus-v2",
     "ink_9um",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -955,7 +921,6 @@
    "readers": [
     "argus-v2",
     "ink_9um",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -1000,7 +965,6 @@
    "readers": [
     "argus-v2",
     "ink_9um",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -1031,7 +995,6 @@
    ],
    "readers": [
     "argus-v2",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -1076,7 +1039,6 @@
    "readers": [
     "argus-v2",
     "ink_9um",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -1107,7 +1069,6 @@
    ],
    "readers": [
     "argus-v2",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -1138,7 +1099,6 @@
    ],
    "readers": [
     "argus-v2",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -1169,7 +1129,6 @@
    ],
    "readers": [
     "argus-v2",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -1200,7 +1159,6 @@
    ],
    "readers": [
     "argus-v2",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -1231,7 +1189,6 @@
    ],
    "readers": [
     "argus-v2",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -1262,7 +1219,6 @@
    ],
    "readers": [
     "argus-v2",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -1293,7 +1249,6 @@
    ],
    "readers": [
     "argus-v2",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -1324,7 +1279,6 @@
    ],
    "readers": [
     "argus-v2",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -1355,7 +1309,6 @@
    ],
    "readers": [
     "argus-v2",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -1398,7 +1351,6 @@
    "readers": [
     "argus-v2",
     "ink_9um",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -1429,7 +1381,6 @@
    ],
    "readers": [
     "argus-v2",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -1472,7 +1423,6 @@
    "readers": [
     "argus-v2",
     "ink_9um",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -1503,7 +1453,6 @@
    ],
    "readers": [
     "argus-v2",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -1534,7 +1483,6 @@
    ],
    "readers": [
     "argus-v2",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -1565,7 +1513,6 @@
    ],
    "readers": [
     "argus-v2",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -1596,7 +1543,6 @@
    ],
    "readers": [
     "argus-v2",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -1627,7 +1573,6 @@
    ],
    "readers": [
     "argus-v2",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -1658,7 +1603,6 @@
    ],
    "readers": [
     "argus-v2",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -1689,7 +1633,6 @@
    ],
    "readers": [
     "argus-v2",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -1720,7 +1663,6 @@
    ],
    "readers": [
     "argus-v2",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -1751,7 +1693,6 @@
    ],
    "readers": [
     "argus-v2",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -1782,7 +1723,6 @@
    ],
    "readers": [
     "argus-v2",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -1813,7 +1753,6 @@
    ],
    "readers": [
     "argus-v2",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -1844,7 +1783,6 @@
    ],
    "readers": [
     "argus-v2",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -1875,7 +1813,6 @@
    ],
    "readers": [
     "argus-v2",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -1906,7 +1843,6 @@
    ],
    "readers": [
     "argus-v2",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -1937,7 +1873,6 @@
    ],
    "readers": [
     "argus-v2",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -1968,7 +1903,6 @@
    ],
    "readers": [
     "argus-v2",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -1999,7 +1933,6 @@
    ],
    "readers": [
     "argus-v2",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -2030,7 +1963,6 @@
    ],
    "readers": [
     "argus-v2",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -2061,7 +1993,6 @@
    ],
    "readers": [
     "argus-v2",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -2092,7 +2023,6 @@
    ],
    "readers": [
     "argus-v2",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -2123,7 +2053,6 @@
    ],
    "readers": [
     "argus-v2",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -2154,7 +2083,6 @@
    ],
    "readers": [
     "argus-v2",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -2185,7 +2113,6 @@
    ],
    "readers": [
     "argus-v2",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -2216,7 +2143,6 @@
    ],
    "readers": [
     "argus-v2",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -2247,7 +2173,6 @@
    ],
    "readers": [
     "argus-v2",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -2278,7 +2203,6 @@
    ],
    "readers": [
     "argus-v2",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -2309,7 +2233,6 @@
    ],
    "readers": [
     "argus-v2",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -2340,7 +2263,6 @@
    ],
    "readers": [
     "argus-v2",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -2371,7 +2293,6 @@
    ],
    "readers": [
     "argus-v2",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -2402,7 +2323,6 @@
    ],
    "readers": [
     "argus-v2",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -2433,7 +2353,6 @@
    ],
    "readers": [
     "argus-v2",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -2464,7 +2383,6 @@
    ],
    "readers": [
     "argus-v2",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -2495,7 +2413,6 @@
    ],
    "readers": [
     "argus-v2",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -2526,7 +2443,6 @@
    ],
    "readers": [
     "argus-v2",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -2557,7 +2473,6 @@
    ],
    "readers": [
     "argus-v2",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -2588,7 +2503,6 @@
    ],
    "readers": [
     "argus-v2",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -2621,7 +2535,6 @@
    "readers": [
     "argus-v2",
     "ink_9um",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -2653,7 +2566,6 @@
    "readers": [
     "argus-v2",
     "ink_9um",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -2685,7 +2597,6 @@
    "readers": [
     "argus-v2",
     "ink_9um",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -2717,7 +2628,6 @@
    "readers": [
     "argus-v2",
     "ink_9um",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -2750,7 +2660,6 @@
    "readers": [
     "argus-v2",
     "ink_9um",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -2783,7 +2692,6 @@
    "readers": [
     "argus-v2",
     "ink_9um",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -2815,7 +2723,6 @@
    "readers": [
     "argus-v2",
     "ink_9um",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -2847,7 +2754,6 @@
    "readers": [
     "argus-v2",
     "ink_9um",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -2879,7 +2785,6 @@
    "readers": [
     "argus-v2",
     "ink_9um",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -2911,7 +2816,6 @@
    "readers": [
     "argus-v2",
     "ink_9um",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -2943,7 +2847,6 @@
    "readers": [
     "argus-v2",
     "ink_9um",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -2975,7 +2878,6 @@
    "readers": [
     "argus-v2",
     "ink_9um",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -3007,7 +2909,6 @@
    "readers": [
     "argus-v2",
     "ink_9um",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -3039,7 +2940,6 @@
    "readers": [
     "argus-v2",
     "ink_9um",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -3071,7 +2971,6 @@
    "readers": [
     "argus-v2",
     "ink_9um",
-    "reader-pu",
     "reader-v2",
     "reader-v3"
    ]
@@ -3111,8 +3010,7 @@
   {
    "readers": [
     "reader-v3",
-    "argus-v2",
-    "reader-pu"
+    "argus-v2"
    ],
    "scroll": "PHerc0841",
    "segments": [
@@ -3130,8 +3028,7 @@
   {
    "readers": [
     "reader-v3",
-    "argus-v2",
-    "reader-pu"
+    "argus-v2"
    ],
    "scroll": "PHerc0009B",
    "segments": [
@@ -3145,8 +3042,7 @@
   {
    "readers": [
     "reader-v3",
-    "argus-v2",
-    "reader-pu"
+    "argus-v2"
    ],
    "scroll": "PHerc1447",
    "segments": [
@@ -3162,8 +3058,7 @@
   {
    "readers": [
     "reader-v3",
-    "argus-v2",
-    "reader-pu"
+    "argus-v2"
    ],
    "scroll": "PHerc0139",
    "segments": [
@@ -3178,5 +3073,5 @@
   }
  ],
  "same_roll_rule": "another piece of a roll a reader trained on is not called fresh: pieces share the roll's number (PHerc0343P and PHerc0343; Interpretation)",
- "digest": "e265a3c39d450fc8334ec9a043b73c8c9868d2e7e54fb912057124639a47d7c1"
+ "digest": "f126aec7f8383043c5e3d7a5970e62bda5e359dedf3b055c0fae2c41b28593ff"
 }

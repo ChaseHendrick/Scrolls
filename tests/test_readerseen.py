@@ -111,8 +111,8 @@ class Check(unittest.TestCase):
         self.assertEqual(r["verdict"], "SAME-ROLL")
 
     def test_derived_reader_never_fresh(self):
-        self.assertEqual(_v("reader-v3", "PHerc1545")["verdict"], "FRESH-BY-LIST")
-        self.assertEqual(_v("argus-v2", "PHerc1545")["verdict"], "DERIVED-UNKNOWN")
+        self.assertEqual(_v("reader-v3", "PHerc0332")["verdict"], "FRESH-BY-LIST")
+        self.assertEqual(_v("argus-v2", "PHerc0332")["verdict"], "DERIVED-UNKNOWN")
         self.assertEqual(_v("argus-v2", "PHerc0139", ["w045"])["verdict"], "TRAINED")
 
     def test_short_ids_and_scroll_spellings(self):
@@ -121,9 +121,9 @@ class Check(unittest.TestCase):
         self.assertEqual(_v("rv3", "PHerc0500P2", ["20250611153340-z_dbg_gen_00275"])["reader"], "reader-v3")
 
     def test_fresh_flags(self):
-        r = _v("reader-v3", "PHerc1545")
+        r = _v("reader-v3", "PHerc0332")
         self.assertEqual((r["exit"], r["held_out_by_list"]), (0, True))
-        self.assertFalse(_v("argus-v2", "PHerc1545")["held_out_by_list"])
+        self.assertFalse(_v("argus-v2", "PHerc0332")["held_out_by_list"])
 
     def test_empty_scroll_refused(self):
         with self.assertRaises(rs.SeenError):
@@ -135,8 +135,8 @@ class Check(unittest.TestCase):
 
     def test_cli_exit_codes(self):
         cases = ((["check", "--reader", "reader-v3", "--scroll", "PHerc0139", "--segment", "w045"], 5),
-                 (["check", "--reader", "reader-v3", "--scroll", "PHerc1545", "--json"], 0),
-                 (["check", "--reader", "nobody", "--scroll", "PHerc1545"], 2),
+                 (["check", "--reader", "reader-v3", "--scroll", "PHerc0332", "--json"], 0),
+                 (["check", "--reader", "nobody", "--scroll", "PHerc0332"], 2),
                  (["verify"], 0))
         for argv, want in cases:
             with redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):

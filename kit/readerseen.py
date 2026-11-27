@@ -19,7 +19,7 @@ Lineage (Sourced fact for the files; Community report that they are what was tra
 and its checkpoint field names the 256 px run. Reader v2's config lists the same 99 dataset keys and starts from a
 checkpoint of a run on "the full corpus contract (29 representations across 4 scrolls)", which is ink_9um's 24
 aligned and 5 native label sets (its README). Every ink_9um set is also one of Reader V3's keys, so Reader V3's
-own list is the union. Readers fine-tuned from Reader V3 (Argus V2, Reader-PU) have seen all of it plus their own
+own list is the union. Readers fine-tuned from Reader V3 (such as Argus V2) have seen all of it plus their own
 data, which this registry does not list.
 
 Identity. Every training key is resolved to the public segment it was drawn on: the key itself where it is a public
@@ -100,13 +100,10 @@ READERS = {
     "argus-v2": {"aliases": ["argus-v2", "argusv2"], "weights": "argus-v2", "derived": True,
                  "note": "Reader V3 fine-tuned by ruiconte on native 8 to 9 um scans (ruiconte/argus-v2); its own "
                          "fine-tune segments are not in this registry"},
-    "reader-pu": {"aliases": ["reader-pu", "scribble-pu", "scribblepu"], "weights": "reader-pu", "derived": True,
-                  "note": "Reader V3 retuned by Domenico Russo with ScribblePU positive-unlabelled training "
-                          "(domenicor046/scribble-pu); the segments of its retuning are not in this registry"},
 }
 
 SUITE = "https://github.com/DomRusso2/reader-v3/tree/main/results"
-DERIVED = ["reader-v3", "argus-v2", "reader-pu"]
+DERIVED = ["reader-v3", "argus-v2"]
 
 # Selection rows: units Reader V3's author scored before release (results/suite_*.json), without training on them.
 SELECTION = [
@@ -236,7 +233,7 @@ def build(cfg_path, rv2_path, readme_path):
         in9 = (r["scroll"], r["public_segment"]) in ink9_public
         if in9 and "human" not in r["labels"]:
             r["inherited_human_labels"] = "ink_9um's human labels of this surface, through Reader v2's initial run"
-        r["readers"] = sorted({"reader-v3", "argus-v2", "reader-pu"}
+        r["readers"] = sorted({"reader-v3", "argus-v2"}
                               | ({"reader-v2"} if any(b["in_reader_v2"] for b in r["blocks"]) else set())
                               | ({"ink_9um"} if in9 else set()))
     counts = {}
@@ -489,7 +486,7 @@ def fmt(res):
 def build_parser(p):
     sub = p.add_subparsers(dest="readerseen_cmd", required=True)
     c = sub.add_parser("check", help="verdict for a site: TRAINED, SELECTED, SAME-SCROLL, SAME-ROLL or FRESH")
-    c.add_argument("--reader", required=True, help="reader-v3, reader-v2, argus-v2, reader-pu")
+    c.add_argument("--reader", required=True, help="reader-v3, reader-v2, argus-v2")
     c.add_argument("--scroll", required=True, help="scroll id, e.g. PHerc0139")
     c.add_argument("--segment", action="append", default=[], help="segment name (repeat for several)")
     c.add_argument("--json", action="store_true", help="print the verdict record as JSON")

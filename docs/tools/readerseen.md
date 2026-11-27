@@ -24,7 +24,7 @@ Resolves Reader V3's published training list (99 keys) to 91 public segments on 
 
 A score is only held out for a reader if the reader never saw that surface. Reader V3 is the ink model most First Letters submissions use, and its published training list names surfaces three ways: public segment ids, bare 14-digit stamps, and the ink_9um annotation names, which "do not track the public segment w-numbering" (the organizers' `pherc0139-w029` is public w045). A check by eye misses these.
 
-`readerseen` builds one registry, `kit/data/readerseen.json`, from three published files pinned by sha256: Reader V3's `train_config.json` (github.com/DomRusso2/reader-v3 at `4a9f1c63`), Reader v2's (huggingface.co/domenicor046/reader-v2 at `72633d8`, the same 99 keys) and the ink_9um label dataset README, whose source-volume table maps every aligned and native9 annotation name to its public segment. Every key becomes a row with its public id, the names it was trained under, the dataset blocks, the label kind (human or pseudo) and the readers that inherited it (ink_9um, Reader v2, Reader V3, and the fine-tunes Argus V2 and Reader-PU). It adds selection rows: units Reader V3's author scored before release (the `results/` suite of the Reader V3 repository: PHerc0841 w00 and two auto-grown segments, PHerc0009B ag487, PHerc1447 w058 and w060, PHerc0139 w047 and w053).
+`readerseen` builds one registry, `kit/data/readerseen.json`, from three published files pinned by sha256: Reader V3's `train_config.json` (github.com/DomRusso2/reader-v3 at `4a9f1c63`), Reader v2's (huggingface.co/domenicor046/reader-v2 at `72633d8`, the same 99 keys) and the ink_9um label dataset README, whose source-volume table maps every aligned and native9 annotation name to its public segment. Every key becomes a row with its public id, the names it was trained under, the dataset blocks, the label kind (human or pseudo) and the readers that inherited it (ink_9um, Reader v2, Reader V3, and the fine-tune Argus V2). It adds selection rows: units Reader V3's author scored before release (the `results/` suite of the Reader V3 repository: PHerc0841 w00 and two auto-grown segments, PHerc0009B ag487, PHerc1447 w058 and w060, PHerc0139 w047 and w053).
 
 `check` takes a reader, a scroll and segment names, and gives a verdict by a fixed rule (below). Names are matched by training name, by winding window however padded or tagged, and by short ids, so `w45`, `w045`, `20260126000000-w045_2026012619` and the organizers' `pherc0139-w029` all meet public w045.
 
@@ -39,7 +39,7 @@ It reads no label, CT layer, preview, mesh or map. FRESH-BY-LIST means fresh by 
 Do not use it:
 - for other readers (ink_9um alone, v8in, d9v2, Hecate, Rectina): it refuses them; check their own lists ([exposure log](../logs/2026-10-16-reader-exposure.md));
 - to show a SAME-SCROLL surface is held out: that needs a geometric check against the training meshes;
-- to say anything about a fine-tune's own extra data (Argus V2, Reader-PU): a site Reader V3 never saw is DERIVED-UNKNOWN for them.
+- to say anything about a fine-tune's own extra data (Argus V2): a site Reader V3 never saw is DERIVED-UNKNOWN for them.
 
 ## Quick start
 
@@ -59,7 +59,7 @@ It worked when the first line holds a verdict and the exit code matches it (5 he
 
 ## Checks and controls
 
-`verify` rebuilds the registry from the pinned copies and fails (exit 1) when the committed file differs; `build` refuses any source file whose sha256 is not the pinned one. The tests check known cases both ways: w045, `w45`, its full id and the organizers' `pherc0139-w029` must be TRAINED on public w045 and on nothing else; public w029 must resolve to `20250108000004-w029_2025010827`, not w045; ag487 must be SELECTED, not TRAINED; PHerc1545 must be FRESH-BY-LIST for Reader V3 and DERIVED-UNKNOWN for Argus V2; an organizer annotation name must never meet a public window by its number. Counts are fixed in the tests: 99 keys, 91 public segments, PHerc0139 26 surfaces in 34 representations.
+`verify` rebuilds the registry from the pinned copies and fails (exit 1) when the committed file differs; `build` refuses any source file whose sha256 is not the pinned one. The tests check known cases both ways: w045, `w45`, its full id and the organizers' `pherc0139-w029` must be TRAINED on public w045 and on nothing else; public w029 must resolve to `20250108000004-w029_2025010827`, not w045; ag487 must be SELECTED, not TRAINED; PHerc0332 must be FRESH-BY-LIST for Reader V3 and DERIVED-UNKNOWN for Argus V2; an organizer annotation name must never meet a public window by its number. Counts are fixed in the tests: 99 keys, 91 public segments, PHerc0139 26 surfaces in 34 representations.
 
 Cross-scroll validation: not applicable (a metadata lookup, no scientific claim; it covers all eight training scrolls and any queried scroll by the same rule).
 
@@ -85,7 +85,7 @@ A whole-scroll query (no segment) on a training scroll is TRAINED. With several 
 
 | Option | Default | Meaning |
 | --- | --- | --- |
-| `--reader READER` | required | reader-v3, reader-v2, argus-v2, reader-pu (aliases: `python -m kit.readerseen readers`) |
+| `--reader READER` | required | reader-v3, reader-v2, argus-v2 (aliases: `python -m kit.readerseen readers`) |
 | `--scroll SCROLL` | required | scroll id, e.g. PHerc0139 (0139, PHerc139 and Paris4 also work) |
 | `--segment SEGMENT` | none | segment name (repeat for several) |
 | `--json` | off | print the verdict record as JSON |
