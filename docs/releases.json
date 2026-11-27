@@ -114,7 +114,7 @@
       "line": "Command-line tools, benchmarks and script folders that run from a clone of this repository.",
       "area": "Releases and repository",
       "page": "docs/tools/cli.md",
-      "released": "2026-11-26",
+      "released": "2026-11-27",
       "summary": "Command-line tools, benchmarks and script folders that run from a clone of this repository. Each line gives the tool's release date, its weights where it has them, one command to start with, its tool page and its evidence; each page lists the tool's own needs. Their outputs are model output or geometry measurements for a person to check, not readings.",
       "commands": [
         "git clone --depth 1 https://github.com/ChaseHendrick/Scrolls.git",
@@ -875,6 +875,18 @@
           "command": "python -m kit.simscore score --reference R343.npz --sim SIM.npz --generator NAME --attempts 0 --out record.json",
           "page": "docs/tools/simscore.md",
           "evidence": "[standard](docs/standards/sim-realism.md), [calibration](docs/evidence/srs1-calibration-1126/README.md)"
+        },
+        {
+          "id": "simgan",
+          "name": "simgan: a learned real CT look for simulated sheet tiles",
+          "line": "Trains a small generator that repaints Hard Cases tiles with the texture of real CT while keeping every sheet in place, so the exact labels still hold.",
+          "area": "Training",
+          "released": "2026-11-27",
+          "version": "1.0",
+          "summary": "A U-Net adds a learned residual to each Hard Cases physics tile, trained against a patch discriminator on unlabelled real CT, with a structure loss that keeps sheets where the layout put them, so the labels still hold. Options match the real spectrum and grain and steer the residual along the sheets. A command line goes from the public R343-v1 reference (PHerc0343P, on no prize list; even slices only) to realized tiles ready for kit.simscore. On PHerc0343P (Model output, development use, three seeds each) the lowest CNN critic AUC is 0.740 with band:4 steering, against 0.880 unsteered and 0.981 for raw tiles; the feature critic stays at 0.976 to 0.986, so every set still fails the 0.60 bar. No weights are released.",
+          "command": "python -m kit.simgan train TILES.npz REAL.npz G.safetensors --steer band:4 --device cuda",
+          "page": "docs/tools/simgan.md",
+          "evidence": "[results](docs/tools/simgan.md#results), [tests](tests/test_simgan.py)"
         },
         {
           "id": "accelbench",

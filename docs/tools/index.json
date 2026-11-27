@@ -6640,7 +6640,7 @@
     {
      "name": "Related",
      "start_line": 181,
-     "end_line": 186,
+     "end_line": 187,
      "applicable": true
     }
    ]
@@ -15243,7 +15243,7 @@
     {
      "name": "Related",
      "start_line": 831,
-     "end_line": 835,
+     "end_line": 836,
      "applicable": true
     }
    ]
@@ -16495,7 +16495,157 @@
     {
      "name": "Related",
      "start_line": 167,
-     "end_line": 170,
+     "end_line": 171,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "simgan",
+   "name": "simgan",
+   "tagline": "learn a real CT look for simulated sheet tiles",
+   "summary": "Trains a small generator that repaints ScrollSim Hard Cases physics tiles with the texture of real CT, while keeping every sheet where the layout put it, so the exact sheet labels still hold.",
+   "status": "Experimental",
+   "kind": [
+    "kit module"
+   ],
+   "area": "Training",
+   "commands": [
+    "python -m kit.simgan real|tiles|train|realize|linekeep"
+   ],
+   "imports": [
+    "from kit import simgan"
+   ],
+   "code": [
+    {
+     "path": "kit/simgan.py",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_simgan.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed"
+   },
+   "checked": {
+    "date": "2026-11-27",
+    "commit": "de415de"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`simgan`",
+    "Status": "Experimental",
+    "Kind": "kit module",
+    "Area": "Training",
+    "Run": "`python -m kit.simgan real|tiles|train|realize|linekeep`; library: `from kit import simgan`",
+    "Code": "`kit/simgan.py`",
+    "Tests": "`tests/test_simgan.py`",
+    "Needs": "Python 3.10 or newer, numpy, scipy, scikit-image, torch, safetensors; for `linekeep` also `opencv-python-headless` and Synthetic-Slices at `bf8d26f5` (`pip install --no-deps git+https://github.com/vincentl065/Synthetic-Slices@bf8d26f502ed38c188c409d7f3011a7a11c4cf89`); real CT gray values as 2D slices (the R343-v1 reference from [simscore](simscore.md) is the tested one)",
+    "Runs on": "A GPU for training (0.064 s a step on an NVIDIA RTX PRO 6000, so about 6.5 minutes for 6,000 steps, measured 27 Nov 2026); CPU only for tiny runs (about 13 s a step in a 4-core cloud container); `tiles`, `realize` and `linekeep` run on CPU",
+    "Network": "None (fetch the reference first with `python -m kit.simscore reference R343.npz`)",
+    "Writes": "The npz or safetensors file named on the command line, and `G.safetensors.json` beside a trained generator",
+    "Go-ahead": "Not needed",
+    "Released": "Scrolls kit (27 Nov 2026)",
+    "Checked": "2026-11-27 against commit `de415de` plus this module (15 tests, about 4 s on CPU)"
+   },
+   "page": "docs/tools/simgan.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 22,
+     "end_line": 29,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 30,
+     "end_line": 40,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 41,
+     "end_line": 65,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 66,
+     "end_line": 73,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 74,
+     "end_line": 149,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 150,
+     "end_line": 168,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 169,
+     "end_line": 173,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 174,
+     "end_line": 191,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 192,
+     "end_line": 205,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 206,
+     "end_line": 213,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 214,
+     "end_line": 217,
+     "applicable": true
+    },
+    {
+     "name": "Results",
+     "start_line": 218,
+     "end_line": 236,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 237,
+     "end_line": 246,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 247,
+     "end_line": 250,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 251,
+     "end_line": 254,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 255,
+     "end_line": 261,
      "applicable": true
     }
    ]
@@ -16798,7 +16948,7 @@
     {
      "name": "Related",
      "start_line": 201,
-     "end_line": 205,
+     "end_line": 206,
      "applicable": true
     }
    ]

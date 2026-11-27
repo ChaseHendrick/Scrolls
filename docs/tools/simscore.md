@@ -202,4 +202,5 @@ Measured 26 Nov 2026 in a 4-core cloud container: `reference` 14 s; a smoke scor
 
 - [Sim Realism Standard SRS-1](../standards/sim-realism.md): the spec this tool implements.
 - [simcritic](simcritic.md): the judge it runs; [simreal](simreal.md) and [hardcases](hardcases.md): the realism statistics and simulator the reference results came from.
+- [simgan](simgan.md): a generator whose realized tiles `score` takes, with its even training slices declared.
 - [Calibration evidence](../evidence/srs1-calibration-1126/README.md) and its [preregistration](../prereg/2026-11-26-srs1-null-calibration.md).

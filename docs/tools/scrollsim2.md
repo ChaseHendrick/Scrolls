@@ -831,5 +831,6 @@ Stage registry: no stage option. The registry's stages read a real scroll; Scrol
 ## Related
 
 - [ScrollSim Hard Cases](hardcases.md): exact 3D layouts of folds, cracks, delamination, contact, crushing, edges and spiral centres, as training tiles or blocks.
+- [simgan](simgan.md): repaints Hard Cases tiles with a texture learned from real CT, labels unchanged.
 - [tifxyz](tifxyz.md): reads and checks the surfaces it writes.
 - [auc](auc.md): scoring on real published labels, where real claims come from.
