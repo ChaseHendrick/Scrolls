@@ -86,6 +86,8 @@ usage: python -m kit atlascomm build [-h] [--measure SCROLL] [--limit LIMIT]
 | `write(out_dir, rows)` | nothing | OSError | writes the CSV and JSONL |
 | `summary(rows)` | one dict per scroll | nothing |  |
 | `build(out_dir, measure=(), limit=None, shards=None, revision=REVISION, workdir=None)` | the rows | OSError, pyarrow errors | the build |
+| `card_section(rows)` | the card section text | nothing | numbers computed from the rows |
+| `add_to_card(text, out_dir)` | the card with the `atlas-15k` config and section added | AtlasCommError when the card has no YAML configs | unchanged when OUT/atlas-15k/atlas-15k.csv is missing or the config is already there; `kit atlas build` calls it, so the daily refresh keeps the section |
 | `build_parser(p)` | the parser | nothing |  |
 | `cmd_atlascomm(args)` | exit code | nothing |  |
 | `main(argv=None)` | exit code | nothing |  |
@@ -110,6 +112,7 @@ Columns, in order: `id`, `scroll`, `volume`, `scan`, `voxel_um`, `size_x`, `size
 | --- | --- | --- |
 | `usage: ...` then `error: ...` on stderr, exit code 2 | A missing or wrong argument | Check the command against Commands and options |
 | `...: x, y and z must be 2D grids of one shape` | A patch's grids are not 2D | The row gets `error`; report it to the dataset's author |
+| `the atlas card has no YAML configs block to extend` | The Segment Atlas card changed shape | Update `add_to_card` to the new card |
 | `atlascomm:...` | The download or disk failed | Check the network and `--workdir` space (one shard is about 480 MB) |
 
 ## How it works

@@ -62,3 +62,27 @@ class RowTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+@unittest.skipIf(np is None, "needs numpy")
+class CardTest(unittest.TestCase):
+    CARD = "---\nlicense: x\nconfigs:\n- config_name: default\n  data_files:\n  - split: train\n    path: atlas.csv\n---\n\n# Atlas\n\nText.\n\n## Changelog\n\n- old\n"
+
+    def test_section_and_config_added_only_when_the_table_exists(self):
+        with tempfile.TemporaryDirectory() as d:
+            self.assertEqual(C.add_to_card(self.CARD, d), self.CARD)
+            C.write(Path(d) / C.FOLDER, [C.row_of(record(), True), C.row_of(record("PHerc0841"), False)])
+            text = C.add_to_card(self.CARD, d)
+            head = text.split("\n---\n")[0]
+            self.assertIn("config_name: atlas-15k", head)
+            self.assertIn("path: atlas-15k/atlas-15k.csv", head)
+            self.assertLess(text.index("## Community surfaces"), text.index("## Changelog"))
+            self.assertIn("2 patches on 2 scrolls", text)
+            self.assertIn("1 patches on 1 scrolls so far", text)
+            self.assertEqual(C.add_to_card(text, d), text)        # adding twice changes nothing
+
+    def test_card_without_configs_refused(self):
+        with tempfile.TemporaryDirectory() as d:
+            C.write(Path(d) / C.FOLDER, [C.row_of(record(), True)])
+            with self.assertRaises(C.AtlasCommError):
+                C.add_to_card("# no yaml\n", d)
