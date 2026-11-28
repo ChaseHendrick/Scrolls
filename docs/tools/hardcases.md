@@ -183,4 +183,5 @@ Measured 24 Nov 2026 in a 4-core cloud container: 0.15 to 0.38 s per 256 px tile
 - [scrollsim2](scrollsim2.md): the full-scale rolled scroll
 - [simreal](simreal.md): measures real CT and fits the render bounds
 - [simcritic](simcritic.md): judges how real the tiles look
+- [simgan](simgan.md): repaints the tiles with a texture learned from real CT, labels unchanged
 - [Synthetic-Slices v0.2](https://github.com/vincentl065/Synthetic-Slices) (vincentl065, MIT): the 2D generator these hard cases come from

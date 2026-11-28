@@ -667,7 +667,7 @@
     "Needs": "Python 3.10 or newer, numpy and tifffile (imagecodecs for the LZW-compressed meshes, about a fifth of them); scipy when installed; matplotlib for the card's figures (skipped without it). `huggingface_hub` only for `scripts/atlas/hf_atlas.py`",
     "Runs on": "Any CPU, but the whole bucket is large: 908 meshes, 69.4 GB of x, y and z files (listed 24 Oct 2026), 50.6 GB of them PHerc. Paris 4's. Per mesh on a 4-core cloud container (24 Oct 2026, download included): 1.2 to 1.5 s at 9.362 um, 7.6 to 8.4 s at 2.4 um, 23.5 s at 1.129 um. The largest mesh (about 116 million nodes) needs about 3 GB of memory, so the daily build runs as a Hugging Face Job on `cpu-upgrade` (8 vCPU, 32 GB)",
     "Network": "`vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` (metadata.json, ListObjectsV2 listings, each mesh's four files); `show` reads the published `atlas.jsonl` from `huggingface.co` unless `--atlas` names a file",
-    "Writes": "`build`: OUT/`atlas.jsonl`, `atlas.csv`, `segments.csv`, `scrolls.csv`, `summary.json`, `README.md`, `assets/*.png` (with matplotlib) and, with `--lens`, `lens/*.slg.gz`; each mesh is fetched into a temporary folder that is deleted after it is measured. `show`: nothing. `hf_atlas.py job`: the public dataset",
+    "Writes": "`build`: OUT/`atlas.jsonl`, `atlas.csv`, `segments.csv`, `scrolls.csv`, `summary.json`, `README.md`, `provenance.json`, `assets/*.png` (with matplotlib) and, with `--lens`, `lens/*.slg.gz`; each mesh is fetched into a temporary folder that is deleted after it is measured. `show`: nothing. `hf_atlas.py job`: the public dataset, with `SHA256SUMS` written last over every file but the card (`atlas.seal`)",
     "License": "Code Apache-2.0; the dataset's numbers and preview grids CC BY-NC 4.0, as the meshes they come from (Vesuvius Challenge open data, CC BY-NC 4.0)",
     "Go-ahead": "Not needed for `build` and `show` (public data, local files). The dataset is public, published after the leak check (AGENTS.md rule 8; Chase asked for it on 24 Oct 2026)",
     "Released": "Public `main` from the change that adds it (24 Oct 2026)",
@@ -756,13 +756,161 @@
     {
      "name": "History",
      "start_line": 238,
-     "end_line": 241,
+     "end_line": 242,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 242,
-     "end_line": 245,
+     "start_line": 243,
+     "end_line": 246,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "atlascomm",
+   "name": "atlascomm",
+   "tagline": "Segment Atlas numbers for ATLAS-15k's community surface patches",
+   "summary": "Reads Qual's ATLAS-15k recto surface patches shard by shard and writes one Segment Atlas row per patch: the dataset's metadata for every patch and, for the scrolls you name, the same area, isometry, hole, fold and stretch numbers `kit atlas` gives published meshes.",
+   "status": "Current",
+   "kind": [
+    "kit command"
+   ],
+   "area": "Surfaces and tracing",
+   "commands": [
+    "python -m kit atlascomm"
+   ],
+   "imports": [],
+   "code": [
+    {
+     "path": "kit/atlascomm.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/cli.py",
+     "symbols": [
+      "build_parser"
+     ]
+    }
+   ],
+   "tests": [
+    "tests/test_atlascomm.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed for `build` (public data, local files). Publishing the table to the Segment Atlas dataset is an upload and needs Chase's yes on its content (AGENTS.md rule 8)"
+   },
+   "checked": {
+    "date": "2026-11-27",
+    "commit": "5f7edb7"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`atlascomm`",
+    "Status": "Current",
+    "Kind": "kit command",
+    "Area": "Surfaces and tracing",
+    "Run": "`python -m kit atlascomm`",
+    "Code": "`kit/atlascomm.py`, `kit/cli.py` (`build_parser`)",
+    "Tests": "`tests/test_atlascomm.py`",
+    "Needs": "Python 3.10 or later, numpy, pyarrow and huggingface_hub (the last two only for `build`)",
+    "Runs on": "Any CPU. On 27 Nov 2026 a 4-core cloud container read all 18 shards (8.6 GB) and measured 3,412 patches in 253 s; one shard on disk at a time",
+    "Network": "`huggingface.co` (the dataset's 18 parquet shards, 8.6 GB in all, one at a time)",
+    "Writes": "OUT/`atlas-15k.csv`, OUT/`atlas-15k.jsonl`, OUT/`atlas-15k-scrolls.json`; each shard goes to a temporary folder (or `--workdir`) that is deleted once read",
+    "Go-ahead": "Not needed for `build` (public data, local files). Publishing the table to the Segment Atlas dataset is an upload and needs Chase's yes on its content (AGENTS.md rule 8)",
+    "Released": "Public `main` once merged",
+    "Checked": "2026-11-27 against commit `5f7edb7`"
+   },
+   "page": "docs/tools/atlascomm.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 22,
+     "end_line": 29,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 30,
+     "end_line": 38,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 39,
+     "end_line": 46,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 47,
+     "end_line": 57,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 58,
+     "end_line": 77,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 78,
+     "end_line": 94,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 95,
+     "end_line": 98,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 99,
+     "end_line": 108,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 109,
+     "end_line": 117,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 118,
+     "end_line": 124,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 125,
+     "end_line": 128,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 129,
+     "end_line": 138,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 139,
+     "end_line": 142,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 143,
+     "end_line": 146,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 147,
+     "end_line": 150,
      "applicable": true
     }
    ]
@@ -2020,67 +2168,67 @@
     {
      "name": "Commands and options",
      "start_line": 85,
-     "end_line": 217,
+     "end_line": 218,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 218,
-     "end_line": 246,
+     "start_line": 219,
+     "end_line": 247,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 247,
-     "end_line": 250,
+     "start_line": 248,
+     "end_line": 251,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 251,
-     "end_line": 261,
+     "start_line": 252,
+     "end_line": 262,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 262,
-     "end_line": 275,
+     "start_line": 263,
+     "end_line": 276,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 276,
-     "end_line": 285,
+     "start_line": 277,
+     "end_line": 286,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 286,
-     "end_line": 289,
+     "start_line": 287,
+     "end_line": 290,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 290,
-     "end_line": 299,
+     "start_line": 291,
+     "end_line": 300,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 300,
-     "end_line": 307,
+     "start_line": 301,
+     "end_line": 308,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 308,
-     "end_line": 319,
+     "start_line": 309,
+     "end_line": 320,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 320,
-     "end_line": 326,
+     "start_line": 321,
+     "end_line": 327,
      "applicable": true
     }
    ]
@@ -3103,6 +3251,314 @@
      "name": "Related",
      "start_line": 204,
      "end_line": 210,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "datacard",
+   "name": "datacard",
+   "tagline": "check a scroll dataset's card, checksums, provenance and spent list",
+   "summary": "Checks a Hugging Face dataset, or a folder about to become one, against the scroll dataset card standard: per-file SHA-256 sums, a provenance record with sources, licenses and code commit, caveats, and a list of the seeds and truth the release has used up.",
+   "status": "Experimental",
+   "kind": [
+    "kit module"
+   ],
+   "area": "Records and provenance",
+   "commands": [
+    "python -m kit.datacard check DIR_OR_OWNER/NAME [--revision R] [--overlay DIR] [--max-download-mb N] [--json]",
+    "python -m kit.datacard sums DIR_OR_OWNER/NAME [--overlay DIR] [--write]",
+    "python -m kit.datacard template OUT [--synthetic]"
+   ],
+   "imports": [
+    "from kit import datacard"
+   ],
+   "code": [
+    {
+     "path": "kit/datacard.py",
+     "symbols": []
+    },
+    {
+     "path": "tests/test_datacard.py",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_datacard.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed to check. Uploading a card or dataset that it passes still needs the owner's yes for each upload"
+   },
+   "checked": {
+    "date": "2026-11-26",
+    "commit": "95d731b"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`datacard`",
+    "Status": "Experimental",
+    "Kind": "kit module",
+    "Area": "Records and provenance",
+    "Run": "`python -m kit.datacard check DIR_OR_OWNER/NAME [--revision R] [--overlay DIR] [--max-download-mb N] [--json]`; `python -m kit.datacard sums DIR_OR_OWNER/NAME [--overlay DIR] [--write]`; `python -m kit.datacard template OUT [--synthetic]`; `from kit import datacard`",
+    "Code": "`kit/datacard.py`, `tests/test_datacard.py`",
+    "Tests": "`tests/test_datacard.py`",
+    "Needs": "Python 3.10 or newer, standard library only",
+    "Runs on": "Any CPU. A Hub check of SharpMeow/scrollsim-tiles (1,570 listed files, 1.8 GB) took 22 s with `--max-download-mb 200`, cloud container, 26 November 2026; a local check reads every listed file once",
+    "Network": "For `OWNER/NAME` only: huggingface.co (the repository tree API and file downloads, no token). None for a folder",
+    "Writes": "`check`: nothing. `sums --write`: `DIR/SHA256SUMS`. `template`: `OUT/README.md` and `OUT/provenance.json`, never over an existing file",
+    "Go-ahead": "Not needed to check. Uploading a card or dataset that it passes still needs the owner's yes for each upload",
+    "Released": "Public `main` from the PR that adds this page (2026-11-26)",
+    "Checked": "2026-11-26 against commit `95d731b`"
+   },
+   "page": "docs/tools/datacard.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 22,
+     "end_line": 41,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 42,
+     "end_line": 53,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 54,
+     "end_line": 77,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 78,
+     "end_line": 96,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 97,
+     "end_line": 125,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 126,
+     "end_line": 146,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 147,
+     "end_line": 152,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 153,
+     "end_line": 174,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 175,
+     "end_line": 192,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 193,
+     "end_line": 208,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 209,
+     "end_line": 213,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 214,
+     "end_line": 223,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 224,
+     "end_line": 229,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 230,
+     "end_line": 233,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 234,
+     "end_line": 238,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "defectbench",
+   "name": "defectbench",
+   "tagline": "a dev bench of meshes with planted defects and known answers",
+   "summary": "Builds synthetic tifxyz meshes with planted sheet switches, rough tracing, folds and bridges, sized like spiral-fit columns of public PHerc0343, with per-vertex truth, and scores switch alarms and mesh repairs on them.",
+   "status": "Experimental",
+   "kind": [
+    "kit module"
+   ],
+   "area": "Surfaces and tracing",
+   "commands": [
+    "python3 -m kit.defectbench cases",
+    "make",
+    "check",
+    "baseline",
+    "score"
+   ],
+   "imports": [
+    "from kit import defectbench"
+   ],
+   "code": [
+    {
+     "path": "kit/defectbench.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/stagereg_ext_defectbench.py",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_defectbench.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed"
+   },
+   "checked": {
+    "date": "2026-11-27",
+    "commit": "8b97285"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`defectbench`",
+    "Status": "Experimental",
+    "Kind": "kit module",
+    "Area": "Surfaces and tracing",
+    "Run": "`python3 -m kit.defectbench cases`, `make`, `check`, `baseline`, `score`; `from kit import defectbench`",
+    "Code": "`kit/defectbench.py`, `kit/stagereg_ext_defectbench.py`",
+    "Tests": "`tests/test_defectbench.py`",
+    "Needs": "Python 3.9 or newer, numpy, scipy, tifffile; zarr 3 and numcodecs for the mini track's prediction. No scan data, villa, VC3D or GPU.",
+    "Runs on": "CPU anywhere. `make --seeds 3` (78 cases, both tracks) took 1 min 43 s and 168 MB; `check` 1 s; one baseline plus its score about 1 min (measured 2026-11-27, 4-core cloud container)",
+    "Network": "None",
+    "Writes": "`make`: OUT/manifest.json and OUT/TRACK/CASE-sSEED/ (x.tif, y.tif, z.tif, meta.json, truth.npz, defects.json; mini adds pred.zarr and umbilicus.json); `baseline`: DIR/TRACK/CASE-sSEED.npy or DIR/TRACK/CASE-sSEED/ tifxyz; `score --out-file`: one JSON file",
+    "Go-ahead": "Not needed",
+    "Released": "Not yet",
+    "Checked": "2026-11-27 against commit `8b97285`"
+   },
+   "page": "docs/tools/defectbench.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 22,
+     "end_line": 52,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 53,
+     "end_line": 69,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 70,
+     "end_line": 85,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 86,
+     "end_line": 106,
+     "applicable": true
+    },
+    {
+     "name": "Result so far (Model output, synthetic data only)",
+     "start_line": 107,
+     "end_line": 130,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 131,
+     "end_line": 208,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 209,
+     "end_line": 241,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 242,
+     "end_line": 251,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 252,
+     "end_line": 286,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 287,
+     "end_line": 302,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 303,
+     "end_line": 319,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 320,
+     "end_line": 324,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 325,
+     "end_line": 338,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 339,
+     "end_line": 345,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 346,
+     "end_line": 350,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 351,
+     "end_line": 354,
      "applicable": true
     }
    ]
@@ -5424,6 +5880,149 @@
    ]
   },
   {
+   "id": "framecheck",
+   "name": "framecheck",
+   "tagline": "is a render in the frame of its mesh and its CT",
+   "summary": "Checks that a rendered surface volume matches the CT sampled at its own mesh positions (Pearson r of at least 0.95) and that its empty pixels lie only in villa's unrendered edge band: gpchain's frame check, ported to numpy.",
+   "status": "Experimental",
+   "kind": [
+    "kit module"
+   ],
+   "area": "Scoring and controls",
+   "commands": [
+    "python -m kit.framecheck PIECE LAYERS --volume VOLUME [--window 768] [--json]"
+   ],
+   "imports": [],
+   "code": [
+    {
+     "path": "kit/framecheck.py",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_framecheck.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed: it reads only, and launches and sends nothing"
+   },
+   "checked": {
+    "date": "2026-11-27",
+    "commit": "de415de"
+   },
+   "license": "Apache 2.0 (this repository). The rule comes from gpchain (MIT)",
+   "fields": {
+    "Id": "`framecheck`",
+    "Status": "Experimental",
+    "Kind": "kit module",
+    "Area": "Scoring and controls",
+    "Run": "`python -m kit.framecheck PIECE LAYERS --volume VOLUME [--window 768] [--json]`",
+    "Code": "`kit/framecheck.py`",
+    "Tests": "`tests/test_framecheck.py`",
+    "Needs": "Python 3.9 or later, numpy; tifffile to read the tifxyz quickly (else kit's own TIFF reader in `kit/vc3d_io.py`); zarr to read a `layers.zarr` render (a `.npy` stack needs nothing more); numcodecs for compressed CT chunks (zlib and gzip need nothing). No villa, no VC3D, no GPU",
+    "Runs on": "Any CPU. One 28 by 2,640 by 3,340 render of public PHerc0343, 100,000 pixels, chunks already local: 3.7 s; a 768 px window read 71 chunks against 464 for the whole render (cloud container, 4 cores, 27 Nov 2026). Over the network the whole render's 411 chunks (0.82 GB) took about 2 min 20 s",
+    "Network": "The CT volume's host, for the chunks under the sampled pixels (the open-data bucket for an open-data URL or key); none for a local folder",
+    "Writes": "Nothing, unless `--out FILE` (the result JSON)",
+    "Go-ahead": "Not needed: it reads only, and launches and sends nothing",
+    "Released": "Not yet (planned with the November 2026 Progress Prize entry)",
+    "License": "Apache 2.0 (this repository). The rule comes from gpchain (MIT)",
+    "Checked": "2026-11-27 against commit `de415de`"
+   },
+   "page": "docs/tools/framecheck.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 23,
+     "end_line": 30,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 31,
+     "end_line": 40,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 41,
+     "end_line": 54,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 55,
+     "end_line": 64,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 65,
+     "end_line": 93,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 94,
+     "end_line": 114,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 115,
+     "end_line": 120,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 121,
+     "end_line": 141,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 142,
+     "end_line": 167,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 168,
+     "end_line": 177,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 178,
+     "end_line": 181,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 182,
+     "end_line": 191,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 192,
+     "end_line": 195,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 196,
+     "end_line": 199,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 200,
+     "end_line": 203,
+     "applicable": true
+    }
+   ]
+  },
+  {
    "id": "freeze",
    "name": "freeze",
    "tagline": "freeze a run by hash, guard what it loads, and keep review pins honest",
@@ -6490,7 +7089,7 @@
     {
      "name": "Related",
      "start_line": 181,
-     "end_line": 186,
+     "end_line": 187,
      "applicable": true
     }
    ]
@@ -13055,6 +13654,160 @@
    ]
   },
   {
+   "id": "readerseen",
+   "name": "readerseen",
+   "tagline": "which public surfaces Reader V3 trained on, and whether a site is fresh for it",
+   "summary": "Resolves Reader V3's published training list (99 keys) to 91 public segments on 8 scrolls, adds the units its author scored before release, and checks any scroll and segment: TRAINED, SELECTED, SAME-SCROLL, SAME-ROLL or FRESH-BY-LIST.",
+   "status": "Current",
+   "kind": [
+    "kit module",
+    "data"
+   ],
+   "area": "Scoring and controls",
+   "commands": [
+    "python -m kit.readerseen check --reader READER --scroll SCROLL [--segment NAME ...] [--json]",
+    "python -m kit.readerseen list",
+    "python -m kit.readerseen readers",
+    "python -m kit.readerseen verify",
+    "python -m kit.readerseen build"
+   ],
+   "imports": [],
+   "code": [
+    {
+     "path": "kit/readerseen.py",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_readerseen.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed"
+   },
+   "checked": {
+    "date": "2026-11-27",
+    "commit": "999a4ad"
+   },
+   "license": "Code: Apache 2.0 (this repository's). The pinned copies keep their own terms: Reader V3's and Reader v2's `train_config.json` come from their authors' repositories (Reader V3 is MIT); the ink_9um README is the organizers' (`scrollprize/datasets` bucket)",
+   "fields": {
+    "Id": "`readerseen`",
+    "Status": "Current",
+    "Kind": "kit module,data",
+    "Area": "Scoring and controls",
+    "Run": "`python -m kit.readerseen check --reader READER --scroll SCROLL [--segment NAME ...] [--json]`, `python -m kit.readerseen list`, `python -m kit.readerseen readers`, `python -m kit.readerseen verify`, `python -m kit.readerseen build`",
+    "Code": "`kit/readerseen.py`",
+    "Tests": "`tests/test_readerseen.py`",
+    "Needs": "Python 3.10 or newer, standard library only. The three pinned source copies in `docs/evidence/readerseen/` for `build` and `verify`",
+    "Runs on": "Any CPU; under 0.1 s for a check (measured 2026-11-27, 4-core cloud container, including Python start-up)",
+    "Network": "None. The source files were fetched once on 2026-11-27 and are pinned by sha256",
+    "Writes": "`check`, `list`, `readers`, `verify`: nothing (prints only). `build`: `kit/data/readerseen.json` (or `--out`), replacing it",
+    "Go-ahead": "Not needed",
+    "Released": "Not yet (pending public merge)",
+    "License": "Code: Apache 2.0 (this repository's). The pinned copies keep their own terms: Reader V3's and Reader v2's `train_config.json` come from their authors' repositories (Reader V3 is MIT); the ink_9um README is the organizers' (`scrollprize/datasets` bucket)",
+    "Checked": "2026-11-27 against commit `999a4ad`"
+   },
+   "page": "docs/tools/readerseen.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 23,
+     "end_line": 32,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 33,
+     "end_line": 43,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 44,
+     "end_line": 59,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 60,
+     "end_line": 67,
+     "applicable": true
+    },
+    {
+     "name": "Verdicts",
+     "start_line": 68,
+     "end_line": 81,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 82,
+     "end_line": 117,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 118,
+     "end_line": 127,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 128,
+     "end_line": 131,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 132,
+     "end_line": 144,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 145,
+     "end_line": 153,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 154,
+     "end_line": 157,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 158,
+     "end_line": 161,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 162,
+     "end_line": 171,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 172,
+     "end_line": 175,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 176,
+     "end_line": 179,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 180,
+     "end_line": 182,
+     "applicable": true
+    }
+   ]
+  },
+  {
    "id": "releases",
    "name": "releases",
    "tagline": "keep the README's Released tools section in step with the release list",
@@ -15093,7 +15846,7 @@
     {
      "name": "Related",
      "start_line": 831,
-     "end_line": 835,
+     "end_line": 836,
      "applicable": true
     }
    ]
@@ -16339,13 +17092,163 @@
     {
      "name": "History",
      "start_line": 162,
-     "end_line": 165,
+     "end_line": 166,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 166,
-     "end_line": 169,
+     "start_line": 167,
+     "end_line": 171,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "simgan",
+   "name": "simgan",
+   "tagline": "learn a real CT look for simulated sheet tiles",
+   "summary": "Trains a small generator that repaints ScrollSim Hard Cases physics tiles with the texture of real CT, while keeping every sheet where the layout put it, so the exact sheet labels still hold.",
+   "status": "Experimental",
+   "kind": [
+    "kit module"
+   ],
+   "area": "Training",
+   "commands": [
+    "python -m kit.simgan real|tiles|train|realize|linekeep"
+   ],
+   "imports": [
+    "from kit import simgan"
+   ],
+   "code": [
+    {
+     "path": "kit/simgan.py",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_simgan.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed"
+   },
+   "checked": {
+    "date": "2026-11-27",
+    "commit": "de415de"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`simgan`",
+    "Status": "Experimental",
+    "Kind": "kit module",
+    "Area": "Training",
+    "Run": "`python -m kit.simgan real|tiles|train|realize|linekeep`; library: `from kit import simgan`",
+    "Code": "`kit/simgan.py`",
+    "Tests": "`tests/test_simgan.py`",
+    "Needs": "Python 3.10 or newer, numpy, scipy, scikit-image, torch, safetensors; for `linekeep` also `opencv-python-headless` and Synthetic-Slices at `bf8d26f5` (`pip install --no-deps git+https://github.com/vincentl065/Synthetic-Slices@bf8d26f502ed38c188c409d7f3011a7a11c4cf89`); real CT gray values as 2D slices (the R343-v1 reference from [simscore](simscore.md) is the tested one)",
+    "Runs on": "A GPU for training (0.064 s a step on an NVIDIA RTX PRO 6000, so about 6.5 minutes for 6,000 steps, measured 27 Nov 2026); CPU only for tiny runs (about 13 s a step in a 4-core cloud container); `tiles`, `realize` and `linekeep` run on CPU",
+    "Network": "None (fetch the reference first with `python -m kit.simscore reference R343.npz`)",
+    "Writes": "The npz or safetensors file named on the command line, and `G.safetensors.json` beside a trained generator",
+    "Go-ahead": "Not needed",
+    "Released": "Scrolls kit (27 Nov 2026)",
+    "Checked": "2026-11-27 against commit `de415de` plus this module (15 tests, about 4 s on CPU)"
+   },
+   "page": "docs/tools/simgan.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 22,
+     "end_line": 29,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 30,
+     "end_line": 40,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 41,
+     "end_line": 65,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 66,
+     "end_line": 73,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 74,
+     "end_line": 149,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 150,
+     "end_line": 168,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 169,
+     "end_line": 173,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 174,
+     "end_line": 191,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 192,
+     "end_line": 205,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 206,
+     "end_line": 213,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 214,
+     "end_line": 217,
+     "applicable": true
+    },
+    {
+     "name": "Results",
+     "start_line": 218,
+     "end_line": 236,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 237,
+     "end_line": 246,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 247,
+     "end_line": 250,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 251,
+     "end_line": 254,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 255,
+     "end_line": 261,
      "applicable": true
     }
    ]
@@ -16502,6 +17405,153 @@
      "name": "Related",
      "start_line": 172,
      "end_line": 176,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "simscore",
+   "name": "simscore",
+   "tagline": "score simulated CT under the Sim Realism Standard",
+   "summary": "Reference scorer of SRS-1: runs the released simcritic judge with every setting fixed, gates it on planted checks and a real-against-real control, applies the fixed bar and the calibrated sample-size rule, and writes a JSON record anyone can check.",
+   "status": "Experimental",
+   "kind": [
+    "kit entry point"
+   ],
+   "area": "Scoring and controls",
+   "commands": [
+    "python -m kit.simscore reference",
+    "score",
+    "check",
+    "calibrate"
+   ],
+   "imports": [
+    "from kit import simscore"
+   ],
+   "code": [
+    {
+     "path": "kit/simscore.py",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_simscore.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed to run; publishing a record is the scorer's owner's choice"
+   },
+   "checked": {
+    "date": "2026-11-26",
+    "commit": "51e816f"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`simscore`",
+    "Status": "Experimental",
+    "Kind": "kit entry point",
+    "Area": "Scoring and controls",
+    "Run": "`python -m kit.simscore reference`, `score`, `check`, `calibrate`; `from kit import simscore`",
+    "Code": "`kit/simscore.py`",
+    "Tests": "`tests/test_simscore.py`",
+    "Needs": "Python 3.10 or newer, numpy, scipy, torch (CPU or CUDA) and scikit-image for the critics (as [simcritic](simcritic.md)); `check` needs only the standard library; a reference npz (R343-v1 from `reference`, or your own slices) and an npz of at least 240 simulated tiles of 256 px or more",
+    "Runs on": "CPU or GPU. `reference`: 14 s; a `--smoke --steps 2` score: 25 s; `calibrate`: 290 s (all in a 4-core cloud container, 26 Nov 2026). A full score: about 5 hours on one CPU worker at simcritic's 25 Nov rate (not timed end to end); a GPU is faster",
+    "Network": "`reference` only: `vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` (PHerc0343P CT) and `huggingface.co` (the organizers' public surface labels, for the gray-value scale); the rest is offline",
+    "Writes": "`reference`: the npz named; `score`: the record named by `--out`; `calibrate`: the JSON named by `--out`; `check`: nothing",
+    "Go-ahead": "Not needed to run; publishing a record is the scorer's owner's choice",
+    "Released": "Not yet: draft PR, waiting for the owner's yes",
+    "Checked": "2026-11-26 against commit `51e816f`"
+   },
+   "page": "docs/tools/simscore.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 22,
+     "end_line": 31,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 32,
+     "end_line": 43,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 44,
+     "end_line": 61,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 62,
+     "end_line": 72,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 73,
+     "end_line": 116,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 117,
+     "end_line": 139,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 140,
+     "end_line": 144,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 145,
+     "end_line": 154,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 155,
+     "end_line": 168,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 169,
+     "end_line": 178,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 179,
+     "end_line": 182,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 183,
+     "end_line": 192,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 193,
+     "end_line": 196,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 197,
+     "end_line": 200,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 201,
+     "end_line": 206,
      "applicable": true
     }
    ]
@@ -20870,7 +21920,7 @@
    "id": "vesuvius-radar",
    "name": "vesuvius-radar",
    "tagline": "new papers, code, models and data for the Herculaneum scrolls, scored and searchable",
-   "summary": "A Hugging Face Space that collects new papers, repositories, models, datasets, package versions and posts from public sources around the clock, scores each for relevance to reading the Herculaneum scrolls, and serves them as a page, a JSON API, CSV, RSS and an MCP server.",
+   "summary": "A Hugging Face Space that collects new papers, code, models, data, posts and videos around the clock, scores each for relevance to reading the Herculaneum scrolls, and serves a page with a weekly digest, a JSON API, CSV, RSS and an MCP server.",
    "status": "Current",
    "kind": [
     "app"
@@ -20892,6 +21942,10 @@
     },
     {
      "path": "spaces/vesuvius-radar/scanner.py",
+     "symbols": []
+    },
+    {
+     "path": "spaces/vesuvius-radar/digest.py",
      "symbols": []
     },
     {
@@ -20927,8 +21981,8 @@
     "text": "Not needed to use. Making the Space public was Chase's yes (29 Oct 2026); later redeploys from merged `main` fall under the standing yes (rule 8)"
    },
    "checked": {
-    "date": "2026-10-30",
-    "commit": "04abb3b"
+    "date": "2026-11-26",
+    "commit": "d11402c"
    },
    "license": "Code Apache 2.0; item titles, summaries and links belong to their sources",
    "fields": {
@@ -20937,16 +21991,16 @@
     "Kind": "app",
     "Area": "Viewers and apps",
     "Run": "[huggingface.co/spaces/SharpMeow/vesuvius-radar](https://huggingface.co/spaces/SharpMeow/vesuvius-radar) (page); `https://sharpmeow-vesuvius-radar.hf.space/api/items?since=1d` (JSON); `/mcp` (MCP, Streamable HTTP); locally `uvicorn app:app --port 7860` in `spaces/vesuvius-radar`; `python scanner.py --days 3 --out scan.json` (one scan, no server); in the page, `window.vesuviusRadar`",
-    "Code": "`spaces/vesuvius-radar/app.py`, `spaces/vesuvius-radar/scanner.py`, `spaces/vesuvius-radar/radar_mcp.py`, `spaces/vesuvius-radar/radar.json`, `spaces/vesuvius-radar/index.html`, `spaces/vesuvius-radar/static/app.js`, `spaces/vesuvius-radar/static/style.css`, `spaces/vesuvius-radar/connect.json`",
+    "Code": "`spaces/vesuvius-radar/app.py`, `spaces/vesuvius-radar/scanner.py`, `spaces/vesuvius-radar/digest.py` (weekly digest, top picks, item pages), `spaces/vesuvius-radar/radar_mcp.py`, `spaces/vesuvius-radar/radar.json`, `spaces/vesuvius-radar/index.html`, `spaces/vesuvius-radar/static/app.js`, `spaces/vesuvius-radar/static/style.css`, `spaces/vesuvius-radar/connect.json`",
     "Tests": "`tests/test_vesuvius_radar.py` (scoring, lookbacks, views, filters, API, CSV, RSS, MCP, the vector cache, and that no key or private material is in the Space's files); `python -m kit spaceconnect check` checks its Connect panel",
     "Needs": "A browser, or any HTTP client. To run it yourself: Python 3.10+, `fastapi` 0.115.6, `uvicorn` 0.34.0, `fastembed` 0.9.1 and `numpy` (`requirements.txt`); the model BAAI/bge-small-en-v1.5 (MIT, about 130 MB) downloads on first use",
     "Runs on": "A free Hugging Face CPU Space (2 vCPU, 16 GB); no GPU and no GPU quota. The page and API answer at once; see Cost and time for the collector",
-    "Network": "`rss.arxiv.org`, `arxiv.org`, `export.arxiv.org` (papers), `api.github.com` (repositories, ScrollPrize/villa), `huggingface.co` (models, datasets, Spaces, daily papers, the embedding model), `pypi.org`, `zenodo.org`, `api.crossref.org`, `scrollprize.substack.com` (the Challenge blog), `news.google.com`, `www.bing.com` and `hnrss.org` (news searches, since 30 Oct 2026); all read logged out",
+    "Network": "`rss.arxiv.org`, `arxiv.org`, `export.arxiv.org` (papers), `api.github.com` (repositories, ScrollPrize/villa), `huggingface.co` (models, datasets, Spaces, daily papers, the embedding model), `pypi.org`, `zenodo.org`, `api.crossref.org`, `api.openalex.org` (scholarly works and citations, since 2.0.0), `scrollprize.substack.com` (the Challenge blog), `www.youtube.com` (the Challenge's channel feed, since 2.0.0), `news.google.com`, `www.bing.com` and `hnrss.org` (news searches, since 30 Oct 2026); all read logged out",
     "Writes": "In the Space: `/data/radar` with persistent storage, else `/tmp/radar` (`store.json`, `vectors.npz`); `RADAR_DATA` moves it. `scanner.py --out` writes the file you name",
     "Go-ahead": "Not needed to use. Making the Space public was Chase's yes (29 Oct 2026); later redeploys from merged `main` fall under the standing yes (rule 8)",
     "Released": "Public on Hugging Face since 2026-10-29; README \"Released tools\" entry `vesuvius-radar`",
     "License": "Code Apache 2.0; item titles, summaries and links belong to their sources",
-    "Checked": "2026-10-30 against commit `04abb3b`"
+    "Checked": "2026-11-26 against commit `d11402c` (version 2.0.0, local run on a copy of the live store)"
    },
    "page": "docs/tools/vesuvius-radar.md",
    "sections": [
@@ -20977,67 +22031,67 @@
     {
      "name": "Commands and options",
      "start_line": 67,
-     "end_line": 137,
+     "end_line": 141,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 138,
-     "end_line": 149,
-     "applicable": true
-    },
-    {
-     "name": "Inputs",
-     "start_line": 150,
+     "start_line": 142,
      "end_line": 153,
      "applicable": true
     },
     {
-     "name": "Outputs",
+     "name": "Inputs",
      "start_line": 154,
      "end_line": 157,
      "applicable": true
     },
     {
-     "name": "Failure modes",
+     "name": "Outputs",
      "start_line": 158,
-     "end_line": 171,
+     "end_line": 161,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 162,
+     "end_line": 182,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 172,
-     "end_line": 181,
+     "start_line": 183,
+     "end_line": 193,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 182,
-     "end_line": 185,
+     "start_line": 194,
+     "end_line": 197,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 186,
-     "end_line": 195,
+     "start_line": 198,
+     "end_line": 208,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 196,
-     "end_line": 199,
+     "start_line": 209,
+     "end_line": 212,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 200,
-     "end_line": 209,
+     "start_line": 213,
+     "end_line": 223,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 210,
-     "end_line": 213,
+     "start_line": 224,
+     "end_line": 227,
      "applicable": true
     }
    ]
@@ -22300,6 +23354,10 @@
      "symbols": []
     },
     {
+     "path": "scripts/ci/testshard.py",
+     "symbols": []
+    },
+    {
      "path": "CITATION.cff",
      "symbols": []
     },
@@ -22325,7 +23383,8 @@
     }
    ],
    "tests": [
-    "tests/test_packaging.py"
+    "tests/test_packaging.py",
+    "tests/test_ci_testshard.py"
    ],
    "go_ahead": {
     "needed": false,
@@ -22342,8 +23401,8 @@
     "Kind": "package, workflow",
     "Area": "Releases and repository",
     "Run": "`python -m pip install \"scrolls-workbench[reader] @ git+https://github.com/ChaseHendrick/Scrolls\"`, then `scrolls-workbench`, `scrolls-letterread`, `scrolls-letterlines`, `scrolls-letterdemo`, `scrolls-start`, `import kit`",
-    "Code": "`pyproject.toml`, `.github/workflows/check.yml`, `CITATION.cff`, `CHANGELOG.md`, `kit/__init__.py`, `kit/cli.py` (`workbench_main`, `letterread_main`, `letterlines_main`, `letterdemo_main`, `start_main`, `_console`, `CONSOLE_SCRIPTS`)",
-    "Tests": "`tests/test_packaging.py`",
+    "Code": "`pyproject.toml`, `.github/workflows/check.yml`, `scripts/ci/testshard.py`, `CITATION.cff`, `CHANGELOG.md`, `kit/__init__.py`, `kit/cli.py` (`workbench_main`, `letterread_main`, `letterlines_main`, `letterdemo_main`, `start_main`, `_console`, `CONSOLE_SCRIPTS`)",
+    "Tests": "`tests/test_packaging.py`, `tests/test_ci_testshard.py`",
     "Needs": "Python 3.10 or newer (`requires-python = \">=3.10\"`); pip with network access to fetch `setuptools>=77` for the build. The core needs no other package; the extras add numpy, pillow, tifffile, imagecodecs, zarr 3 (Python 3.11 or newer only) and scipy",
     "Runs on": "Linux, macOS and Windows (the CI's reader job runs all three). Installing with no extras from a local copy took about 6 s (measured 2026-10-16, cloud container, Python 3.13)",
     "Network": "The install fetches `setuptools>=77` and the chosen extras from PyPI, and clones GitHub for a `git+https` URL. The letter reader's commands download the released weights from GitHub. The CI runs on GitHub-hosted runners",
@@ -22383,67 +23442,67 @@
     {
      "name": "Commands and options",
      "start_line": 83,
-     "end_line": 125,
+     "end_line": 135,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 126,
-     "end_line": 134,
+     "start_line": 136,
+     "end_line": 144,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 135,
-     "end_line": 143,
-     "applicable": true
-    },
-    {
-     "name": "Outputs",
-     "start_line": 144,
+     "start_line": 145,
      "end_line": 153,
      "applicable": true
     },
     {
-     "name": "Failure modes",
+     "name": "Outputs",
      "start_line": 154,
-     "end_line": 168,
+     "end_line": 163,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 164,
+     "end_line": 182,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 169,
-     "end_line": 175,
-     "applicable": true
-    },
-    {
-     "name": "Cost and time",
-     "start_line": 176,
-     "end_line": 179,
-     "applicable": true
-    },
-    {
-     "name": "For agents",
-     "start_line": 180,
+     "start_line": 183,
      "end_line": 189,
      "applicable": true
     },
     {
-     "name": "Tests",
+     "name": "Cost and time",
      "start_line": 190,
-     "end_line": 197,
+     "end_line": 193,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 194,
+     "end_line": 203,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 204,
+     "end_line": 211,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 198,
-     "end_line": 207,
+     "start_line": 212,
+     "end_line": 221,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 208,
-     "end_line": 214,
+     "start_line": 222,
+     "end_line": 228,
      "applicable": true
     }
    ]

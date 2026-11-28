@@ -35,7 +35,7 @@ Every released tool, one line each; each name opens its guide. Generated from [`
 | [Fiber stop score (two opt-in settings for villa's beam fiber tracer)](docs/tools/fiber-stop-score.md) | Ends a beam fiber trace before it slides onto the next fiber; with the sheet-plane penalty it was tested with. villa draft PRs #2377 and #2265. |
 | [Umbilici (center lines of 35 Herculaneum scans)](docs/tools/umbilici.md) | Every public center line (umbilicus) we know of for 35 scans, 91 lines from seven sources, in 3D over the CT, with line ends outside the scroll hidden (Space). |
 | [Parting (same layer or next layer where two papyrus layers touch)](docs/tools/parting.md) | Scores whether a point where two papyrus layers touch lies on the same layer or the next, against base dinovol's cosine; code and model file. |
-| [Vesuvius Radar (new papers, code and data for the scrolls)](docs/tools/vesuvius-radar.md) | New papers, code, models and data that could help read the scrolls, from public sources around the clock, scored, with an API and MCP (Space). |
+| [Vesuvius Radar (new papers, code and data for the scrolls)](docs/tools/vesuvius-radar.md) | New papers, code, models, data and videos that could help read the scrolls, scored around the clock, with a weekly digest, an API and MCP (Space). |
 | [Crackle Check (is there ink crackle in this patch?)](docs/tools/crackle-check.md) | Asks one ink model whether a small patch of a segment shows ink crackle, with the reversed layer order as its control (Space, API and MCP). |
 | [Snapped Labels (published surface labels moved onto the papyrus)](docs/tools/snapped-labels.md) | Every published surface label of PHerc0139, PHerc0814, PHerc0841 and PHerc0172, moved onto the papyrus recto face, as tifxyz meshes with a viewer on live CT. |
 | [AFV Fibers (papyrus fiber curves for six whole scans)](docs/tools/afv-fibers.md) | Papyrus fiber curves from Qual's AFV V2 for six whole scans, as .afv files VC3D opens, with a Space to explore any box and a fiber-set catalog. |
@@ -81,12 +81,13 @@ Command-line tools, benchmarks and script folders that run from a clone of this 
 </details>
 
 <details>
-<summary><b>Surfaces and tracing</b> (21)</summary>
+<summary><b>Surfaces and tracing</b> (22)</summary>
 
 | Tool | What it does |
 | --- | --- |
 | [Autocrop: good regions of a spiral fit](docs/tools/autocrop.md) | Keeps the regions of a villa spiral fit most likely on the right winding and writes them as relative windings, with controls. |
 | [Bounded surface correction (experimental)](docs/tools/surfacefix.md) | Suggests bounded surface shifts using agreement between maps from two traces and keeps only shifts that pass its controls. |
+| [defectbench: synthetic meshes with planted defects and known answers](docs/tools/defectbench.md) | Scores mesh repairs and sheet-switch alarms on meshes whose defects are known. |
 | [freshmap: where a scroll's papyrus is still untraced](docs/tools/freshmap.md) | Maps a scroll's untraced m7 papyrus by band, angle and radius, ranks targets and checks new meshes against it. |
 | [Label snap on a finer registered scan](docs/tools/finesnap.md) | Snaps a label traced on a coarse scan onto the recto face seen in a finer, per-site registered scan of the same scroll. |
 | [Label snap onto the recto face](docs/tools/labelsnap.md) | Moves a tifxyz surface label along its normals onto the recto face of its papyrus band, with an abstain mask and VC3D review points. |
@@ -122,7 +123,7 @@ Command-line tools, benchmarks and script folders that run from a clone of this 
 </details>
 
 <details>
-<summary><b>Scoring and controls</b> (14)</summary>
+<summary><b>Scoring and controls</b> (17)</summary>
 
 | Tool | What it does |
 | --- | --- |
@@ -130,13 +131,16 @@ Command-line tools, benchmarks and script folders that run from a clone of this 
 | [Controlled benchmark gate](docs/tools/gate.md) | Checks recorded benchmark scores against the declared pass rules and required controls. |
 | [Controlled ink AUC scoring](docs/tools/auc.md) | Scores an ink map against labeled ink and background with a reverse-depth control; kit.aucreport adds curves, AP, tiles and a shifted-label null. |
 | [finite: refuse speeds, scores and maps taken from NaN or Inf output](docs/tools/finite.md) | Refuses any speed, score or map taken from model output that holds NaN or Inf, and flags fp16 sums that would overflow. |
+| [framecheck: is a render in the frame of its mesh and its CT](docs/tools/framecheck.md) | Catches renders made in the wrong frame: wrong scan, voxel size, shift or swapped render. |
 | [Ink map agreement check](docs/tools/verify.md) | Checks whether two ink maps of the same input agree while requiring a deliberately different control to fail. |
 | [Ink map self-check (neighbor-sheet test)](docs/tools/sheetcheck.md) | Checks without labels whether an ink map reads the traced sheet, comparing it with the same model one and two sheets away. |
 | [Ink offset diagnostic (AUC against surface offsets along the normal)](docs/tools/offsetdiag.md) | Measures how much an ink model's AUC changes when a segment's surface moves along its normal, and tests a lasagna sheet-center snap against same-size controls. |
 | [Letter-scale ink score](docs/tools/hpscore.md) | Compares an ink map with published labels after removing broad brightness changes, with displaced-label and reverse-depth controls. |
+| [readerseen: every public surface Reader V3 trained on, and a site check](docs/tools/readerseen.md) | Says whether a site is in Reader V3's published training data, by public segment id. |
 | [Research integrity checks for Vesuvius claims](docs/tools/integrity.md) | Checks a claim before it goes out: controls on the same pixels, held-out status, number sources, preregistration and wording. |
 | [Seam-aware winding switches](docs/tools/seamswitch.md) | Counts how often a spiral fit puts touching vertices of one traced sheet on different windings, allowing for the fit's seam. |
 | [simcritic: a held-apart judge of how real simulated CT looks](docs/tools/simcritic.md) | Fresh critics try to tell real CT from simulated tiles, with a real-against-real control and views that show what gives the simulation away. |
+| [simscore: score simulated CT under the Sim Realism Standard (SRS-1)](docs/tools/simscore.md) | A fixed, checkable way to rate how real a set of simulated scroll CT tiles looks against a public reference, with a calibrated pass bar. |
 | [StrokeNet text-likeness score](docs/tools/strokenet.md) | Scores how much a window of an ink map looks like lines of text, with rotation and IAAFT controls, using only NumPy. |
 | [Synthetic map controls](docs/tools/phantom.md) | Creates known-answer synthetic inputs for checking ink-map scoring and controls. |
 | [Text-row pattern score](docs/tools/rowscore.md) | Measures repeating bands in forward and reverse ink maps as a triage aid, without interpreting text. |
@@ -174,12 +178,13 @@ Command-line tools, benchmarks and script folders that run from a clone of this 
 </details>
 
 <details>
-<summary><b>Training</b> (3)</summary>
+<summary><b>Training</b> (4)</summary>
 
 | Tool | What it does |
 | --- | --- |
 | [Label suggestions from reader disagreement](docs/tools/labelsuggest.md) | Ranks tiles by where readers' ink maps disagree, so a person labels there first; beat random tiles on two scrolls, not shown to beat simple picks. |
 | [Segmentation model comparison tools (experimental)](docs/tools/segzoo.md) | Lists segmentation model families and provides training and controlled scoring scripts. |
+| [simgan: a learned real CT look for simulated sheet tiles](docs/tools/simgan.md) | Trains a small generator that repaints Hard Cases tiles with the texture of real CT while keeping every sheet in place, so the exact labels still hold. |
 | [Training-run comparison for label suggestions](docs/tools/altrain.md) | Tests whether fine-tuning on suggested tiles beats random tiles; on three fragments it did not. |
 
 </details>

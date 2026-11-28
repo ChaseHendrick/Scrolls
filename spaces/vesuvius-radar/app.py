@@ -11,6 +11,9 @@ no login: every source is public and read logged out.
   GET  /api/item?id=ID        one item in full, with the items closest to it in meaning
   GET  /api/overview          counts behind the charts for a window and view
   GET  /api/briefing          the strongest items per topic for a window and view
+  GET  /api/picks             the best paper, code, data or model, and community item for a window and view
+  GET  /api/week              one ISO week against the week before (also /week.md as Markdown, /week.xml as RSS)
+  GET  /item?id=ID            one item as a page you can share, with a link preview
   GET  /api/sources           the collector: each source's last check, next check and recent runs
   POST /api/check             check every source now (one at a time for the whole Space, with a cooldown)
   GET  /api/views, /api/config   the reader views and the scoring settings
@@ -39,6 +42,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, PlainTextResponse, Response
 from fastapi.staticfiles import StaticFiles
 
+import digest
 import scanner
 
 HERE = Path(__file__).resolve().parent
@@ -50,7 +54,8 @@ VECS_FILE = DATA_DIR / "vectors.npz"
 COLLECT = os.environ.get("RADAR_COLLECT", "1") != "0"  # tests set 0: no background collector
 SEMANTIC = os.environ.get("RADAR_SEMANTIC", "1") != "0"
 PUBLIC_URL = "https://sharpmeow-vesuvius-radar.hf.space"
-VERSION = "1.2.2"
+VERSION = "2.0.0"
+OG_IMAGE = PUBLIC_URL + "/static/og.jpg"
 
 CFG = scanner.load_config()
 SCORER = scanner.Scorer(CFG)
@@ -148,6 +153,8 @@ def load_store():
         with LOCK:
             STORE.update({k: best.get(k, STORE[k]) for k in STORE})
             STORE.setdefault("state", {})
+            for i in STORE["items"].values():
+                scanner.reweight(i, CFG)  # a changed villa_weight reaches items already held
     prune()
 
 
@@ -174,6 +181,7 @@ def merge(items: list[dict]) -> int:
     new = 0
     with LOCK:
         for i in items:
+            scanner.reweight(i, CFG)  # villa pull requests and issues rank lower (radar.json villa_weight)
             old = STORE["items"].get(i["id"])
             if old:
                 i["first_seen"] = old.get("first_seen", now)
@@ -723,6 +731,94 @@ def feed(f: Filters = Depends(filters)):
     return Response(body, media_type="application/rss+xml")
 
 
+def picks(f: Filters) -> list[dict]:
+    return digest.top_picks(query(f), named)
+
+
+def week(view: str = "all", which: str | None = None, by: str = "date") -> dict:
+    """One ISO week of the store for a reader view, against the week before (digest.week_digest)."""
+    if view not in VIEWS:
+        raise KeyError(f"unknown view {view}; one of " + ", ".join(VIEWS))
+    if by not in ("date", "found"):
+        raise ValueError("by must be date or found")
+    now = scanner.utcnow()
+    start = digest.parse_week(which, now)
+    oldest = scanner.iso(now - dt.timedelta(days=CFG["retention_days"]))
+    if digest._iso(start + dt.timedelta(days=7)) <= oldest:
+        raise ValueError(f"week {digest.week_name(start)} is older than the {CFG['retention_days']} days the radar keeps")
+    if start > now:
+        raise ValueError(f"week {digest.week_name(start)} has not started")
+    with LOCK:
+        items = [i for i in STORE["items"].values() if in_view(i, view)]
+    d = digest.week_digest(items, start, now, by=by, oldest=min((i.get("first_seen") or i["date"] for i in items),
+                                                                default=None) if by == "found" else oldest, name=named)
+    d.update(view=view, label=VIEWS[view]["label"],
+             weeks=[digest.week_name(digest.week_start(now) - dt.timedelta(days=7 * k)) for k in range(5)
+                    if digest._iso(digest.week_start(now) - dt.timedelta(days=7 * k - 7)) > oldest])
+    return d
+
+
+@app.get("/api/picks", summary="Top picks: the best paper, code, data or model, and community item, for the same filters")
+def api_picks(f: Filters = Depends(filters)):
+    return JSONResponse({"since": scanner.iso(f.start), "view": f.view, "picks": picks(f)},
+                        headers={"Cache-Control": "no-cache"})
+
+
+@app.get("/api/week", summary="One ISO week against the week before: totals, rising topics, the best items and lists")
+def api_week(week_: str = Query("this", alias="week", description="2026-W48, this or last (weeks inside the 30 days kept)"),
+             view: str = Query("all", description="all, research, team or builders"),
+             by: str = Query("date", description="date (published or updated) or found (first seen by the radar)")):
+    try:
+        return JSONResponse(week(view, week_, by), headers={"Cache-Control": "no-cache"})
+    except (KeyError, ValueError) as e:
+        raise HTTPException(400, str(e).strip("'\""))
+
+
+@app.get("/week.md", response_class=PlainTextResponse, summary="One week as Markdown, ready to paste into a forum or chat")
+def week_md(week_: str = Query("this", alias="week"), view: str = Query("all")):
+    try:
+        return PlainTextResponse(digest.week_markdown(week(view, week_), PUBLIC_URL),
+                                 media_type="text/markdown; charset=utf-8")
+    except (KeyError, ValueError) as e:
+        raise HTTPException(400, str(e).strip("'\""))
+
+
+@app.get("/week.xml", summary="The finished weeks as RSS, one entry a week")
+def week_feed(view: str = Query("all")):
+    if view not in VIEWS:
+        raise HTTPException(400, f"unknown view {view}")
+    rows = []
+    for k in range(1, 5):
+        try:
+            d = week(view, digest.week_name(digest.week_start(scanner.utcnow()) - dt.timedelta(days=7 * k)))
+        except ValueError:
+            break
+        end = scanner.parse_time(d["end"])
+        body = digest.week_markdown(d, PUBLIC_URL)
+        rows.append(f"<item><title>{xml_escape('Vesuvius Radar: week ' + d['week'])}</title>"
+                    f"<link>{PUBLIC_URL}/?week={d['week']}#week</link>"
+                    f'<guid isPermaLink="false">week:{view}:{d["week"]}</guid>'
+                    f"<pubDate>{end.strftime('%a, %d %b %Y %H:%M:%S +0000')}</pubDate>"
+                    f"<description>{xml_escape(body)}</description></item>")
+    body = ('<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"><channel>'
+            f"<title>Vesuvius Radar weekly: {xml_escape(VIEWS[view]['label'])}</title><link>{PUBLIC_URL}/#week</link>"
+            "<description>Each finished week of new work on the Herculaneum scrolls, against the week before.</description>"
+            + "".join(rows) + "</channel></rss>")
+    return Response(body, media_type="application/rss+xml")
+
+
+@app.get("/item", response_class=HTMLResponse, include_in_schema=False)
+def item_html(id: str = Query(...)):
+    with LOCK:
+        it = STORE["items"].get(id)
+    if not it:
+        return HTMLResponse(f'<!doctype html><meta charset="utf-8"><title>Not found</title><p style="font:16px system-ui;'
+                            f'margin:3rem auto;max-width:36rem">The radar no longer holds this item: it keeps '
+                            f'{CFG["retention_days"]} days. <a href="/">Open Vesuvius Radar</a>.</p>', status_code=404)
+    return HTMLResponse(digest.item_page(public(it), similar(id, 6), site="Vesuvius Radar", base=PUBLIC_URL,
+                                         labels=scanner.LABELS, image=OG_IMAGE), headers={"Cache-Control": "no-cache"})
+
+
 import radar_mcp  # noqa: E402  (needs the functions above)
 
 radar_mcp.bind(sys.modules[__name__])
@@ -735,4 +831,4 @@ def _start():
     if COLLECT:
         threading.Thread(target=collector_loop, daemon=True, name="collector").start()
     elif SEMANTIC:
-        threading.Thread(target=lambda: (SEM.load(), warm_vectors()), daemon=True).start()
+        threading.Thread(target=lambda: (SEM.load(), SEM.load_cache(VECS_FILE), warm_vectors()), daemon=True).start()

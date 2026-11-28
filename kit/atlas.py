@@ -466,6 +466,12 @@ SCROLL_COLUMNS = ("scroll", "segments", "meshes", "measured", "errors", "clean_m
                   "largest_segment_cm2", "median_segment_cm2", "median_within_10pct", "voxel_sizes_um", "prize_lists")
 FIRST_RELEASE = "2026-10-24"
 CHANGELOG = (
+    ("2026-11-27", "Config `atlas-15k`: one row per ATLAS-15k community surface patch (Qualzz20/ATLAS-15k), its "
+                   "metadata and, on measured scrolls, this atlas's numbers. Every existing file and column is "
+                   "unchanged."),
+    ("2026-11-26", "The card follows the [scroll dataset card standard 0.1](" + "https://github.com/ChaseHendrick/Scrolls/blob/main/docs/standards/dataset-card.md" + "): every "
+                   "build writes `provenance.json` and `SHA256SUMS` (every file but this card), and the card has a "
+                   "Spent seeds and truth section. No table, column or preview changed."),
     ("2026-11-26", "Segment and scroll tables (`segments.csv`, `scrolls.csv`, configs `segments` and `scrolls`); "
                    "bounding box and physical extent columns on every mesh (`x_min` to `extent_z_mm`, added at the "
                    "end so column positions do not move); figures in `assets/`; a fuller card. Every existing "
@@ -633,8 +639,43 @@ def write(out, rows, figures=True):
         except Exception as exc:          # a figure must never stop the tables from being published
             summary["figure_error"] = f"{type(exc).__name__}: {exc}"[:300]
     (out / "summary.json").write_text(json.dumps(summary, indent=1) + "\n", encoding="utf-8")
-    (out / "README.md").write_text(card(summary, segs), encoding="utf-8")
+    from . import atlascomm   # the ATLAS-15k section, when OUT/atlas-15k/ holds its table
+    (out / "README.md").write_text(atlascomm.add_to_card(card(summary, segs), out), encoding="utf-8")
+    (out / "provenance.json").write_text(json.dumps(provenance(summary), indent=2) + "\n", encoding="utf-8")
     return summary
+
+
+def provenance(summary):
+    """The dataset's provenance.json under the scroll dataset card standard (docs/standards/dataset-card.md)."""
+    return {
+        "standard": "scroll-dataset-card/0.1", "dataset": DATASET,
+        "version": summary["built"][:10], "updated": summary["built"][:10],
+        "kind": ["real-derived", "geometry", "tabular"], "license": "cc-by-nc-4.0",
+        "sources": [{"name": "Vesuvius Challenge open data: published tifxyz segment meshes",
+                     "url": "https://scrollprize.org/data", "license": "cc-by-nc-4.0",
+                     "ref": f"{summary['bucket']}, listed {summary['built']}; each row's url and fingerprint"}],
+        "code": {"repo": "https://github.com/ChaseHendrick/Scrolls", "commit": summary.get("kit_commit") or "",
+                 "command": "python scripts/atlas/hf_atlas.py job (python -m kit atlas build --previous ... --lens)"},
+        "model_output": False,
+        "caveats": ["The numbers describe the grid, not the papyrus: nothing here looks at the CT, detects sheet "
+                    "switches or judges ink, and none of it is an official villa or prize check.",
+                    "extent_*_mm is the axis-aligned bounding box of the filled nodes, not the flattened size; "
+                    "area_cm2 is.",
+                    "Area counts complete grid cells only, so a mesh with many holes reads a little small.",
+                    "Meshes of one segment on different volumes, and intermediate meshes, are separate rows.",
+                    "Prize lists come from a dated snapshot in kit, not the live prize page."],
+        "spent": {"seeds": [], "truth": [], "held_back": [],
+                  "none_reason": "measures mesh geometry only: no labels, no random seed and no model are used"},
+    }
+
+
+def seal(out):
+    """Write SHA256SUMS over the finished folder (every file but README.md, SHA256SUMS and .gitattributes).
+    Run last, after stale previews are removed, so the sums match exactly what is uploaded."""
+    from . import datacard
+    text = datacard.make_sums(out)
+    (Path(out) / "SHA256SUMS").write_text(text, encoding="utf-8")
+    return text.count("\n")
 
 
 FIGURE_TEXT = {
@@ -766,6 +807,8 @@ to the mesh. The same numbers on the command line come from [ChaseHendrick/Scrol
 | `summary.json` | | the per-scroll counts of the table below, build time and kit commit |
 | `lens/NAME.slg.gz` | one per mesh of a scroll on no prize list | a small preview grid of the mesh, read by the Segment Lens viewer (format below) |
 | `assets/*.png` | | the figures on this page |
+| `provenance.json` | | sources, kit commit, caveats and the spent list, machine-readable ([standard](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/standards/dataset-card.md)) |
+| `SHA256SUMS` | | the SHA-256 of every file but this card, written on every build |
 
 | Scroll | Segments | Meshes | Measured | Clean | Area, cm2 (each segment once) | Largest segment, cm2 | Prize lists (kit snapshot) |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -849,6 +892,15 @@ The code is `kit/atlas.py` in [ChaseHendrick/Scrolls](https://github.com/ChaseHe
 - Meshes of one segment on different volumes, and intermediate meshes, are separate rows: sum `segments.csv`, or
   filter `kind == "mesh"` and pick one volume, to avoid counting a segment twice.
 - Prize lists come from a dated snapshot in kit, not the live prize page.
+
+## Spent seeds and truth
+
+None. The atlas measures the geometry of the published meshes only: it uses no labels, no random seed and no model,
+so it spends no test data, and nothing is held back. Preview grids are written only for scrolls on no prize list.
+`provenance.json` says the same, in the format of the [scroll dataset card standard](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/standards/dataset-card.md).
+
+Check a full download: `hf download {DATASET} --repo-type dataset --local-dir atlas`, then
+`cd atlas && sha256sum -c SHA256SUMS`.
 
 ## License and credit
 

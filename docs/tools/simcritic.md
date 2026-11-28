@@ -139,7 +139,7 @@ PHerc0343P (a public fragment scan on no prize list), 25 Nov 2026, development u
 | --- | --- | --- |
 | Control: real against real (even against odd slices) | 0.473 | bar 0.523 |
 | Hard Cases tiles with the `343p` [simreal](simreal.md) preset, two rounds | 0.999 and 1.000 | FAIL |
-| The same tiles passed through a learned sim-to-real texture (not released), five settings | 0.971 to 0.998 | FAIL |
+| The same tiles passed through a learned sim-to-real texture ([simgan](simgan.md), released 27 Nov 2026), five settings | 0.971 to 0.998 | FAIL |
 
 All seven sets fail; the gap to the bar is +0.448 to +0.477. The 46-feature critic is the worst case for 6 of the 7. Disclosed break: 8 of the 16 CPU parts hit their time cap, so the judgement was rebuilt from the parts' log lines; every critic finished on both seeds for every set, but the attribution views did not finish on the control, so the preregistered attribution rule is void.
 
@@ -162,8 +162,10 @@ What gives it away (post-hoc, Interpretation): fitting the feature critic on one
 ## History
 
 - 2026-11-26: released in the Scrolls kit: held-apart judge, planted checks, control, attribution views, partial results through `sink`. ([#382](https://github.com/ChaseHendrick/Scrolls/pull/382))
+- 2026-11-26: `verdict` returns FAIL with `gap_to_bar` None when the control has no worst AUC (it raised a TypeError); bars unchanged and inclusive. ([#390](https://github.com/ChaseHendrick/Scrolls/pull/390))
 
 ## Related
 
 - [scrollsim2](scrollsim2.md) and [hardcases](hardcases.md): the simulators whose tiles it judges.
 - [simreal](simreal.md): gray-value statistics, a linear realism test and the render fit.
+- [simgan](simgan.md): the learned sim-to-real texture whose sets it judged.

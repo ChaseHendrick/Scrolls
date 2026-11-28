@@ -1,0 +1,97 @@
+{
+ "admit_groups": null,
+ "by_groups": {
+  "12": {
+   "admitted": false,
+   "control_mean": 0.498,
+   "control_sd": 0.0953,
+   "d99": 0.2045,
+   "false_fail": 0.485,
+   "gap_median": -0.002,
+   "gap_p95": 0.142,
+   "power": {
+    "0.5": {
+     "pass_rate": 0.0,
+     "set_mean": 0.73
+    },
+    "0.8": {
+     "pass_rate": 0.0,
+     "set_mean": 0.96
+    }
+   },
+   "set_mean": 0.538,
+   "set_sd": 0.0461
+  },
+  "24": {
+   "admitted": false,
+   "control_mean": 0.496,
+   "control_sd": 0.0563,
+   "d99": 0.0788,
+   "false_fail": 0.285,
+   "gap_median": -0.033,
+   "gap_p95": 0.058,
+   "power": {
+    "0.5": {
+     "pass_rate": 0.02,
+     "set_mean": 0.69
+    },
+    "0.8": {
+     "pass_rate": 0.0,
+     "set_mean": 0.97
+    }
+   },
+   "set_mean": 0.509,
+   "set_sd": 0.0359
+  },
+  "6": {
+   "admitted": false,
+   "control_mean": 0.506,
+   "control_sd": 0.1048,
+   "d99": 0.2454,
+   "false_fail": 0.595,
+   "gap_median": 0.024,
+   "gap_p95": 0.204,
+   "power": {
+    "0.5": {
+     "pass_rate": 0.09,
+     "set_mean": 0.73
+    },
+    "0.8": {
+     "pass_rate": 0.0,
+     "set_mean": 0.98
+    }
+   },
+   "set_mean": 0.528,
+   "set_sd": 0.1058
+  }
+ },
+ "critic": "feat",
+ "d99": {
+  "12": 0.2045,
+  "24": 0.0788,
+  "6": 0.2454
+ },
+ "folds": 3,
+ "full_output_sha256": "396c4a862eece1820e40e86bb8259fbdf819506d46f0384c1343d347aea182f7",
+ "n_sim": 240,
+ "note": "Summary per size. The per-replicate rows are left out; python -m kit.simscore calibrate regenerates them on the same seeds.",
+ "pool": 480,
+ "power_reps": 100,
+ "prereg": "docs/prereg/2026-11-26-srs1-null-calibration.md",
+ "real_seeds": [
+  4611101,
+  4611124
+ ],
+ "reps": 200,
+ "seconds": 289.6,
+ "seeds": [
+  0,
+  1
+ ],
+ "sigmas": [
+  0.5,
+  0.8
+ ],
+ "sim_seed": 4612001,
+ "tiles_per_group": 4
+}

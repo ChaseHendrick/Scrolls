@@ -47,6 +47,7 @@ Updated 18 October 2026.
 | CLI and output conventions | [`UI-UX.md`](UI-UX.md) | |
 | Recurring checks every agent runs at session start, and the daily workflow (prize page, release list, AutoPipeline watcher, handoff size and age, repository tests) | [`routines.json`](routines.json), run by `python3 -m kit routines run --due` | [`AI-AGENTS.md`](AI-AGENTS.md#session-start-repository-routines), [`../.github/workflows/routines.yml`](../.github/workflows/routines.yml) |
 | How every tool is documented: the tool-page standard, its fields and sections, and what the checker checks | [`TOOL-DOCS.md`](TOOL-DOCS.md) | [`../templates/tool-doc.md`](../templates/tool-doc.md); AGENTS.md rule 16 |
+| Community standards: formats anyone can follow and check, such as the scroll dataset card (SHA256SUMS, provenance, license, caveats, spent seeds and truth), the frozen-test protocol (preregister, freeze, independent review pin, reviewer never the author, spent data kept out, arms tried reported) and the Sim Realism Standard SRS-1 (how real simulated scroll CT looks, fixed bar, reference scorer) | [`standards/README.md`](standards/README.md) | [`standards/dataset-card.md`](standards/dataset-card.md), [`tools/datacard.md`](tools/datacard.md), [`standards/frozen-test.md`](standards/frozen-test.md), [`../templates/frozen-test.md`](../templates/frozen-test.md), [`standards/sim-realism.md`](standards/sim-realism.md), [`tools/simscore.md`](tools/simscore.md) |
 
 ## Tools and how to run things
 

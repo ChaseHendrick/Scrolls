@@ -70,9 +70,9 @@ $\Phi(0)>0$ and $\Phi'(\nu)=-R\sin(b-\nu)-\sin\nu<0$, so $\Phi$ has a unique zer
 
 Let the weight satisfy $\ell(t)\le w(t)\le u(t)$ for known even envelopes with $\int\ell>0$, let the turning allowance be an even envelope $\omega(t)$ with $B(t)=2\int_0^{|t|}\omega$, and add a reading error $|e|\le\eta$ with $\eta<1$, applied after normalization. Define, for $\phi\in[0,\pi]$,
 
-$$c_\phi(t)=\cos((\phi-B(t))_+),\qquad F_\eta(\phi)=\int\left\{u\,[c_\phi+\eta]_++\ell\,[c_\phi+\eta]_-\right\}dt .$$
+$$c_\phi(t)=\cos((\phi-B(t))_+),\qquad F_\eta(\phi)=\int\left\lbrace u\,[c_\phi+\eta]_++\ell\,[c_\phi+\eta]_-\right\rbrace dt .$$
 
-$F_\eta$ is continuous and nonincreasing, and $F_\eta(\pi/2)\ge0$. **Theorem 2.** If $F_\eta(\pi)<0$, let $\phi_*$ be the unique zero of $F_\eta$ in $[\pi/2,\pi)$. The exact minimax error for one reading is $(\phi_*-\pi/2)/2$, attained by half the argument. The proof is the support argument of section 3 with aligned noise added. For $R=1$ and constant $\Omega$ it gives $\delta=\tfrac12\{b/2+\arcsin[\eta/\mathrm{sinc}(b/2)]\}$ when $\eta<\mathrm{sinc}(b)$.
+$F_\eta$ is continuous and nonincreasing, and $F_\eta(\pi/2)\ge0$. **Theorem 2.** If $F_\eta(\pi)<0$, let $\phi_*$ be the unique zero of $F_\eta$ in $[\pi/2,\pi)$. The exact minimax error for one reading is $(\phi_*-\pi/2)/2$, attained by half the argument. The proof is the support argument of section 3 with aligned noise added. For $R=1$ and constant $\Omega$ it gives $\delta=\tfrac12\lbrace b/2+\arcsin[\eta/\mathrm{sinc}(b/2)]\rbrace$ when $\eta<\mathrm{sinc}(b)$.
 
 If $F_\eta(\pi)\ge0$, some admissible configuration gives a zero reading for every center axis, so a forced-output estimator has worst case $\pi/2$. This note makes no claim about rules that abstain on small readings. An earlier draft proposed abstaining only at a zero reading; that rule fails, because noise can carry a small nonzero reading to any axis (for example $b=60^\circ$, $\ell=u=1$, $\eta=0.9$ admits the reading $0.01$ for every axis).
 

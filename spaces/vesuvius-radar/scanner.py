@@ -33,10 +33,10 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 CONFIG = HERE / "radar.json"
-UA = "vesuvius-radar/1.0 (+https://huggingface.co/spaces/SharpMeow/vesuvius-radar)"
+UA = "vesuvius-radar/2.0 (+https://huggingface.co/spaces/SharpMeow/vesuvius-radar)"
 SOURCES = ("arxiv", "github", "hf", "pypi", "zenodo", "journals", "blog")
 LABELS = {"arxiv": "arXiv", "github": "GitHub", "hf": "Hugging Face", "pypi": "PyPI", "zenodo": "Zenodo",
-          "journals": "Journals", "blog": "News and blogs"}
+          "journals": "Journals", "blog": "News, blogs and videos"}
 
 
 def load_config() -> dict:
@@ -396,6 +396,51 @@ def finish(items: list[dict], scorer: Scorer, sem: Semantic | None, progress=Non
                 i["capped"] = capped
         i["band"] = scorer.band(i["score"])
     return items
+
+
+# ---------------------------------------------------------------- villa weight (radar.json villa_weight)
+
+def villa_weight(i: dict, cfg: dict) -> float:
+    """The factor on an item's score from radar.json villa_weight: villa pull requests and issues are common and would
+    look more important than they are, so they rank lower (still listed). A merged pull request that touches our core areas
+    (core_terms in its title, summary or labels) keeps merged_core_weight. Every other item: 1."""
+    vw = cfg.get("villa_weight") or {}
+    repos = {r.lower() for r in vw.get("repos", [])}
+    if i.get("source") != "github" or i.get("kind") not in vw.get("kinds", ("pr", "issue")) or not repos:
+        return 1.0
+    rid = str(i.get("id") or "")
+    if not rid.startswith("github:") or rid[7:].split("#", 1)[0] not in repos:
+        return 1.0
+    if i.get("kind") == "pr" and i.get("state") == "merged":
+        text = " ".join([str(i.get("title") or ""), str(i.get("summary") or "")] + [str(x) for x in i.get("labels") or []])
+        if any(t in text.lower() for t in vw.get("core_terms", [])):
+            return float(vw.get("merged_core_weight", 1.0))
+    return float(vw.get("weight", 1.0))
+
+
+def reweight(i: dict, cfg: dict) -> dict:
+    """Apply villa_weight to the item's score and band, in place and idempotent: score_base keeps the score its scorer
+    gave, so a second pass (a reload, a new weight) starts from it."""
+    base = i.get("score_base", i.get("score"))
+    if not isinstance(base, (int, float)):
+        return i
+    w = villa_weight(i, cfg)
+    if w == 1.0:
+        if "score_base" in i:
+            i["score"] = i.pop("score_base")
+            i.pop("weighted", None)
+            i["band"] = band(i["score"], cfg)
+        return i
+    i["score_base"] = base
+    i["score"] = max(0, min(100, int(round(base * w))))
+    i["band"] = band(i["score"], cfg)
+    i["weighted"] = f"villa weight {w:g}: score {base} before it"
+    return i
+
+
+def band(s: int, cfg: dict) -> str:
+    b = cfg["bands"]
+    return "high" if s >= b["high"] else "medium" if s >= b["medium"] else "low"
 
 
 def embed_text(cfg: dict, title: str, summary: str) -> str:
@@ -931,7 +976,87 @@ def c_journals(sc, ctx):
                                  title=w["title"][0], url=w.get("URL") or f"https://doi.org/{w['DOI']}", date=t,
                                  text=w.get("abstract", ""), who=who, category=(w.get("container-title") or [""])[0],
                                  publisher=w.get("publisher"))
+    if sc.get("openalex"):
+        prog("OpenAlex")
+        more, r2, n2 = openalex_works(scorer, since, sc["openalex"], ctx["state"])
+        read += r2
+        notes += n2
+        for key, it in more.items():
+            if key in out:  # Crossref has it already: keep that row, note the citation of the field's papers
+                if it.get("cites_field"):
+                    out[key]["cites_field"] = True
+                continue
+            out[key] = it
     return list(out.values()), {"read": read, "notes": notes}
+
+
+OA_KINDS = {"article": "journal article", "book-chapter": "book chapter", "preprint": "posted content",
+            "dissertation": "thesis", "review": "journal article", "book": "book", "dataset": "dataset",
+            "report": "report", "other": "publication"}
+
+
+def oa_abstract(inv) -> str:
+    """OpenAlex keeps an abstract as an inverted index (word: positions); this puts the words back in order."""
+    if not isinstance(inv, dict):
+        return ""
+    at = {}
+    for w, ps in inv.items():
+        for p in ps or []:
+            at[p] = w
+    return " ".join(at[k] for k in sorted(at))
+
+
+def openalex_works(scorer, since: dt.datetime, oc: dict, state: dict) -> tuple[dict, int, list]:
+    """Scholarly works from OpenAlex, read logged out: works whose title or abstract match each query, and works that
+    cite the field's founding papers (oc["cites"], DOIs; their OpenAlex ids are looked up once and remembered).
+    OpenAlex dates a work by its publication day and offers no indexing date to logged-out readers, so the window
+    starts lag_days before `since`; a late listing then shows under "Found by the radar". Rows key on the DOI, so a
+    work Crossref also lists stays one row."""
+    out, read, notes = {}, 0, []
+    base = "https://api.openalex.org/works?"
+    start = (since - dt.timedelta(days=oc.get("lag_days", 21))).date()
+    fields = "id,doi,display_name,publication_date,type,abstract_inverted_index,authorships,primary_location,cited_by_count"
+    lookups = [(q, f"title_and_abstract.search:{q}", False) for q in oc.get("queries", [])]
+    if oc.get("cites"):
+        ids = state.get("openalex_cites") or []
+        if not ids:
+            try:
+                res = FETCH.json(base + urllib.parse.urlencode({"filter": "doi:" + "|".join(oc["cites"]), "select": "id",
+                                                                "per_page": 50}))
+                ids = [r["id"].rsplit("/", 1)[-1] for r in res.get("results", []) if r.get("id")]
+                state["openalex_cites"] = ids
+            except Exception as e:  # noqa: BLE001
+                notes.append(f"OpenAlex founding papers: {_why(e)}")
+        if ids:
+            lookups.append(("works citing the founding papers", "cites:" + "|".join(ids), True))
+    for name, flt, cites in lookups:
+        try:
+            res = FETCH.json(base + urllib.parse.urlencode({"filter": f"{flt},from_publication_date:{start}",
+                                                            "sort": "publication_date:desc", "per_page": 50,
+                                                            "select": fields}))
+        except Exception as e:  # noqa: BLE001
+            notes.append(f"OpenAlex {name}: {_why(e)}")
+            continue
+        for w in res.get("results", []):
+            t = parse_time(w.get("publication_date"))
+            if not t or not w.get("display_name") or t > utcnow() + dt.timedelta(days=2):
+                continue
+            read += 1
+            doi = (w.get("doi") or "").lower().replace("https://doi.org/", "")
+            key = "doi:" + doi if doi else "openalex:" + w["id"].rsplit("/", 1)[-1]
+            if key in out:
+                out[key]["cites_field"] = out[key].get("cites_field") or cites
+                continue
+            loc = (w.get("primary_location") or {})
+            venue = (loc.get("source") or {}).get("display_name") or ""
+            who = ", ".join((a.get("author") or {}).get("display_name", "") for a in (w.get("authorships") or [])[:6])
+            out[key] = make_item(scorer, source="journals", kind=OA_KINDS.get(w.get("type") or "", "publication"), id=key,
+                                 title=w["display_name"], url=w.get("doi") or loc.get("landing_page_url") or w["id"],
+                                 date=t, text=oa_abstract(w.get("abstract_inverted_index")),
+                                 base=12 if cites else 0, base_label="cites a founding paper of the field" if cites else "",
+                                 who=who, category=venue, openalex=w["id"], cited_by=w.get("cited_by_count"),
+                                 cites_field=cites or None, index="OpenAlex")
+    return out, read, notes
 
 
 def _tag(el, name: str):
@@ -955,6 +1080,32 @@ def news_key(title: str) -> str:
     return re.sub(r"[\W_]+", " ", title.lower()).strip()[:120]
 
 
+ATOM = "{http://www.w3.org/2005/Atom}"
+MEDIA = "{http://search.yahoo.com/mrss/}"
+
+
+def atom_entries(scorer, root, f, name: str, since: dt.datetime) -> list[dict]:
+    """An Atom feed's entries since `since`, as the feed owner's own posts (a base of 50, like the blog): for a YouTube
+    channel feed, each video with its description and view count."""
+    out = []
+    kind = (f.get("kind") if isinstance(f, dict) else None) or "post"
+    for e in root.iter(ATOM + "entry"):
+        t = parse_time(e.findtext(ATOM + "published")) or parse_time(e.findtext(ATOM + "updated"))
+        if not t or t < since:
+            continue
+        link = next((l.get("href") for l in e.iter(ATOM + "link") if l.get("rel", "alternate") == "alternate"), "") or ""
+        group = e.find(MEDIA + "group")
+        text = group.findtext(MEDIA + "description", "") if group is not None else (e.findtext(ATOM + "summary") or "")
+        stats = group.find(MEDIA + "community/" + MEDIA + "statistics") if group is not None else None
+        thumb = group.find(MEDIA + "thumbnail") if group is not None else None
+        views = int(stats.get("views", 0) or 0) if stats is not None else None
+        out.append(make_item(scorer, source="blog", kind=kind, id=f"{kind}:" + link.lower().rstrip("/"),
+                             title=e.findtext(ATOM + "title", ""), url=link, date=t, text=text, base=50,
+                             base_label=f"{name} {kind}", core_terms=False, who=name, topics_extra=["Scroll work"],
+                             views=views, thumb=safe_url(thumb.get("url")) if thumb is not None else None))
+    return out
+
+
 def c_blog(sc, ctx):
     """The Challenge's own blog, where every post counts (a base of 50), and news searches (Google News, Bing News,
     Hacker News), whose stories go through the scorer like any other listing. A story found by several searches is
@@ -972,6 +1123,10 @@ def c_blog(sc, ctx):
             continue
         except ET.ParseError:
             notes.append(f"{name}: skipped, the answer was not RSS")
+            continue
+        if root.tag.endswith("}feed"):  # Atom (a YouTube channel): every entry is the channel's own video
+            out += atom_entries(scorer, root, f, name, since)
+            read += sum(1 for _ in root.iter(ATOM + "entry"))
             continue
         for it in root.iter("item"):
             t = parse_time(it.findtext("pubDate"))
