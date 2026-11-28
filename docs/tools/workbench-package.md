@@ -9,8 +9,8 @@
 | Kind | package, workflow |
 | Area | Releases and repository |
 | Run | `python -m pip install "scrolls-workbench[reader] @ git+https://github.com/ChaseHendrick/Scrolls"`, then `scrolls-workbench`, `scrolls-letterread`, `scrolls-letterlines`, `scrolls-letterdemo`, `scrolls-start`, `import kit` |
-| Code | `pyproject.toml`, `.github/workflows/check.yml`, `CITATION.cff`, `CHANGELOG.md`, `kit/__init__.py`, `kit/cli.py` (`workbench_main`, `letterread_main`, `letterlines_main`, `letterdemo_main`, `start_main`, `_console`, `CONSOLE_SCRIPTS`) |
-| Tests | `tests/test_packaging.py` |
+| Code | `pyproject.toml`, `.github/workflows/check.yml`, `scripts/ci/testshard.py`, `CITATION.cff`, `CHANGELOG.md`, `kit/__init__.py`, `kit/cli.py` (`workbench_main`, `letterread_main`, `letterlines_main`, `letterdemo_main`, `start_main`, `_console`, `CONSOLE_SCRIPTS`) |
+| Tests | `tests/test_packaging.py`, `tests/test_ci_testshard.py` |
 | Needs | Python 3.10 or newer (`requires-python = ">=3.10"`); pip with network access to fetch `setuptools>=77` for the build. The core needs no other package; the extras add numpy, pillow, tifffile, imagecodecs, zarr 3 (Python 3.11 or newer only) and scipy |
 | Runs on | Linux, macOS and Windows (the CI's reader job runs all three). Installing with no extras from a local copy took about 6 s (measured 2026-10-16, cloud container, Python 3.13) |
 | Network | The install fetches `setuptools>=77` and the chosen extras from PyPI, and clones GitHub for a `git+https` URL. The letter reader's commands download the released weights from GitHub. The CI runs on GitHub-hosted runners |
@@ -113,9 +113,19 @@ Name "Kit checks". It runs on a push to `main`, on every pull request, and by ha
 | --- | --- | --- | --- |
 | `test` | `ubuntu-latest`, Python 3.10 and 3.13 | 10 min | `python -m unittest discover -s tests -v` with nothing installed; a CLI smoke (`python -m kit prizes`, `python -m kit plan PHerc0826`, `python -m kit cost --gpu-hours 6.5 --rate 1.10`); then `python -m pip install .` and, from `$RUNNER_TEMP`, `scrolls-workbench prizes`, `scrolls-workbench plan PHerc0826` and `scrolls-letterdemo --quiet`, which must exit 2 |
 | `reader` | `ubuntu-latest`, `macos-latest`, `windows-latest`, each with Python 3.10 and 3.13 (`fail-fast: false`, bash shell) | 20 min | `python -m pip install ".[reader]"`; the reader's tests (`test_letter*.py`, `test_greeklm.py`, `test_packaging.py`); from `runner.temp`, `scrolls-letterdemo --out letterdemo` and `scrolls-letterread letterdemo/demo-page.png --weights letters-v2-ccby --letter-px 32 --quiet --no-orientation` |
-| `verify` | `ubuntu-latest`, Python 3.13 | 10 min | `python -m pip install ".[all]"`; the whole suite; then every folder under `scripts/experiments/` that holds a `test_*.py` ([experiment-records](experiment-records.md)), failing with `No experiment regression tests found` when there are none |
+| `verify-shard` | `ubuntu-latest`, Python 3.13, shards 1 to 6 (`fail-fast: false`) | 20 min | `python -m pip install ".[all]"`; `python scripts/ci/testshard.py --shard N --of 6`, one sixth of the whole suite by measured time. A unit is a test module, or one class of a slow module named in `SPLIT` (`test_scrollsim2`), or one test of a slow class in `SPLIT_TESTS`; units are packed longest first, and every loaded test lands in exactly one shard |
+| `verify-experiments` | `ubuntu-latest`, Python 3.13 | 20 min | `python -m pip install ".[all]"`; every folder under `scripts/experiments/` that holds a `test_*.py` ([experiment-records](experiment-records.md)), failing with `No experiment regression tests found` when there are none |
+| `verify` | `ubuntu-latest` | 5 min | The required check named in `main`'s ruleset, so keep its name: it runs even when a shard fails (`if: always()`) and passes only when every `verify-shard` and `verify-experiments` succeeded, so a failed, skipped or cancelled shard fails it |
 
 The installed Starter is checked outside the clone on Linux, macOS and Windows: `scrolls-start --portable --out starter-portable.html --no-open`, `scrolls-start --check`, and `scrolls-start --out starter-local.html --no-open`. The checks require the installed version in the setup JSON and both generated HTML files. The no-extras job also checks portable output and the setup command.
+
+### Test shards, `scripts/ci/testshard.py`
+
+| Option | Default | Meaning |
+| --- | --- | --- |
+| `--of N` | required | Number of shards; the CI uses 6 |
+| `--shard K` | none | Run shard K (1 to N) verbosely; exit 1 on any failed test, or when the shard ran no test |
+| `--list` | off | Print every shard's units and estimated seconds, and run nothing |
 
 ### Environment variables
 
@@ -159,6 +169,10 @@ An installed distribution `scrolls-workbench` (version in `kit/__init__.py`): th
 | `scrolls-workbench: error: argument command: invalid choice: ...`, exit code 2 | No such command | `scrolls-workbench --help` lists them |
 | `cannot read the scores: no .../site-packages/docs/results.json. The gate reads the repository's docs/results.json, which an installed package does not have: ...` | `scrolls-workbench gate` outside a clone | Run it from a clone, or give `--results` |
 | `releases: no release list at .../site-packages/docs/releases.json; it reads the repository's docs/releases.json and README.md, which an installed package does not have: ...` | `scrolls-workbench releases` outside a clone | Run it from a clone, or give `--list` and `--readme` |
+| `--of must be at least 1 and --shard between 1 and --of` from `scripts/ci/testshard.py`, exit code 2 | `--shard` missing or outside 1 to `--of` | Give `--shard K --of N` with 1 <= K <= N, or `--list --of N` |
+| `--of must be at least 1` (ValueError from `testshard.plan`) | `plan()` was called with no shards | Pass a shard count of 1 or more |
+| `no tests ran in this shard` from `scripts/ci/testshard.py`, exit code 1 | The shard held no loadable test, so a pass would mean nothing | Check `--list --of N`; fewer shards than units, or a broken test import |
+| The required `verify` check fails while every test passed | A `verify-shard` or `verify-experiments` job was cancelled or skipped | Rerun the workflow; `verify` passes only when all of them succeeded |
 | `externally-managed-environment` from pip | The system Python refuses installs outside a virtual environment (PEP 668) | Make and activate a virtual environment first ([guide](../letter-reader.md#install)) |
 | `kit` turns out to be AutoPipeline's, or AutoPipeline's `kit` turns out to be this one | Both packages install a top-level `kit` in one environment | One virtual environment per package |
 | zarr tools fail on Python 3.10 after `pip install ".[maps]"` | The extras leave zarr out on 3.10 | Use Python 3.11 or newer for zarr inputs and outputs |

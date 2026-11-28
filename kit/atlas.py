@@ -466,6 +466,9 @@ SCROLL_COLUMNS = ("scroll", "segments", "meshes", "measured", "errors", "clean_m
                   "largest_segment_cm2", "median_segment_cm2", "median_within_10pct", "voxel_sizes_um", "prize_lists")
 FIRST_RELEASE = "2026-10-24"
 CHANGELOG = (
+    ("2026-11-27", "Config `atlas-15k`: one row per ATLAS-15k community surface patch (Qualzz20/ATLAS-15k), its "
+                   "metadata and, on measured scrolls, this atlas's numbers. Every existing file and column is "
+                   "unchanged."),
     ("2026-11-26", "The card follows the [scroll dataset card standard 0.1](" + "https://github.com/ChaseHendrick/Scrolls/blob/main/docs/standards/dataset-card.md" + "): every "
                    "build writes `provenance.json` and `SHA256SUMS` (every file but this card), and the card has a "
                    "Spent seeds and truth section. No table, column or preview changed."),
@@ -636,7 +639,8 @@ def write(out, rows, figures=True):
         except Exception as exc:          # a figure must never stop the tables from being published
             summary["figure_error"] = f"{type(exc).__name__}: {exc}"[:300]
     (out / "summary.json").write_text(json.dumps(summary, indent=1) + "\n", encoding="utf-8")
-    (out / "README.md").write_text(card(summary, segs), encoding="utf-8")
+    from . import atlascomm   # the ATLAS-15k section, when OUT/atlas-15k/ holds its table
+    (out / "README.md").write_text(atlascomm.add_to_card(card(summary, segs), out), encoding="utf-8")
     (out / "provenance.json").write_text(json.dumps(provenance(summary), indent=2) + "\n", encoding="utf-8")
     return summary
 

@@ -98,6 +98,14 @@ A result is called held out only when the rule 5 check is clean for every scored
 
 Before building a test, search your own records for the same idea under other names, and say in the preregistration what this test does that the earlier ones did not. Before any public claim that a result is new, search other fields' names for the same object, across several source kinds with at least one full-text search, read the nearest documents in full, and cite the nearest prior work. No hit is not proof of novelty. A case from this repository: a math note's 2D closed form turned out to be a worked example in a July 2026 statistics paper on circular expectiles that our own search terms had missed, so the published note credits it and offers only the parts not found elsewhere ([note](../manuscripts/finite-window-axis/README.md)).
 
+### Optional: sequential designs
+
+A test may read its data in a few planned looks and stop early, if the preregistration fixes the design before the freeze: the statistic, the one-sided alpha, the looks as fractions of the data (the last one all of it), the data read at each look, the boundary at each look and how it was computed, and any futility bound. The boundaries must keep the overall type I error at or under alpha. Two standard ways do: alpha spending ([Lan and DeMets 1983](https://doi.org/10.1093/biomet/70.3.659), O'Brien-Fleming or Pocock shaped) with exact boundaries from numerical integration, or the conservative rule that gives each look the increment of the spending function as its own level, which the union bound keeps under alpha with no assumption about how the looks correlate. A futility bound must be non-binding: the efficacy boundaries are computed as if it never stops a run.
+
+At each look the run computes the statistic on exactly the planned amount of data and applies the frozen boundaries. It stops with a PASS when the boundary is crossed, stops with a FAIL when a futility bound is crossed or the last look ends without crossing, and otherwise reads on. Every look is recorded once, in order, with its numbers, and the report states the look the run stopped at. A design is never added to or changed in a test after its freeze, and the looks are never timed on the data. Controls still apply at every look: a missed control makes the run VOID.
+
+A simulation of the design under the null, with a fixed seed, showing the realized type I error at or under alpha, belongs in the pass-first checks (step 2) so the reviewer of the freeze can check it.
+
 ## 3. The protocol, step by step
 
 | Step | What happens | What it leaves behind |
@@ -122,6 +130,7 @@ Copy this into a report, PR description or submission and tick each line with a 
 [ ] Never-touched list and the code that refuses it
 [ ] Every bar has a source outside the test data
 [ ] Verdict rule can give PASS, FAIL and VOID
+[ ] If sequential: looks, boundaries and futility frozen; null simulation at or under alpha
 [ ] At least one control, shown to catch a known-bad input on development data
 [ ] Ceiling check: a reference clears the bars through the exact scorer
 [ ] Test sites checked against the spent and reserved registry: clean
@@ -151,6 +160,7 @@ Some of these checks are public `kit` commands; the rest run in our private tool
 | 6 | | An append-only candidate log per search helper and a check that the preregistration's arms block matches it by count and hash. |
 | 7, 8 | `python -m kit verify --control`, `python -m kit auc --control`; [`integrity.md`](../integrity.md) and `python -m kit integrity` for wording and order. | VOID and FAIL results feed a lessons list that later preregistrations must answer before their freeze. |
 | 10 | | A search of our own records before a test is built, and a check that refuses a public novelty claim unless a prior-art record shows several phrasings, at least four searches over three source kinds with one full-text kind, three documents read and the nearest prior work named (being added 26 November 2026). |
+| Sequential designs | | A design checker that refuses a sequential block added to or changed in a frozen preregistration, computes the boundaries (conservative or exact), judges each look from the frozen boundaries only, and simulates the design under the null. |
 
 ## 6. What the protocol cannot do
 
@@ -164,3 +174,4 @@ Some of these checks are public `kit` commands; the rest run in our private tool
 This draft changes by pull request. Each change gets a dated line here.
 
 - 26 November 2026: Draft 0.1.
+- 26 November 2026: optional sequential designs (section 2), with a checklist line.
