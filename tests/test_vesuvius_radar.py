@@ -948,3 +948,43 @@ class NewSourcesTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class VillaWeightTest(unittest.TestCase):
+    """Villa pull requests and issues rank lower (radar.json villa_weight) but stay listed; releases, new repositories
+    and merged villa changes in the core areas keep their score."""
+
+    def it(self, id, kind, score, title="", state=None):
+        return {"id": id, "source": "github", "kind": kind, "score": score, "band": scanner.band(score, CFG), "url": "",
+                "title": title, "summary": "", "state": state, "labels": []}
+
+    def test_the_weight_is_a_named_parameter_below_one(self):
+        self.assertLess(CFG["villa_weight"]["weight"], 1.0)
+        self.assertIn("ScrollPrize/villa", CFG["villa_weight"]["repos"])
+
+    def test_a_routine_villa_pr_does_not_outrank_a_new_community_tool_release_of_similar_relevance(self):
+        for kind in ("pr", "issue"):
+            villa = scanner.reweight(self.it("github:scrollprize/villa#900", kind, 70, "Fix CI config", "open"), CFG)
+            rel = scanner.reweight(self.it("github:someone/new-tracer@v1.0", "release", 66, "new-tracer v1.0"), CFG)
+            repo = scanner.reweight(self.it("github:someone/new-tool", "repo", 66, "someone/new-tool"), CFG)
+            self.assertLess(villa["score"], rel["score"], kind)
+            self.assertLess(villa["score"], repo["score"], kind)
+            self.assertEqual((rel["score"], repo["score"], villa["score_base"]), (66, 66, 70))
+
+    def test_merged_core_change_keeps_its_score_and_reweight_is_idempotent(self):
+        core = self.it("github:scrollprize/villa#901", "pr", 72, "Faster tifxyz surface tracer", "merged")
+        self.assertEqual(scanner.reweight(core, CFG)["score"], 72)
+        other = scanner.reweight(self.it("github:scrollprize/villa#902", "pr", 72, "Faster tifxyz tracer", "open"), CFG)
+        once = other["score"]
+        self.assertLess(once, 72)
+        self.assertEqual(scanner.reweight(other, CFG)["score"], once)
+
+    @unittest.skipIf(app is None, "fastapi not installed")
+    def test_the_store_ranks_the_release_above_the_routine_villa_pr(self):
+        saved = dict(app.STORE["items"])
+        self.addCleanup(lambda: (app.STORE["items"].clear(), app.STORE["items"].update(saved)))
+        now = scanner.iso(scanner.utcnow())
+        a = dict(self.it("github:scrollprize/villa#903", "pr", 70, "Bump dependency", "open"), date=now)
+        b = dict(self.it("github:someone/ink-tool@v2", "release", 64, "ink-tool v2"), date=now)
+        app.merge([a, b])
+        self.assertGreater(app.STORE["items"][b["id"]]["score"], app.STORE["items"][a["id"]]["score"])

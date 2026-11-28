@@ -153,6 +153,8 @@ def load_store():
         with LOCK:
             STORE.update({k: best.get(k, STORE[k]) for k in STORE})
             STORE.setdefault("state", {})
+            for i in STORE["items"].values():
+                scanner.reweight(i, CFG)  # a changed villa_weight reaches items already held
     prune()
 
 
@@ -179,6 +181,7 @@ def merge(items: list[dict]) -> int:
     new = 0
     with LOCK:
         for i in items:
+            scanner.reweight(i, CFG)  # villa pull requests and issues rank lower (radar.json villa_weight)
             old = STORE["items"].get(i["id"])
             if old:
                 i["first_seen"] = old.get("first_seen", now)

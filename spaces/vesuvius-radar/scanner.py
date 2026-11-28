@@ -398,6 +398,51 @@ def finish(items: list[dict], scorer: Scorer, sem: Semantic | None, progress=Non
     return items
 
 
+# ---------------------------------------------------------------- villa weight (radar.json villa_weight)
+
+def villa_weight(i: dict, cfg: dict) -> float:
+    """The factor on an item's score from radar.json villa_weight: villa pull requests and issues are common and would
+    look more important than they are, so they rank lower (still listed). A merged pull request that touches our core areas
+    (core_terms in its title, summary or labels) keeps merged_core_weight. Every other item: 1."""
+    vw = cfg.get("villa_weight") or {}
+    repos = {r.lower() for r in vw.get("repos", [])}
+    if i.get("source") != "github" or i.get("kind") not in vw.get("kinds", ("pr", "issue")) or not repos:
+        return 1.0
+    rid = str(i.get("id") or "")
+    if not rid.startswith("github:") or rid[7:].split("#", 1)[0] not in repos:
+        return 1.0
+    if i.get("kind") == "pr" and i.get("state") == "merged":
+        text = " ".join([str(i.get("title") or ""), str(i.get("summary") or "")] + [str(x) for x in i.get("labels") or []])
+        if any(t in text.lower() for t in vw.get("core_terms", [])):
+            return float(vw.get("merged_core_weight", 1.0))
+    return float(vw.get("weight", 1.0))
+
+
+def reweight(i: dict, cfg: dict) -> dict:
+    """Apply villa_weight to the item's score and band, in place and idempotent: score_base keeps the score its scorer
+    gave, so a second pass (a reload, a new weight) starts from it."""
+    base = i.get("score_base", i.get("score"))
+    if not isinstance(base, (int, float)):
+        return i
+    w = villa_weight(i, cfg)
+    if w == 1.0:
+        if "score_base" in i:
+            i["score"] = i.pop("score_base")
+            i.pop("weighted", None)
+            i["band"] = band(i["score"], cfg)
+        return i
+    i["score_base"] = base
+    i["score"] = max(0, min(100, int(round(base * w))))
+    i["band"] = band(i["score"], cfg)
+    i["weighted"] = f"villa weight {w:g}: score {base} before it"
+    return i
+
+
+def band(s: int, cfg: dict) -> str:
+    b = cfg["bands"]
+    return "high" if s >= b["high"] else "medium" if s >= b["medium"] else "low"
+
+
 def embed_text(cfg: dict, title: str, summary: str) -> str:
     """The text the meaning model reads: title and the start of the summary. Scoring, similarity and search share it,
     so each item is embedded once. The opening of an abstract carries its topic; a shorter text is much faster on CPU."""
