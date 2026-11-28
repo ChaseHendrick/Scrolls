@@ -28,7 +28,7 @@ def bind(app_module):
 
 router = APIRouter()
 VERSIONS = ("2025-06-18", "2025-03-26", "2024-11-05")
-SERVER = {"name": "vesuvius-radar", "title": "Vesuvius Radar", "version": "2.0.0"}
+SERVER = {"name": "vesuvius-radar", "title": "Vesuvius Radar", "version": "2.1.0"}
 INSTRUCTIONS = (
     "Vesuvius Radar keeps collecting new work that could help read the Herculaneum scrolls (the Vesuvius Challenge): "
     "papers from arXiv and journals, GitHub repositories with ScrollPrize/villa pull requests, issues and releases, "

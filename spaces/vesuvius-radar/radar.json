@@ -73,6 +73,14 @@
  "negative": ["large language model", "llm", "llms", "kv cache", "vision-language-action", "autonomous driving",
               "dialogue", "speech", "recommender", "chatbot", "reinforcement learning from human", "text-to-motion",
               "avatar", "gaussian splatting", "nerf"],
+ "scroll_floor": {
+  "note": "The learned head was fitted to a window with few papers on the scrolls themselves, so it ranks such papers low by their source. An item that names the scrolls with one of these specific terms and that the meaning model also reads as scroll work (meaning score at least min_semantic) counts its rule score half: final = max(learned, (learned + rule) / 2). Generic terms (papyrus, papyri, vesuvius) do not count. Only written works (the sources listed): the head saw hundreds of GitHub and Hugging Face items that name the scrolls and learned to judge those, empty repositories included.",
+  "specific": ["herculaneum", "herculanense", "carbonized scroll", "carbonised scroll", "charred scroll", "scroll prize",
+               "scrollprize", "volume cartographer", "volume-cartographer", "vc3d", "khartes", "thaumato", "educelab",
+               "pherc", "dinovol", "virtual unwrapping", "virtual unrolling"],
+  "min_semantic": 50,
+  "sources": ["arxiv", "journals", "zenodo", "blog"]
+ },
  "semantic": {
   "model": "BAAI/bge-small-en-v1.5",
   "query_prefix": "Represent this sentence for searching relevant passages: ",

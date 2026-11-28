@@ -178,6 +178,30 @@ class ScorerTest(unittest.TestCase):
         scanner.finish(items, self.s, None, head=none)
         self.assertEqual((items[0]["score"], items[0].get("learned")), (25, None))
 
+    def test_scroll_floor_lifts_only_scroll_papers_and_never_lowers(self):
+        cfg = self.s.cfg
+        def item(**k):
+            d = {"learned": "full", "score": 35, "rule": 100, "keyword": 100, "semantic": 100, "source": "arxiv",
+                 "matched": ["herculaneum", "papyrus", "ink"]}
+            d.update(k)
+            return d
+        paper = scanner.apply_scroll_floor(cfg, item())
+        self.assertEqual((paper["score"], paper["learned_score"], paper["band"]), (68, 35, "high"))
+        self.assertIn("lifted", paper)
+        again = scanner.apply_scroll_floor(cfg, dict(paper))  # the Space applies it again to stored items at start
+        self.assertEqual((again["score"], again["learned_score"]), (68, 35))
+        for other in (item(source="github"), item(source="hf"),                   # the head judges these itself
+                      item(matched=["papyri", "vesuvius", "papyrus"]),           # generic terms only
+                      item(semantic=49),                                         # meaning does not agree
+                      item(learned=None),                                        # no learned head: rule score shown
+                      item(score=90, rule=60)):                                  # never lowers
+            before = other["score"]
+            out = scanner.apply_scroll_floor(cfg, other)
+            self.assertEqual(out["score"], before)
+            self.assertNotIn("lifted", out)
+        self.assertTrue(set(cfg["scroll_floor"]["specific"]) <= set(cfg["core"]["terms"]))
+        self.assertFalse({"papyrus", "papyri", "vesuvius"} & set(cfg["scroll_floor"]["specific"]))
+
     @unittest.skipIf(importlib.util.find_spec("numpy") is None, "numpy is not installed")
     def test_vector_cache_survives_a_restart(self):
         import numpy as np

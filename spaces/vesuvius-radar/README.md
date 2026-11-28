@@ -39,7 +39,7 @@ radar is open as JSON, CSV, RSS and an MCP server. No key, no login, no GPU quot
 | Views | Everyone, Researchers, Challenge team, Contributors |
 | Outputs | page, JSON API, CSV, two RSS feeds, weekly Markdown, MCP server (11 tools) |
 | Runs on | free CPU; holds no keys; the page keeps stars, hides and your last visit in your own browser |
-| Version | 2.0.0 |
+| Version | 2.1.0 |
 
 ## Quick start
 
@@ -145,12 +145,17 @@ Hendrick.
   title        = {Vesuvius Radar: new work on the Herculaneum scrolls, scored for relevance},
   year         = {2026},
   howpublished = {\url{https://huggingface.co/spaces/SharpMeow/vesuvius-radar}},
-  note         = {Version 2.0.0}
+  note         = {Version 2.1.0}
 }
 ```
 
 ## Changelog
 
+- **2.1.0 (November 2026)**: a paper, article or news story that names the Herculaneum scrolls specifically
+  (Herculaneum, PHerc, virtual unwrapping and similar) and that the meaning model reads as scroll work now counts its
+  rule score half (final = max(learned, (learned + rule) / 2)). The learned head had ranked such papers by their source:
+  a paper on virtually unwrapping a Herculaneum scroll scored 47, below minor villa pull requests. "Why this score"
+  says when a score was raised.
 - **2.0.0 (November 2026)**: new This week tab with a week-against-week digest, also as Markdown (`/week.md`), RSS
   (`/week.xml`), JSON (`/api/week`) and the MCP tool `weekly_digest`; top picks for any window (`/api/picks`,
   `top_picks`); a shareable page per item (`/item?id=`) with link previews; OpenAlex as a second scholarly index,

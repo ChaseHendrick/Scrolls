@@ -54,7 +54,7 @@ VECS_FILE = DATA_DIR / "vectors.npz"
 COLLECT = os.environ.get("RADAR_COLLECT", "1") != "0"  # tests set 0: no background collector
 SEMANTIC = os.environ.get("RADAR_SEMANTIC", "1") != "0"
 PUBLIC_URL = "https://sharpmeow-vesuvius-radar.hf.space"
-VERSION = "2.0.0"
+VERSION = "2.1.0"
 OG_IMAGE = PUBLIC_URL + "/static/og.jpg"
 
 CFG = scanner.load_config()
@@ -153,7 +153,8 @@ def load_store():
         with LOCK:
             STORE.update({k: best.get(k, STORE[k]) for k in STORE})
             STORE.setdefault("state", {})
-            for i in STORE["items"].values():
+            for i in STORE["items"].values():  # items stored before a scoring change get it too
+                scanner.apply_scroll_floor(CFG, i)
                 scanner.reweight(i, CFG)  # a changed villa_weight reaches items already held
     prune()
 
