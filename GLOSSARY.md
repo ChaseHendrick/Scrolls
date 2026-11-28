@@ -30,6 +30,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **At a glance table**: The two-column table at the top of every tool page in `docs/tools/` (Id, Status, Kind, Area, Run, Code, Tests, Needs, Runs on, Network, Writes, Go-ahead, Released, Checked). An agent reads it first. See [`docs/TOOL-DOCS.md`](docs/TOOL-DOCS.md).
 
+**ATLAS-15k**: Qual's community dataset of 14,678 recto surface patches on 28 open-data scrolls (Hugging Face Qualzz20/ATLAS-15k, 27 Nov 2026, CC BY-NC 4.0). The Segment Atlas measures it with `python -m kit atlascomm` ([`docs/tools/atlascomm.md`](docs/tools/atlascomm.md)).
+
 **AUC (pixel AUC)**: Area under the ROC curve. Here it measures how well an ink map ranks labeled ink pixels above labeled non-ink pixels, inside a segment's supervision mask (`kit auc`). 0.5 is chance and 1.0 is perfect. An AUC is reported beside the same reader's reverse-depth map as the control.
 
 **Auto3DSeg**: NVIDIA's automatic 3D segmentation pipeline in MONAI (AutoRunner). It analyzes a dataset, trains SegResNet, DiNTS and Swin UNETR and ensembles them. `kit segzoo datalist` writes the datalist it reads from an nnU-Net dataset ([page](docs/tools/segzoo.md)).

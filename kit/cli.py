@@ -1,4 +1,4 @@
-"""Command line: python -m kit {start,help,prizes,submitcheck,live,style,stages,hardcases,doctor,plan,cost,find,labels,centerline,cite,fetch,s3relay,vc3dcache,prclock,prtext,villaports,verify,rowscore,auc,hpscore,overlap,collate,stackcheck,tifxyz,sheetview,atlas,coverage,uvgate,windconsistency,axispolish,windlabel-box,hopbench,meshaudit,snap,labelsnap,finesnap,ensemble,fibertensor,sheetcheck,labelsuggest,altrain,gate,layers,shuffle,provenance,compute,run,surfacefix,phantom,view,strokenet,letterread,letterlines,letterdemo,greeklm,releases,spaceconnect,leaderboard,routines,drivers,freeze,reviewpin,hubcall,stale,integrity,volumeview,segzoo,fibers,scroll2ink,vxsummary,zarrbox,expatlas,sentinel}.
+"""Command line: python -m kit {start,help,prizes,submitcheck,live,style,stages,hardcases,doctor,plan,cost,find,labels,centerline,cite,fetch,s3relay,vc3dcache,prclock,prtext,villaports,verify,rowscore,auc,hpscore,overlap,collate,stackcheck,tifxyz,sheetview,atlas,atlascomm,coverage,uvgate,windconsistency,axispolish,windlabel-box,hopbench,meshaudit,snap,labelsnap,finesnap,ensemble,fibertensor,sheetcheck,labelsuggest,altrain,gate,layers,shuffle,provenance,compute,run,surfacefix,phantom,view,strokenet,letterread,letterlines,letterdemo,greeklm,releases,spaceconnect,leaderboard,routines,drivers,freeze,reviewpin,hubcall,stale,integrity,volumeview,segzoo,fibers,scroll2ink,vxsummary,zarrbox,expatlas,sentinel}.
 
 An installed package (pyproject.toml) has the same commands as console scripts: scrolls-workbench (every command;
 gate, releases and leaderboard read the repository's docs/ and README.md, so they need a clone), and scrolls-letterread,
@@ -1029,7 +1029,7 @@ GROUPS = (
     ("Start and set up", ("start", "doctor", "prizes", "submitcheck", "plan", "cost", "help", "live", "style")),
     ("Find and fetch public data", ("find", "labels", "centerline", "cite", "fetch", "s3relay", "vc3dcache",
                                     "volumeview", "segzoo", "fibers", "zarrbox", "sentinel")),
-    ("Segments and geometry", ("scroll2ink", "stages", "hardcases", "tifxyz", "sheetview", "atlas", "coverage", "stackcheck",
+    ("Segments and geometry", ("scroll2ink", "stages", "hardcases", "tifxyz", "sheetview", "atlas", "atlascomm", "coverage", "stackcheck",
                                "uvgate", "windconsistency", "axispolish",
                                "windlabel-box", "hopbench", "overlap", "expatlas", "meshaudit", "surfacefix", "layers",
                                "snap", "labelsnap", "finesnap")),
@@ -1382,6 +1382,12 @@ def build_parser(prog="python -m kit", sub_progs=None):
     from . import atlas as _atlas
     _atlas.build_parser(p)
     p.set_defaults(func=_atlas.cmd_atlas)
+
+    p = sub.add_parser("atlascomm", help="Segment Atlas community table: ATLAS-15k surface patches, metadata and "
+                       "the atlas numbers per patch (kit/atlascomm.py)")
+    from . import atlascomm as _atlascomm
+    _atlascomm.build_parser(p)
+    p.set_defaults(func=_atlascomm.cmd_atlascomm)
 
     p = sub.add_parser("coverage", help="Winding coverage: which turns and heights a scroll's segments trace, and the gaps")
     from . import coverage as _coverage

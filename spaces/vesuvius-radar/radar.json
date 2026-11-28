@@ -4,6 +4,7 @@
  "keep_score": 12,
  "bands": {"high": 60, "medium": 35},
  "check_cooldown_s": 300,
+ "villa_weight": {"note": "Villa pull requests and issues are common and would look more important than they are. Every score of a pull request or issue on a repos entry is multiplied by weight (band recomputed; the item stays listed, and score_base keeps the score before it). A merged pull request whose title, summary or labels match a core_terms entry (surface tracing, sheet seating and switches, ink detection, tifxyz, flattening) keeps merged_core_weight instead. Releases, new repositories, papers, datasets and models are never weighted.", "repos": ["ScrollPrize/villa"], "kinds": ["pr", "issue"], "weight": 0.6, "merged_core_weight": 1.0, "core_terms": ["surface trac", "tracer", "tracing", "trace", "sheet", "seat", "switch", "ink detect", "ink model", "ink pred", "tifxyz", "flatten", "winding", "unroll", "segment"]},
  "people": {"Chase Hendrick": ["ChaseHendrick", "SharpMeow", "Sharpie"]},
  "core": {
   "weight": 45,
